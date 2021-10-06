@@ -1,0 +1,23 @@
+# Environment files
+.env
+.env.local
+.env.production
+**/*.yml-e
+
+# Editor
+.vscode
+
+# Notes
+note/*
+notes/*
+NOTES.md
+
+# Binaries
+go-boilerplate-template-server
+go-boilerplate-template-cli
+
+go-boilerplate-player-server
+go-boilerplate-player-cli
+
+go-boilerplate-character-server
+go-boilerplate-character-cli

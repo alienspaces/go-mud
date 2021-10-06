@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Environment
+source ${BASH_SOURCE%/*}/environment || exit $?
+
+# stop database
+echo "=> Stopping database";
+
+if [ $APP_SERVER_DB_SERVICE = "docker" ]; then
+
+    echo "=> Stopping database - docker service"
+
+    docker ps -a | grep go-boilerplate | awk '{print $1}' | xargs sh -c 'for arg do docker stop $arg; docker rm $arg; done' _
+
+elif [ $APP_SERVER_DB_SERVICE = "local" ]; then
+
+    echo "=> Stopping database - local service"
+
+    sudo -u postgres dropdb go-boilerplate
+    sudo -u postgres dropuser go-boilerplate
+    sudo service postgresql stop
+
+elif [ $APP_SERVER_DB_SERVICE = "ci" ]; then
+
+    echo "=> Stopping database - ci service"
+fi

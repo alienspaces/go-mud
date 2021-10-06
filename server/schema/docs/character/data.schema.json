@@ -1,0 +1,88 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "http://go-boilerplate.com/schema/character/data.schema.json",
+    "title": "Mages Data",
+    "description": "Payload data for characters",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [],
+    "properties": {
+        "id": {
+            "description": "Resource ID",
+            "type": "string",
+            "format": "uuid",
+            "example": "a87feca8-d6f0-4794-98c7-037b30219520"
+        },
+        "player_id": {
+            "description": "Player resource ID",
+            "type": "string",
+            "format": "uuid",
+            "example": "b0938b3d-563e-4054-b07f-522ae3dd376d"
+        },
+        "name": {
+            "description": "The name of this character.",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 100,
+            "example": "Lord Thoril Lightouch the Sorcerer"
+        },
+        "avatar": {
+            "description": "The avatar to use for this character.",
+            "type": "string"
+        },
+        "strength": {
+            "description": "The strength attribute determines physical health and can restrict what items can be used.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "example": 25
+        },
+        "dexterity": {
+            "description": "The dexterity attribute determines their ability to dodge attacks and can restrict what items can be used.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "example": 25
+        },
+        "intelligence": {
+            "description": "The intelligence attribute determines magical power and can restrict what spells can be used.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "example": 25
+        },
+        "attribute_points": {
+            "description": "Attribute points are distributed across the attributes strength, dexterity and intelligence. This value is equal to the sum of these attributes along with any points yet to be distributed.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9223372036854775807,
+            "example": 1000
+        },
+        "experience_points": {
+            "description": "Experience points increase automatically in battle and determines how many attributes points a character has to assign.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9223372036854775807,
+            "example": 1000
+        },
+        "coins": {
+            "description": "Coins are used to purchase items and training.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9223372036854775807,
+            "example": 437
+        },
+        "created_at": {
+            "description": "Date/time the resource was created",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+        },
+        "updated_at": {
+            "description": "Date/time the resource was last updated",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+        }
+    }
+}

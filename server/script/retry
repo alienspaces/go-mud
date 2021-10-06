@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Retry a command a number of times with an
+# increasing wait time between each attempt.
+function retry_cmd {
+  local n=1
+  local max=5
+  local delay=5
+  local delay_inc=5
+
+  echo "=> Command $@"
+
+  while true; do
+    "$@" && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        echo "=> Command failed. Trying again in $delay seconds. Attempt $n/$max:"
+        sleep $delay;
+        delay=$[$delay+$delay_inc]
+      else
+        echo "=> Command failed after $n attempts, exiting.." >&2
+        exit 1
+      fi
+    }
+  done
+}

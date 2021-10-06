@@ -1,0 +1,21 @@
+
+# unique job names required
+test_common_logger:
+  stage: test
+  image: docker:19.03
+  services:
+    - docker:19.03-dind
+  before_script:
+    - apk update
+    - apk add gcc
+    - apk add bash
+    - apk add musl-dev
+    - apk add libffi-dev
+    - apk add openssl-dev
+    - apk add make
+  script:
+    - echo "Testing.."
+  only:
+    changes:
+      - common/logger/**/*
+      - common/env/**/*

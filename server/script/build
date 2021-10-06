@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# build all services that have been modified
+
+# google cloud service account key
+if [ -n "$GC_SERVICE_ACCOUNT_KEY" ]; then
+    echo "$GC_SERVICE_ACCOUNT_KEY" > gc-service-account-key.json # Google Cloud service accounts
+fi
+
+# previous latest commit present on a branch before a merge
+# request. Only populated when there is a merge request
+# associated with the pipeline.
+PREV_COMMIT=$CI_COMMIT_BEFORE_SHA
+if [ -z "$PREV_COMMIT" ]; then
+    # otherwise use the actual previous commit
+    PREV_COMMIT=$(git rev-parse HEAD^)
+fi
+
+# service directory list
+shopt -s dotglob
+shopt -s nullglob
+cd ./service
+SERVICE_NAMES=(*)
+cd -
+
+for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
+
+    SERVICE_DIR="./service/$SERVICE_NAME"
+    echo "$SERVICE_DIR";
+
+    # build if anything changed in common
+    CHANGED=$(git diff $PREV_COMMIT --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+    if [ -z "$CHANGED" ]; then
+        # build if anything changed in the service
+        CHANGED=$(git diff $PREV_COMMIT --name-only -- $SERVICE_DIR)
+    fi
+    if [ -z "$CHANGED" ]; then
+        echo "No changes"
+        continue
+    fi
+
+    echo "Changes detected in $SERVICE_DIR"
+
+    if [ -f "$SERVICE_DIR/build/docker/Dockerfile" ]; then
+
+        echo "Building $SERVICE_NAME"
+
+        gcloud auth activate-service-account --key-file gc-service-account-key.json || exit $?
+        gcloud config set project $GC_PROJECT_ID
+        gcloud auth configure-docker gcr.io --quiet
+        docker build -f "$SERVICE_DIR/build/docker/Dockerfile" -t "go-boilerplate/$SERVICE_NAME" .
+        docker tag "go-boilerplate/$SERVICE_NAME" "gcr.io/eng-braid-266903/go-boilerplate/$SERVICE_NAME:latest"
+        docker push "gcr.io/eng-braid-266903/go-boilerplate/$SERVICE_NAME:latest"
+    fi
+
+done
+
+

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+HOSTNAME="http://localhost:8082"
+echo "HOSTNAME => $HOSTNAME"
+
+TOKEN=$(uuidgen)
+echo "TOKEN => $TOKEN"
+
+read -d "" DATA <<- "_EOF_"
+{
+    "data": {
+        "provider": "anonymous",
+        "provider_account_id": "$TOKEN",
+        "provider_token": ""
+    }
+}
+_EOF_
+echo "DATA => $DATA"
+
+curl -v --data "$DATA" -H 'Content-Type: application/json' "${HOSTNAME}/api/auth"
+

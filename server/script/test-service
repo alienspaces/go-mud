@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+# DESCRIPTION:
+#   Execute ./service unit tests
+# USAGE:
+#   Test all services
+#     ./script/test-service
+#   Test specific service
+#     ./script/test-service ./service/example/player
+
+echo
+echo "=> Test service"
+echo
+
+# Environment
+if [ -z "$APP_SERVER_GO_VERSION" ]; then
+    source ${BASH_SOURCE%/*}/environment || exit $?
+fi
+
+function test_service {
+
+    if [ -f "go.mod" ]; then
+        echo "=> Test service directory - $f"
+        export APP_SERVER_HOME=$(pwd)
+
+        if [ $APP_SERVER_DB_SERVICE = "ci" ]; then
+            if [ -f ".env.ci" ]; then
+                echo "=> Test service - sourcing service .env.ci"
+                source .env.ci
+            fi
+        else
+            if [ -f ".env.development" ]; then
+                echo "=> Test service - sourcing service .env.development"
+                source .env.development
+            fi
+        fi
+
+        echo "=> Test service - APP_SERVER_HOME - ${APP_SERVER_HOME}"
+        go test -v -cover -count 1 ./... || exit $?
+    fi
+}
+
+function test_services {
+   
+    for TEST_SERVICE in "$BASE_DIRECTORY"/*; do
+        cd $TEST_SERVICE
+        test_service
+        cd -
+    done
+}
+
+# Specific service / All services
+TEST_SERVICE=""
+if [ -n "$1" ]; then
+    TEST_SERVICE=$1
+    shift
+
+    cd $TEST_SERVICE
+    test_service;
+    cd -
+else
+
+    # Service directory list
+    BASE_DIRECTORY="service"
+    test_services;
+
+    # Service example directory list
+    if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
+        echo " => Starting example services"
+        
+        BASE_DIRECTORY="service/example"
+        test_services;
+    fi
+fi
+

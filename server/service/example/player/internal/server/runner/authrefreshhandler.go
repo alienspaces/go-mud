@@ -1,0 +1,82 @@
+package runner
+
+import (
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+
+	"gitlab.com/alienspaces/go-boilerplate/server/constant"
+	"gitlab.com/alienspaces/go-boilerplate/server/core/auth"
+	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
+	"gitlab.com/alienspaces/go-boilerplate/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-boilerplate/server/schema"
+	"gitlab.com/alienspaces/go-boilerplate/server/service/player/internal/model"
+)
+
+// PostAuthRefreshHandler -
+func (rnr *Runner) PostAuthRefreshHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+
+	l.Info("** Post auth refresh handler ** p >%#v< m >#%v<", pp, m)
+
+	req := schema.AuthRefreshRequest{}
+
+	err := rnr.ReadRequest(l, r, &req)
+	if err != nil {
+		rnr.WriteSystemError(l, w, err)
+		return
+	}
+
+	accountRec, err := m.(*model.Model).AuthVerifyToken(model.AuthTokenData{
+		Token: req.Data.Token,
+	})
+	if err != nil {
+		rnr.WriteUnauthorizedError(l, w, err)
+		return
+	}
+
+	a, err := auth.NewAuth(rnr.Config, rnr.Log)
+	if err != nil {
+		rnr.WriteUnauthorizedError(l, w, err)
+		return
+	}
+
+	// TODO: Expand on account roles
+	roles := []string{
+		constant.AuthRoleDefault,
+	}
+
+	identity := map[string]interface{}{
+		constant.AuthIdentityPlayerID: accountRec.ID,
+	}
+
+	claims := auth.Claims{
+		Roles:    roles,
+		Identity: identity,
+	}
+
+	tokenString, err := a.EncodeJWT(&claims)
+	if err != nil {
+		rnr.WriteUnauthorizedError(l, w, err)
+		return
+	}
+
+	// assign response properties
+	res := schema.AuthRefreshResponse{
+		Data: []schema.AuthRefreshData{
+			{
+				PlayerID:    accountRec.ID,
+				PlayerName:  accountRec.Name,
+				PlayerEmail: accountRec.Email,
+				Token:        tokenString,
+				CreatedAt:    accountRec.CreatedAt,
+				UpdatedAt:    accountRec.UpdatedAt.Time,
+			},
+		},
+	}
+
+	err = rnr.WriteResponse(l, w, res)
+	if err != nil {
+		l.Warn("Failed writing response >%v<", err)
+		return
+	}
+}

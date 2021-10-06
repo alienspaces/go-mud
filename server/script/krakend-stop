@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+NGINX_RUNNING=$(docker ps -a | grep "go-boilerplate-krakend")
+if [[ ! -z "${NGINX_RUNNING}" ]]; then
+    echo
+    echo "=> Stopping krakend"
+    echo
+    docker stop go-boilerplate-krakend
+    docker rm go-boilerplate-krakend
+fi

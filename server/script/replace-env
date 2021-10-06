@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+function replace-env {
+
+    echo "=> Replace $1"
+
+    # replace environment variable placeholders
+    for var in $(compgen -e | grep "^APP_" | sort)
+    do
+        # masked
+        if [[ "${var}" = *"PASS" ]] || [[ "${var}" = *"KEY" ]]; then
+            echo "=> (environment) ${var} => ********"
+        else
+            echo "=> (environment) ${var} => ${!var}"
+        fi
+
+        sed -i -e "s#{${var}}#${!var}#g" $1
+
+        # remove backup files
+        if [ -d $1 ]; then
+            rm -f $1/*-e
+        else
+            rm -f $1*-e
+        fi
+    done
+}
+
+if ! [ -z $1 ]; then
+    replace-env $1
+fi

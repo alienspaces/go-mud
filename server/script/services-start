@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+# Local development run script
+
+# Environment
+if [ -z "$APP_SERVER_GO_VERSION" ]; then
+    source ${BASH_SOURCE%/*}/environment || exit $?
+fi
+
+# stop
+source ${BASH_SOURCE%/*}/services-stop || exit $?
+
+echo
+echo "=> Starting services"
+echo
+
+function start_services {
+    for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
+
+        echo "=> (start_services) - Service $SERVICE_NAME"
+
+        if [ -f "${SERVICE_BASE_PATH}/$SERVICE_NAME/.env" ]; then
+
+            # Reset APP_SERVER_PORT as each service should define
+            # a unique server port in their local env
+            export APP_SERVER_PORT=""
+
+            # Build and run service
+            cd "$SERVICE_BASE_PATH/$SERVICE_NAME"
+
+            # NOTE: we shift into the service directory before sourcing
+            # the environment so $PWD is correct for APP_SERVER_HOME
+
+            # Copy development env
+            cp .env.development .env
+
+            # Add local env (runtime secrets we don't actually want committed to git)
+            cat .env.local >> .env
+
+            # Load service specific environment
+            if [ -f "../../${BASH_SOURCE%/*}/environment" ]; then
+                source ../../${BASH_SOURCE%/*}/environment || exit $?
+            elif [ -f "../../../${BASH_SOURCE%/*}/environment" ]; then
+                source ../../../${BASH_SOURCE%/*}/environment || exit $?
+            fi
+
+            # Build server
+            SERVER_NAME="go-boilerplate-${SERVICE_NAME}-server"
+            rm -f $SERVER_NAME
+            go build -o $SERVER_NAME ./cmd/server
+
+            echo "=> (start_services) - Running server $SERVER_NAME"
+            ./$SERVER_NAME&
+            cd -
+        fi
+    done
+}
+
+shopt -s dotglob
+shopt -s nullglob
+
+# Service directory list
+SERVICE_BASE_PATH=./service
+cd $SERVICE_BASE_PATH
+SERVICE_NAMES=(*)
+cd -
+
+start_services
+
+# Service example directory list
+if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
+    echo
+    echo " => Starting example services"
+    echo
+
+    SERVICE_BASE_PATH=./service/example
+    cd $SERVICE_BASE_PATH
+    SERVICE_NAMES=(*)
+    cd -
+
+    start_services
+fi

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# Environment
+if [ -z "$APP_SERVER_GO_VERSION" ]; then
+    source ${BASH_SOURCE%/*}/environment || exit $?
+fi
+
+# NOTE: Add new services here
+SERVICES=()
+
+for SERVICE in "${SERVICES[@]}"; do
+
+    # Reset APP_SERVER_PORT as each service should define
+    # a unique server port in their local env
+    export APP_SERVER_PORT=""
+
+    cd "service/${SERVICE}"
+
+    echo
+    echo "** Loading ${SERVICE} service test data"
+    echo
+
+    # Environment
+    source ../../${BASH_SOURCE%/*}/environment || exit $?
+
+    go run ./cmd/cli load-seed-data || exit $?
+
+    cd -
+
+done

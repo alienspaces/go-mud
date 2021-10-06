@@ -1,0 +1,64 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "http://go-boilerplate.com/schema/auth/data.schema.json",
+    "title": "Players Data",
+    "description": "Payload data for auth",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "provider",
+        "provider_account_id"
+    ],
+    "properties": {
+        "provider": {
+            "description": "OAuth provider",
+            "enum": [
+                "anonymous",
+                "apple",
+                "facebook",
+                "github",
+                "google",
+                "twitter"
+            ]
+        },
+        "provider_account_id": {
+            "description": "Player identifier from provider",
+            "type": "string"
+        },
+        "provider_token": {
+            "description": "Authentication token from provider",
+            "type": "string"
+        },
+        "player_id": {
+            "description": "Local player identifier",
+            "type": "string",
+            "format": "uuid",
+            "example": "a87feca8-d6f0-4794-98c7-037b30219520"
+        },
+        "player_name": {
+            "description": "Local player name",
+            "type": "string"
+        },
+        "player_email": {
+            "description": "Local player email",
+            "type": "string",
+            "format": "email"
+        },
+        "token": {
+            "description": "Token to use for subsequent requests",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "Date/time the resource was created",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+        },
+        "updated_at": {
+            "description": "Date/time the resource was last updated",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+        }
+    }
+}

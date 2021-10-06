@@ -1,0 +1,14 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "http://go-boilerplate.com/schema/authrefresh/main.schema.json",
+    "title": "Auth Token Refresh Main",
+    "type": "object",
+    "required": [
+        "data"
+    ],
+    "properties": {
+        "data": {
+            "$ref": "http://go-boilerplate.com/schema/authrefresh/data.schema.json"
+        }
+    }
+}

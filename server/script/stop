@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# copy development env
+cp .env.development .env
+
+# Environment
+if [ -z "$APP_SERVER_GO_VERSION" ]; then
+    source ${BASH_SOURCE%/*}/environment || exit $?
+fi
+
+# stop
+source ${BASH_SOURCE%/*}/services-stop || exit $?
+
+# stop krakend
+source ${BASH_SOURCE%/*}/krakend-stop
+
+# stop database
+source ${BASH_SOURCE%/*}/db-stop || exit $?
+

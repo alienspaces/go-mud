@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+SERVICE_NAME=$1
+if [ -z "${SERVICE_NAME}" ]; then
+    echo "=> (start service) Missing service name, cannot start service"
+    exit 0
+fi
+
+shift
+
+echo
+echo "=> Running CLI ${SERVICE_NAME}"
+echo
+
+# copy and clear args
+ARGS=$@
+for var in "$@"
+do
+    shift
+done
+
+# copy development env
+cp .env.development .env
+
+# Environment
+source ${BASH_SOURCE%/*}/environment || exit $?
+
+# reset APP_SERVER_PORT as each service should define
+# a unique server port in their local env
+export APP_SERVER_PORT=""
+
+# build and run service
+cd service/$SERVICE_NAME
+
+# copy development env
+cp .env.development .env
+
+cat .env
+
+echo "Sourcing service .env"
+
+# NOTE: we shift into the service directory before sourcing
+# the environment so $PWD is correct for APP_SERVER_HOME
+
+# load service specific environment
+source ../../${BASH_SOURCE%/*}/environment || exit $?
+
+echo ""
+
+# build CLI
+CLI_NAME="go-boilerplate-${SERVICE_NAME}-cli"
+rm -f $CLI_NAME
+go build -o $CLI_NAME ./cmd/cli || exit $?
+
+echo "Running CLI $CLI_NAME"
+./$CLI_NAME $ARGS
+cd -
