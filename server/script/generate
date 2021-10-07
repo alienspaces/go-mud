@@ -32,28 +32,28 @@ function generate_service {
     echo "Generating service ${SERVICE_CC}"
 
     # create service directory
-    mkdir ./service/${SERVICE_LC}
+    mkdir ./service/"${SERVICE_LC}"
 
     # remove template binaries in case
     rm -f ./service/template/go-mud-template-server
     rm -f ./service/template/go-mud-template-cli
 
     # copy source
-    cp -R ./service/template/* ./service/${SERVICE_LC}
-    cp ./service/template/.env* ./service/${SERVICE_LC}/
+    cp -R ./service/template/* ./service/"${SERVICE_LC}"
+    cp ./service/template/.env* ./service/"${SERVICE_LC}"/
 
     # rename specific files
-    mv ./service/${SERVICE_LC}/internal/repository/template ./service/${SERVICE_LC}/internal/repository/${SERVICE_LC}
+    mv ./service/"${SERVICE_LC}"/internal/repository/template ./service/"${SERVICE_LC}"/internal/repository/"${SERVICE_LC}"
 
     # replace template names
-    find ./service/${SERVICE_LC} -type f -exec perl -pi -e "s/template/${SERVICE_LC}/g" {} \;
-    find ./service/${SERVICE_LC} -type f -exec perl -pi -e "s/TEMPLATE/${SERVICE_UC}/g" {} \;
-    find ./service/${SERVICE_LC} -type f -exec perl -pi -e "s/Template/${SERVICE_CC}/g" {} \;
+    find ./service/"${SERVICE_LC}" -type f -exec perl -pi -e "s/template/${SERVICE_LC}/g" {} \;
+    find ./service/"${SERVICE_LC}" -type f -exec perl -pi -e "s/TEMPLATE/${SERVICE_UC}/g" {} \;
+    find ./service/"${SERVICE_LC}" -type f -exec perl -pi -e "s/Template/${SERVICE_CC}/g" {} \;
 
     # check go module integrity
-    cd ./service/${SERVICE_LC}
+    cd ./service/"${SERVICE_LC}" || exit
     go mod tidy
-    cd -
+    cd - || exit
 }
 
 function generate_repo {
@@ -94,13 +94,13 @@ fi
 
 # generate repo
 if [ "$COMMAND" == "repo" ]; then
-    generate_repo $1 $2
+    generate_repo "$1" "$2"
     exit 1
 fi
 
 # generate service
 if [ "$COMMAND" == "service" ]; then
-    generate_service $1
+    generate_service "$1"
     exit 1
 fi
 

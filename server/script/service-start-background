@@ -21,14 +21,14 @@ echo
 cp .env.development .env
 
 # Environment
-source ${BASH_SOURCE%/*}/environment || exit $?
+source "${BASH_SOURCE%/*}"/environment || exit $?
 
 # reset APP_SERVER_PORT as each service should define
 # a unique server port in their local env
 export APP_SERVER_PORT=""
 
 # build and run service
-cd service/$SERVICE_NAME
+cd service/"$SERVICE_NAME" || exit
 
 # NOTE: we shift into the service directory before sourcing
 # the environment so $PWD is correct for APP_SERVER_HOME
@@ -40,13 +40,13 @@ cp .env.development .env
 cat .env.local >> .env
 
 # load service specific environment
-source ../../${BASH_SOURCE%/*}/environment || exit $?
+source ../../"${BASH_SOURCE%/*}"/environment || exit $?
 
 # build server
 SERVER_NAME="go-mud-${SERVICE_NAME}-server"
-rm -f $SERVER_NAME
-go build -o $SERVER_NAME ./cmd/server || exit $?
+rm -f "$SERVER_NAME"
+go build -o "$SERVER_NAME" ./cmd/server || exit $?
 
 echo "Running server $SERVER_NAME"
-./$SERVER_NAME&
-cd -
+./"$SERVER_NAME"&
+cd - || exit

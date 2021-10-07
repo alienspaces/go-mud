@@ -13,11 +13,11 @@ notes/*
 NOTES.md
 
 # Binaries
-go-boilerplate-template-server
-go-boilerplate-template-cli
+go-mud-template-server
+go-mud-template-cli
 
-go-boilerplate-player-server
-go-boilerplate-player-cli
+go-mud-player-server
+go-mud-player-cli
 
-go-boilerplate-character-server
-go-boilerplate-character-cli
+go-mud-character-server
+go-mud-character-cli

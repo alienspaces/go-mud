@@ -13,8 +13,8 @@ echo "=> Running CLI ${SERVICE_NAME}"
 echo
 
 # copy and clear args
-ARGS=$@
-for var in "$@"
+ARGS=( "$@" )
+for _ in "$@"
 do
     shift
 done
@@ -23,14 +23,14 @@ done
 cp .env.development .env
 
 # Environment
-source ${BASH_SOURCE%/*}/environment || exit $?
+source "${BASH_SOURCE%/*}"/environment || exit $?
 
 # reset APP_SERVER_PORT as each service should define
 # a unique server port in their local env
 export APP_SERVER_PORT=""
 
 # build and run service
-cd service/$SERVICE_NAME
+cd service/"$SERVICE_NAME" || exit
 
 # copy development env
 cp .env.development .env
@@ -43,15 +43,15 @@ echo "Sourcing service .env"
 # the environment so $PWD is correct for APP_SERVER_HOME
 
 # load service specific environment
-source ../../${BASH_SOURCE%/*}/environment || exit $?
+source ../../"${BASH_SOURCE%/*}"/environment || exit $?
 
 echo ""
 
 # build CLI
 CLI_NAME="go-mud-${SERVICE_NAME}-cli"
-rm -f $CLI_NAME
-go build -o $CLI_NAME ./cmd/cli || exit $?
+rm -f "$CLI_NAME"
+go build -o "$CLI_NAME" ./cmd/cli || exit $?
 
 echo "Running CLI $CLI_NAME"
-./$CLI_NAME $ARGS
-cd -
+./"$CLI_NAME" "${ARGS[@]}"
+cd - || exit

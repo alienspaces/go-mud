@@ -4,11 +4,11 @@
 
 # Environment
 if [ -z "$APP_SERVER_GO_VERSION" ]; then
-    source ${BASH_SOURCE%/*}/environment || exit $?
+    source "${BASH_SOURCE%/*}"/environment || exit $?
 fi
 
 # stop
-source ${BASH_SOURCE%/*}/services-stop || exit $?
+source "${BASH_SOURCE%/*}"/services-stop || exit $?
 
 echo
 echo "=> Starting services"
@@ -26,7 +26,7 @@ function start_services {
             export APP_SERVER_PORT=""
 
             # Build and run service
-            cd "$SERVICE_BASE_PATH/$SERVICE_NAME"
+            cd "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit
 
             # NOTE: we shift into the service directory before sourcing
             # the environment so $PWD is correct for APP_SERVER_HOME
@@ -39,19 +39,19 @@ function start_services {
 
             # Load service specific environment
             if [ -f "../../${BASH_SOURCE%/*}/environment" ]; then
-                source ../../${BASH_SOURCE%/*}/environment || exit $?
+                source ../../"${BASH_SOURCE%/*}"/environment || exit $?
             elif [ -f "../../../${BASH_SOURCE%/*}/environment" ]; then
-                source ../../../${BASH_SOURCE%/*}/environment || exit $?
+                source ../../../"${BASH_SOURCE%/*}"/environment || exit $?
             fi
 
             # Build server
             SERVER_NAME="go-mud-${SERVICE_NAME}-server"
-            rm -f $SERVER_NAME
-            go build -o $SERVER_NAME ./cmd/server
+            rm -f "$SERVER_NAME"
+            go build -o "$SERVER_NAME" ./cmd/server
 
             echo "=> (start_services) - Running server $SERVER_NAME"
-            ./$SERVER_NAME&
-            cd -
+            ./"$SERVER_NAME"&
+            cd - || exit
         fi
     done
 }
@@ -61,9 +61,9 @@ shopt -s nullglob
 
 # Service directory list
 SERVICE_BASE_PATH=./service
-cd $SERVICE_BASE_PATH
+cd $SERVICE_BASE_PATH || exit
 SERVICE_NAMES=(*)
-cd -
+cd - || exit
 
 start_services
 
@@ -74,9 +74,9 @@ if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
     echo
 
     SERVICE_BASE_PATH=./service/example
-    cd $SERVICE_BASE_PATH
+    cd $SERVICE_BASE_PATH || exit
     SERVICE_NAMES=(*)
-    cd -
+    cd - || exit
 
     start_services
 fi

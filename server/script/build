@@ -19,9 +19,9 @@ fi
 # service directory list
 shopt -s dotglob
 shopt -s nullglob
-cd ./service
+cd ./service || exit
 SERVICE_NAMES=(*)
-cd -
+cd - || exit
 
 for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
@@ -29,10 +29,10 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
     echo "$SERVICE_DIR";
 
     # build if anything changed in common
-    CHANGED=$(git diff $PREV_COMMIT --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+    CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
     if [ -z "$CHANGED" ]; then
         # build if anything changed in the service
-        CHANGED=$(git diff $PREV_COMMIT --name-only -- $SERVICE_DIR)
+        CHANGED=$(git diff "$PREV_COMMIT" --name-only -- "$SERVICE_DIR")
     fi
     if [ -z "$CHANGED" ]; then
         echo "No changes"
@@ -46,7 +46,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
         echo "Building $SERVICE_NAME"
 
         gcloud auth activate-service-account --key-file gc-service-account-key.json || exit $?
-        gcloud config set project $GC_PROJECT_ID
+        gcloud config set project "$GC_PROJECT_ID"
         gcloud auth configure-docker gcr.io --quiet
         docker build -f "$SERVICE_DIR/build/docker/Dockerfile" -t "go-mud/$SERVICE_NAME" .
         docker tag "go-mud/$SERVICE_NAME" "gcr.io/eng-braid-266903/go-mud/$SERVICE_NAME:latest"

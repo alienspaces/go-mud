@@ -3,10 +3,10 @@
 # deploy all services that have been modified
 
 # replace-env
-source ${BASH_SOURCE%/*}/replace-env || exit $?
+source "${BASH_SOURCE%/*}"/replace-env || exit $?
 
 # retry
-source ${BASH_SOURCE%/*}/retry || exit $?
+source "${BASH_SOURCE%/*}"/retry || exit $?
 
 # google cloud service account key
 if [ -n "$GC_SERVICE_ACCOUNT_KEY" ]; then
@@ -14,7 +14,7 @@ if [ -n "$GC_SERVICE_ACCOUNT_KEY" ]; then
 fi
 
 gcloud auth activate-service-account --key-file gc-service-account-key.json || exit $?
-gcloud config set project $GC_PROJECT_ID
+gcloud config set project "$GC_PROJECT_ID"
 gcloud container clusters get-credentials alienspaces-cluster-1 --zone australia-southeast1-a
 
 # previous latest commit present on a branch before a merge
@@ -27,7 +27,7 @@ if [ -z "$PREV_COMMIT" ]; then
 fi
 
 # deploy configmap if anything changed in common top level config or modules
-CHANGED=$(git diff $PREV_COMMIT --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
 if [ -n "$CHANGED" ]; then
 
     if [ -f "./build/kubernetes/configmap.yml" ]; then
@@ -43,9 +43,9 @@ fi
 # service directory list
 shopt -s dotglob
 shopt -s nullglob
-cd ./service
+cd ./service || exit
 SERVICE_NAMES=(*)
-cd -
+cd - || exit
 
 for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
@@ -53,10 +53,10 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
     echo "$SERVICE_DIR";
 
     # deploy service if anything changed in common top level config or modules
-    CHANGED=$(git diff $PREV_COMMIT --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+    CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
     if [ -z "$CHANGED" ]; then
         # deploy service if anything changed in the specific service
-        CHANGED=$(git diff $PREV_COMMIT --name-only -- $SERVICE_DIR)
+        CHANGED=$(git diff "$PREV_COMMIT" --name-only -- "$SERVICE_DIR")
     fi
     if [ -z "$CHANGED" ]; then
         echo "No changes"
@@ -72,7 +72,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
         echo "Deploying $SERVICE_NAME image $APP_IMAGE"
 
         # replace environment variable placeholders
-        replace-env $SERVICE_DIR/build/kubernetes/*.yml
+        replace-env "$SERVICE_DIR"/build/kubernetes/*.yml
 
         # apply deployment
         if [ -f "$SERVICE_DIR/build/kubernetes/deployment.yml" ]; then
@@ -89,7 +89,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 done
 
 # deploy ingress if anything changed in common top level config or modules
-CHANGED=$(git diff $PREV_COMMIT --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
 if [ -n "$CHANGED" ]; then
 
     if [ -f "./build/kubernetes/ingress.yml" ]; then
