@@ -6,22 +6,22 @@
 cp .env.development .env
 
 # Environment
-source ${BASH_SOURCE%/*}/environment || exit $?
+source "${BASH_SOURCE%/*}"/environment || exit $?
 
 # stop
-source ${BASH_SOURCE%/*}/stop $1 || exit $?
+source "${BASH_SOURCE%/*}"/stop "$1" || exit $?
 
 # start database
-source ${BASH_SOURCE%/*}/db-start $1 || exit $?
+source "${BASH_SOURCE%/*}"/db-start "$1" || exit $?
 
 # migrate database
-source ${BASH_SOURCE%/*}/db-migrate-up || exit $?
+source "${BASH_SOURCE%/*}"/db-migrate-up || exit $?
 
 # load seed data
-source ${BASH_SOURCE%/*}/load-seed-data || exit $?
+source "${BASH_SOURCE%/*}"/load-seed-data || exit $?
 
 # start krakend
-source ${BASH_SOURCE%/*}/krakend-start $1 || exit $?
+source "${BASH_SOURCE%/*}"/krakend-start "$1" || exit $?
 
 # start services
-source ${BASH_SOURCE%/*}/services-start $1 || exit $?
+source "${BASH_SOURCE%/*}"/services-start "$1" || exit $?

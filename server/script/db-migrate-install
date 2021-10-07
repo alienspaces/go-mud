@@ -2,14 +2,14 @@
 
 # Environment
 if [ -z "$APP_SERVER_GO_VERSION" ]; then
-    source ${BASH_SOURCE%/*}/environment || exit $?
+    source "${BASH_SOURCE%/*}"/environment || exit $?
 fi
 
 # go version
-if [ $(command -v gvm) ]; then
+if [ "$(command -v gvm)" ]; then
     source  ~/.gvm/scripts/gvm
     echo "=> Use ${APP_SERVER_GO_VERSION}"
-    gvm use $APP_SERVER_GO_VERSION || exit $?
+    gvm use "$APP_SERVER_GO_VERSION" || exit $?
 fi
 
 # https://github.com/golang-migrate/migrate/releases

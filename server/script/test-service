@@ -14,16 +14,17 @@ echo
 
 # Environment
 if [ -z "$APP_SERVER_GO_VERSION" ]; then
-    source ${BASH_SOURCE%/*}/environment || exit $?
+    source "${BASH_SOURCE%/*}"/environment || exit $?
 fi
 
 function test_service {
 
     if [ -f "go.mod" ]; then
-        echo "=> Test service directory - $f"
-        export APP_SERVER_HOME=$(pwd)
+        echo "=> Test service directory"
+        APP_SERVER_HOME=$(pwd)
+        export APP_SERVER_HOME
 
-        if [ $APP_SERVER_DB_SERVICE = "ci" ]; then
+        if [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
             if [ -f ".env.ci" ]; then
                 echo "=> Test service - sourcing service .env.ci"
                 source .env.ci
@@ -43,9 +44,9 @@ function test_service {
 function test_services {
    
     for TEST_SERVICE in "$BASE_DIRECTORY"/*; do
-        cd $TEST_SERVICE
+        cd "$TEST_SERVICE" || exit
         test_service
-        cd -
+        cd - || exit
     done
 }
 
@@ -55,9 +56,9 @@ if [ -n "$1" ]; then
     TEST_SERVICE=$1
     shift
 
-    cd $TEST_SERVICE
+    cd "$TEST_SERVICE" || exit
     test_service;
-    cd -
+    cd - || exit
 else
 
     # Service directory list

@@ -6,7 +6,7 @@ echo "HOSTNAME => $HOSTNAME"
 TOKEN=$(uuidgen)
 echo "TOKEN => $TOKEN"
 
-read -d "" DATA <<- "_EOF_"
+read -rd "" DATA <<- "_EOF_"
 {
     "data": {
         "provider": "anonymous",

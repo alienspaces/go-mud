@@ -3,19 +3,19 @@
 # Local development run script
 
 # Environment
-source ${BASH_SOURCE%/*}/environment || exit $?
+source "${BASH_SOURCE%/*}"/environment || exit $?
 
 # go version
-if [ $(command -v gvm) ]; then
+if [ "$(command -v gvm)" ]; then
     source  ~/.gvm/scripts/gvm
     echo "=> Use ${APP_SERVER_GO_VERSION}"
-    gvm use $APP_SERVER_GO_VERSION || exit $?
+    gvm use "$APP_SERVER_GO_VERSION" || exit $?
 fi
 
 # golang migrate
 MIGRATE_PATH=$(which migrate)
 if [[ "$MIGRATE_PATH" != *"$APP_SERVER_GO_VERSION"* ]]; then
-    source ${BASH_SOURCE%/*}/db-migrate-install || exit $?
+    source "${BASH_SOURCE%/*}"/db-migrate-install || exit $?
 fi
 
 function migrate_up {
@@ -25,7 +25,7 @@ function migrate_up {
         if [ -d "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" ]; then
 
             # load service specific environment
-            source ${BASH_SOURCE%/*}/environment "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
+            source "${BASH_SOURCE%/*}"/environment "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
 
             URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
 
@@ -41,9 +41,9 @@ shopt -s dotglob
 shopt -s nullglob
 
 SERVICE_BASE_PATH=./service
-cd $SERVICE_BASE_PATH
+cd $SERVICE_BASE_PATH || exit
 SERVICE_NAMES=(*)
-cd -
+cd - || exit
 
 migrate_up
 
@@ -52,9 +52,9 @@ if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
     echo " => Migrating example services"
 
     SERVICE_BASE_PATH=./service/example
-    cd $SERVICE_BASE_PATH
+    cd $SERVICE_BASE_PATH || exit
     SERVICE_NAMES=(*)
-    cd -
+    cd - || exit
 
     migrate_up
 fi

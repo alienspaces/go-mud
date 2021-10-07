@@ -28,9 +28,9 @@ function verify_env {
 
     # Verify environment
     MISSING=0
-    for ENV_VAR_NAME in ${ENV_VARS[@]}; do
+    for ENV_VAR_NAME in "${ENV_VARS[@]}"; do
 
-        if ! [[ -n ${!ENV_VAR_NAME} ]]; then
+        if [[ -z ${!ENV_VAR_NAME} ]]; then
             echo "=> (env) Variable ${ENV_VAR_NAME} ** MISSING **"
             MISSING=1
             continue
@@ -60,11 +60,11 @@ echo "=> (env) Checking $DOTFILE_PATH/.env"
 
 if [ -f "$DOTFILE_PATH/.env" ]; then
     echo "=> (env) Sourcing $DOTFILE_PATH/.env"
-    source $DOTFILE_PATH/.env
+    source "$DOTFILE_PATH"/.env
 fi
 
 # Go present?
-if [ $(command -v go) ]; then
+if [ "$(command -v go)" ]; then
     
     VERSION=$(go version)
     if [[ "$VERSION" != *"${APP_SERVER_GO_VERSION}"* ]]; then

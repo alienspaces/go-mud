@@ -14,17 +14,17 @@ function replace-env {
             echo "=> (environment) ${var} => ${!var}"
         fi
 
-        sed -i -e "s#{${var}}#${!var}#g" $1
+        sed -i -e "s#{${var}}#${!var}#g" "$1"
 
         # remove backup files
-        if [ -d $1 ]; then
-            rm -f $1/*-e
+        if [ -d "$1" ]; then
+            rm -f "$1"/*-e
         else
-            rm -f $1*-e
+            rm -f "$1"*-e
         fi
     done
 }
 
-if ! [ -z $1 ]; then
-    replace-env $1
+if [[ -n $1 ]]; then
+    replace-env "$1"
 fi
