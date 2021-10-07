@@ -1,4 +1,4 @@
-module gitlab.com/alienspaces/go-boilerplate/server/core
+module gitlab.com/alienspaces/go-mud/server/core
 
 go 1.15
 

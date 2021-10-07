@@ -3,9 +3,9 @@ package runner
 import (
 	"github.com/urfave/cli/v2"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/repository"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/harness"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/harness"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
 )
 
 // LoadTestData -

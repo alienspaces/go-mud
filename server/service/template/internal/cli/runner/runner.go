@@ -3,11 +3,11 @@ package runner
 import (
 	"github.com/urfave/cli/v2"
 
-	command "gitlab.com/alienspaces/go-boilerplate/server/core/cli"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/prepare"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/model"
+	command "gitlab.com/alienspaces/go-mud/server/core/cli"
+	"gitlab.com/alienspaces/go-mud/server/core/prepare"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
 )
 
 // Runner -

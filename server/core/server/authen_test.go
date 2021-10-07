@@ -9,9 +9,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/auth"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/core/auth"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
 // Authen middleware tests

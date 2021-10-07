@@ -43,7 +43,7 @@ cat .env.local >> .env
 source ../../${BASH_SOURCE%/*}/environment || exit $?
 
 # build server
-SERVER_NAME="go-boilerplate-${SERVICE_NAME}-server"
+SERVER_NAME="go-mud-${SERVICE_NAME}-server"
 rm -f $SERVER_NAME
 go build -o $SERVER_NAME ./cmd/server || exit $?
 

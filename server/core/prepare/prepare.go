@@ -6,9 +6,9 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparable"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparable"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 )
 
 // Prepare - Methods for preparing and fetching repo statements

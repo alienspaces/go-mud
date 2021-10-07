@@ -16,7 +16,7 @@ if [ $APP_SERVER_DB_SERVICE = "docker" ]; then
 
     echo "=> Start database - docker service"
 
-    docker run --hostname postgres --name go-boilerplate-postgres \
+    docker run --hostname postgres --name go-mud-postgres \
     -e POSTGRES_USER=$APP_SERVER_DB_USER \
     -e POSTGRES_PASSWORD=$APP_SERVER_DB_PASSWORD \
     -e POSTGRES_DB=$APP_SERVER_DB_NAME \

@@ -48,7 +48,7 @@ source ../../${BASH_SOURCE%/*}/environment || exit $?
 echo ""
 
 # build CLI
-CLI_NAME="go-boilerplate-${SERVICE_NAME}-cli"
+CLI_NAME="go-mud-${SERVICE_NAME}-cli"
 rm -f $CLI_NAME
 go build -o $CLI_NAME ./cmd/cli || exit $?
 

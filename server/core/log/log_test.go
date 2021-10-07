@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/config"
+	"gitlab.com/alienspaces/go-mud/server/core/config"
 )
 
 func TestLogger(t *testing.T) {

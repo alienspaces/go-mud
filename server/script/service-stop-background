@@ -24,7 +24,7 @@ cp .env.development .env
 source ${BASH_SOURCE%/*}/environment || exit $?
 
 # server
-SERVER_NAME="go-boilerplate-${SERVICE_NAME}-server"
+SERVER_NAME="go-mud-${SERVICE_NAME}-server"
 
 echo "Finding process for $SERVER_NAME"
 

@@ -5,11 +5,11 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-boilerplate/server/schema"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/model"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/schema"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
 )
 
 // GetTemplatesHandler -

@@ -1,10 +1,10 @@
 package harness
 
 import (
-	"gitlab.com/alienspaces/go-boilerplate/server/core/harness"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/model"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/server/core/harness"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
 )
 
 // Testing -

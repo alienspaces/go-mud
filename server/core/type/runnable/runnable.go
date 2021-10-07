@@ -1,9 +1,9 @@
 package runnable
 
 import (
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 )
 
 // Runnable -

@@ -5,11 +5,11 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/repository"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/repositor"
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
 )
 
 const (

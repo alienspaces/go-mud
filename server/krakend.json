@@ -1,329 +1,270 @@
 {
-    "version": 2,
-    "extra_config": {
-        "github_com/devopsfaith/krakend-cors": {
-            "allow_origins": [
-                "*"
-            ],
-            "expose_headers": [
-                "Content-Length",
-                "Authorization"
-            ],
-            "max_age": "12h",
-            "allow_methods": [
-                "GET",
-                "HEAD",
-                "POST",
-                "PUT",
-                "DELETE",
-                "OPTIONS"
-            ],
-            "allow_credentials": false,
-            "allow_headers": [
-                "Authorization",
-                "Content-Type"
-            ]
-        },
-        "github_com/devopsfaith/krakend-gologging": {
-            "level": "DEBUG",
-            "prefix": "[KRAKEND]",
-            "syslog": false,
-            "stdout": true,
-            "format": "default"
-        },
-        "github_com/devopsfaith/krakend-logstash": {
-            "enabled": false
-        }
+  "version": 2,
+  "extra_config": {
+    "github_com/devopsfaith/krakend-cors": {
+      "allow_origins": ["*"],
+      "expose_headers": ["Content-Length", "Authorization"],
+      "max_age": "12h",
+      "allow_methods": ["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"],
+      "allow_credentials": false,
+      "allow_headers": ["Authorization", "Content-Type"]
     },
-    "timeout": "3000ms",
-    "cache_ttl": "300s",
-    "output_encoding": "json",
-    "name": "go-boilerplate",
-    "endpoints": [
+    "github_com/devopsfaith/krakend-gologging": {
+      "level": "DEBUG",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true,
+      "format": "default"
+    },
+    "github_com/devopsfaith/krakend-logstash": {
+      "enabled": false
+    }
+  },
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "name": "go-mud",
+  "endpoints": [
+    {
+      "endpoint": "/characters/documentation",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
         {
-            "endpoint": "/characters/documentation",
-            "method": "GET",
-            "output_encoding": "no-op",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api",
-                    "encoding": "no-op",
-                    "sd": "static",
-                    "method": "GET",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/players/documentation",
-            "method": "GET",
-            "output_encoding": "no-op",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api",
-                    "encoding": "no-op",
-                    "sd": "static",
-                    "method": "GET",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8087"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "GET",
-            "output_encoding": "json",
-            "extra_config": {},
-            "querystring_params": [
-                "email",
-                "provider",
-                "provider_player_id"
-            ],
-            "backend": [
-                {
-                    "url_pattern": "/api/players",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "GET",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8087"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players/{player_id}/characters",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "GET",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/players/{player_id}/characters",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "GET",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players/{player_id}/characters/{character_id}",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "GET",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/players/{player_id}/characters/{character_id}",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "GET",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players/{player_id}/characters",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "POST",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/players/{player_id}/characters",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "POST",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players/{player_id}/characters/{character_id}",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "POST",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/players/{player_id}/characters/{character_id}",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "POST",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players/{player_id}/characters/{character_id}",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "PUT",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/players/{player_id}/characters/{character_id}",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "PUT",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/players/{player_id}/characters/{character_id}",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "DELETE",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/players/{player_id}/characters/{character_id}",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "DELETE",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8085"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/auth",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "POST",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/auth",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "POST",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8087"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
-        },
-        {
-            "endpoint": "/api/auth-refresh",
-            "headers_to_pass": [
-                "Authorization"
-            ],
-            "method": "POST",
-            "output_encoding": "json",
-            "extra_config": {},
-            "backend": [
-                {
-                    "url_pattern": "/api/auth-refresh",
-                    "encoding": "json",
-                    "sd": "static",
-                    "method": "POST",
-                    "extra_config": {
-                        "github.com/devopsfaith/krakend/http": {
-                            "return_error_details": "error"
-                        }
-                    },
-                    "host": [
-                        "http://172.17.0.1:8087"
-                    ],
-                    "disable_host_sanitize": true
-                }
-            ]
+          "url_pattern": "/api",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
         }
-    ]
+      ]
+    },
+    {
+      "endpoint": "/players/documentation",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8087"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players",
+      "headers_to_pass": ["Authorization"],
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {},
+      "querystring_params": ["email", "provider", "provider_player_id"],
+      "backend": [
+        {
+          "url_pattern": "/api/players",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8087"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players/{player_id}/characters",
+      "headers_to_pass": ["Authorization"],
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/players/{player_id}/characters",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "headers_to_pass": ["Authorization"],
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players/{player_id}/characters",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/players/{player_id}/characters",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "headers_to_pass": ["Authorization"],
+      "method": "PUT",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "encoding": "json",
+          "sd": "static",
+          "method": "PUT",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "headers_to_pass": ["Authorization"],
+      "method": "DELETE",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "encoding": "json",
+          "sd": "static",
+          "method": "DELETE",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8085"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/auth",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/auth",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8087"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/auth-refresh",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/auth-refresh",
+          "encoding": "json",
+          "sd": "static",
+          "method": "POST",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/http": {
+              "return_error_details": "error"
+            }
+          },
+          "host": ["http://172.17.0.1:8087"],
+          "disable_host_sanitize": true
+        }
+      ]
+    }
+  ]
 }

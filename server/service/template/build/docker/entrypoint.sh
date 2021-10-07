@@ -8,7 +8,7 @@ if [ -z "$COMMAND" ]; then
 
     # run
     echo "=> (entrypoint) Executing run command"
-    go-boilerplate-template-server
+    go-mud-template-server
 
 else
 

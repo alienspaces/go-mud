@@ -10,13 +10,13 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/prepare"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/runnable"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/server/core/prepare"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
+	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 )
 
 const (

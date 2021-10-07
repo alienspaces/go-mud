@@ -35,8 +35,8 @@ function generate_service {
     mkdir ./service/${SERVICE_LC}
 
     # remove template binaries in case
-    rm -f ./service/template/go-boilerplate-template-server
-    rm -f ./service/template/go-boilerplate-template-cli
+    rm -f ./service/template/go-mud-template-server
+    rm -f ./service/template/go-mud-template-cli
 
     # copy source
     cp -R ./service/template/* ./service/${SERVICE_LC}

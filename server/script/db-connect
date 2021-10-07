@@ -2,7 +2,7 @@
 
 # Opens a psql session to the database specified in current APP environment
 # \l              - list schemas
-# \c go-boilerplate-template - connect to schema
+# \c go-mud-template - connect to schema
 
 # Environment
 source ${BASH_SOURCE%/*}/environment || exit $?

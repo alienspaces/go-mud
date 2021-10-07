@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-boilerplate-template-deployment
+  name: go-mud-template-deployment
 spec:
   selector:
     matchLabels:
-      app: go-boilerplate-template
+      app: go-mud-template
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: go-boilerplate-template
+        app: go-mud-template
     spec:
       affinity:
         podAntiAffinity:
@@ -22,11 +22,11 @@ spec:
                   - key: app
                     operator: In
                     values:
-                      - go-boilerplate-template
+                      - go-mud-template
               topologyKey: "kubernetes.io/hostname"
       containers:
-        - name: go-boilerplate-template-container
-          image: {APP_IMAGE}
+        - name: go-mud-template-container
+          image: { APP_IMAGE }
           imagePullPolicy: Always
           livenessProbe:
             httpGet:
@@ -49,6 +49,6 @@ spec:
               cpu: "0.25"
           envFrom:
             - configMapRef:
-                name: go-boilerplate-template-configmap
+                name: go-mud-template-configmap
           ports:
             - containerPort: 8080

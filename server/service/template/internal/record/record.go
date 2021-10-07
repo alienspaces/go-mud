@@ -1,7 +1,7 @@
 package record
 
 import (
-	"gitlab.com/alienspaces/go-boilerplate/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/server/core/repository"
 )
 
 // Template -

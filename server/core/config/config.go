@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 )
 
 // Item defines a valid environment variable and whether it is required

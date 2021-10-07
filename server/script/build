@@ -48,9 +48,9 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
         gcloud auth activate-service-account --key-file gc-service-account-key.json || exit $?
         gcloud config set project $GC_PROJECT_ID
         gcloud auth configure-docker gcr.io --quiet
-        docker build -f "$SERVICE_DIR/build/docker/Dockerfile" -t "go-boilerplate/$SERVICE_NAME" .
-        docker tag "go-boilerplate/$SERVICE_NAME" "gcr.io/eng-braid-266903/go-boilerplate/$SERVICE_NAME:latest"
-        docker push "gcr.io/eng-braid-266903/go-boilerplate/$SERVICE_NAME:latest"
+        docker build -f "$SERVICE_DIR/build/docker/Dockerfile" -t "go-mud/$SERVICE_NAME" .
+        docker tag "go-mud/$SERVICE_NAME" "gcr.io/eng-braid-266903/go-mud/$SERVICE_NAME:latest"
+        docker push "gcr.io/eng-braid-266903/go-mud/$SERVICE_NAME:latest"
     fi
 
 done

@@ -67,7 +67,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
     if [ -d "$SERVICE_DIR/build/kubernetes" ]; then
 
-        export APP_IMAGE="gcr.io/eng-braid-266903/go-boilerplate/$SERVICE_NAME:latest"
+        export APP_IMAGE="gcr.io/eng-braid-266903/go-mud/$SERVICE_NAME:latest"
 
         echo "Deploying $SERVICE_NAME image $APP_IMAGE"
 

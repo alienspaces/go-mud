@@ -12,7 +12,7 @@ function stop_services {
         if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env" ]; then
 
             # stop server
-            SERVER_NAME="go-boilerplate-${SERVICE_NAME}-server"
+            SERVER_NAME="go-mud-${SERVICE_NAME}-server"
 
             echo "=> (stop_services) - Finding process for $SERVER_NAME"
 

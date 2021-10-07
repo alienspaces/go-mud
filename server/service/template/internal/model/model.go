@@ -3,14 +3,14 @@ package model
 import (
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/model"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/logger"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/repositor"
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/server/core/model"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
+	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/service/template/internal/repository/template"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/repository/template"
 )
 
 // Model -

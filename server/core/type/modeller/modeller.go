@@ -3,7 +3,7 @@ package modeller
 import (
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-boilerplate/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 )
 
 // Modeller -
