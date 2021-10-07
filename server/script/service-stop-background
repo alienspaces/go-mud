@@ -11,7 +11,7 @@ fi
 shift
 
 # start nginx
-source ${BASH_SOURCE%/*}/start-nginx || exit $?
+source "${BASH_SOURCE%/*}"/start-nginx || exit $?
 
 echo
 echo "=> (start service) Starting service ${SERVICE_NAME}"
@@ -21,18 +21,18 @@ echo
 cp .env.development .env
 
 # Environment
-source ${BASH_SOURCE%/*}/environment || exit $?
+source "${BASH_SOURCE%/*}"/environment || exit $?
 
 # server
 SERVER_NAME="go-mud-${SERVICE_NAME}-server"
 
 echo "Finding process for $SERVER_NAME"
 
-PID=$(pgrep $SERVER_NAME)
+PID=$(pgrep "$SERVER_NAME")
 
 if [ -n "$PID" ]; then
     echo "Killing process $PID for $SERVICE_NAME"
-    kill $PID
+    kill "$PID"
     sleep 2
 fi
 

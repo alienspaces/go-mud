@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
 # Environment
-source ${BASH_SOURCE%/*}/environment || exit $?
+source "${BASH_SOURCE%/*}"/environment || exit $?
 
 # stop database
 echo "=> Stopping database";
 
-if [ $APP_SERVER_DB_SERVICE = "docker" ]; then
+if [ "$APP_SERVER_DB_SERVICE" = "docker" ]; then
 
     echo "=> Stopping database - docker service"
 
+    # We want this string to outputcontain $arg without expansion
+    # shellcheck disable=SC2016
     docker ps -a | grep go-mud | awk '{print $1}' | xargs sh -c 'for arg do docker stop $arg; docker rm $arg; done' _
 
-elif [ $APP_SERVER_DB_SERVICE = "local" ]; then
+elif [ "$APP_SERVER_DB_SERVICE" = "local" ]; then
 
     echo "=> Stopping database - local service"
 
@@ -20,7 +22,7 @@ elif [ $APP_SERVER_DB_SERVICE = "local" ]; then
     sudo -u postgres dropuser go-mud
     sudo service postgresql stop
 
-elif [ $APP_SERVER_DB_SERVICE = "ci" ]; then
+elif [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
 
     echo "=> Stopping database - ci service"
 fi
