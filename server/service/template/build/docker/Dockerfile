@@ -1,5 +1,5 @@
 # build image
-FROM golang:1.15.7-alpine3.12 as builder
+FROM golang:1.17.2-alpine3.14 as builder
 
 # enable https:// repositories
 RUN apk update \
@@ -20,7 +20,7 @@ RUN go build -o /go/bin/go-mud-template-server ./cmd/server
 RUN go build -o /go/bin/go-mud-template-cli ./cmd/cli
 
 # final image
-FROM golang:1.15.7-alpine3.12
+FROM golang:1.17.2-alpine3.14
 
 RUN apk update \
     && apk add curl \

@@ -1,0 +1,75 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+stages:
+  - build
+  - test
+
+sast:
+  variables:
+    SAST_EXCLUDED_ANALYZERS: bandit, brakeman, flawfinder, phpcs-security-audit, pmd-apex,
+      security-code-scan, sobelow, spotbugs
+  stage: test
+
+# All variables are valid for all jobs
+variables:
+  FF_NETWORK_PER_BUILD: 1
+  APP_SERVER_ENV: development
+  APP_SERVER_LOG_LEVEL: warn
+  APP_SERVER_DB_HOST: go-mud-database
+  APP_SERVER_DB_NAME: "go-mud"
+  APP_SERVER_DB_PORT: 5432
+  APP_SERVER_DB_USER: "go-mud-user"
+  APP_SERVER_DB_PASSWORD: "go-mud-pass"
+  POSTGRES_DB: go-mud
+  POSTGRES_USER: go-mud-user
+  POSTGRES_PASSWORD: go-mud-pass
+  APP_CLIENT_API_HOST: go-mud-server
+  APP_CLIENT_API_PORT: 3000
+
+# Build the server so we can use it as a service when integration
+# testing the Flutter client.
+build-server:
+  image: docker:19.03.12
+  stage: build
+  services:
+    - docker:19.03.12-dind
+  script:
+    - cd server
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/alienspaces/go-mud/go-mud-server:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY/alienspaces/go-mud/go-mud-server:$CI_COMMIT_SHORT_SHA
+
+# Testing the client requires the server and postgres to be running
+# as services.
+test-client:
+  image: $CI_REGISTRY/alienspaces/go-mud/cirrusci/flutter:stable
+  stage: test
+  services:
+    - name: $CI_REGISTRY/alienspaces/go-mud/go-mud-server:$CI_COMMIT_SHORT_SHA
+      alias: go-mud-server
+  script:
+    - cd client
+    - flutter pub get
+    - dart ./tool/generate.dart
+    - flutter test
+  only:
+    - develop
+    - master
+
+# Testing the server requires postgres to be running as a service.
+test-server:
+  image: $CI_REGISTRY/alienspaces/go-mud/node:14.17.3-alpine3.14
+  stage: test
+  services:
+    - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
+      alias: go-mud-database
+  before_script:
+    - apk add bash
+    - npm i -g @gojs/cli
+  script:
+    - cd server
+    - yarn install
+    - "./script/db-migrate-up"
+    - yarn test
+    - yarn test:e2e
