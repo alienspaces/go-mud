@@ -8,8 +8,6 @@ import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
-// TODO: Generates a 5 x 5 grid with buttons for directions, objects
-// characters and monsters
 class GameDungeonGridWidget extends StatefulWidget {
   const GameDungeonGridWidget({Key? key}) : super(key: key);
 
@@ -64,9 +62,17 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
 
   // Object widget
   Widget objectWidget(BuildContext context, DungeonActionRecord record, int idx) {
-    // TODO: Implement object actions
-
     return emptyWidget('O$idx');
+  }
+
+  // Character widget
+  Widget characterWidget(BuildContext context, DungeonActionRecord record, int idx) {
+    return emptyWidget('C$idx');
+  }
+
+  // Monster widget
+  Widget monsterWidget(BuildContext context, DungeonActionRecord record, int idx) {
+    return emptyWidget('M$idx');
   }
 
   // Empty widget
@@ -97,7 +103,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     }
 
     // TODO: Objects, monsters and characters should be randomly scattered through the
-    // room but not change location with a widget rebuild..
+    // room but not change position in grid with a widget rebuild..
 
     List<Widget Function()> dunegonGridMemberFunctions = [
       // Top Row

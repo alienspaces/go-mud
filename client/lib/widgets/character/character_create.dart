@@ -124,7 +124,6 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
       );
     }
 
-    // TODO: Centralise styles..
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
       textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),

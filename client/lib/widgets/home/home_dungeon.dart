@@ -29,7 +29,6 @@ class HomeDungeonWidget extends StatelessWidget {
     final log = getLogger('HomeDungeonWidget');
     log.info('Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 
-    // TODO: Centralise styles..
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
       textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
