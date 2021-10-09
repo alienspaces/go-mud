@@ -26,7 +26,7 @@
   "name": "go-mud",
   "endpoints": [
     {
-      "endpoint": "/characters/documentation",
+      "endpoint": "/game/documentation",
       "method": "GET",
       "output_encoding": "no-op",
       "extra_config": {},
@@ -42,27 +42,6 @@
             }
           },
           "host": ["http://172.17.0.1:8085"],
-          "disable_host_sanitize": true
-        }
-      ]
-    },
-    {
-      "endpoint": "/players/documentation",
-      "method": "GET",
-      "output_encoding": "no-op",
-      "extra_config": {},
-      "backend": [
-        {
-          "url_pattern": "/api",
-          "encoding": "no-op",
-          "sd": "static",
-          "method": "GET",
-          "extra_config": {
-            "github.com/devopsfaith/krakend/http": {
-              "return_error_details": "error"
-            }
-          },
-          "host": ["http://172.17.0.1:8087"],
           "disable_host_sanitize": true
         }
       ]
@@ -91,14 +70,14 @@
       ]
     },
     {
-      "endpoint": "/api/players/{player_id}/characters",
+      "endpoint": "/api/players/{player_id}/game",
       "headers_to_pass": ["Authorization"],
       "method": "GET",
       "output_encoding": "json",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/players/{player_id}/characters",
+          "url_pattern": "/api/players/{player_id}/game",
           "encoding": "json",
           "sd": "static",
           "method": "GET",
@@ -113,14 +92,14 @@
       ]
     },
     {
-      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "endpoint": "/api/players/{player_id}/game/{character_id}",
       "headers_to_pass": ["Authorization"],
       "method": "GET",
       "output_encoding": "json",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "url_pattern": "/api/players/{player_id}/game/{character_id}",
           "encoding": "json",
           "sd": "static",
           "method": "GET",
@@ -135,14 +114,14 @@
       ]
     },
     {
-      "endpoint": "/api/players/{player_id}/characters",
+      "endpoint": "/api/players/{player_id}/game",
       "headers_to_pass": ["Authorization"],
       "method": "POST",
       "output_encoding": "json",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/players/{player_id}/characters",
+          "url_pattern": "/api/players/{player_id}/game",
           "encoding": "json",
           "sd": "static",
           "method": "POST",
@@ -157,14 +136,14 @@
       ]
     },
     {
-      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "endpoint": "/api/players/{player_id}/game/{character_id}",
       "headers_to_pass": ["Authorization"],
       "method": "POST",
       "output_encoding": "json",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "url_pattern": "/api/players/{player_id}/game/{character_id}",
           "encoding": "json",
           "sd": "static",
           "method": "POST",
@@ -179,14 +158,14 @@
       ]
     },
     {
-      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "endpoint": "/api/players/{player_id}/game/{character_id}",
       "headers_to_pass": ["Authorization"],
       "method": "PUT",
       "output_encoding": "json",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "url_pattern": "/api/players/{player_id}/game/{character_id}",
           "encoding": "json",
           "sd": "static",
           "method": "PUT",
@@ -201,14 +180,14 @@
       ]
     },
     {
-      "endpoint": "/api/players/{player_id}/characters/{character_id}",
+      "endpoint": "/api/players/{player_id}/game/{character_id}",
       "headers_to_pass": ["Authorization"],
       "method": "DELETE",
       "output_encoding": "json",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/players/{player_id}/characters/{character_id}",
+          "url_pattern": "/api/players/{player_id}/game/{character_id}",
           "encoding": "json",
           "sd": "static",
           "method": "DELETE",
