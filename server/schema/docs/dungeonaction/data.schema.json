@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/dungeonaction/data.schema.json",
+  "title": "Dungeon Action Data",
+  "description": "Dungeon action data",
+  "type": "object",
+  "required": ["action", "location"],
+  "properties": {
+    "action": {
+      "type": "object",
+      "required": ["id", "command", "created_at"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "command": {
+          "type": "string"
+        },
+        "equipped_dungeon_object_name": {
+          "type": "string"
+        },
+        "stashed_dungeon_object_name": {
+          "type": "string"
+        },
+        "target_dungeon_object_name": {
+          "type": "string"
+        },
+        "target_dungeon_character_name": {
+          "type": "string"
+        },
+        "target_dungeon_location_direction": {
+          "type": "string"
+        },
+        "target_dungeon_location_name": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "directions": {
+          "type": "array"
+        }
+      }
+    },
+    "character": {
+      "$ref": "#/$defs/character"
+    },
+    "monster": {
+      "$ref": "#/$defs/monster"
+    },
+    "characters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/character" }
+    },
+    "monsters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/monster" }
+    },
+    "objects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/object" }
+    }
+  },
+  "$defs": {
+    "character": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "monster": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

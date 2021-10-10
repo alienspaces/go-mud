@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/create-dungeon-action.schema.json",
+  "title": "Create Dungeon Action",
+  "type": "object",
+  "properties": {
+    "data": {
+      "$ref": "#/definitions/data"
+    }
+  },
+  "required": ["data"],
+  "additionalProperties": false,
+  "definitions": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "sentence": {
+          "type": "string"
+        }
+      },
+      "required": ["sentence"]
+    }
+  }
+}

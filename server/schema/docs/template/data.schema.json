@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "http://go-mud.com/schema/template/data.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/template/data.schema.json",
   "title": "Templates Data",
   "description": "Payload data for templates",
   "type": "object",

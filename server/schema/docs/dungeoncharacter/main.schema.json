@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "http://go-mud.com/schema/character/main.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/dungeoncharacter/main.schema.json",
   "title": "Character Main",
   "type": "object",
   "required": ["data"],
   "properties": {
     "data": {
       "type": "array",
-      "items": { "$ref": "http://go-mud.com/schema/character/data.schema.json" }
+      "items": { "$ref": "https://gitlab.com/alienspaces/go-mud/server/schema/dungeoncharacter/data.schema.json" }
     }
   }
 }
