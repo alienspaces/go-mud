@@ -27,20 +27,20 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.Game
+		rec  func() *record.Dungeon
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func() *record.Game {
-				return &record.Game{}
+			rec: func() *record.Dungeon {
+				return &record.Dungeon{}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func() *record.Game {
-				rec := &record.Game{}
+			rec: func() *record.Dungeon {
+				rec := &record.Dungeon{}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -68,7 +68,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).GameRepository()
+			r := h.Model.(*model.Model).DungeonRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -90,9 +90,9 @@ func TestGetOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Game{},
+				Record: record.Dungeon{},
 			},
 		},
 	}
@@ -111,7 +111,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.GameRecs[0].ID
+				return h.Data.DungeonRecs[0].ID
 			},
 			err: false,
 		},
@@ -143,7 +143,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).GameRepository()
+			r := h.Model.(*model.Model).DungeonRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -164,9 +164,9 @@ func TestUpdateOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Game{},
+				Record: record.Dungeon{},
 			},
 		},
 	}
@@ -180,20 +180,20 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() record.Game
+		rec  func() record.Dungeon
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() record.Game {
-				return h.Data.GameRecs[0]
+			rec: func() record.Dungeon {
+				return h.Data.DungeonRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() record.Game {
-				rec := h.Data.GameRecs[0]
+			rec: func() record.Dungeon {
+				rec := h.Data.DungeonRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -220,7 +220,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).GameRepository()
+			r := h.Model.(*model.Model).DungeonRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -242,9 +242,9 @@ func TestDeleteOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Game{},
+				Record: record.Dungeon{},
 			},
 		},
 	}
@@ -263,7 +263,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.GameRecs[0].ID
+				return h.Data.DungeonRecs[0].ID
 			},
 			err: false,
 		},
@@ -295,7 +295,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).GameRepository()
+			r := h.Model.(*model.Model).DungeonRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())

@@ -10,7 +10,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/game"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonlocation"
 )
 
 // Model -
@@ -39,7 +40,7 @@ func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.R
 
 	repositoryList := []repositor.Repositor{}
 
-	tr, err := game.NewRepository(m.Log, p, tx)
+	tr, err := dungeon.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new game repository >%v<", err)
 		return nil, err
@@ -50,14 +51,26 @@ func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.R
 	return repositoryList, nil
 }
 
-// GameRepository -
-func (m *Model) GameRepository() *game.Repository {
+// DungeonRepository -
+func (m *Model) DungeonRepository() *dungeon.Repository {
 
-	r := m.Repositories[game.TableName]
+	r := m.Repositories[dungeon.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", game.TableName)
+		m.Log.Warn("Repository >%s< is nil", dungeon.TableName)
 		return nil
 	}
 
-	return r.(*game.Repository)
+	return r.(*dungeon.Repository)
+}
+
+// DungeonLocationRepository -
+func (m *Model) DungeonLocationRepository() *dungeonlocation.Repository {
+
+	r := m.Repositories[dungeonlocation.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", dungeonlocation.TableName)
+		return nil
+	}
+
+	return r.(*dungeonlocation.Repository)
 }

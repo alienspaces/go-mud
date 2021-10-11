@@ -10,7 +10,7 @@ if [ "$APP_SERVER_DB_SERVICE" = "docker" ]; then
 
     echo "=> Stopping database - docker service"
 
-    # We want this string to outputcontain $arg without expansion
+    # We want this string to output $arg without expansion
     # shellcheck disable=SC2016
     docker ps -a | grep go-mud | awk '{print $1}' | xargs sh -c 'for arg do docker stop $arg; docker rm $arg; done' _
 

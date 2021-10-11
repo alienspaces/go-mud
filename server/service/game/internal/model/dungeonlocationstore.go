@@ -7,22 +7,22 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// GetGameRecs -
-func (m *Model) GetGameRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Game, error) {
+// GetDungeonLocationRecs -
+func (m *Model) GetDungeonLocationRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonLocation, error) {
 
 	m.Log.Info("Getting game records params >%s<", params)
 
-	r := m.GameRepository()
+	r := m.DungeonLocationRepository()
 
 	return r.GetMany(params, operators, forUpdate)
 }
 
-// GetGameRec -
-func (m *Model) GetGameRec(recID string, forUpdate bool) (*record.Game, error) {
+// GetDungeonLocationRec -
+func (m *Model) GetDungeonLocationRec(recID string, forUpdate bool) (*record.DungeonLocation, error) {
 
 	m.Log.Info("Getting game rec ID >%s<", recID)
 
-	r := m.GameRepository()
+	r := m.DungeonLocationRepository()
 
 	// validate UUID
 	if !m.IsUUID(recID) {
@@ -38,14 +38,14 @@ func (m *Model) GetGameRec(recID string, forUpdate bool) (*record.Game, error) {
 	return rec, err
 }
 
-// CreateGameRec -
-func (m *Model) CreateGameRec(rec *record.Game) error {
+// CreateDungeonLocationRec -
+func (m *Model) CreateDungeonLocationRec(rec *record.DungeonLocation) error {
 
 	m.Log.Info("Creating game rec >%#v<", rec)
 
-	r := m.GameRepository()
+	r := m.DungeonLocationRepository()
 
-	err := m.ValidateGameRec(rec)
+	err := m.ValidateDungeonLocationRec(rec)
 	if err != nil {
 		m.Log.Info("Failed model validation >%v<", err)
 		return err
@@ -54,14 +54,14 @@ func (m *Model) CreateGameRec(rec *record.Game) error {
 	return r.CreateOne(rec)
 }
 
-// UpdateGameRec -
-func (m *Model) UpdateGameRec(rec *record.Game) error {
+// UpdateDungeonLocationRec -
+func (m *Model) UpdateDungeonLocationRec(rec *record.DungeonLocation) error {
 
 	m.Log.Info("Updating game rec >%#v<", rec)
 
-	r := m.GameRepository()
+	r := m.DungeonLocationRepository()
 
-	err := m.ValidateGameRec(rec)
+	err := m.ValidateDungeonLocationRec(rec)
 	if err != nil {
 		m.Log.Info("Failed model validation >%v<", err)
 		return err
@@ -70,19 +70,19 @@ func (m *Model) UpdateGameRec(rec *record.Game) error {
 	return r.UpdateOne(rec)
 }
 
-// DeleteGameRec -
-func (m *Model) DeleteGameRec(recID string) error {
+// DeleteDungeonLocationRec -
+func (m *Model) DeleteDungeonLocationRec(recID string) error {
 
 	m.Log.Info("Deleting game rec ID >%s<", recID)
 
-	r := m.GameRepository()
+	r := m.DungeonLocationRepository()
 
 	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteGameRec(recID)
+	err := m.ValidateDeleteDungeonLocationRec(recID)
 	if err != nil {
 		m.Log.Info("Failed model validation >%v<", err)
 		return err
@@ -91,19 +91,19 @@ func (m *Model) DeleteGameRec(recID string) error {
 	return r.DeleteOne(recID)
 }
 
-// RemoveGameRec -
-func (m *Model) RemoveGameRec(recID string) error {
+// RemoveDungeonLocationRec -
+func (m *Model) RemoveDungeonLocationRec(recID string) error {
 
 	m.Log.Info("Removing game rec ID >%s<", recID)
 
-	r := m.GameRepository()
+	r := m.DungeonLocationRepository()
 
 	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteGameRec(recID)
+	err := m.ValidateDeleteDungeonLocationRec(recID)
 	if err != nil {
 		m.Log.Info("Failed model validation >%v<", err)
 		return err

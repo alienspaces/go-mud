@@ -16,17 +16,17 @@ type Testing struct {
 
 // DataConfig -
 type DataConfig struct {
-	GameConfig []GameConfig
+	DungeonConfig []DungeonConfig
 }
 
-// GameConfig -
-type GameConfig struct {
-	Record record.Game
+// DungeonConfig -
+type DungeonConfig struct {
+	Record record.Dungeon
 }
 
 // Data -
 type Data struct {
-	GameRecs []record.Game
+	DungeonRecs []record.Dungeon
 }
 
 // NewTesting -
@@ -68,14 +68,14 @@ func (t *Testing) Modeller() (modeller.Modeller, error) {
 // CreateData - Custom data
 func (t *Testing) CreateData() error {
 
-	for _, gameConfig := range t.DataConfig.GameConfig {
+	for _, dungeonConfig := range t.DataConfig.DungeonConfig {
 
-		gameRec, err := t.createGameRec(gameConfig)
+		gameRec, err := t.createDungeonRec(dungeonConfig)
 		if err != nil {
 			t.Log.Warn("Failed creating game record >%v<", err)
 			return err
 		}
-		t.Data.GameRecs = append(t.Data.GameRecs, gameRec)
+		t.Data.DungeonRecs = append(t.Data.DungeonRecs, gameRec)
 	}
 
 	return nil
@@ -86,13 +86,13 @@ func (t *Testing) RemoveData() error {
 
 GAME_RECS:
 	for {
-		if len(t.Data.GameRecs) == 0 {
+		if len(t.Data.DungeonRecs) == 0 {
 			break GAME_RECS
 		}
-		rec := record.Game{}
-		rec, t.Data.GameRecs = t.Data.GameRecs[0], t.Data.GameRecs[1:]
+		rec := record.Dungeon{}
+		rec, t.Data.DungeonRecs = t.Data.DungeonRecs[0], t.Data.DungeonRecs[1:]
 
-		err := t.Model.(*model.Model).RemoveGameRec(rec.ID)
+		err := t.Model.(*model.Model).RemoveDungeonRec(rec.ID)
 		if err != nil {
 			t.Log.Warn("Failed removing game record >%v<", err)
 			return err

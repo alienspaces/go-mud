@@ -1,4 +1,4 @@
-package game
+package dungeon
 
 import (
 	"time"
@@ -14,7 +14,7 @@ import (
 
 const (
 	// TableName - underlying database table name used for configuration
-	TableName string = "game"
+	TableName string = "dungeon"
 )
 
 // Repository -
@@ -57,17 +57,17 @@ func NewRepository(l logger.Logger, p preparer.Preparer, tx *sqlx.Tx) (*Reposito
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.Game {
-	return &record.Game{}
+func (r *Repository) NewRecord() *record.Dungeon {
+	return &record.Dungeon{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.Game {
-	return []*record.Game{}
+func (r *Repository) NewRecordArray() []*record.Dungeon {
+	return []*record.Dungeon{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.Game, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.Dungeon, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("Failed statement execution >%v<", err)
@@ -80,7 +80,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.Game, error) {
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.Game, error) {
+	forUpdate bool) ([]*record.Dungeon, error) {
 
 	recs := r.NewRecordArray()
 
@@ -107,7 +107,7 @@ func (r *Repository) GetMany(
 }
 
 // CreateOne -
-func (r *Repository) CreateOne(rec *record.Game) error {
+func (r *Repository) CreateOne(rec *record.Dungeon) error {
 
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
@@ -125,7 +125,7 @@ func (r *Repository) CreateOne(rec *record.Game) error {
 }
 
 // UpdateOne -
-func (r *Repository) UpdateOne(rec *record.Game) error {
+func (r *Repository) UpdateOne(rec *record.Dungeon) error {
 
 	origUpdatedAt := rec.UpdatedAt
 	rec.UpdatedAt = repository.NewUpdatedAt()
@@ -141,6 +141,6 @@ func (r *Repository) UpdateOne(rec *record.Game) error {
 }
 
 // CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *record.Game) error {
+func (r *Repository) CreateTestRecord(rec *record.Dungeon) error {
 	return r.CreateOne(rec)
 }

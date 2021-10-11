@@ -5,17 +5,17 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func (t *Testing) createGameRec(gameConfig GameConfig) (record.Game, error) {
+func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (record.Dungeon, error) {
 
-	rec := gameConfig.Record
+	rec := dungeonConfig.Record
 
 	// NOTE: Add default values for required properties here
 
 	t.Log.Info("Creating testing record >%#v<", rec)
 
-	err := t.Model.(*model.Model).CreateGameRec(&rec)
+	err := t.Model.(*model.Model).CreateDungeonRec(&rec)
 	if err != nil {
-		t.Log.Warn("Failed creating testing game record >%v<", err)
+		t.Log.Warn("Failed creating testing dungeon record >%v<", err)
 		return rec, err
 	}
 	return rec, nil
