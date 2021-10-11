@@ -14,6 +14,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoncharacter"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonlocation"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonmonster"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonobject"
 )
 
 // Model -
@@ -70,6 +71,13 @@ func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.R
 	}
 	repositoryList = append(repositoryList, dungeonMonsterRepo)
 
+	dungeonObjectRepo, err := dungeonobject.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon object repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, dungeonObjectRepo)
+
 	return repositoryList, nil
 }
 
@@ -119,4 +127,16 @@ func (m *Model) DungeonMonsterRepository() *dungeonmonster.Repository {
 	}
 
 	return r.(*dungeonmonster.Repository)
+}
+
+// DungeonObjectRepository -
+func (m *Model) DungeonObjectRepository() *dungeonobject.Repository {
+
+	r := m.Repositories[dungeonobject.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", dungeonobject.TableName)
+		return nil
+	}
+
+	return r.(*dungeonobject.Repository)
 }

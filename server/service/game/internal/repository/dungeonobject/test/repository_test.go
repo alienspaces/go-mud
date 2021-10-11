@@ -1,7 +1,7 @@
 package test
 
-// NOTE: model tests are run is the public space so we are
-// able to use common setup and teardown tooling for all models
+// NOTE: repository tests are run is the public space so we are
+// able to use common setup and teardown tooling for all repositories
 
 import (
 	"testing"
@@ -14,7 +14,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestCreateGameRec(t *testing.T) {
+func TestCreateOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{}
@@ -27,20 +27,20 @@ func TestCreateGameRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.Game
+		rec  func() *record.DungeonObject
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func() *record.Game {
-				return &record.Game{}
+			rec: func() *record.DungeonObject {
+				return &record.DungeonObject{}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func() *record.Game {
-				rec := &record.Game{}
+			rec: func() *record.DungeonObject {
+				rec := &record.DungeonObject{}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -59,8 +59,6 @@ func TestCreateGameRec(t *testing.T) {
 			err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
-				err = h.RollbackTx()
-				require.NoError(t, err, "RollbackTx returns without error")
 				err = h.Teardown()
 				require.NoError(t, err, "Teardown returns without error")
 			}()
@@ -69,26 +67,32 @@ func TestCreateGameRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
+			// repository
+			r := h.Model.(*model.Model).DungeonObjectRepository()
+			require.NotNil(t, r, "Repository is not nil")
+
 			rec := tc.rec()
 
-			err = h.Model.(*model.Model).CreateGameRec(rec)
+			err = r.CreateOne(rec)
 			if tc.err == true {
-				require.Error(t, err, "CreateGameRec returns error")
+				require.Error(t, err, "CreateOne returns error")
 				return
 			}
-			require.NoError(t, err, "CreateGameRec returns without error")
-			require.NotEmpty(t, rec.CreatedAt, "CreateGameRec returns record with CreatedAt")
+			require.NoError(t, err, "CreateOne returns without error")
+			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
+
+			h.RollbackTx()
 		}()
 	}
 }
 
-func TestGetGameRec(t *testing.T) {
+func TestGetOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonObjectConfig{
 			{
-				Record: record.Game{},
+				Record: record.DungeonObject{},
 			},
 		},
 	}
@@ -107,7 +111,7 @@ func TestGetGameRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.GameRecs[0].ID
+				return h.Data.DungeonObjectRecs[0].ID
 			},
 			err: false,
 		},
@@ -130,8 +134,6 @@ func TestGetGameRec(t *testing.T) {
 			err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
-				err = h.RollbackTx()
-				require.NoError(t, err, "RollbackTx returns without error")
 				err = h.Teardown()
 				require.NoError(t, err, "Teardown returns without error")
 			}()
@@ -140,25 +142,31 @@ func TestGetGameRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetGameRec(tc.id(), false)
+			// repository
+			r := h.Model.(*model.Model).DungeonObjectRepository()
+			require.NotNil(t, r, "Repository is not nil")
+
+			rec, err := r.GetOne(tc.id(), false)
 			if tc.err == true {
-				require.Error(t, err, "GetGameRec returns error")
+				require.Error(t, err, "GetOne returns error")
 				return
 			}
-			require.NoError(t, err, "GetGameRec returns without error")
-			require.NotNil(t, rec, "GetGameRec returns record")
+			require.NoError(t, err, "GetOne returns without error")
+			require.NotNil(t, rec, "GetOne returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
+
+			h.RollbackTx()
 		}()
 	}
 }
 
-func TestUpdateGameRec(t *testing.T) {
+func TestUpdateOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonObjectConfig{
 			{
-				Record: record.Game{},
+				Record: record.DungeonObject{},
 			},
 		},
 	}
@@ -172,20 +180,20 @@ func TestUpdateGameRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() record.Game
+		rec  func() record.DungeonObject
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() record.Game {
-				return h.Data.GameRecs[0]
+			rec: func() record.DungeonObject {
+				return h.Data.DungeonObjectRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() record.Game {
-				rec := h.Data.GameRecs[0]
+			rec: func() record.DungeonObject {
+				rec := h.Data.DungeonObjectRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -203,8 +211,6 @@ func TestUpdateGameRec(t *testing.T) {
 			err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
-				err = h.RollbackTx()
-				require.NoError(t, err, "RollbackTx returns without error")
 				err = h.Teardown()
 				require.NoError(t, err, "Teardown returns without error")
 			}()
@@ -213,26 +219,32 @@ func TestUpdateGameRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
+			// repository
+			r := h.Model.(*model.Model).DungeonObjectRepository()
+			require.NotNil(t, r, "Repository is not nil")
+
 			rec := tc.rec()
 
-			err := h.Model.(*model.Model).UpdateGameRec(&rec)
+			err := r.UpdateOne(&rec)
 			if tc.err == true {
-				require.Error(t, err, "UpdateGameRec returns error")
+				require.Error(t, err, "UpdateOne returns error")
 				return
 			}
-			require.NoError(t, err, "UpdateGameRec returns without error")
-			require.NotEmpty(t, rec.UpdatedAt, "UpdateGameRec returns record with UpdatedAt")
+			require.NoError(t, err, "UpdateOne returns without error")
+			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
+
+			h.RollbackTx()
 		}()
 	}
 }
 
-func TestDeleteGameRec(t *testing.T) {
+func TestDeleteOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonObjectConfig{
 			{
-				Record: record.Game{},
+				Record: record.DungeonObject{},
 			},
 		},
 	}
@@ -251,7 +263,7 @@ func TestDeleteGameRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.GameRecs[0].ID
+				return h.Data.DungeonObjectRecs[0].ID
 			},
 			err: false,
 		},
@@ -274,8 +286,6 @@ func TestDeleteGameRec(t *testing.T) {
 			err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
-				err = h.RollbackTx()
-				require.NoError(t, err, "RollbackTx returns without error")
 				err = h.Teardown()
 				require.NoError(t, err, "Teardown returns without error")
 			}()
@@ -284,16 +294,22 @@ func TestDeleteGameRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			err := h.Model.(*model.Model).DeleteGameRec(tc.id())
+			// repository
+			r := h.Model.(*model.Model).DungeonObjectRepository()
+			require.NotNil(t, r, "Repository is not nil")
+
+			err := r.DeleteOne(tc.id())
 			if tc.err == true {
-				require.Error(t, err, "DeleteGameRec returns error")
+				require.Error(t, err, "DeleteOne returns error")
 				return
 			}
-			require.NoError(t, err, "DeleteGameRec returns without error")
+			require.NoError(t, err, "DeleteOne returns without error")
 
-			rec, err := h.Model.(*model.Model).GetGameRec(tc.id(), false)
-			require.NoError(t, err, "GetGameRec returns without error")
-			require.Nil(t, rec, "GetGameRec does not return record")
+			rec, err := r.GetOne(tc.id(), false)
+			require.Error(t, err, "GetOne returns error")
+			require.Nil(t, rec, "GetOne does not return record")
+
+			h.RollbackTx()
 		}()
 	}
 }
