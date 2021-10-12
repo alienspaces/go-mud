@@ -4,6 +4,7 @@
 - [How to Play](README-HOWTOPLAY.md)
 - [API](README-API.md)
 - [Design](README-DESIGN.md)
+- [TODO](README-TODO.md)
 
 A M.U.D (multi user dungeon) with a back end API built with [`Go`](https://go.dev/) and a front end UI built with [`Flutter`](https://flutter.dev/docs).
 

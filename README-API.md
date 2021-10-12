@@ -4,6 +4,7 @@
 - [How to Play](README-HOWTOPLAY.md)
 - [API](README-API.md)
 - [Design](README-DESIGN.md)
+- [TODO](README-TODO.md)
 
 ## Dungeons
 
