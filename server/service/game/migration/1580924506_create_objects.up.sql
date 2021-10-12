@@ -1,6 +1,3 @@
--- pgcrypto
-CREATE EXTENSION pgcrypto;
-
 -- table dungeon
 CREATE TABLE "dungeon" (
   "id"                    uuid CONSTRAINT dungeon_pk PRIMARY KEY DEFAULT gen_random_uuid(),

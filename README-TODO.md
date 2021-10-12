@@ -8,6 +8,7 @@
 
 ## Now
 
+- Test manager
 - Repository tests
 - Model tests
 
