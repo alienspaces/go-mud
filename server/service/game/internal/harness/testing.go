@@ -87,17 +87,32 @@ func (t *Testing) CreateData() error {
 // RemoveData -
 func (t *Testing) RemoveData() error {
 
-GAME_RECS:
+DUNGEON_LOCATION_RECS:
+	for {
+		if len(t.Data.DungeonLocationRecs) == 0 {
+			break DUNGEON_LOCATION_RECS
+		}
+		rec := record.DungeonLocation{}
+		rec, t.Data.DungeonLocationRecs = t.Data.DungeonLocationRecs[0], t.Data.DungeonLocationRecs[1:]
+
+		err := t.Model.(*model.Model).RemoveDungeonLocationRec(rec.ID)
+		if err != nil {
+			t.Log.Warn("Failed removing dungeon location record >%v<", err)
+			return err
+		}
+	}
+
+DUNGEON_RECS:
 	for {
 		if len(t.Data.DungeonRecs) == 0 {
-			break GAME_RECS
+			break DUNGEON_RECS
 		}
 		rec := record.Dungeon{}
 		rec, t.Data.DungeonRecs = t.Data.DungeonRecs[0], t.Data.DungeonRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonRec(rec.ID)
 		if err != nil {
-			t.Log.Warn("Failed removing game record >%v<", err)
+			t.Log.Warn("Failed removing dungeon record >%v<", err)
 			return err
 		}
 	}
