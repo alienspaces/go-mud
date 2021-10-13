@@ -3,6 +3,7 @@ module gitlab.com/alienspaces/go-mud/server/service/game
 go 1.15
 
 require (
+	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/julienschmidt/httprouter v1.3.0

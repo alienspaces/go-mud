@@ -14,19 +14,13 @@ type Testing struct {
 	DataConfig DataConfig
 }
 
-// DataConfig -
-type DataConfig struct {
-	DungeonConfig []DungeonConfig
-}
-
-// DungeonConfig -
-type DungeonConfig struct {
-	Record record.Dungeon
-}
-
 // Data -
 type Data struct {
-	DungeonRecs []record.Dungeon
+	DungeonRecs          []record.Dungeon
+	DungeonLocationRecs  []record.DungeonLocation
+	DungeonCharacterRecs []record.DungeonCharacter
+	DungeonMonsterRecs   []record.DungeonMonster
+	DungeonObjectRecs    []record.DungeonObject
 }
 
 // NewTesting -
@@ -70,12 +64,21 @@ func (t *Testing) CreateData() error {
 
 	for _, dungeonConfig := range t.DataConfig.DungeonConfig {
 
-		gameRec, err := t.createDungeonRec(dungeonConfig)
+		dungeonRec, err := t.createDungeonRec(dungeonConfig)
 		if err != nil {
-			t.Log.Warn("Failed creating game record >%v<", err)
+			t.Log.Warn("Failed creating dungeon record >%v<", err)
 			return err
 		}
-		t.Data.DungeonRecs = append(t.Data.DungeonRecs, gameRec)
+		t.Data.DungeonRecs = append(t.Data.DungeonRecs, dungeonRec)
+
+		for _, dungeonLocationConfig := range dungeonConfig.DungeonLocationConfig {
+			dungeonLocationRec, err := t.createDungeonLocationRec(dungeonRec, dungeonLocationConfig)
+			if err != nil {
+				t.Log.Warn("Failed creating game record >%v<", err)
+				return err
+			}
+			t.Data.DungeonLocationRecs = append(t.Data.DungeonLocationRecs, dungeonLocationRec)
+		}
 	}
 
 	return nil
