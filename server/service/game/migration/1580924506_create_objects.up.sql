@@ -74,6 +74,8 @@ CREATE TABLE "dungeon_monster" (
   "health"               integer NOT NULL DEFAULT 0,
   "fatigue"              integer NOT NULL DEFAULT 0,
   "coins"                integer NOT NULL DEFAULT 0,
+  "experience_points"    integer NOT NULL DEFAULT 0,
+  "attribute_points"     integer NOT NULL DEFAULT 0,
   "created_at"           timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at"           timestamp WITH TIME ZONE,
   "deleted_at"           timestamp WITH TIME ZONE,

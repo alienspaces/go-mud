@@ -71,6 +71,12 @@ func (t *Testing) CreateData() error {
 		}
 		t.Data.DungeonRecs = append(t.Data.DungeonRecs, dungeonRec)
 
+		dungeonConfig, err = t.resolveConfigDungeonIdentifiers(dungeonRec, dungeonConfig)
+		if err != nil {
+			t.Log.Warn("Failed resolving dungeon config dungeon identifiers >%v<", err)
+			return err
+		}
+
 		for _, dungeonLocationConfig := range dungeonConfig.DungeonLocationConfig {
 			dungeonLocationRec, err := t.createDungeonLocationRec(dungeonRec, dungeonLocationConfig)
 			if err != nil {
@@ -82,6 +88,35 @@ func (t *Testing) CreateData() error {
 	}
 
 	return nil
+}
+
+func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec record.Dungeon, dungeonConfig DungeonConfig) (DungeonConfig, error) {
+
+	if dungeonConfig.DungeonLocationConfig != nil {
+		for idx := range dungeonConfig.DungeonLocationConfig {
+			dungeonConfig.DungeonLocationConfig[idx].Record.DungeonID = dungeonRec.ID
+		}
+	}
+
+	if dungeonConfig.DungeonCharacterConfig != nil {
+		for _, dungeonCharacterConfig := range dungeonConfig.DungeonCharacterConfig {
+			dungeonCharacterConfig.Record.DungeonID = dungeonRec.ID
+		}
+	}
+
+	if dungeonConfig.DungeonMonsterConfig != nil {
+		for _, dungeonMonsterConfig := range dungeonConfig.DungeonMonsterConfig {
+			dungeonMonsterConfig.Record.DungeonID = dungeonRec.ID
+		}
+	}
+
+	if dungeonConfig.DungeonObjectConfig != nil {
+		for _, dungeonObjectConfig := range dungeonConfig.DungeonObjectConfig {
+			dungeonObjectConfig.Record.DungeonID = dungeonRec.ID
+		}
+	}
+
+	return dungeonConfig, nil
 }
 
 // RemoveData -

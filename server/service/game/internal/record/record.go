@@ -1,6 +1,8 @@
 package record
 
 import (
+	"database/sql"
+
 	"gitlab.com/alienspaces/go-mud/server/core/repository"
 )
 
@@ -13,20 +15,20 @@ type Dungeon struct {
 
 // DungeonLocation -
 type DungeonLocation struct {
-	DungeonID                  string `db:"dungeon_id"`
-	Name                       string `db:"name"`
-	Description                string `db:"description"`
-	Default                    bool   `db:"default"`
-	NorthDungeonLocationID     string `db:"north_dungeon_location_id"`
-	NortheastDungeonLocationID string `db:"northeast_dungeon_location_id"`
-	EastDungeonLocationID      string `db:"east_dungeon_location_id"`
-	SoutheastDungeonLocationID string `db:"southeast_dungeon_location_id"`
-	SouthDungeonLocationID     string `db:"south_dungeon_location_id"`
-	SouthwestDungeonLocationID string `db:"southwest_dungeon_location_id"`
-	WestDungeonLocationID      string `db:"west_dungeon_location_id"`
-	NorthwestDungeonLocationID string `db:"northwest_dungeon_location_id"`
-	UpDungeonLocationID        string `db:"up_dungeon_location_id"`
-	DownDungeonLocationID      string `db:"down_dungeon_location_id"`
+	DungeonID                  string         `db:"dungeon_id"`
+	Name                       string         `db:"name"`
+	Description                string         `db:"description"`
+	Default                    bool           `db:"default"`
+	NorthDungeonLocationID     sql.NullString `db:"north_dungeon_location_id"`
+	NortheastDungeonLocationID sql.NullString `db:"northeast_dungeon_location_id"`
+	EastDungeonLocationID      sql.NullString `db:"east_dungeon_location_id"`
+	SoutheastDungeonLocationID sql.NullString `db:"southeast_dungeon_location_id"`
+	SouthDungeonLocationID     sql.NullString `db:"south_dungeon_location_id"`
+	SouthwestDungeonLocationID sql.NullString `db:"southwest_dungeon_location_id"`
+	WestDungeonLocationID      sql.NullString `db:"west_dungeon_location_id"`
+	NorthwestDungeonLocationID sql.NullString `db:"northwest_dungeon_location_id"`
+	UpDungeonLocationID        sql.NullString `db:"up_dungeon_location_id"`
+	DownDungeonLocationID      sql.NullString `db:"down_dungeon_location_id"`
 	repository.Record
 }
 

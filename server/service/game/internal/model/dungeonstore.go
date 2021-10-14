@@ -41,7 +41,7 @@ func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, er
 // CreateDungeonRec -
 func (m *Model) CreateDungeonRec(rec *record.Dungeon) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon rec >%#v<", rec)
 
 	r := m.DungeonRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonRec(rec *record.Dungeon) error {
 // UpdateDungeonRec -
 func (m *Model) UpdateDungeonRec(rec *record.Dungeon) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon rec >%#v<", rec)
 
 	r := m.DungeonRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonRec(rec *record.Dungeon) error {
 // DeleteDungeonRec -
 func (m *Model) DeleteDungeonRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon rec ID >%s<", recID)
 
 	r := m.DungeonRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonRec(recID string) error {
 // RemoveDungeonRec -
 func (m *Model) RemoveDungeonRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon rec ID >%s<", recID)
 
 	r := m.DungeonRepository()
 
