@@ -14,7 +14,7 @@ import (
 
 const (
 	// TableName - underlying database table name used for configuration
-	TableName string = "dungeon_object"
+	TableName string = "dungeon_action_object"
 )
 
 // Repository -

@@ -63,15 +63,15 @@ type DungeonMonster struct {
 }
 
 type DungeonObject struct {
-	DungeonID          string `db:"dungeon_id"`
-	DungeonLocationID  string `db:"dungeon_location_id"`
-	DungeonCharacterID string `db:"dungeon_character_id"`
-	DungeonMonsterID   string `db:"dungeon_monster_id"`
-	Name               string `db:"name"`
-	Description        string `db:"description"`
-	DescriptionLong    string `db:"description_long"`
-	IsStashed          bool   `db:"is_stashed"`
-	IsEquipped         bool   `db:"is_equipped"`
+	DungeonID          string         `db:"dungeon_id"`
+	DungeonLocationID  sql.NullString `db:"dungeon_location_id"`
+	DungeonCharacterID sql.NullString `db:"dungeon_character_id"`
+	DungeonMonsterID   sql.NullString `db:"dungeon_monster_id"`
+	Name               string         `db:"name"`
+	Description        string         `db:"description"`
+	DescriptionLong    string         `db:"description_long"`
+	IsStashed          bool           `db:"is_stashed"`
+	IsEquipped         bool           `db:"is_equipped"`
 	repository.Record
 }
 

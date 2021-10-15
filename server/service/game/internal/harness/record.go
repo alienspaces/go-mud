@@ -36,3 +36,63 @@ func (t *Testing) createDungeonLocationRec(dungeonRec record.Dungeon, dungeonLoc
 	}
 	return rec, nil
 }
+
+func (t *Testing) updateDungeonLocationRec(rec *record.DungeonLocation) error {
+
+	t.Log.Info("Updating dungeon location record >%#v<", rec)
+
+	err := t.Model.(*model.Model).UpdateDungeonLocationRec(rec)
+	if err != nil {
+		t.Log.Warn("Failed updating dungeon location record >%v<", err)
+		return err
+	}
+	return nil
+}
+
+func (t *Testing) createDungeonCharacterRec(dungeonRec record.Dungeon, dungeonCharacterConfig DungeonCharacterConfig) (record.DungeonCharacter, error) {
+
+	rec := dungeonCharacterConfig.Record
+
+	// NOTE: Add default values for required properties here
+
+	t.Log.Info("Creating dungeon character record >%#v<", rec)
+
+	err := t.Model.(*model.Model).CreateDungeonCharacterRec(&rec)
+	if err != nil {
+		t.Log.Warn("Failed creating dungeon character record >%v<", err)
+		return rec, err
+	}
+	return rec, nil
+}
+
+func (t *Testing) createDungeonMonsterRec(dungeonRec record.Dungeon, dungeonMonsterConfig DungeonMonsterConfig) (record.DungeonMonster, error) {
+
+	rec := dungeonMonsterConfig.Record
+
+	// NOTE: Add default values for required properties here
+
+	t.Log.Info("Creating dungeon monster record >%#v<", rec)
+
+	err := t.Model.(*model.Model).CreateDungeonMonsterRec(&rec)
+	if err != nil {
+		t.Log.Warn("Failed creating dungeon monster record >%v<", err)
+		return rec, err
+	}
+	return rec, nil
+}
+
+func (t *Testing) createDungeonObjectRec(dungeonRec record.Dungeon, dungeonObjectConfig DungeonObjectConfig) (record.DungeonObject, error) {
+
+	rec := dungeonObjectConfig.Record
+
+	// NOTE: Add default values for required properties here
+
+	t.Log.Info("Creating dungeon object record >%#v<", rec)
+
+	err := t.Model.(*model.Model).CreateDungeonObjectRec(&rec)
+	if err != nil {
+		t.Log.Warn("Failed creating dungeon object record >%v<", err)
+		return rec, err
+	}
+	return rec, nil
+}
