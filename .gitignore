@@ -16,8 +16,5 @@ NOTES.md
 go-mud-template-server
 go-mud-template-cli
 
-go-mud-player-server
-go-mud-player-cli
-
-go-mud-character-server
-go-mud-character-cli
+go-mud-game-server
+go-mud-game-cli

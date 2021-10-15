@@ -6,7 +6,7 @@ if [ -z "$APP_SERVER_GO_VERSION" ]; then
 fi
 
 # NOTE: Add new services here
-SERVICES=()
+SERVICES=(game)
 
 for SERVICE in "${SERVICES[@]}"; do
 

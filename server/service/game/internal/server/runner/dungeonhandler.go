@@ -109,6 +109,8 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 		Data: data,
 	}
 
+	l.Info("Responding with >%#v<", res)
+
 	err = rnr.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)

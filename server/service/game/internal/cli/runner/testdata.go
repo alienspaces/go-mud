@@ -15,9 +15,9 @@ func (rnr *Runner) LoadTestData(c *cli.Context) error {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Game{
+				Record: record.Dungeon{
 					Record: repository.Record{
 						ID: "a11f45c3-a0c7-4f79-a90d-52585c9e1473",
 					},

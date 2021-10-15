@@ -3,7 +3,6 @@ package runner
 import (
 	"net/http"
 
-	"gitlab.com/alienspaces/go-mud/server/core/auth"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -36,13 +35,13 @@ func NewRunner() *Runner {
 
 	r.HandlerConfig = []server.HandlerConfig{
 		{
-			Method:      http.MethodGet,
-			Path:        "/api/dungeons",
-			HandlerFunc: r.GetDungeonsHandler,
+			Method:           http.MethodGet,
+			Path:             "/api/dungeons",
+			HandlerFunc:      r.GetDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				AuthTypes: []string{
-					auth.AuthTypeJWT,
-				},
+				// AuthTypes: []string{
+				// 	auth.AuthTypeJWT,
+				// },
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
@@ -50,13 +49,13 @@ func NewRunner() *Runner {
 			},
 		},
 		{
-			Method:      http.MethodGet,
-			Path:        "/api/dungeons/:dungeon_id",
-			HandlerFunc: r.GetDungeonHandler,
+			Method:           http.MethodGet,
+			Path:             "/api/dungeons/:dungeon_id",
+			HandlerFunc:      r.GetDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				AuthTypes: []string{
-					auth.AuthTypeJWT,
-				},
+				// AuthTypes: []string{
+				// 	auth.AuthTypeJWT,
+				// },
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
