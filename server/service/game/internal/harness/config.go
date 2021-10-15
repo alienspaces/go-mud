@@ -13,12 +13,12 @@ type DataConfig struct {
 
 // DungeonConfig -
 type DungeonConfig struct {
-	Record                     record.Dungeon
-	DefaultDungeonLocationName string
-	DungeonLocationConfig      []DungeonLocationConfig
-	DungeonCharacterConfig     []DungeonCharacterConfig
-	DungeonMonsterConfig       []DungeonMonsterConfig
-	DungeonObjectConfig        []DungeonObjectConfig
+	Record record.Dungeon
+	// DefaultDungeonLocationName string
+	DungeonLocationConfig  []DungeonLocationConfig
+	DungeonCharacterConfig []DungeonCharacterConfig
+	DungeonMonsterConfig   []DungeonMonsterConfig
+	DungeonObjectConfig    []DungeonObjectConfig
 }
 
 type DungeonLocationConfig struct {
@@ -56,12 +56,13 @@ var DefaultDataConfig = DataConfig{
 			Record: record.Dungeon{
 				Name: "Cave",
 			},
-			DefaultDungeonLocationName: "Cave Entrance",
+			// DefaultDungeonLocationName: "Cave Entrance",
 			DungeonLocationConfig: []DungeonLocationConfig{
 				{
 					Record: record.DungeonLocation{
 						Name:        "Cave Entrance",
 						Description: "A large cave entrance.",
+						Default:     true,
 					},
 					NorthLocationName: "Cave Tunnel",
 				},
