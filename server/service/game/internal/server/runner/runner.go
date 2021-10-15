@@ -37,8 +37,8 @@ func NewRunner() *Runner {
 	r.HandlerConfig = []server.HandlerConfig{
 		{
 			Method:      http.MethodGet,
-			Path:        "/api/games",
-			HandlerFunc: r.GetGamesHandler,
+			Path:        "/api/dungeons",
+			HandlerFunc: r.GetDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthTypes: []string{
 					auth.AuthTypeJWT,
@@ -46,13 +46,13 @@ func NewRunner() *Runner {
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
-				Description: "Query games.",
+				Description: "Query dungeons.",
 			},
 		},
 		{
 			Method:      http.MethodGet,
-			Path:        "/api/games/:game_id",
-			HandlerFunc: r.GetGamesHandler,
+			Path:        "/api/dungeons/:dungeon_id",
+			HandlerFunc: r.GetDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthTypes: []string{
 					auth.AuthTypeJWT,
@@ -60,66 +60,66 @@ func NewRunner() *Runner {
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
-				Description: "Get a game.",
+				Description: "Get a dungeon.",
 			},
 		},
-		{
-			Method:      http.MethodPost,
-			Path:        "/api/games",
-			HandlerFunc: r.PostGamesHandler,
-			MiddlewareConfig: server.MiddlewareConfig{
-				AuthTypes: []string{
-					auth.AuthTypeJWT,
-				},
-				ValidateSchemaLocation: "game",
-				ValidateSchemaMain:     "main.schema.json",
-				ValidateSchemaReferences: []string{
-					"data.schema.json",
-				},
-			},
-			DocumentationConfig: server.DocumentationConfig{
-				Document:    true,
-				Description: "Create a game.",
-			},
-		},
-		{
-			Method:      http.MethodPost,
-			Path:        "/api/games/:game_id",
-			HandlerFunc: r.PostGamesHandler,
-			MiddlewareConfig: server.MiddlewareConfig{
-				AuthTypes: []string{
-					auth.AuthTypeJWT,
-				},
-				ValidateSchemaLocation: "game",
-				ValidateSchemaMain:     "main.schema.json",
-				ValidateSchemaReferences: []string{
-					"data.schema.json",
-				},
-			},
-			DocumentationConfig: server.DocumentationConfig{
-				Document:    true,
-				Description: "Create a game.",
-			},
-		},
-		{
-			Method:      http.MethodPut,
-			Path:        "/api/games/:game_id",
-			HandlerFunc: r.PutGamesHandler,
-			MiddlewareConfig: server.MiddlewareConfig{
-				AuthTypes: []string{
-					auth.AuthTypeJWT,
-				},
-				ValidateSchemaLocation: "game",
-				ValidateSchemaMain:     "main.schema.json",
-				ValidateSchemaReferences: []string{
-					"data.schema.json",
-				},
-			},
-			DocumentationConfig: server.DocumentationConfig{
-				Document:    true,
-				Description: "Update a game.",
-			},
-		},
+		// {
+		// 	Method:      http.MethodPost,
+		// 	Path:        "/api/dungeons",
+		// 	HandlerFunc: r.PostDungeonsHandler,
+		// 	MiddlewareConfig: server.MiddlewareConfig{
+		// 		AuthTypes: []string{
+		// 			auth.AuthTypeJWT,
+		// 		},
+		// 		ValidateSchemaLocation: "dungeon",
+		// 		ValidateSchemaMain:     "main.schema.json",
+		// 		ValidateSchemaReferences: []string{
+		// 			"data.schema.json",
+		// 		},
+		// 	},
+		// 	DocumentationConfig: server.DocumentationConfig{
+		// 		Document:    true,
+		// 		Description: "Create a dungeon.",
+		// 	},
+		// },
+		// {
+		// 	Method:      http.MethodPost,
+		// 	Path:        "/api/dungeons/:dungeon_id",
+		// 	HandlerFunc: r.PostDungeonsHandler,
+		// 	MiddlewareConfig: server.MiddlewareConfig{
+		// 		AuthTypes: []string{
+		// 			auth.AuthTypeJWT,
+		// 		},
+		// 		ValidateSchemaLocation: "dungeon",
+		// 		ValidateSchemaMain:     "main.schema.json",
+		// 		ValidateSchemaReferences: []string{
+		// 			"data.schema.json",
+		// 		},
+		// 	},
+		// 	DocumentationConfig: server.DocumentationConfig{
+		// 		Document:    true,
+		// 		Description: "Create a dungeon.",
+		// 	},
+		// },
+		// {
+		// 	Method:      http.MethodPut,
+		// 	Path:        "/api/dungeons/:dungeon_id",
+		// 	HandlerFunc: r.PutDungeonsHandler,
+		// 	MiddlewareConfig: server.MiddlewareConfig{
+		// 		AuthTypes: []string{
+		// 			auth.AuthTypeJWT,
+		// 		},
+		// 		ValidateSchemaLocation: "dungeon",
+		// 		ValidateSchemaMain:     "main.schema.json",
+		// 		ValidateSchemaReferences: []string{
+		// 			"data.schema.json",
+		// 		},
+		// 	},
+		// 	DocumentationConfig: server.DocumentationConfig{
+		// 		Document:    true,
+		// 		Description: "Update a dungeon.",
+		// 	},
+		// },
 		{
 			Method:           http.MethodGet,
 			Path:             "/api",
@@ -134,7 +134,7 @@ func NewRunner() *Runner {
 // Modeller -
 func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 
-	l.Info("** Game Model **")
+	l.Info("** Dungeon Model **")
 
 	m, err := model.NewModel(rnr.Config, l, rnr.Store)
 	if err != nil {

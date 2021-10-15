@@ -13,9 +13,9 @@ func NewTestHarness() (*harness.Testing, error) {
 
 	// harness
 	config := harness.DataConfig{
-		GameConfig: []harness.GameConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Game{},
+				Record: record.Dungeon{},
 			},
 		},
 	}

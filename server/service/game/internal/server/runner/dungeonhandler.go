@@ -15,9 +15,9 @@ import (
 // GetDungeonHandler -
 func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
 
-	l.Info("** Get games handler ** p >%#v< m >%#v<", pp, m)
+	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
 
-	var recs []*record.Game
+	var recs []*record.Dungeon
 	var err error
 
 	// Path parameters
@@ -28,9 +28,9 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 		return
 	}
 
-	l.Info("Getting game record ID >%s<", id)
+	l.Info("Getting dungeon record ID >%s<", id)
 
-	rec, err := m.(*model.Model).GetGameRec(id, false)
+	rec, err := m.(*model.Model).GetDungeonRec(id, false)
 	if err != nil {
 		rnr.WriteModelError(l, w, err)
 		return
@@ -72,20 +72,20 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 // GetDungeonsHandler -
 func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
 
-	l.Info("** Get games handler ** p >%#v< m >%#v<", pp, m)
+	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
 
-	var recs []*record.Game
+	var recs []*record.Dungeon
 	var err error
 
-	l.Info("Querying game records")
+	l.Info("Querying dungeon records")
 
 	params := make(map[string]interface{})
 	for paramName, paramValue := range qp {
-		l.Info("Querying game records with param name >%s< value >%v<", paramName, paramValue)
+		l.Info("Querying dungeon records with param name >%s< value >%v<", paramName, paramValue)
 		params[paramName] = paramValue
 	}
 
-	recs, err = m.(*model.Model).GetGameRecs(params, nil, false)
+	recs, err = m.(*model.Model).GetDungeonRecs(params, nil, false)
 	if err != nil {
 		rnr.WriteModelError(l, w, err)
 		return
@@ -123,12 +123,12 @@ func (rnr *Runner) DungeonRequestDataToRecord(data schema.DungeonData, rec *reco
 }
 
 // RecordToDungeonResponseData -
-func (rnr *Runner) RecordToDungeonResponseData(gameRec *record.Dungeon) (schema.DungeonData, error) {
+func (rnr *Runner) RecordToDungeonResponseData(dungeonRec *record.Dungeon) (schema.DungeonData, error) {
 
 	data := schema.DungeonData{
-		ID:        gameRec.ID,
-		CreatedAt: gameRec.CreatedAt,
-		UpdatedAt: gameRec.UpdatedAt.Time,
+		ID:        dungeonRec.ID,
+		CreatedAt: dungeonRec.CreatedAt,
+		UpdatedAt: dungeonRec.UpdatedAt.Time,
 	}
 
 	return data, nil
