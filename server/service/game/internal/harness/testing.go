@@ -19,15 +19,12 @@ type Testing struct {
 
 // Data -
 type Data struct {
-	DungeonRecs                []record.Dungeon
-	DungeonLocationRecs        []record.DungeonLocation
-	DungeonCharacterRecs       []record.DungeonCharacter
-	DungeonMonsterRecs         []record.DungeonMonster
-	DungeonObjectRecs          []record.DungeonObject
-	DungeonActionRecs          []record.DungeonAction
-	DungeonActionCharacterRecs []record.DungeonActionCharacter
-	DungeonActionMonsterRecs   []record.DungeonActionMonster
-	DungeonActionObjectRecs    []record.DungeonActionObject
+	DungeonRecs          []*record.Dungeon
+	DungeonLocationRecs  []*record.DungeonLocation
+	DungeonCharacterRecs []*record.DungeonCharacter
+	DungeonMonsterRecs   []*record.DungeonMonster
+	DungeonObjectRecs    []*record.DungeonObject
+	DungeonActionRecs    []*record.DungeonAction
 }
 
 // NewTesting -
@@ -105,7 +102,7 @@ func (t *Testing) CreateData() error {
 
 		// Update all location records
 		for _, dungeonLocationRec := range data.DungeonLocationRecs {
-			err := t.updateDungeonLocationRec(&dungeonLocationRec)
+			err := t.updateDungeonLocationRec(dungeonLocationRec)
 			if err != nil {
 				t.Log.Warn("Failed updating dungeon location record >%v<", err)
 				return err
@@ -149,6 +146,27 @@ func (t *Testing) CreateData() error {
 			data.DungeonObjectRecs = append(data.DungeonObjectRecs, dungeonObjectRec)
 		}
 
+		// Create action records
+		for _, dungeonActionConfig := range dungeonConfig.DungeonActionConfig {
+			dungeonCharacterID := ""
+			for _, characterRecord := range data.DungeonCharacterRecs {
+				if characterRecord.Name == dungeonActionConfig.CharacterName {
+					dungeonCharacterID = characterRecord.ID
+				}
+			}
+			if dungeonCharacterID == "" {
+				msg := fmt.Sprintf("Failed to find dungeon character record name >%s<", dungeonActionConfig.CharacterName)
+				t.Log.Error(msg)
+				return fmt.Errorf(msg)
+			}
+
+			dungeonActionRec, err := t.createDungeonCharacterActionRec(dungeonCharacterID, dungeonActionConfig.Command)
+			if err != nil {
+				t.Log.Warn("Failed creating dungeon action record >%v<", err)
+				return err
+			}
+			data.DungeonActionRecs = append(data.DungeonActionRecs, dungeonActionRec)
+		}
 	}
 
 	// Assign data once we have successfully set up ll data
@@ -162,7 +180,7 @@ func (t *Testing) resolveDataLocationIdentifiers(data Data, dungeonConfig Dungeo
 	findDungeonLocationRec := func(locationName string) *record.DungeonLocation {
 		for _, dungeonLocationRec := range data.DungeonLocationRecs {
 			if dungeonLocationRec.Name == locationName {
-				return &dungeonLocationRec
+				return dungeonLocationRec
 			}
 		}
 		return nil
@@ -327,7 +345,7 @@ func (t *Testing) resolveConfigDungeonLocationIdentifiers(data Data, dungeonConf
 	findDungeonLocationRec := func(locationName string) *record.DungeonLocation {
 		for _, dungeonLocationRec := range data.DungeonLocationRecs {
 			if dungeonLocationRec.Name == locationName {
-				return &dungeonLocationRec
+				return dungeonLocationRec
 			}
 		}
 		return nil
@@ -370,7 +388,7 @@ func (t *Testing) resolveConfigDungeonLocationIdentifiers(data Data, dungeonConf
 	return dungeonConfig, nil
 }
 
-func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec record.Dungeon, dungeonConfig DungeonConfig) (DungeonConfig, error) {
+func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, dungeonConfig DungeonConfig) (DungeonConfig, error) {
 
 	if dungeonConfig.DungeonLocationConfig != nil {
 		for idx := range dungeonConfig.DungeonLocationConfig {
@@ -407,7 +425,8 @@ DUNGEON_CHARACTER_RECS:
 		if len(t.Data.DungeonCharacterRecs) == 0 {
 			break DUNGEON_CHARACTER_RECS
 		}
-		rec := record.DungeonCharacter{}
+		// rec := &record.DungeonCharacter{}
+		var rec *record.DungeonCharacter
 		rec, t.Data.DungeonCharacterRecs = t.Data.DungeonCharacterRecs[0], t.Data.DungeonCharacterRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonCharacterRec(rec.ID)
@@ -422,7 +441,8 @@ DUNGEON_MONSTER_RECS:
 		if len(t.Data.DungeonMonsterRecs) == 0 {
 			break DUNGEON_MONSTER_RECS
 		}
-		rec := record.DungeonMonster{}
+		// rec := &record.DungeonMonster{}
+		var rec *record.DungeonMonster
 		rec, t.Data.DungeonMonsterRecs = t.Data.DungeonMonsterRecs[0], t.Data.DungeonMonsterRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonMonsterRec(rec.ID)
@@ -437,7 +457,8 @@ DUNGEON_OBJECT_RECS:
 		if len(t.Data.DungeonObjectRecs) == 0 {
 			break DUNGEON_OBJECT_RECS
 		}
-		rec := record.DungeonObject{}
+		// rec := &record.DungeonObject{}
+		var rec *record.DungeonObject
 		rec, t.Data.DungeonObjectRecs = t.Data.DungeonObjectRecs[0], t.Data.DungeonObjectRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonObjectRec(rec.ID)
@@ -452,7 +473,8 @@ DUNGEON_LOCATION_RECS:
 		if len(t.Data.DungeonLocationRecs) == 0 {
 			break DUNGEON_LOCATION_RECS
 		}
-		rec := record.DungeonLocation{}
+		// rec := &record.DungeonLocation{}
+		var rec *record.DungeonLocation
 		rec, t.Data.DungeonLocationRecs = t.Data.DungeonLocationRecs[0], t.Data.DungeonLocationRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonLocationRec(rec.ID)
@@ -467,7 +489,8 @@ DUNGEON_RECS:
 		if len(t.Data.DungeonRecs) == 0 {
 			break DUNGEON_RECS
 		}
-		rec := record.Dungeon{}
+		// rec := &record.Dungeon{}
+		var rec *record.Dungeon
 		rec, t.Data.DungeonRecs = t.Data.DungeonRecs[0], t.Data.DungeonRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonRec(rec.ID)

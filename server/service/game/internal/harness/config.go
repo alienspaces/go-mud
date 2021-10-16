@@ -21,6 +21,7 @@ type DungeonConfig struct {
 	DungeonCharacterConfig []DungeonCharacterConfig
 	DungeonMonsterConfig   []DungeonMonsterConfig
 	DungeonObjectConfig    []DungeonObjectConfig
+	DungeonActionConfig    []DungeonActionConfig
 }
 
 type DungeonLocationConfig struct {
@@ -38,16 +39,16 @@ type DungeonLocationConfig struct {
 }
 
 type DungeonActionConfig struct {
-	CharacterName                          string
-	MonsterName                            string
-	LocationName                           string
-	ResolvedEquippedDungeonObjectName      string
-	ResolvedStashedDungeonObjectName       string
-	ResolvedTargetDungeonObjectName        string
-	ResolvedTargetDungeonCharacterName     string
-	ResolvedTargetDungeonMonsterName       string
-	ResolvedTargetDungeonLocationDirection string
-	ResolvedTargetDungeonLocationName      string
+	CharacterName string
+	MonsterName   string
+	Command       string
+	// ResolvedEquippedDungeonObjectName      string
+	// ResolvedStashedDungeonObjectName       string
+	// ResolvedTargetDungeonObjectName        string
+	// ResolvedTargetDungeonCharacterName     string
+	// ResolvedTargetDungeonMonsterName       string
+	// ResolvedTargetDungeonLocationDirection string
+	// ResolvedTargetDungeonLocationName      string
 }
 
 type DungeonCharacterConfig struct {

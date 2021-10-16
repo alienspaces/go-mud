@@ -62,7 +62,7 @@ look goblin
 
 📝 _Unimplemented_
 
-A character may `equip` or `stash` an object into their backpack that is in their current location. A character may also `equip` and object that has been stashed in their backback. Any item that is currently equipped where that item would normally be equipped will be stashed if there is enough room in the characters backpack or dropped if there is not. A character may `drop` any item that is equipped or stashed in their backpack.
+A character may `equip` or `stash` an object into their backpack that is in their current location. A character may also `equip` an object that has been stashed in their backback. Any item that is currently equipped where that item would normally be equipped will be stashed if there is enough room in the characters backpack or dropped if there is not. A character may `drop` any item that is equipped or stashed in their backpack.
 
 **Syntax Examples:**
 
