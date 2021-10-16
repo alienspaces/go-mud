@@ -51,8 +51,6 @@ func NewDefaultDependencies() (configurer.Configurer, logger.Logger, error) {
 	}
 
 	configVars := []string{
-		// general
-		"APP_SERVER_HOST",
 		// logger
 		"APP_SERVER_LOG_LEVEL",
 	}
