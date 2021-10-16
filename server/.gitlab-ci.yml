@@ -1,0 +1,43 @@
+# All variables are valid for all jobs
+variables:
+  APP_SERVER_ENV: development
+  APP_SERVER_GO_VERSION: go1.17.2
+  APP_SERVER_LOG_LEVEL: warn
+  APP_SERVER_SCHEMA_PATH: "./schema/docs"
+  APP_SERVER_DB_HOST: go-mud-database
+  APP_SERVER_DB_NAME: "go-mud"
+  APP_SERVER_DB_PORT: 5432
+  APP_SERVER_DB_USER: "go-mud-user"
+  APP_SERVER_DB_PASSWORD: "go-mud-pass"
+  POSTGRES_DB: go-mud
+  POSTGRES_USER: go-mud-user
+  POSTGRES_PASSWORD: go-mud-pass
+
+# Build the server so we can use it as a service when integration
+# testing the Flutter client.
+build-server:
+  image: docker:19.03.12
+  stage: build
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    - apk add git
+    - apk add bash
+  script:
+    - cd server
+    - ./script/build
+
+# Testing the server requires postgres to be running as a service.
+test-server:
+  image: $CI_REGISTRY/alienspaces/go-mud/golang:1.17.2-alpine3.14
+  stage: test
+  services:
+    - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
+      alias: go-mud-database
+  before_script:
+    - apk add git
+    - apk add bash
+  script:
+    - cd server
+    - ./script/db-migrate-up
+    - ./script/test
