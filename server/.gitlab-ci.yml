@@ -39,6 +39,7 @@ test-server:
   before_script:
     - apk add git
     - apk add bash
+    - apk add postgresql-client
   script:
     - cd server
     - ./script/test-ci
