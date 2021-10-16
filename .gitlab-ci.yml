@@ -15,7 +15,9 @@ sast:
 variables:
   FF_NETWORK_PER_BUILD: 1
   APP_SERVER_ENV: development
+  APP_SERVER_GO_VERSION: go1.17.2
   APP_SERVER_LOG_LEVEL: warn
+  APP_SERVER_SCHEMA_PATH: "./schema/docs"
   APP_SERVER_DB_HOST: go-mud-database
   APP_SERVER_DB_NAME: "go-mud"
   APP_SERVER_DB_PORT: 5432
