@@ -35,6 +35,7 @@ build-server:
   services:
     - docker:19.03.12-dind
   before_script:
+    - apk add git
     - apk add bash
   script:
     - cd server
@@ -65,9 +66,9 @@ test-server:
     - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
       alias: go-mud-database
   before_script:
+    - apk add git
     - apk add bash
   script:
     - cd server
-    - ./script/db-setup
     - ./script/db-migrate-up
     - ./script/test
