@@ -41,5 +41,4 @@ test-server:
     - apk add bash
   script:
     - cd server
-    - ./script/db-migrate-up
-    - ./script/test
+    - ./script/test-ci
