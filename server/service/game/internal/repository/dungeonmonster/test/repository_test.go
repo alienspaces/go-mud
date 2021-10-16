@@ -90,9 +90,14 @@ func TestGetOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonMonsterConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.DungeonMonster{},
+				Record: record.Dungeon{},
+				DungeonMonsterConfig: []harness.DungeonMonsterConfig{
+					{
+						Record: record.DungeonMonster{},
+					},
+				},
 			},
 		},
 	}
@@ -164,9 +169,14 @@ func TestUpdateOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonMonsterConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.DungeonMonster{},
+				Record: record.Dungeon{},
+				DungeonMonsterConfig: []harness.DungeonMonsterConfig{
+					{
+						Record: record.DungeonMonster{},
+					},
+				},
 			},
 		},
 	}
@@ -242,9 +252,14 @@ func TestDeleteOne(t *testing.T) {
 
 	// harness
 	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonMonsterConfig{
+		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.DungeonMonster{},
+				Record: record.Dungeon{},
+				DungeonMonsterConfig: []harness.DungeonMonsterConfig{
+					{
+						Record: record.DungeonMonster{},
+					},
+				},
 			},
 		},
 	}

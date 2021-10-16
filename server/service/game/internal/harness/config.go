@@ -37,6 +37,19 @@ type DungeonLocationConfig struct {
 	DownLocationName      string
 }
 
+type DungeonActionConfig struct {
+	CharacterName                          string
+	MonsterName                            string
+	LocationName                           string
+	ResolvedEquippedDungeonObjectName      string
+	ResolvedStashedDungeonObjectName       string
+	ResolvedTargetDungeonObjectName        string
+	ResolvedTargetDungeonCharacterName     string
+	ResolvedTargetDungeonMonsterName       string
+	ResolvedTargetDungeonLocationDirection string
+	ResolvedTargetDungeonLocationName      string
+}
+
 type DungeonCharacterConfig struct {
 	Record       record.DungeonCharacter
 	LocationName string
