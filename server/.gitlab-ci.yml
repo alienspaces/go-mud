@@ -37,6 +37,7 @@ test-server:
     - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
       alias: go-mud-database
   before_script:
+    - apk add build-base
     - apk add git
     - apk add bash
     - apk add postgresql-client
