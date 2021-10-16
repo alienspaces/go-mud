@@ -34,6 +34,8 @@ build-server:
   stage: build
   services:
     - docker:19.03.12-dind
+  before_script:
+    - apk add bash
   script:
     - cd server
     - ./script/build
@@ -57,17 +59,15 @@ test-client:
 
 # Testing the server requires postgres to be running as a service.
 test-server:
-  image: $CI_REGISTRY/alienspaces/go-mud/node:14.17.3-alpine3.14
+  image: $CI_REGISTRY/alienspaces/go-mud/golang:1.17.2-alpine3.14
   stage: test
   services:
     - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
       alias: go-mud-database
   before_script:
     - apk add bash
-    - npm i -g @gojs/cli
   script:
     - cd server
-    - yarn install
-    - "./script/db-migrate-up"
-    - yarn test
-    - yarn test:e2e
+    - ./script/db-setup
+    - ./script/db-migrate-up
+    - ./script/test
