@@ -27,7 +27,7 @@ if [ -z "$PREV_COMMIT" ]; then
 fi
 
 # deploy configmap if anything changed in common top level config or modules
-CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+CHANGED=$(git diff "$PREV_COMMIT" --name-only .gitlab-ci.yml ./core ./build ./script/deploy ./script/build)
 if [ -n "$CHANGED" ]; then
 
     if [ -f "./build/kubernetes/configmap.yml" ]; then
@@ -53,7 +53,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
     echo "$SERVICE_DIR";
 
     # deploy service if anything changed in common top level config or modules
-    CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+    CHANGED=$(git diff "$PREV_COMMIT" --name-only .gitlab-ci.yml ./core ./build ./script/deploy ./script/build)
     if [ -z "$CHANGED" ]; then
         # deploy service if anything changed in the specific service
         CHANGED=$(git diff "$PREV_COMMIT" --name-only -- "$SERVICE_DIR")
@@ -89,7 +89,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 done
 
 # deploy ingress if anything changed in common top level config or modules
-CHANGED=$(git diff "$PREV_COMMIT" --name-only ./common .gitlab-ci.yml  ./build ./script/deploy ./script/build)
+CHANGED=$(git diff "$PREV_COMMIT" --name-only .gitlab-ci.yml  ./core ./build ./script/deploy ./script/build)
 if [ -n "$CHANGED" ]; then
 
     if [ -f "./build/kubernetes/ingress.yml" ]; then
