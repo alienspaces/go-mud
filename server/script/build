@@ -19,16 +19,14 @@ if [ -z "$PREV_COMMIT" ]; then
 fi
 
 # service directory list
-shopt -s dotglob
-shopt -s nullglob
-cd ./service || exit
 SERVICE_NAMES=(game)
-cd - || exit
 
 for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
     SERVICE_DIR="./service/$SERVICE_NAME"
-    echo "$SERVICE_DIR";
+    echo "Directory: $SERVICE_DIR";
+    echo ""
+    ls -la
 
     # build if anything changed in common
     CHANGED=$(git diff "$PREV_COMMIT" --name-only .gitlab-ci.yml ./core ./build ./script/deploy ./script/build)
