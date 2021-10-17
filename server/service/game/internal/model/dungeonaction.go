@@ -9,5 +9,15 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 
 	m.Log.Info("Processing dungeon character ID >%s< action command >%s<", dungeonCharacterID, sentence)
 
+	// Get current dungeon location record set
+
+	// Resolve character action
+
+	// Perform character action
+
+	// Refetch current dungeon location record set
+
+	// Create dungeon action event records
+
 	return nil, nil
 }
