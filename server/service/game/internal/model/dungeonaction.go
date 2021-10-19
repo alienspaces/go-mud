@@ -10,11 +10,25 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 	m.Log.Info("Processing dungeon character ID >%s< action command >%s<", dungeonCharacterID, sentence)
 
 	// Get current dungeon location record set
+	dungeonLocationRecordSet, err := m.getDungeonLocationRecordSet(dungeonCharacterID, true)
+	if err != nil {
+		m.Log.Warn("Failed getting dungeon location record set >%v<", err)
+		return nil, err
+	}
 
 	// Resolve character action
+	dungeonActionRec, err := m.resolveAction(sentence, dungeonLocationRecordSet)
+	if err != nil {
+		m.Log.Warn("Failed resolving dungeon character action >%v<", err)
+		return nil, err
+	}
 
 	// Perform character action
-
+	dungeonActionRec, err = m.performDungeonCharacterAction(dungeonActionRec, dungeonLocationRecordSet)
+	if err != nil {
+		m.Log.Warn("Failed performing dungeon character action >%v<", err)
+		return nil, err
+	}
 	// Refetch current dungeon location record set
 
 	// Create dungeon action event records
@@ -138,44 +152,5 @@ func (m *Model) getDungeonLocationRecordSet(dungeonCharacterID string, forUpdate
 	}
 	dungeonLocationRecordSet.LocationRecs = locationRecs
 
-	// [
-	// 'north_dungeon_location_id',
-	// 'northeast_dungeon_location_id',
-	// 'east_dungeon_location_id',
-	// 'southeast_dungeon_location_id',
-	// 'south_dungeon_location_id',
-	// 'southwest_dungeon_location_id',
-	// 'west_dungeon_location_id',
-	// 'northwest_dungeon_location_id',
-	// 'up_dungeon_location_id',
-	// 'down_dungeon_location_id',
-	// ].forEach((prop) => {
-	// if (locationRecord[prop]) {
-	// locationIds.push(locationRecord[prop]);
-	// }
-	// });
-	//
-	// Location records
-	// const locationRecords = await this.dungeonLocationRepository.getMany({
-	// parameters: [
-	// {
-	// column: 'id',
-	// value: locationIds,
-	// operator: RepositoryOperator.In,
-	// },
-	// ],
-	// });
-	// logger.info(`Fetched ${locationRecords.length} dungeon location records`);
-	//
-	// Resolve action sentence
-	// const records: DungeonLocationRecordSet = {
-	// character: characterRecord,
-	// location: locationRecord,
-	// characters: characterRecords,
-	// monsters: monsterRecords,
-	// objects: objectRecords,
-	// locations: locationRecords,
-	// };
-
-	return nil, nil
+	return dungeonLocationRecordSet, nil
 }

@@ -11,7 +11,7 @@ type ResolverSentence struct {
 	Sentence string
 }
 
-func (m *Model) resolveAction(sentence string, records DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	resolved, err := m.resolveCommand(sentence)
 	if err != nil {
@@ -19,7 +19,7 @@ func (m *Model) resolveAction(sentence string, records DungeonLocationRecordSet)
 		return nil, err
 	}
 
-	resolveFuncs := map[string]func(sentence string, records DungeonLocationRecordSet) (*record.DungeonAction, error){
+	resolveFuncs := map[string]func(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error){
 		"move": m.resolveMoveAction,
 		// "look":  m.resolveLookAction,
 		// "equip": m.resolveEquipAction,
@@ -37,30 +37,26 @@ func (m *Model) resolveAction(sentence string, records DungeonLocationRecordSet)
 }
 
 func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
-	parts := strings.Split(sentence, " ")
+	sentenceWords := strings.Split(sentence, " ")
 	resolved := ResolverSentence{}
 
-	m.Log.Info("Have command parts >%v<", parts)
+	m.Log.Info("Have sentence words >%v<", sentenceWords)
 
 	for _, dungeonAction := range []string{"move", "look", "equip", "stash", "drop"} {
 		m.Log.Info("Checking dungeon action >%s<", dungeonAction)
-	}
 
-	// 	const index = parts.indexOf(findAction);
-	// 	if (index === -1) {
-	// 		return;
-	// 	}
-	// 	resolved = {
-	// 		command: findAction,
-	// 		sentence: parts.length > index + 1 ? parts.splice(index + 1).join(' ') : undefined,
-	// 	};
-	// 	return true;
-	// });
+		// NOTE: The appended space is important
+		if strings.Contains(sentence, dungeonAction+" ") {
+			sentence = strings.Replace(sentence, dungeonAction, "", 1)
+			resolved.Command = dungeonAction
+			resolved.Sentence = sentence
+		}
+	}
 
 	return &resolved, nil
 }
 
-func (m *Model) resolveMoveAction(sentence string, records DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 	var command string
 	var targetDungeonLocationID string
 	var targetDungeonLocationDirection string
