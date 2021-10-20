@@ -1,14 +1,20 @@
 package model
 
-import "gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+import (
+	"fmt"
+
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+)
 
 func (m *Model) performDungeonCharacterAction(
-	dungeonActionRecord *record.DungeonAction,
+	dungeonActionRec *record.DungeonAction,
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
-	// const logger = this.loggerService.logger({
-	// 	function: 'performDungeonCharacterAction',
-	// });
+
+	actionFuncs := map[string]func(dungeonActionRecord *record.DungeonAction, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error){
+		"move": m.performDungeonActionMove,
+	}
+
 	// const actionFuncs = {
 	// 	move: (dungeonActionRecord: DungeonActionRepositoryRecord, records: DungeonLocationRecordSet) =>
 	// 		this.performDungeonActionMove(dungeonActionRecord, records),
@@ -22,35 +28,47 @@ func (m *Model) performDungeonCharacterAction(
 	// 		this.performDungeonActionDrop(dungeonActionRecord, records),
 	// };
 
-	// const actionFunc = actionFuncs[dungeonActionRecord.resolved_command];
-	// if (!actionFunc) {
-	// 	throw new DomainError(`Action function for ${dungeonActionRecord.resolved_command} not supported`);
-	// }
+	actionFunc, ok := actionFuncs[dungeonActionRec.ResolvedCommand]
+	if !ok {
+		msg := fmt.Sprintf("Action >%s< not supported", dungeonActionRec.ResolvedCommand)
+		m.Log.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
 
-	// dungeonActionRecord = await actionFunc(dungeonActionRecord, records);
+	var err error
+	dungeonActionRec, err = actionFunc(dungeonActionRec, dungeonLocationRecordSet)
+	if err != nil {
+		m.Log.Warn("Failed performing action >%s< >%v<", dungeonActionRec.ResolvedCommand, err)
+		return nil, err
+	}
 
-	// logger.info(`Have updated dungeon action record ${dungeonActionRecord}`);
+	m.Log.Info("Have updated dungeon action record >%v<", dungeonActionRec)
 
-	// return dungeonActionRecord;
-
-	return nil, nil
+	return dungeonActionRec, nil
 }
 
-// func (m *Model) performDungeonActionMove(
-// 	dungeonActionRecord: DungeonActionRepositoryRecord,
-// 	records: DungeonLocationRecordSet,
-// ): Promise<DungeonActionRepositoryRecord> {
-// 	if (dungeonActionRecord.dungeon_character_id) {
-// 		// Move character
-// 		let characterRecord = records.character;
-// 		characterRecord.dungeon_location_id = dungeonActionRecord.resolved_target_dungeon_location_id;
-// 		characterRecord = await this.dungeonCharacterRepository.updateOne({ record: characterRecord });
+func (m *Model) performDungeonActionMove(
+	dungeonActionRec *record.DungeonAction,
+	dungeonLocationRecordSet *DungeonLocationRecordSet,
+) (*record.DungeonAction, error) {
 
-// 		// Update dungeon action entity
-// 		dungeonActionRecord.dungeon_location_id = dungeonActionRecord.resolved_target_dungeon_location_id;
-// 	} else if (dungeonActionRecord.dungeon_monster_id) {
-// 		// Move monster
-// 		// ...
-// 	}
-// 	return dungeonActionRecord;
-// }
+	if dungeonActionRec.DungeonCharacterID != "" {
+		// Move character
+		characterRec := dungeonLocationRecordSet.CharacterRec
+		characterRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID
+
+		err := m.UpdateDungeonCharacterRec(characterRec)
+		if err != nil {
+			m.Log.Warn("Failed updated dungeon character record >%v<", err)
+			return nil, err
+		}
+
+		// Update dungeon action record
+		dungeonActionRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID
+	} else if dungeonActionRec.DungeonMonsterID != "" {
+		// Move monster
+		return nil, fmt.Errorf("moving monsters is currently not supported")
+	}
+
+	return dungeonActionRec, nil
+}
