@@ -46,7 +46,7 @@ CREATE TABLE "dungeon_character" (
   "id"                   uuid CONSTRAINT dungeon_character_pk PRIMARY KEY DEFAULT gen_random_uuid(),
   "dungeon_id"           uuid NOT NULL,
   "dungeon_location_id"  uuid NOT NULL,
-  "name"                 text NOT NULL UNIQUE,
+  "name"                 text NOT NULL,
   "strength"             integer NOT NULL DEFAULT 10,
   "dexterity"            integer NOT NULL DEFAULT 10,
   "intelligence"         integer NOT NULL DEFAULT 10,
@@ -59,7 +59,8 @@ CREATE TABLE "dungeon_character" (
   "updated_at"           timestamp WITH TIME ZONE,
   "deleted_at"           timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_character_dungeon_id_fk" FOREIGN KEY (dungeon_id) REFERENCES dungeon(id),
-  CONSTRAINT "dungeon_character_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id)
+  CONSTRAINT "dungeon_character_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
+  CONSTRAINT "dungeon_character_dungeon_id_name_uq" UNIQUE (dungeon_id, "name")
 );
 
 -- table dungeon_monster
@@ -67,7 +68,7 @@ CREATE TABLE "dungeon_monster" (
   "id"                   uuid CONSTRAINT dungeon_monster_pk PRIMARY KEY DEFAULT gen_random_uuid(),
   "dungeon_id"           uuid NOT NULL,
   "dungeon_location_id"  uuid NOT NULL,
-  "name"                 text NOT NULL UNIQUE,
+  "name"                 text NOT NULL,
   "strength"             integer NOT NULL DEFAULT 10,
   "dexterity"            integer NOT NULL DEFAULT 10,
   "intelligence"         integer NOT NULL DEFAULT 10,
@@ -80,7 +81,8 @@ CREATE TABLE "dungeon_monster" (
   "updated_at"           timestamp WITH TIME ZONE,
   "deleted_at"           timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_monster_dungeon_id_fk" FOREIGN KEY (dungeon_id) REFERENCES dungeon(id),
-  CONSTRAINT "dungeon_monster_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id)
+  CONSTRAINT "dungeon_monster_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
+  CONSTRAINT "dungeon_monster_dungeon_id_name_uq" UNIQUE (dungeon_id, "name")
 );
 
 -- table dungeon_object
@@ -90,7 +92,7 @@ CREATE TABLE "dungeon_object" (
   "dungeon_location_id"  uuid,
   "dungeon_character_id" uuid,
   "dungeon_monster_id"   uuid,
-  "name"                 text NOT NULL UNIQUE,
+  "name"                 text NOT NULL,
   "description"          text NOT NULL,
   "description_long"     text NOT NULL,
   "is_stashed"           boolean,
@@ -102,6 +104,7 @@ CREATE TABLE "dungeon_object" (
   CONSTRAINT "dungeon_object_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
   CONSTRAINT "dungeon_object_dungeon_character_id_fk" FOREIGN KEY (dungeon_character_id) REFERENCES dungeon_character(id),
   CONSTRAINT "dungeon_object_dungeon_monster_id_fk" FOREIGN KEY (dungeon_monster_id) REFERENCES dungeon_monster(id),
+  CONSTRAINT "dungeon_object_dungeon_id_name_uq" UNIQUE (dungeon_id, "name"),
   CONSTRAINT "dungeon_object_location_character_monster_ck" CHECK (
     num_nonnulls(dungeon_location_id, dungeon_character_id, dungeon_monster_id) = 1
   )
