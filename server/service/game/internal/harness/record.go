@@ -97,14 +97,15 @@ func (t *Testing) createDungeonObjectRec(dungeonRec *record.Dungeon, dungeonObje
 	return &rec, nil
 }
 
-func (t *Testing) createDungeonCharacterActionRec(dungeonCharacterID string, sentence string) (*record.DungeonAction, error) {
+func (t *Testing) createDungeonCharacterActionRec(dungeonCharacterID string, sentence string) (*model.DungeonActionRecordSet, error) {
 
 	t.Log.Info("Creating dungeon action for character ID >%s< sentence >%s<", dungeonCharacterID, sentence)
 
-	dungeonActionRec, err := t.Model.(*model.Model).ProcessDungeonCharacterAction(dungeonCharacterID, sentence)
+	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessDungeonCharacterAction(dungeonCharacterID, sentence)
 	if err != nil {
 		t.Log.Warn("Failed creating dungeon character action record >%v<", err)
 		return nil, err
 	}
-	return dungeonActionRec, nil
+
+	return dungeonActionRecordSet, nil
 }

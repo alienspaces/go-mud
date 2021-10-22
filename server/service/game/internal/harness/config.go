@@ -42,13 +42,6 @@ type DungeonActionConfig struct {
 	CharacterName string
 	MonsterName   string
 	Command       string
-	// ResolvedEquippedDungeonObjectName      string
-	// ResolvedStashedDungeonObjectName       string
-	// ResolvedTargetDungeonObjectName        string
-	// ResolvedTargetDungeonCharacterName     string
-	// ResolvedTargetDungeonMonsterName       string
-	// ResolvedTargetDungeonLocationDirection string
-	// ResolvedTargetDungeonLocationName      string
 }
 
 type DungeonCharacterConfig struct {
@@ -72,7 +65,6 @@ var DefaultDataConfig = DataConfig{
 			Record: record.Dungeon{
 				Name: "Cave",
 			},
-			// DefaultDungeonLocationName: "Cave Entrance",
 			DungeonLocationConfig: []DungeonLocationConfig{
 				{
 					Record: record.DungeonLocation{
@@ -115,6 +107,12 @@ var DefaultDataConfig = DataConfig{
 				},
 			},
 			DungeonObjectConfig: []DungeonObjectConfig{
+				{
+					Record: record.DungeonObject{
+						Name: fmt.Sprintf("Object %s %d", gofakeit.Name(), gofakeit.Int8()),
+					},
+					LocationName: "Cave Entrance",
+				},
 				{
 					Record: record.DungeonObject{
 						Name: fmt.Sprintf("Object %s %d", gofakeit.Name(), gofakeit.Int8()),

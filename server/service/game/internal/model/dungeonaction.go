@@ -4,8 +4,23 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO: Complete processing character action
-func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentence string) (*record.DungeonAction, error) {
+type DungeonActionRecordSet struct {
+	DungeonActionRec           *record.DungeonAction
+	DungeonActionCharacterRecs []*record.DungeonActionCharacter
+	DungeonActionMonsterRecs   []*record.DungeonActionMonster
+	DungeonActionObjectRecs    []*record.DungeonActionObject
+}
+
+type DungeonLocationRecordSet struct {
+	CharacterRec  *record.DungeonCharacter
+	LocationRec   *record.DungeonLocation
+	CharacterRecs []*record.DungeonCharacter
+	MonsterRecs   []*record.DungeonMonster
+	ObjectRecs    []*record.DungeonObject
+	LocationRecs  []*record.DungeonLocation
+}
+
+func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentence string) (*DungeonActionRecordSet, error) {
 
 	m.Log.Info("Processing dungeon character ID >%s< action command >%s<", dungeonCharacterID, sentence)
 
@@ -46,6 +61,13 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 
 	m.Log.Info("Created dungeon action record ID >%s<", dungeonActionRec.ID)
 
+	dungeonActionRecordSet := DungeonActionRecordSet{
+		DungeonActionRec:           dungeonActionRec,
+		DungeonActionCharacterRecs: []*record.DungeonActionCharacter{},
+		DungeonActionMonsterRecs:   []*record.DungeonActionMonster{},
+		DungeonActionObjectRecs:    []*record.DungeonActionObject{},
+	}
+
 	if len(dungeonLocationRecordSet.CharacterRecs) > 0 {
 		for _, characterRec := range dungeonLocationRecordSet.CharacterRecs {
 			dungeonActionCharacterRec := record.DungeonActionCharacter{
@@ -58,7 +80,9 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 				m.Log.Warn("Failed creating dungeon action character record >%v<", err)
 				return nil, err
 			}
+
 			m.Log.Info("Created dungeon action character record ID >%s<", dungeonActionCharacterRec.ID)
+			dungeonActionRecordSet.DungeonActionCharacterRecs = append(dungeonActionRecordSet.DungeonActionCharacterRecs, &dungeonActionCharacterRec)
 		}
 	}
 
@@ -74,6 +98,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 				return nil, err
 			}
 			m.Log.Info("Created dungeon action monster record ID >%s<", dungeonActionMonsterRec.ID)
+			dungeonActionRecordSet.DungeonActionMonsterRecs = append(dungeonActionRecordSet.DungeonActionMonsterRecs, &dungeonActionMonsterRec)
 		}
 	}
 
@@ -89,19 +114,11 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 				return nil, err
 			}
 			m.Log.Info("Created dungeon action object record ID >%s<", dungeonActionObjectRec.ID)
+			dungeonActionRecordSet.DungeonActionObjectRecs = append(dungeonActionRecordSet.DungeonActionObjectRecs, &dungeonActionObjectRec)
 		}
 	}
 
-	return nil, nil
-}
-
-type DungeonLocationRecordSet struct {
-	CharacterRec  *record.DungeonCharacter
-	LocationRec   *record.DungeonLocation
-	CharacterRecs []*record.DungeonCharacter
-	MonsterRecs   []*record.DungeonMonster
-	ObjectRecs    []*record.DungeonObject
-	LocationRecs  []*record.DungeonLocation
+	return &dungeonActionRecordSet, nil
 }
 
 func (m *Model) getDungeonLocationRecordSet(dungeonCharacterID string, forUpdate bool) (*DungeonLocationRecordSet, error) {

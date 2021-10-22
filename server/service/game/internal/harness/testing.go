@@ -19,12 +19,15 @@ type Testing struct {
 
 // Data -
 type Data struct {
-	DungeonRecs          []*record.Dungeon
-	DungeonLocationRecs  []*record.DungeonLocation
-	DungeonCharacterRecs []*record.DungeonCharacter
-	DungeonMonsterRecs   []*record.DungeonMonster
-	DungeonObjectRecs    []*record.DungeonObject
-	DungeonActionRecs    []*record.DungeonAction
+	DungeonRecs                []*record.Dungeon
+	DungeonLocationRecs        []*record.DungeonLocation
+	DungeonCharacterRecs       []*record.DungeonCharacter
+	DungeonMonsterRecs         []*record.DungeonMonster
+	DungeonObjectRecs          []*record.DungeonObject
+	DungeonActionRecs          []*record.DungeonAction
+	DungeonActionCharacterRecs []*record.DungeonActionCharacter
+	DungeonActionMonsterRecs   []*record.DungeonActionMonster
+	DungeonActionObjectRecs    []*record.DungeonActionObject
 }
 
 // NewTesting -
@@ -160,12 +163,15 @@ func (t *Testing) CreateData() error {
 				return fmt.Errorf(msg)
 			}
 
-			dungeonActionRec, err := t.createDungeonCharacterActionRec(dungeonCharacterID, dungeonActionConfig.Command)
+			dungeonActionRecordSet, err := t.createDungeonCharacterActionRec(dungeonCharacterID, dungeonActionConfig.Command)
 			if err != nil {
 				t.Log.Warn("Failed creating dungeon action record >%v<", err)
 				return err
 			}
-			data.DungeonActionRecs = append(data.DungeonActionRecs, dungeonActionRec)
+			data.DungeonActionRecs = append(data.DungeonActionRecs, dungeonActionRecordSet.DungeonActionRec)
+			data.DungeonActionCharacterRecs = append(data.DungeonActionCharacterRecs, dungeonActionRecordSet.DungeonActionCharacterRecs...)
+			data.DungeonActionMonsterRecs = append(data.DungeonActionMonsterRecs, dungeonActionRecordSet.DungeonActionMonsterRecs...)
+			data.DungeonActionObjectRecs = append(data.DungeonActionObjectRecs, dungeonActionRecordSet.DungeonActionObjectRecs...)
 		}
 	}
 
@@ -419,6 +425,66 @@ func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, du
 
 // RemoveData -
 func (t *Testing) RemoveData() error {
+
+DUNGEON_ACTION_CHARACTER_RECS:
+	for {
+		if len(t.Data.DungeonActionCharacterRecs) == 0 {
+			break DUNGEON_ACTION_CHARACTER_RECS
+		}
+		var rec *record.DungeonActionCharacter
+		rec, t.Data.DungeonActionCharacterRecs = t.Data.DungeonActionCharacterRecs[0], t.Data.DungeonActionCharacterRecs[1:]
+
+		err := t.Model.(*model.Model).RemoveDungeonActionCharacterRec(rec.ID)
+		if err != nil {
+			t.Log.Warn("Failed removing dungeon action character record >%v<", err)
+			return err
+		}
+	}
+
+DUNGEON_ACTION_MONSTER_RECS:
+	for {
+		if len(t.Data.DungeonActionMonsterRecs) == 0 {
+			break DUNGEON_ACTION_MONSTER_RECS
+		}
+		var rec *record.DungeonActionMonster
+		rec, t.Data.DungeonActionMonsterRecs = t.Data.DungeonActionMonsterRecs[0], t.Data.DungeonActionMonsterRecs[1:]
+
+		err := t.Model.(*model.Model).RemoveDungeonActionMonsterRec(rec.ID)
+		if err != nil {
+			t.Log.Warn("Failed removing dungeon action monster record >%v<", err)
+			return err
+		}
+	}
+
+DUNGEON_ACTION_OBJECT_RECS:
+	for {
+		if len(t.Data.DungeonActionObjectRecs) == 0 {
+			break DUNGEON_ACTION_OBJECT_RECS
+		}
+		var rec *record.DungeonActionObject
+		rec, t.Data.DungeonActionObjectRecs = t.Data.DungeonActionObjectRecs[0], t.Data.DungeonActionObjectRecs[1:]
+
+		err := t.Model.(*model.Model).RemoveDungeonActionObjectRec(rec.ID)
+		if err != nil {
+			t.Log.Warn("Failed removing dungeon action object record >%v<", err)
+			return err
+		}
+	}
+
+DUNGEON_ACTION_RECS:
+	for {
+		if len(t.Data.DungeonActionRecs) == 0 {
+			break DUNGEON_ACTION_RECS
+		}
+		var rec *record.DungeonAction
+		rec, t.Data.DungeonActionRecs = t.Data.DungeonActionRecs[0], t.Data.DungeonActionRecs[1:]
+
+		err := t.Model.(*model.Model).RemoveDungeonActionRec(rec.ID)
+		if err != nil {
+			t.Log.Warn("Failed removing dungeon action record >%v<", err)
+			return err
+		}
+	}
 
 DUNGEON_CHARACTER_RECS:
 	for {

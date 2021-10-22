@@ -180,19 +180,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() record.Dungeon
+		rec  func() *record.Dungeon
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() record.Dungeon {
+			rec: func() *record.Dungeon {
 				return h.Data.DungeonRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() record.Dungeon {
+			rec: func() *record.Dungeon {
 				rec := h.Data.DungeonRecs[0]
 				rec.ID = ""
 				return rec
@@ -225,7 +225,7 @@ func TestUpdateOne(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := r.UpdateOne(&rec)
+			err := r.UpdateOne(rec)
 			if tc.err == true {
 				require.Error(t, err, "UpdateOne returns error")
 				return
