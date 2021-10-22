@@ -1,10 +1,6 @@
 package harness
 
 import (
-	"fmt"
-
-	"github.com/brianvoe/gofakeit"
-
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -93,7 +89,7 @@ var DefaultDataConfig = DataConfig{
 			DungeonCharacterConfig: []DungeonCharacterConfig{
 				{
 					Record: record.DungeonCharacter{
-						Name: fmt.Sprintf("Hero %s %d", gofakeit.Name(), gofakeit.Int8()),
+						Name: "Barricade",
 					},
 					LocationName: "Cave Entrance",
 				},
@@ -101,7 +97,7 @@ var DefaultDataConfig = DataConfig{
 			DungeonMonsterConfig: []DungeonMonsterConfig{
 				{
 					Record: record.DungeonMonster{
-						Name: fmt.Sprintf("Monster %s %d", gofakeit.Name(), gofakeit.Int8()),
+						Name: "Angry Goblin",
 					},
 					LocationName: "Cave Tunnel",
 				},
@@ -109,15 +105,21 @@ var DefaultDataConfig = DataConfig{
 			DungeonObjectConfig: []DungeonObjectConfig{
 				{
 					Record: record.DungeonObject{
-						Name: fmt.Sprintf("Object %s %d", gofakeit.Name(), gofakeit.Int8()),
+						Name: "Rusted Sword",
 					},
 					LocationName: "Cave Entrance",
 				},
 				{
 					Record: record.DungeonObject{
-						Name: fmt.Sprintf("Object %s %d", gofakeit.Name(), gofakeit.Int8()),
+						Name: "Silver Key",
 					},
 					LocationName: "Cave Room",
+				},
+			},
+			DungeonActionConfig: []DungeonActionConfig{
+				{
+					CharacterName: "Barricade",
+					Command:       "look north",
 				},
 			},
 		},

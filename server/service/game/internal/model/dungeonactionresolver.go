@@ -21,7 +21,7 @@ func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet
 
 	resolveFuncs := map[string]func(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error){
 		"move": m.resolveMoveAction,
-		// "look":  m.resolveLookAction,
+		"look": m.resolveLookAction,
 		// "equip": m.resolveEquipAction,
 		// "stash": m.resolveStashAction,
 		// "drop":  m.resolveDropAction,
@@ -103,6 +103,83 @@ func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecor
 				break
 			}
 		}
+	}
+
+	dungeonActionRecord := record.DungeonAction{
+		// TODO: Should DungeonID, DungeonLocationID, DungeonCharacterID be set to the target location
+		// when the character is moving, or is another dungeon action record created when the character
+		// is actually moved in the performActionXxxx function, or is this in fact not correct and
+		// would result in weird replay behaviour?
+		DungeonID:                              records.CharacterRec.DungeonID,
+		DungeonLocationID:                      records.CharacterRec.DungeonLocationID,
+		DungeonCharacterID:                     records.CharacterRec.ID,
+		ResolvedCommand:                        command,
+		ResolvedTargetDungeonLocationDirection: targetDungeonLocationDirection,
+		ResolvedTargetDungeonLocationName:      targetDungeonLocationName,
+		ResolvedTargetDungeonLocationID:        targetDungeonLocationID,
+	}
+
+	return &dungeonActionRecord, nil
+}
+
+func (m *Model) resolveLookAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+	var command string
+
+	// Resolve look direction
+	var targetDungeonLocationID string
+	var targetDungeonLocationDirection string
+
+	if sentence != "" {
+		if records.LocationRec.NortheastDungeonLocationID.Valid && strings.Contains(sentence, "northeast") {
+			targetDungeonLocationID = records.LocationRec.NortheastDungeonLocationID.String
+			targetDungeonLocationDirection = "northeast"
+		} else if records.LocationRec.NorthwestDungeonLocationID.Valid && strings.Contains(sentence, "northwest") {
+			targetDungeonLocationID = records.LocationRec.NorthwestDungeonLocationID.String
+			targetDungeonLocationDirection = "northwest"
+		} else if records.LocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
+			targetDungeonLocationID = records.LocationRec.SoutheastDungeonLocationID.String
+			targetDungeonLocationDirection = "southeast"
+		} else if records.LocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
+			targetDungeonLocationID = records.LocationRec.SoutheastDungeonLocationID.String
+			targetDungeonLocationDirection = "southeast"
+		} else if records.LocationRec.NorthDungeonLocationID.Valid && strings.Contains(sentence, "north") {
+			targetDungeonLocationID = records.LocationRec.NorthDungeonLocationID.String
+			targetDungeonLocationDirection = "north"
+		} else if records.LocationRec.EastDungeonLocationID.Valid && strings.Contains(sentence, "east") {
+			targetDungeonLocationID = records.LocationRec.EastDungeonLocationID.String
+			targetDungeonLocationDirection = "east"
+		} else if records.LocationRec.SouthDungeonLocationID.Valid && strings.Contains(sentence, "south") {
+			targetDungeonLocationID = records.LocationRec.SouthDungeonLocationID.String
+			targetDungeonLocationDirection = "south"
+		} else if records.LocationRec.WestDungeonLocationID.Valid && strings.Contains(sentence, "west") {
+			targetDungeonLocationID = records.LocationRec.WestDungeonLocationID.String
+			targetDungeonLocationDirection = "west"
+		} else if records.LocationRec.UpDungeonLocationID.Valid && strings.Contains(sentence, "up") {
+			targetDungeonLocationID = records.LocationRec.UpDungeonLocationID.String
+			targetDungeonLocationDirection = "up"
+		} else if records.LocationRec.DownDungeonLocationID.Valid && strings.Contains(sentence, "down") {
+			targetDungeonLocationID = records.LocationRec.DownDungeonLocationID.String
+			targetDungeonLocationDirection = "down"
+		}
+	}
+
+	var targetDungeonLocationName string
+	if targetDungeonLocationID != "" && len(records.LocationRecs) > 0 {
+		for _, locationRec := range records.LocationRecs {
+			if locationRec.ID == targetDungeonLocationID {
+				targetDungeonLocationName = locationRec.Name
+				break
+			}
+		}
+	}
+
+	// TODO: When a location was not identified, try to identify an object, a monster, a character.
+
+	// TODO: When nothing has been identified, assume we are just looking in the current room.
+	if targetDungeonLocationID == "" {
+		targetDungeonLocationID = records.LocationRec.ID
+		targetDungeonLocationName = records.LocationRec.Name
+		targetDungeonLocationDirection = ""
 	}
 
 	dungeonActionRecord := record.DungeonAction{
