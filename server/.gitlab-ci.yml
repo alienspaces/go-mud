@@ -4,7 +4,7 @@ test-server:
   stage: test-server
   services:
     - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
-      alias: game-database
+      alias: postgres
   before_script:
     - apk add build-base
     - apk add git

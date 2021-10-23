@@ -16,7 +16,7 @@ sast:
 
 # All variables are valid for all jobs
 variables:
-  FF_NETWORK_PER_BUILD: 1
+  # FF_NETWORK_PER_BUILD: 1
   APP_CLIENT_API_HOST: game-server
   APP_CLIENT_API_PORT: 8084
   APP_SERVER_ENV: development
@@ -26,7 +26,7 @@ variables:
   APP_SERVER_SCHEMA_PATH: "./schema/docs"
   APP_SERVER_DB_SERVICE: ci
   APP_SERVER_ENABLE_EXAMPLES: 0
-  APP_SERVER_DB_HOST: game-database
+  APP_SERVER_DB_HOST: postgres
   APP_SERVER_DB_NAME: "go-mud"
   APP_SERVER_DB_PORT: 5432
   APP_SERVER_DB_USER: "go-mud-user"
@@ -41,8 +41,6 @@ test-client:
   image: $CI_REGISTRY/alienspaces/go-mud/cirrusci/flutter:stable
   stage: test-client
   services:
-    - name: $CI_REGISTRY/alienspaces/go-mud/postgres:12.7-alpine3.14
-      alias: game-database
     - name: $CI_REGISTRY/alienspaces/go-mud/game-server:$CI_COMMIT_SHORT_SHA
       alias: game-server
   script:
