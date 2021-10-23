@@ -8,7 +8,7 @@ function retry_cmd {
   local delay=5
   local delay_inc=5
 
-  echo "=> Command $@"
+  echo "=> Command $*"
 
   while true; do
     "$@" && break || {
@@ -31,6 +31,8 @@ echo "=> (entrypoint) Command ${COMMAND}"
 
 echo "=> (entrypoint) PWD ${PWD}"
 
+ls -la
+
 if [ -z "$COMMAND" ]; then
 
     # postgres
@@ -40,7 +42,7 @@ if [ -z "$COMMAND" ]; then
 
     # extensions
     echo "=> (entrypoint) Creating extension pgcrypto"
-    retry_cmd psql --host=$APP_SERVER_DB_HOST --port=$APP_SERVER_DB_PORT --username=$APP_SERVER_DB_USER --command="CREATE EXTENSION pgcrypto;" $APP_SERVER_DB_NAME
+    retry_cmd psql --host="$APP_SERVER_DB_HOST" --port="$APP_SERVER_DB_PORT" --username="$APP_SERVER_DB_USER" --command="CREATE EXTENSION pgcrypto;" "$APP_SERVER_DB_NAME"
 
     # migrate
     URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
