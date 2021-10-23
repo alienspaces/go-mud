@@ -19,9 +19,17 @@ if [ -z "$PREV_COMMIT" ]; then
 fi
 
 # service directory list
-SERVICE_NAMES=(game)
+SERVICE_NAMES=(*)
 
 for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
+
+    # Ingoring template always
+    if [ "$SERVICE_NAME" = "template" ]; then
+        echo "=> (build) - Skipping build service $SERVICE_NAME"
+        continue
+    fi
+
+    echo "=> (build) - Building service $SERVICE_NAME"
 
     SERVICE_DIR="./service/$SERVICE_NAME"
     echo "Directory: $SERVICE_DIR";

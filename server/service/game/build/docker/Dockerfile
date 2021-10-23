@@ -34,7 +34,7 @@ COPY --from=builder /go-mud/schema/docs ./schema/docs
 RUN pwd
 RUN ls -la
 
-EXPOSE 5432
+EXPOSE 8084
 
 # entrypoint
 ENTRYPOINT [ "./entrypoint.sh" ]

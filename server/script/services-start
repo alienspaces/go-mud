@@ -17,7 +17,13 @@ echo
 function start_services {
     for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
-        echo "=> (start_services) - Service $SERVICE_NAME"
+        # Ingoring template
+        if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_TEMPLATE_ENABLED" != 1 ]; then
+            echo "=> (start_services) - Skipping service $SERVICE_NAME"
+            continue
+        fi
+
+        echo "=> (start_services) - Starting service $SERVICE_NAME"
 
         if [ -f "${SERVICE_BASE_PATH}/$SERVICE_NAME/.env" ]; then
 
