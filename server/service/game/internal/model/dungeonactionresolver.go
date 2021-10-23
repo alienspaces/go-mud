@@ -3,6 +3,7 @@ package model
 import (
 	"strings"
 
+	"gitlab.com/alienspaces/go-mud/server/core/store"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -27,13 +28,15 @@ func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet
 		// "drop":  m.resolveDropAction,
 	}
 
-	dungeonActionRecord, err := resolveFuncs[resolved.Command](resolved.Sentence, records)
+	dungeonActionRec, err := resolveFuncs[resolved.Command](resolved.Sentence, records)
 	if err != nil {
 		m.Log.Warn("Failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
 	}
 
-	return dungeonActionRecord, nil
+	m.Log.Info("Resolved dungeon action rec >%#v<", dungeonActionRec)
+
+	return dungeonActionRec, nil
 }
 
 func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
@@ -47,17 +50,26 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 
 		// NOTE: The appended space is important
 		if strings.Contains(sentence, dungeonAction+" ") {
+			m.Log.Info("Sentence contains action >%s<", dungeonAction)
+			sentence = strings.Replace(sentence, dungeonAction+" ", "", 1)
+			resolved.Command = dungeonAction
+			resolved.Sentence = sentence
+		} else if sentence == dungeonAction {
+			m.Log.Info("Sentence equals action >%s<", dungeonAction)
 			sentence = strings.Replace(sentence, dungeonAction, "", 1)
 			resolved.Command = dungeonAction
 			resolved.Sentence = sentence
 		}
 	}
 
+	m.Log.Info("Resolved command >%#v<", resolved)
+
 	return &resolved, nil
 }
 
 func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
-	var command string
+
+	// Resolve move direction
 	var targetDungeonLocationID string
 	var targetDungeonLocationDirection string
 
@@ -112,18 +124,17 @@ func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecor
 		// would result in weird replay behaviour?
 		DungeonID:                              records.CharacterRec.DungeonID,
 		DungeonLocationID:                      records.CharacterRec.DungeonLocationID,
-		DungeonCharacterID:                     records.CharacterRec.ID,
-		ResolvedCommand:                        command,
-		ResolvedTargetDungeonLocationDirection: targetDungeonLocationDirection,
-		ResolvedTargetDungeonLocationName:      targetDungeonLocationName,
-		ResolvedTargetDungeonLocationID:        targetDungeonLocationID,
+		DungeonCharacterID:                     store.NullString(records.CharacterRec.ID),
+		ResolvedCommand:                        "move",
+		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
+		ResolvedTargetDungeonLocationName:      store.NullString(targetDungeonLocationName),
+		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
 	}
 
 	return &dungeonActionRecord, nil
 }
 
 func (m *Model) resolveLookAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
-	var command string
 
 	// Resolve look direction
 	var targetDungeonLocationID string
@@ -185,59 +196,15 @@ func (m *Model) resolveLookAction(sentence string, records *DungeonLocationRecor
 	dungeonActionRecord := record.DungeonAction{
 		DungeonID:                              records.CharacterRec.DungeonID,
 		DungeonLocationID:                      records.CharacterRec.DungeonLocationID,
-		DungeonCharacterID:                     records.CharacterRec.ID,
-		ResolvedCommand:                        command,
-		ResolvedTargetDungeonLocationDirection: targetDungeonLocationDirection,
-		ResolvedTargetDungeonLocationName:      targetDungeonLocationName,
-		ResolvedTargetDungeonLocationID:        targetDungeonLocationID,
+		DungeonCharacterID:                     store.NullString(records.CharacterRec.ID),
+		ResolvedCommand:                        "look",
+		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
+		ResolvedTargetDungeonLocationName:      store.NullString(targetDungeonLocationName),
+		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
 	}
 
 	return &dungeonActionRecord, nil
 }
-
-// func (m *Model) resolveLookAction(sentence: string, records: DungeonLocationRecordSet): DungeonActionRepositoryRecord {
-// 	const command = 'look';
-// 	let targetDungeonLocationId: string;
-// 	let targetDungeonLocationDirection: string;
-
-// 	// Looking in a direction where there is another location?
-// 	if (sentence) {
-// 		for (var prop in DIRECTION_MAP) {
-// 			if (records.location[prop] && sentence.match(new RegExp(`\s?${DIRECTION_MAP[prop]}(?![A-Za-z]+)`))) {
-// 				targetDungeonLocationId = records.location[prop];
-// 				targetDungeonLocationDirection = DIRECTION_MAP[prop];
-// 				break;
-// 			}
-// 		}
-// 	}
-
-// 	// When not a direction where there is a room exit the character
-// 	// is looking at the current location.
-// 	let targetDungeonLocationName: string;
-// 	if (targetDungeonLocationId == null) {
-// 		targetDungeonLocationId = records.location.id;
-// 		targetDungeonLocationName = records.location.name;
-// 	} else if (records.locations) {
-// 		records.locations.some((location) => {
-// 			if (location.id === targetDungeonLocationId) {
-// 				targetDungeonLocationName = location.name;
-// 				return true;
-// 			}
-// 		});
-// 	}
-
-// 	const dungeonActionRecord: DungeonActionRepositoryRecord = {
-// 		dungeon_id: records.character.dungeon_id,
-// 		dungeon_location_id: records.character.dungeon_location_id,
-// 		dungeon_character_id: records.character.id,
-// 		resolved_command: command,
-// 		resolved_target_dungeon_location_direction: targetDungeonLocationDirection,
-// 		resolved_target_dungeon_location_name: targetDungeonLocationName,
-// 		resolved_target_dungeon_location_id: targetDungeonLocationId,
-// 	};
-
-// 	return dungeonActionRecord;
-// }
 
 // func (m *Model) resolveEquipAction(sentence: string, records: DungeonLocationRecordSet): DungeonActionRepositoryRecord {
 // 	let dungeonActionRecord: Partial<DungeonActionRepositoryRecord> = {

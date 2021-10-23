@@ -10,7 +10,7 @@ import (
 // GetDungeonCharacterRecs -
 func (m *Model) GetDungeonCharacterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonCharacter, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon character records params >%s<", params)
 
 	r := m.DungeonCharacterRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonCharacterRecs(params map[string]interface{}, operators
 // GetDungeonCharacterRec -
 func (m *Model) GetDungeonCharacterRec(recID string, forUpdate bool) (*record.DungeonCharacter, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon character rec ID >%s<", recID)
 
 	r := m.DungeonCharacterRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonCharacterRec(recID string, forUpdate bool) (*record.Du
 // CreateDungeonCharacterRec -
 func (m *Model) CreateDungeonCharacterRec(rec *record.DungeonCharacter) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon character rec >%#v<", rec)
 
 	r := m.DungeonCharacterRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonCharacterRec(rec *record.DungeonCharacter) error {
 // UpdateDungeonCharacterRec -
 func (m *Model) UpdateDungeonCharacterRec(rec *record.DungeonCharacter) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon character rec >%#v<", rec)
 
 	r := m.DungeonCharacterRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonCharacterRec(rec *record.DungeonCharacter) error {
 // DeleteDungeonCharacterRec -
 func (m *Model) DeleteDungeonCharacterRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon character rec ID >%s<", recID)
 
 	r := m.DungeonCharacterRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonCharacterRec(recID string) error {
 // RemoveDungeonCharacterRec -
 func (m *Model) RemoveDungeonCharacterRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon character rec ID >%s<", recID)
 
 	r := m.DungeonCharacterRepository()
 

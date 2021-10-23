@@ -10,7 +10,7 @@ import (
 // GetDungeonActionMonsterRecs -
 func (m *Model) GetDungeonActionMonsterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonActionMonster, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon action monster records params >%s<", params)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonActionMonsterRecs(params map[string]interface{}, opera
 // GetDungeonActionMonsterRec -
 func (m *Model) GetDungeonActionMonsterRec(recID string, forUpdate bool) (*record.DungeonActionMonster, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon action monster rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonActionMonsterRec(recID string, forUpdate bool) (*recor
 // CreateDungeonActionMonsterRec -
 func (m *Model) CreateDungeonActionMonsterRec(rec *record.DungeonActionMonster) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon action monster rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonActionMonsterRec(rec *record.DungeonActionMonster) 
 // UpdateDungeonActionMonsterRec -
 func (m *Model) UpdateDungeonActionMonsterRec(rec *record.DungeonActionMonster) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon action monster rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonActionMonsterRec(rec *record.DungeonActionMonster) 
 // DeleteDungeonActionMonsterRec -
 func (m *Model) DeleteDungeonActionMonsterRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon action monster rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonActionMonsterRec(recID string) error {
 // RemoveDungeonActionMonsterRec -
 func (m *Model) RemoveDungeonActionMonsterRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon action monster rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterRepository()
 

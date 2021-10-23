@@ -10,7 +10,7 @@ import (
 // GetDungeonMonsterRecs -
 func (m *Model) GetDungeonMonsterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonMonster, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon monster records params >%s<", params)
 
 	r := m.DungeonMonsterRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonMonsterRecs(params map[string]interface{}, operators m
 // GetDungeonMonsterRec -
 func (m *Model) GetDungeonMonsterRec(recID string, forUpdate bool) (*record.DungeonMonster, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon monster rec ID >%s<", recID)
 
 	r := m.DungeonMonsterRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonMonsterRec(recID string, forUpdate bool) (*record.Dung
 // CreateDungeonMonsterRec -
 func (m *Model) CreateDungeonMonsterRec(rec *record.DungeonMonster) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon monster rec >%#v<", rec)
 
 	r := m.DungeonMonsterRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonMonsterRec(rec *record.DungeonMonster) error {
 // UpdateDungeonMonsterRec -
 func (m *Model) UpdateDungeonMonsterRec(rec *record.DungeonMonster) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon monster rec >%#v<", rec)
 
 	r := m.DungeonMonsterRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonMonsterRec(rec *record.DungeonMonster) error {
 // DeleteDungeonMonsterRec -
 func (m *Model) DeleteDungeonMonsterRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon monster rec ID >%s<", recID)
 
 	r := m.DungeonMonsterRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonMonsterRec(recID string) error {
 // RemoveDungeonMonsterRec -
 func (m *Model) RemoveDungeonMonsterRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon monster rec ID >%s<", recID)
 
 	r := m.DungeonMonsterRepository()
 

@@ -53,10 +53,10 @@ func (m *Model) performDungeonActionMove(
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
 
-	if dungeonActionRec.DungeonCharacterID != "" {
+	if dungeonActionRec.DungeonCharacterID.Valid {
 		// Character move direction
 		characterRec := dungeonLocationRecordSet.CharacterRec
-		characterRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID
+		characterRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID.String
 
 		err := m.UpdateDungeonCharacterRec(characterRec)
 		if err != nil {
@@ -65,8 +65,8 @@ func (m *Model) performDungeonActionMove(
 		}
 
 		// Update dungeon action record
-		dungeonActionRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID
-	} else if dungeonActionRec.DungeonMonsterID != "" {
+		dungeonActionRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID.String
+	} else if dungeonActionRec.DungeonMonsterID.Valid {
 		// Monster move direction
 		return nil, fmt.Errorf("moving monsters is currently not supported")
 	}
@@ -79,11 +79,11 @@ func (m *Model) performDungeonActionLook(
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
 
-	if dungeonActionRec.DungeonCharacterID != "" {
+	if dungeonActionRec.DungeonCharacterID.Valid {
 		// TODO: Character look direction. Looking at anything multiple times should result in
 		// additional information within a short timeframe
 
-	} else if dungeonActionRec.DungeonMonsterID != "" {
+	} else if dungeonActionRec.DungeonMonsterID.Valid {
 		// TODO: Monster look at current room, a direction, another monster, a character, or an object
 		return nil, fmt.Errorf("monsters lokking is currently not supported")
 	}

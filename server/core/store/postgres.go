@@ -20,28 +20,28 @@ func getPostgresDB(c configurer.Configurer, l logger.Logger) (*sqlx.DB, error) {
 	dbPass := c.Get("APP_SERVER_DB_PASSWORD")
 
 	if dbHost == "" {
-		l.Warn("Missing APP_SERVER_DB_HOST, cannot connect")
-		return nil, fmt.Errorf("Missing APP_SERVER_DB_HOST, cannot connect")
+		l.Warn("missing APP_SERVER_DB_HOST, cannot connect")
+		return nil, fmt.Errorf("missing APP_SERVER_DB_HOST, cannot connect")
 	}
 
 	if dbPort == "" {
-		l.Warn("Missing APP_SERVER_DB_PORT, cannot connect")
-		return nil, fmt.Errorf("Missing APP_SERVER_DB_PORT, cannot connect")
+		l.Warn("missing APP_SERVER_DB_PORT, cannot connect")
+		return nil, fmt.Errorf("missing APP_SERVER_DB_PORT, cannot connect")
 	}
 
 	if dbName == "" {
-		l.Warn("Missing APP_SERVER_DB_NAME, cannot connect")
-		return nil, fmt.Errorf("Missing APP_SERVER_DB_NAME, cannot connect")
+		l.Warn("missing APP_SERVER_DB_NAME, cannot connect")
+		return nil, fmt.Errorf("missing APP_SERVER_DB_NAME, cannot connect")
 	}
 
 	if dbUser == "" {
-		l.Warn("Missing APP_SERVER_DB_USER, cannot connect")
-		return nil, fmt.Errorf("Missing APP_SERVER_DB_USER, cannot connect")
+		l.Warn("missing APP_SERVER_DB_USER, cannot connect")
+		return nil, fmt.Errorf("missing APP_SERVER_DB_USER, cannot connect")
 	}
 
 	if dbPass == "" {
-		l.Warn("Missing APP_SERVER_DB_PASS, cannot connect")
-		return nil, fmt.Errorf("Missing APP_SERVER_DB_PASS, cannot connect")
+		l.Warn("missing APP_SERVER_DB_PASS, cannot connect")
+		return nil, fmt.Errorf("missing APP_SERVER_DB_PASS, cannot connect")
 	}
 
 	cs := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)

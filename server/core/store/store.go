@@ -66,22 +66,22 @@ func (s *Store) GetDb() (*sqlx.DB, error) {
 		s.Log.Debug("Connecting to postgres")
 		c, err := getPostgresDB(s.Config, s.Log)
 		if err != nil {
-			s.Log.Warn("Failed getting postgres DB handle >%v<", err)
+			s.Log.Warn("failed getting postgres DB handle >%v<", err)
 			return nil, err
 		}
 		s.DB = c
 		return c, nil
 	}
 
-	return nil, fmt.Errorf("Unsupported database")
+	return nil, fmt.Errorf("unsupported database")
 }
 
 // GetTx -
 func (s *Store) GetTx() (*sqlx.Tx, error) {
 
 	if s.DB == nil {
-		s.Log.Warn("Not connected")
-		return nil, fmt.Errorf("Not Not connected")
+		s.Log.Warn("not connected")
+		return nil, fmt.Errorf("not connected")
 	}
 
 	return s.DB.Beginx()

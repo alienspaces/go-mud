@@ -10,7 +10,7 @@ import (
 // GetDungeonRecs -
 func (m *Model) GetDungeonRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Dungeon, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon records params >%s<", params)
 
 	r := m.DungeonRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonRecs(params map[string]interface{}, operators map[stri
 // GetDungeonRec -
 func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon rec ID >%s<", recID)
 
 	r := m.DungeonRepository()
 

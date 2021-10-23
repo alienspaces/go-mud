@@ -10,7 +10,7 @@ import (
 // GetDungeonActionRecs -
 func (m *Model) GetDungeonActionRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonAction, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon action records params >%s<", params)
 
 	r := m.DungeonActionRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonActionRecs(params map[string]interface{}, operators ma
 // GetDungeonActionRec -
 func (m *Model) GetDungeonActionRec(recID string, forUpdate bool) (*record.DungeonAction, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon action rec ID >%s<", recID)
 
 	r := m.DungeonActionRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonActionRec(recID string, forUpdate bool) (*record.Dunge
 // CreateDungeonActionRec -
 func (m *Model) CreateDungeonActionRec(rec *record.DungeonAction) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon action rec >%#v<", rec)
 
 	r := m.DungeonActionRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonActionRec(rec *record.DungeonAction) error {
 // UpdateDungeonActionRec -
 func (m *Model) UpdateDungeonActionRec(rec *record.DungeonAction) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon action rec >%#v<", rec)
 
 	r := m.DungeonActionRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonActionRec(rec *record.DungeonAction) error {
 // DeleteDungeonActionRec -
 func (m *Model) DeleteDungeonActionRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon action rec ID >%s<", recID)
 
 	r := m.DungeonActionRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonActionRec(recID string) error {
 // RemoveDungeonActionRec -
 func (m *Model) RemoveDungeonActionRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon action rec ID >%s<", recID)
 
 	r := m.DungeonActionRepository()
 

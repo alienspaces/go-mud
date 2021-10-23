@@ -13,8 +13,9 @@ import (
 // Testing -
 type Testing struct {
 	harness.Testing
-	Data       Data
-	DataConfig DataConfig
+	Data         Data
+	DataConfig   DataConfig
+	teardownData teardownData
 }
 
 // Data -
@@ -28,6 +29,19 @@ type Data struct {
 	DungeonActionCharacterRecs []*record.DungeonActionCharacter
 	DungeonActionMonsterRecs   []*record.DungeonActionMonster
 	DungeonActionObjectRecs    []*record.DungeonActionObject
+}
+
+// teardownData -
+type teardownData struct {
+	DungeonRecs                []record.Dungeon
+	DungeonLocationRecs        []record.DungeonLocation
+	DungeonCharacterRecs       []record.DungeonCharacter
+	DungeonMonsterRecs         []record.DungeonMonster
+	DungeonObjectRecs          []record.DungeonObject
+	DungeonActionRecs          []record.DungeonAction
+	DungeonActionCharacterRecs []record.DungeonActionCharacter
+	DungeonActionMonsterRecs   []record.DungeonActionMonster
+	DungeonActionObjectRecs    []record.DungeonActionObject
 }
 
 // NewTesting -
@@ -45,6 +59,7 @@ func NewTesting(config DataConfig) (t *Testing, err error) {
 
 	t.DataConfig = config
 	t.Data = Data{}
+	t.teardownData = teardownData{}
 
 	err = t.Init()
 	if err != nil {
@@ -70,6 +85,7 @@ func (t *Testing) Modeller() (modeller.Modeller, error) {
 func (t *Testing) CreateData() error {
 
 	data := Data{}
+	teardownData := teardownData{}
 
 	for _, dungeonConfig := range t.DataConfig.DungeonConfig {
 
@@ -78,7 +94,8 @@ func (t *Testing) CreateData() error {
 			t.Log.Warn("Failed creating dungeon record >%v<", err)
 			return err
 		}
-		data.DungeonRecs = append(t.Data.DungeonRecs, dungeonRec)
+		data.DungeonRecs = append(data.DungeonRecs, dungeonRec)
+		teardownData.DungeonRecs = append(teardownData.DungeonRecs, *dungeonRec)
 
 		dungeonConfig, err = t.resolveConfigDungeonIdentifiers(dungeonRec, dungeonConfig)
 		if err != nil {
@@ -93,6 +110,7 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 			data.DungeonLocationRecs = append(data.DungeonLocationRecs, dungeonLocationRec)
+			teardownData.DungeonLocationRecs = append(teardownData.DungeonLocationRecs, *dungeonLocationRec)
 		}
 
 		// Resolve all location identifiers on entities where entity
@@ -127,6 +145,7 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 			data.DungeonCharacterRecs = append(data.DungeonCharacterRecs, dungeonCharacterRec)
+			teardownData.DungeonCharacterRecs = append(teardownData.DungeonCharacterRecs, *dungeonCharacterRec)
 		}
 
 		// Create monster records
@@ -137,6 +156,7 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 			data.DungeonMonsterRecs = append(data.DungeonMonsterRecs, dungeonMonsterRec)
+			teardownData.DungeonMonsterRecs = append(teardownData.DungeonMonsterRecs, *dungeonMonsterRec)
 		}
 
 		// Create object records
@@ -147,6 +167,7 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 			data.DungeonObjectRecs = append(data.DungeonObjectRecs, dungeonObjectRec)
+			teardownData.DungeonObjectRecs = append(teardownData.DungeonObjectRecs, *dungeonObjectRec)
 		}
 
 		// Create action records
@@ -172,11 +193,23 @@ func (t *Testing) CreateData() error {
 			data.DungeonActionCharacterRecs = append(data.DungeonActionCharacterRecs, dungeonActionRecordSet.DungeonActionCharacterRecs...)
 			data.DungeonActionMonsterRecs = append(data.DungeonActionMonsterRecs, dungeonActionRecordSet.DungeonActionMonsterRecs...)
 			data.DungeonActionObjectRecs = append(data.DungeonActionObjectRecs, dungeonActionRecordSet.DungeonActionObjectRecs...)
+
+			teardownData.DungeonActionRecs = append(teardownData.DungeonActionRecs, *dungeonActionRecordSet.DungeonActionRec)
+			for _, dungeonActionCharacterRec := range dungeonActionRecordSet.DungeonActionCharacterRecs {
+				teardownData.DungeonActionCharacterRecs = append(teardownData.DungeonActionCharacterRecs, *dungeonActionCharacterRec)
+			}
+			for _, dungeonActionMonsterRec := range dungeonActionRecordSet.DungeonActionMonsterRecs {
+				teardownData.DungeonActionMonsterRecs = append(teardownData.DungeonActionMonsterRecs, *dungeonActionMonsterRec)
+			}
+			for _, dungeonActionObjectRec := range dungeonActionRecordSet.DungeonActionObjectRecs {
+				teardownData.DungeonActionObjectRecs = append(teardownData.DungeonActionObjectRecs, *dungeonActionObjectRec)
+			}
 		}
 	}
 
 	// Assign data once we have successfully set up ll data
 	t.Data = data
+	t.teardownData = teardownData
 
 	return nil
 }
@@ -428,11 +461,11 @@ func (t *Testing) RemoveData() error {
 
 DUNGEON_ACTION_CHARACTER_RECS:
 	for {
-		if len(t.Data.DungeonActionCharacterRecs) == 0 {
+		if len(t.teardownData.DungeonActionCharacterRecs) == 0 {
 			break DUNGEON_ACTION_CHARACTER_RECS
 		}
-		var rec *record.DungeonActionCharacter
-		rec, t.Data.DungeonActionCharacterRecs = t.Data.DungeonActionCharacterRecs[0], t.Data.DungeonActionCharacterRecs[1:]
+		var rec record.DungeonActionCharacter
+		rec, t.teardownData.DungeonActionCharacterRecs = t.teardownData.DungeonActionCharacterRecs[0], t.teardownData.DungeonActionCharacterRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonActionCharacterRec(rec.ID)
 		if err != nil {
@@ -443,11 +476,11 @@ DUNGEON_ACTION_CHARACTER_RECS:
 
 DUNGEON_ACTION_MONSTER_RECS:
 	for {
-		if len(t.Data.DungeonActionMonsterRecs) == 0 {
+		if len(t.teardownData.DungeonActionMonsterRecs) == 0 {
 			break DUNGEON_ACTION_MONSTER_RECS
 		}
-		var rec *record.DungeonActionMonster
-		rec, t.Data.DungeonActionMonsterRecs = t.Data.DungeonActionMonsterRecs[0], t.Data.DungeonActionMonsterRecs[1:]
+		var rec record.DungeonActionMonster
+		rec, t.teardownData.DungeonActionMonsterRecs = t.teardownData.DungeonActionMonsterRecs[0], t.teardownData.DungeonActionMonsterRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonActionMonsterRec(rec.ID)
 		if err != nil {
@@ -458,11 +491,11 @@ DUNGEON_ACTION_MONSTER_RECS:
 
 DUNGEON_ACTION_OBJECT_RECS:
 	for {
-		if len(t.Data.DungeonActionObjectRecs) == 0 {
+		if len(t.teardownData.DungeonActionObjectRecs) == 0 {
 			break DUNGEON_ACTION_OBJECT_RECS
 		}
-		var rec *record.DungeonActionObject
-		rec, t.Data.DungeonActionObjectRecs = t.Data.DungeonActionObjectRecs[0], t.Data.DungeonActionObjectRecs[1:]
+		var rec record.DungeonActionObject
+		rec, t.teardownData.DungeonActionObjectRecs = t.teardownData.DungeonActionObjectRecs[0], t.teardownData.DungeonActionObjectRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonActionObjectRec(rec.ID)
 		if err != nil {
@@ -473,11 +506,11 @@ DUNGEON_ACTION_OBJECT_RECS:
 
 DUNGEON_ACTION_RECS:
 	for {
-		if len(t.Data.DungeonActionRecs) == 0 {
+		if len(t.teardownData.DungeonActionRecs) == 0 {
 			break DUNGEON_ACTION_RECS
 		}
-		var rec *record.DungeonAction
-		rec, t.Data.DungeonActionRecs = t.Data.DungeonActionRecs[0], t.Data.DungeonActionRecs[1:]
+		var rec record.DungeonAction
+		rec, t.teardownData.DungeonActionRecs = t.teardownData.DungeonActionRecs[0], t.teardownData.DungeonActionRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonActionRec(rec.ID)
 		if err != nil {
@@ -488,12 +521,12 @@ DUNGEON_ACTION_RECS:
 
 DUNGEON_CHARACTER_RECS:
 	for {
-		if len(t.Data.DungeonCharacterRecs) == 0 {
+		if len(t.teardownData.DungeonCharacterRecs) == 0 {
 			break DUNGEON_CHARACTER_RECS
 		}
 		// rec := &record.DungeonCharacter{}
-		var rec *record.DungeonCharacter
-		rec, t.Data.DungeonCharacterRecs = t.Data.DungeonCharacterRecs[0], t.Data.DungeonCharacterRecs[1:]
+		var rec record.DungeonCharacter
+		rec, t.teardownData.DungeonCharacterRecs = t.teardownData.DungeonCharacterRecs[0], t.teardownData.DungeonCharacterRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonCharacterRec(rec.ID)
 		if err != nil {
@@ -504,12 +537,12 @@ DUNGEON_CHARACTER_RECS:
 
 DUNGEON_MONSTER_RECS:
 	for {
-		if len(t.Data.DungeonMonsterRecs) == 0 {
+		if len(t.teardownData.DungeonMonsterRecs) == 0 {
 			break DUNGEON_MONSTER_RECS
 		}
 		// rec := &record.DungeonMonster{}
-		var rec *record.DungeonMonster
-		rec, t.Data.DungeonMonsterRecs = t.Data.DungeonMonsterRecs[0], t.Data.DungeonMonsterRecs[1:]
+		var rec record.DungeonMonster
+		rec, t.teardownData.DungeonMonsterRecs = t.teardownData.DungeonMonsterRecs[0], t.teardownData.DungeonMonsterRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonMonsterRec(rec.ID)
 		if err != nil {
@@ -520,12 +553,12 @@ DUNGEON_MONSTER_RECS:
 
 DUNGEON_OBJECT_RECS:
 	for {
-		if len(t.Data.DungeonObjectRecs) == 0 {
+		if len(t.teardownData.DungeonObjectRecs) == 0 {
 			break DUNGEON_OBJECT_RECS
 		}
 		// rec := &record.DungeonObject{}
-		var rec *record.DungeonObject
-		rec, t.Data.DungeonObjectRecs = t.Data.DungeonObjectRecs[0], t.Data.DungeonObjectRecs[1:]
+		var rec record.DungeonObject
+		rec, t.teardownData.DungeonObjectRecs = t.teardownData.DungeonObjectRecs[0], t.teardownData.DungeonObjectRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonObjectRec(rec.ID)
 		if err != nil {
@@ -536,12 +569,12 @@ DUNGEON_OBJECT_RECS:
 
 DUNGEON_LOCATION_RECS:
 	for {
-		if len(t.Data.DungeonLocationRecs) == 0 {
+		if len(t.teardownData.DungeonLocationRecs) == 0 {
 			break DUNGEON_LOCATION_RECS
 		}
 		// rec := &record.DungeonLocation{}
-		var rec *record.DungeonLocation
-		rec, t.Data.DungeonLocationRecs = t.Data.DungeonLocationRecs[0], t.Data.DungeonLocationRecs[1:]
+		var rec record.DungeonLocation
+		rec, t.teardownData.DungeonLocationRecs = t.teardownData.DungeonLocationRecs[0], t.teardownData.DungeonLocationRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonLocationRec(rec.ID)
 		if err != nil {
@@ -552,12 +585,12 @@ DUNGEON_LOCATION_RECS:
 
 DUNGEON_RECS:
 	for {
-		if len(t.Data.DungeonRecs) == 0 {
+		if len(t.teardownData.DungeonRecs) == 0 {
 			break DUNGEON_RECS
 		}
 		// rec := &record.Dungeon{}
-		var rec *record.Dungeon
-		rec, t.Data.DungeonRecs = t.Data.DungeonRecs[0], t.Data.DungeonRecs[1:]
+		var rec record.Dungeon
+		rec, t.teardownData.DungeonRecs = t.teardownData.DungeonRecs[0], t.teardownData.DungeonRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveDungeonRec(rec.ID)
 		if err != nil {

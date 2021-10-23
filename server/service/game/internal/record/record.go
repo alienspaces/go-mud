@@ -76,25 +76,25 @@ type DungeonObject struct {
 }
 
 type DungeonAction struct {
-	DungeonID                              string `db:"dungeon_id"`
-	DungeonLocationID                      string `db:"dungeon_location_id"`
-	DungeonCharacterID                     string `db:"dungeon_character_id"`
-	DungeonMonsterID                       string `db:"dungeon_monster_id"`
-	SerialID                               string `db:"serial_id"`
-	ResolvedCommand                        string `db:"resolved_command"`
-	ResolvedEquippedDungeonObjectID        string `db:"resolved_equipped_dungeon_object_id"`
-	ResolvedEquippedDungeonObjectName      string `db:"resolved_equipped_dungeon_object_name"`
-	ResolvedStashedDungeonObjectID         string `db:"resolved_stashed_dungeon_object_id"`
-	ResolvedStashedDungeonObjectName       string `db:"resolved_stashed_dungeon_object_name"`
-	ResolvedTargetDungeonObjectID          string `db:"resolved_target_dungeon_object_id"`
-	ResolvedTargetDungeonObjectName        string `db:"resolved_target_dungeon_object_name"`
-	ResolvedTargetDungeonCharacterID       string `db:"resolved_target_dungeon_character_id"`
-	ResolvedTargetDungeonCharacterName     string `db:"resolved_target_dungeon_character_name"`
-	ResolvedTargetDungeonMonsterID         string `db:"resolved_target_dungeon_monster_id"`
-	ResolvedTargetDungeonMonsterName       string `db:"resolved_target_dungeon_monster_name"`
-	ResolvedTargetDungeonLocationDirection string `db:"resolved_target_dungeon_location_direction"`
-	ResolvedTargetDungeonLocationID        string `db:"resolved_target_dungeon_location_id"`
-	ResolvedTargetDungeonLocationName      string `db:"resolved_target_dungeon_location_name"`
+	DungeonID                              string         `db:"dungeon_id"`
+	DungeonLocationID                      string         `db:"dungeon_location_id"`
+	DungeonCharacterID                     sql.NullString `db:"dungeon_character_id"`
+	DungeonMonsterID                       sql.NullString `db:"dungeon_monster_id"`
+	SerialID                               sql.NullInt16  `db:"serial_id"`
+	ResolvedCommand                        string         `db:"resolved_command"`
+	ResolvedEquippedDungeonObjectID        sql.NullString `db:"resolved_equipped_dungeon_object_id"`
+	ResolvedEquippedDungeonObjectName      sql.NullString `db:"resolved_equipped_dungeon_object_name"`
+	ResolvedStashedDungeonObjectID         sql.NullString `db:"resolved_stashed_dungeon_object_id"`
+	ResolvedStashedDungeonObjectName       sql.NullString `db:"resolved_stashed_dungeon_object_name"`
+	ResolvedTargetDungeonObjectID          sql.NullString `db:"resolved_target_dungeon_object_id"`
+	ResolvedTargetDungeonObjectName        sql.NullString `db:"resolved_target_dungeon_object_name"`
+	ResolvedTargetDungeonCharacterID       sql.NullString `db:"resolved_target_dungeon_character_id"`
+	ResolvedTargetDungeonCharacterName     sql.NullString `db:"resolved_target_dungeon_character_name"`
+	ResolvedTargetDungeonMonsterID         sql.NullString `db:"resolved_target_dungeon_monster_id"`
+	ResolvedTargetDungeonMonsterName       sql.NullString `db:"resolved_target_dungeon_monster_name"`
+	ResolvedTargetDungeonLocationDirection sql.NullString `db:"resolved_target_dungeon_location_direction"`
+	ResolvedTargetDungeonLocationID        sql.NullString `db:"resolved_target_dungeon_location_id"`
+	ResolvedTargetDungeonLocationName      sql.NullString `db:"resolved_target_dungeon_location_name"`
 	repository.Record
 }
 

@@ -217,7 +217,7 @@ func (m *Model) getDungeonLocationRecordSet(dungeonCharacterID string, forUpdate
 
 	locationRecs, err := m.GetDungeonLocationRecs(
 		map[string]interface{}{
-			"dungeon_location_id": locationIDs,
+			"id": locationIDs,
 		},
 		nil,
 		forUpdate,

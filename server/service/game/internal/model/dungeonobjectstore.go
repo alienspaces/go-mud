@@ -10,7 +10,7 @@ import (
 // GetDungeonObjectRecs -
 func (m *Model) GetDungeonObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonObject, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon object records params >%s<", params)
 
 	r := m.DungeonObjectRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonObjectRecs(params map[string]interface{}, operators ma
 // GetDungeonObjectRec -
 func (m *Model) GetDungeonObjectRec(recID string, forUpdate bool) (*record.DungeonObject, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon object rec ID >%s<", recID)
 
 	r := m.DungeonObjectRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonObjectRec(recID string, forUpdate bool) (*record.Dunge
 // CreateDungeonObjectRec -
 func (m *Model) CreateDungeonObjectRec(rec *record.DungeonObject) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon object rec >%#v<", rec)
 
 	r := m.DungeonObjectRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonObjectRec(rec *record.DungeonObject) error {
 // UpdateDungeonObjectRec -
 func (m *Model) UpdateDungeonObjectRec(rec *record.DungeonObject) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon object rec >%#v<", rec)
 
 	r := m.DungeonObjectRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonObjectRec(rec *record.DungeonObject) error {
 // DeleteDungeonObjectRec -
 func (m *Model) DeleteDungeonObjectRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon object rec ID >%s<", recID)
 
 	r := m.DungeonObjectRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonObjectRec(recID string) error {
 // RemoveDungeonObjectRec -
 func (m *Model) RemoveDungeonObjectRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon object rec ID >%s<", recID)
 
 	r := m.DungeonObjectRepository()
 

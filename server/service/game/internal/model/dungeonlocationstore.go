@@ -10,7 +10,7 @@ import (
 // GetDungeonLocationRecs -
 func (m *Model) GetDungeonLocationRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonLocation, error) {
 
-	m.Log.Info("Getting game records params >%s<", params)
+	m.Log.Info("Getting dungeon location records params >%s<", params)
 
 	r := m.DungeonLocationRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonLocationRecs(params map[string]interface{}, operators 
 // GetDungeonLocationRec -
 func (m *Model) GetDungeonLocationRec(recID string, forUpdate bool) (*record.DungeonLocation, error) {
 
-	m.Log.Info("Getting game rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon location rec ID >%s<", recID)
 
 	r := m.DungeonLocationRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonLocationRec(recID string, forUpdate bool) (*record.Dun
 // CreateDungeonLocationRec -
 func (m *Model) CreateDungeonLocationRec(rec *record.DungeonLocation) error {
 
-	m.Log.Info("Creating game rec >%#v<", rec)
+	m.Log.Info("Creating dungeon location rec >%#v<", rec)
 
 	r := m.DungeonLocationRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonLocationRec(rec *record.DungeonLocation) error {
 // UpdateDungeonLocationRec -
 func (m *Model) UpdateDungeonLocationRec(rec *record.DungeonLocation) error {
 
-	m.Log.Info("Updating game rec >%#v<", rec)
+	m.Log.Info("Updating dungeon location rec >%#v<", rec)
 
 	r := m.DungeonLocationRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonLocationRec(rec *record.DungeonLocation) error {
 // DeleteDungeonLocationRec -
 func (m *Model) DeleteDungeonLocationRec(recID string) error {
 
-	m.Log.Info("Deleting game rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon location rec ID >%s<", recID)
 
 	r := m.DungeonLocationRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonLocationRec(recID string) error {
 // RemoveDungeonLocationRec -
 func (m *Model) RemoveDungeonLocationRec(recID string) error {
 
-	m.Log.Info("Removing game rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon location rec ID >%s<", recID)
 
 	r := m.DungeonLocationRepository()
 
