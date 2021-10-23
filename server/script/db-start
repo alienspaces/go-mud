@@ -54,6 +54,8 @@ function start_service_databases {
     
     for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
+        echo "=> (start_service_databases) - Service name ${SERVICE_NAME} template enabled ${APP_SERVER_TEMPLATE_ENABLED}"
+
         # Ingoring template
         if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_TEMPLATE_ENABLED" != 1 ]; then
             echo "=> (start_service_databases) - Skipping database $SERVICE_NAME"
