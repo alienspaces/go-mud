@@ -12,6 +12,7 @@ variables:
   APP_SERVER_DB_PORT: 5432
   APP_SERVER_DB_USER: "go-mud-user"
   APP_SERVER_DB_PASSWORD: "go-mud-pass"
+  APP_SERVER_JWT_SIGNING_KEY: "!notTherealSecretNoob!"
   POSTGRES_DB: go-mud
   POSTGRES_USER: go-mud-user
   POSTGRES_PASSWORD: go-mud-pass
