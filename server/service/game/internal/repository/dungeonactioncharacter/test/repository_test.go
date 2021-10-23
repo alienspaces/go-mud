@@ -17,7 +17,7 @@ import (
 func TestCreateOne(t *testing.T) {
 
 	// harness
-	config := harness.DataConfig{}
+	config := harness.DefaultDataConfig
 
 	h, err := harness.NewTesting(config)
 	require.NoError(t, err, "NewTesting returns without error")
@@ -27,20 +27,26 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonActionCharacter
+		rec  func(data harness.Data) *record.DungeonActionCharacter
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonActionCharacter {
-				return &record.DungeonActionCharacter{}
+			rec: func(data harness.Data) *record.DungeonActionCharacter {
+				return &record.DungeonActionCharacter{
+					DungeonActionID:    data.DungeonActionRecs[0].ID,
+					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func() *record.DungeonActionCharacter {
-				rec := &record.DungeonActionCharacter{}
+			rec: func(data harness.Data) *record.DungeonActionCharacter {
+				rec := &record.DungeonActionCharacter{
+					DungeonActionID:    data.DungeonActionRecs[0].ID,
+					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -71,7 +77,7 @@ func TestCreateOne(t *testing.T) {
 			r := h.Model.(*model.Model).DungeonActionCharacterRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
-			rec := tc.rec()
+			rec := tc.rec(h.Data)
 
 			err = r.CreateOne(rec)
 			if tc.err == true {

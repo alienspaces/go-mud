@@ -97,6 +97,12 @@ var DefaultDataConfig = DataConfig{
 			DungeonMonsterConfig: []DungeonMonsterConfig{
 				{
 					Record: record.DungeonMonster{
+						Name: "White Cat",
+					},
+					LocationName: "Cave Entrance",
+				},
+				{
+					Record: record.DungeonMonster{
 						Name: "Angry Goblin",
 					},
 					LocationName: "Cave Tunnel",

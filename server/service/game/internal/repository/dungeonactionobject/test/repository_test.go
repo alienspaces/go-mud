@@ -17,7 +17,7 @@ import (
 func TestCreateOne(t *testing.T) {
 
 	// harness
-	config := harness.DataConfig{}
+	config := harness.DefaultDataConfig
 
 	h, err := harness.NewTesting(config)
 	require.NoError(t, err, "NewTesting returns without error")
@@ -27,20 +27,26 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonActionObject
+		rec  func(data harness.Data) *record.DungeonActionObject
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonActionObject {
-				return &record.DungeonActionObject{}
+			rec: func(data harness.Data) *record.DungeonActionObject {
+				return &record.DungeonActionObject{
+					DungeonActionID: data.DungeonActionRecs[0].ID,
+					DungeonObjectID: data.DungeonObjectRecs[0].ID,
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func() *record.DungeonActionObject {
-				rec := &record.DungeonActionObject{}
+			rec: func(data harness.Data) *record.DungeonActionObject {
+				rec := &record.DungeonActionObject{
+					DungeonActionID: data.DungeonActionRecs[0].ID,
+					DungeonObjectID: data.DungeonObjectRecs[0].ID,
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -71,7 +77,7 @@ func TestCreateOne(t *testing.T) {
 			r := h.Model.(*model.Model).DungeonActionObjectRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
-			rec := tc.rec()
+			rec := tc.rec(h.Data)
 
 			err = r.CreateOne(rec)
 			if tc.err == true {
@@ -89,13 +95,7 @@ func TestCreateOne(t *testing.T) {
 func TestGetOne(t *testing.T) {
 
 	// harness
-	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonConfig{
-			{
-				Record: record.Dungeon{},
-			},
-		},
-	}
+	config := harness.DefaultDataConfig
 
 	h, err := harness.NewTesting(config)
 	require.NoError(t, err, "NewTesting returns without error")
@@ -163,13 +163,7 @@ func TestGetOne(t *testing.T) {
 func TestUpdateOne(t *testing.T) {
 
 	// harness
-	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonConfig{
-			{
-				Record: record.Dungeon{},
-			},
-		},
-	}
+	config := harness.DefaultDataConfig
 
 	h, err := harness.NewTesting(config)
 
@@ -180,19 +174,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() record.DungeonActionObject
+		rec  func() *record.DungeonActionObject
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() record.DungeonActionObject {
+			rec: func() *record.DungeonActionObject {
 				return h.Data.DungeonActionObjectRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() record.DungeonActionObject {
+			rec: func() *record.DungeonActionObject {
 				rec := h.Data.DungeonActionObjectRecs[0]
 				rec.ID = ""
 				return rec
@@ -225,7 +219,7 @@ func TestUpdateOne(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := r.UpdateOne(&rec)
+			err := r.UpdateOne(rec)
 			if tc.err == true {
 				require.Error(t, err, "UpdateOne returns error")
 				return
@@ -241,13 +235,7 @@ func TestUpdateOne(t *testing.T) {
 func TestDeleteOne(t *testing.T) {
 
 	// harness
-	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonConfig{
-			{
-				Record: record.Dungeon{},
-			},
-		},
-	}
+	config := harness.DefaultDataConfig
 
 	h, err := harness.NewTesting(config)
 	require.NoError(t, err, "NewTesting returns without error")
