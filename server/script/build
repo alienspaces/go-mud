@@ -19,7 +19,14 @@ if [ -z "$PREV_COMMIT" ]; then
 fi
 
 # service directory list
+shopt -s dotglob
+shopt -s nullglob
+
+# Service directory list
+SERVICE_BASE_PATH=./service
+cd $SERVICE_BASE_PATH || exit
 SERVICE_NAMES=(*)
+cd - || exit
 
 for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
