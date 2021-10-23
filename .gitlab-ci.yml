@@ -11,7 +11,7 @@ stages:
 sast:
   variables:
     SAST_EXCLUDED_ANALYZERS: bandit, brakeman, flawfinder, phpcs-security-audit, pmd-apex,
-      security-code-scan, sobelow, spotbugs
+      security-code-scan, sobelow, spotbugs, eslint
   stage: test
 
 # All variables are valid for all jobs
