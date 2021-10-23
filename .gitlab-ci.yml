@@ -18,7 +18,7 @@ sast:
 variables:
   FF_NETWORK_PER_BUILD: 1
   APP_CLIENT_API_HOST: game-server
-  APP_CLIENT_API_PORT: 3000
+  APP_CLIENT_API_PORT: 5432
 
 # Testing the client requires the server and postgres to be running as services.
 test-client:
