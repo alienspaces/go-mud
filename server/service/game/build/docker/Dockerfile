@@ -40,7 +40,7 @@ COPY --from=builder /go-mud/service/game/build/docker/entrypoint.sh .
 COPY --from=builder /go-mud/schema/docs ./schema/docs
 
 # copy database migrations
-COPY --from=builder /g-mud/service/game/migration /migration
+COPY --from=builder /go-mud/service/game/migration /migration
 
 EXPOSE 8084
 

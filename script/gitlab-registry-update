@@ -3,6 +3,16 @@
 # Update gitlab container registry with dependent images
 docker login registry.gitlab.com -u alienspaces@gmail.com -p "$GITLAB_PERSONAL_TOKEN"
 
+IMAGE="docker:19.03.12"
+docker pull $IMAGE
+docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
+docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
+
+IMAGE="docker:19.03.12-dind"
+docker pull $IMAGE
+docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
+docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
+
 IMAGE="golang:1.17.2-alpine3.14"
 docker pull $IMAGE || exit $?
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE

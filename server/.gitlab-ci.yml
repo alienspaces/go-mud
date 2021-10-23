@@ -15,10 +15,11 @@ test-server:
     - ./script/test-ci
 
 build-server:
-  image: docker:19.03.12
+  image: $CI_REGISTRY/alienspaces/go-mud/docker:19.03.12
   stage: build-server
   services:
-    - docker:19.03.12-dind
+    - name: $CI_REGISTRY/alienspaces/go-mud/docker:19.03.12-dind
+      alias: docker
   before_script:
     - apk add git
     - apk add bash
