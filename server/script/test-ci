@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# # copy ci env
-# cp .env.ci .env
+# copy ci env
+cp .env.ci .env
 
 # Environment
 source "${BASH_SOURCE%/*}"/environment || exit $?
