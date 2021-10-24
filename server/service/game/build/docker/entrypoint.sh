@@ -31,13 +31,15 @@ echo "=> (entrypoint) Command ${COMMAND}"
 
 echo "=> (entrypoint) PWD ${PWD}"
 
-ls -la
-
 if [ -z "$COMMAND" ]; then
 
     # postgres
     echo "=> (entrypoint) Starting Postgres"
 
+    export POSTGRES_DB=$APP_SERVER_DB_NAME
+    export POSTGRES_USER=$APP_SERVER_DB_USER
+    export POSTGRES_PASSWORD=$APP_SERVER_DB_PASSWORD
+    
     nohup /usr/local/bin/docker-entrypoint.sh postgres &
 
     # extensions

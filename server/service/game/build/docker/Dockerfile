@@ -29,8 +29,8 @@ RUN apk update \
     && apk add curl \
     && apk add bash
 
-COPY --from=builder /go/bin/go-mud-game-server /go/bin
-COPY --from=builder /go/bin/go-mud-game-cli /go/bin
+COPY --from=builder /go/bin/go-mud-game-server /bin
+COPY --from=builder /go/bin/go-mud-game-cli /bin
 COPY --from=builder /go/bin/migrate /bin
 
 # entrypoint
