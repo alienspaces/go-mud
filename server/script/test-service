@@ -30,10 +30,17 @@ function test_service {
         #         source .env.ci
         #     fi
         # else
-        if [ "$APP_SERVER_DB_SERVICE" = "development" ]; then
+        if [ "$APP_SERVER_ENV" = "development" ]; then
             if [ -f ".env.development" ]; then
                 echo "=> Test service - sourcing service .env.development"
                 source .env.development
+            fi
+        fi
+
+        if [ "$APP_SERVER_ENV" = "ci" ]; then
+            if [ -f ".env.ci" ]; then
+                echo "=> Test service - sourcing service .env.ci"
+                source .env.ci
             fi
         fi
 

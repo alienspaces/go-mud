@@ -71,6 +71,12 @@ function start_service_databases {
             fi
         fi
 
+        if [ "$APP_SERVER_ENV" = "ci" ]; then
+            if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" ]; then
+                cp "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" "$SERVICE_BASE_PATH/$SERVICE_NAME/.env"
+            fi
+        fi
+
         # # Service specific .env
         # if [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
         #     if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" ]; then
