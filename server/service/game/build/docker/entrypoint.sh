@@ -38,7 +38,7 @@ if [ -z "$COMMAND" ]; then
     # postgres
     echo "=> (entrypoint) Starting Postgres"
 
-    nohup ./docker-entrypoint.sh postgres &
+    nohup /usr/local/bin/docker-entrypoint.sh postgres &
 
     # extensions
     echo "=> (entrypoint) Creating extension pgcrypto"
