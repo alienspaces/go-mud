@@ -21,6 +21,12 @@ fi
 function migrate_up {
     for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
+        # Ingoring template
+        if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
+            echo "=> (db-migrate-up) - Skipping database $SERVICE_NAME"
+            continue
+        fi
+
         # run migrations
         if [ -d "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" ]; then
 

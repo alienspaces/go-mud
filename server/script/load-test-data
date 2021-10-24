@@ -8,16 +8,22 @@ fi
 # NOTE: Add new services here
 SERVICES=(game)
 
-for SERVICE in "${SERVICES[@]}"; do
+for SERVICE_NAME in "${SERVICES[@]}"; do
 
     # Reset APP_SERVER_PORT as each service should define
     # a unique server port in their local env
     export APP_SERVER_PORT=""
 
-    cd "service/${SERVICE}" || exit
+    # Ingoring template
+    if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
+        echo "=> (start_service_databases) - Skipping database $SERVICE_NAME"
+        continue
+    fi
+
+    cd "service/${SERVICE_NAME}" || exit
 
     echo
-    echo "** Loading ${SERVICE} service test data"
+    echo "** Loading ${SERVICE_NAME} service test data"
     echo
 
     # Environment
