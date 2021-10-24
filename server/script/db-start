@@ -12,7 +12,8 @@ source "${BASH_SOURCE%/*}"/db-stop || exit $?
 # start database
 echo "=> Start database"
 
-if [ "$APP_SERVER_DB_SERVICE" = "docker" ]; then
+# if [ "$APP_SERVER_DB_SERVICE" = "docker" ]; then
+if [ "$APP_SERVER_ENV" = "devlopment" ]; then
 
     echo "=> Start database - docker service"
 
@@ -23,21 +24,21 @@ if [ "$APP_SERVER_DB_SERVICE" = "docker" ]; then
     -p "${APP_SERVER_DB_PORT}":5432 -d \
     postgres:10.4-alpine || exit $?
 
-elif [ "$APP_SERVER_DB_SERVICE" = "local" ]; then
+# elif [ "$APP_SERVER_DB_SERVICE" = "local" ]; then
 
-    echo "=> Start database - local service"
+#     echo "=> Start database - local service"
 
-    sudo service postgresql start
-    sudo -u postgres createuser "$APP_SERVER_DB_USER"
-    sudo -u postgres createdb "$APP_SERVER_DB_NAME"
-    sudo -u postgres \
-        psql -c "grant all privileges on database $APP_SERVER_DB_NAME to $APP_SERVER_DB_USER;"
-    sudo -u postgres \
-        psql -c "alter user $APP_SERVER_DB_USER with password '$APP_SERVER_DB_PASSWORD';"
+#     sudo service postgresql start
+#     sudo -u postgres createuser "$APP_SERVER_DB_USER"
+#     sudo -u postgres createdb "$APP_SERVER_DB_NAME"
+#     sudo -u postgres \
+#         psql -c "grant all privileges on database $APP_SERVER_DB_NAME to $APP_SERVER_DB_USER;"
+#     sudo -u postgres \
+#         psql -c "alter user $APP_SERVER_DB_USER with password '$APP_SERVER_DB_PASSWORD';"
 
-elif [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
+# elif [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
 
-    echo "=> Start database - ci service"
+#     echo "=> Start database - ci service"
 fi
 
 # pgcrypto for uuids
@@ -63,18 +64,19 @@ function start_service_databases {
         echo "=> (start_service_databases) - Starting database $SERVICE_NAME"
 
         # Service specific .env
-        if [ "$APP_SERVER_DB_SERVICE" = "docker" ] || [ "$APP_SERVER_DB_SERVICE" = "local" ]; then
+        # if [ "$APP_SERVER_DB_SERVICE" = "docker" ] || [ "$APP_SERVER_DB_SERVICE" = "local" ]; then
+        if [ "$APP_SERVER_ENV" = "development" ]; then
             if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.development" ]; then
                 cp "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.development" "$SERVICE_BASE_PATH/$SERVICE_NAME/.env"
             fi
         fi
 
-        # Service specific .env
-        if [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
-            if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" ]; then
-                cp "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" "$SERVICE_BASE_PATH/$SERVICE_NAME/.env"
-            fi
-        fi
+        # # Service specific .env
+        # if [ "$APP_SERVER_DB_SERVICE" = "ci" ]; then
+        #     if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" ]; then
+        #         cp "$SERVICE_BASE_PATH/$SERVICE_NAME/.env.ci" "$SERVICE_BASE_PATH/$SERVICE_NAME/.env"
+        #     fi
+        # fi
 
         if [ -f "$SERVICE_BASE_PATH/$SERVICE_NAME/.env" ]; then
 

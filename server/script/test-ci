@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-# copy ci env
-cp .env.ci .env
+# # copy ci env
+# cp .env.ci .env
 
 # Environment
 source "${BASH_SOURCE%/*}"/environment || exit $?
 
-if [[ -z ${APP_SERVER_DB_SERVICE} ]]; then
-    echo "=> (test-ci) Missing APP_SERVER_DB_SERVICE"
-    exit 1
-fi
+# if [[ -z ${APP_SERVER_DB_SERVICE} ]]; then
+#     echo "=> (test-ci) Missing APP_SERVER_DB_SERVICE"
+#     exit 1
+# fi
 
 # start database
 source "${BASH_SOURCE%/*}"/db-start || exit $?

@@ -17,7 +17,7 @@ if [ -n "$1" ]; then
 fi
 
 # copy ci env
-cp .env.ci .env
+# cp .env.ci .env
 
 # Environment
 source "${BASH_SOURCE%/*}"/environment || exit $?

@@ -17,7 +17,7 @@ function verify_env {
         # Template
         "APP_SERVER_ENABLE_TEMPLATE" \
         # Database
-        'APP_SERVER_DB_SERVICE' \
+        #'APP_SERVER_DB_SERVICE' \
 		'APP_SERVER_DB_HOST' \
 		'APP_SERVER_DB_NAME' \
 		'APP_SERVER_DB_PORT' \
