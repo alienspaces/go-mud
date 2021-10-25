@@ -34,15 +34,12 @@ func NewRunner() *Runner {
 	r.ModellerFunc = r.Modeller
 
 	r.HandlerConfig = []server.HandlerConfig{
+		// Dungeons
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons",
 			HandlerFunc:      r.GetDungeonsHandler,
-			MiddlewareConfig: server.MiddlewareConfig{
-				// AuthTypes: []string{
-				// 	auth.AuthTypeJWT,
-				// },
-			},
+			MiddlewareConfig: server.MiddlewareConfig{},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Query dungeons.",
@@ -52,14 +49,51 @@ func NewRunner() *Runner {
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons/:dungeon_id",
 			HandlerFunc:      r.GetDungeonHandler,
-			MiddlewareConfig: server.MiddlewareConfig{
-				// AuthTypes: []string{
-				// 	auth.AuthTypeJWT,
-				// },
-			},
+			MiddlewareConfig: server.MiddlewareConfig{},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Get a dungeon.",
+			},
+		},
+		// Characters
+		{
+			Method:           http.MethodGet,
+			Path:             "/api/v1/dungeons/:dungeon_id/characters",
+			HandlerFunc:      r.GetDungeonCharactersHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Get characters.",
+			},
+		},
+		{
+			Method:           http.MethodGet,
+			Path:             "/api/v1/dungeons/:dungeon_id/characters/:character_id",
+			HandlerFunc:      r.GetDungeonCharacterHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Get a character.",
+			},
+		},
+		{
+			Method:           http.MethodPost,
+			Path:             "/api/v1/dungeons/:dungeon_id/characters",
+			HandlerFunc:      r.PostDungeonCharactersHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Create a character.",
+			},
+		},
+		{
+			Method:           http.MethodPut,
+			Path:             "/api/v1/dungeons/:dungeon_id/characters",
+			HandlerFunc:      r.PutDungeonCharacterHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Update a character.",
 			},
 		},
 		// {
