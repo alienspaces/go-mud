@@ -95,7 +95,7 @@ func TestRunnerRouter(t *testing.T) {
 	require.NotNil(t, router, "DefaultRouter returns a router")
 
 	// test default configured routes
-	handle, params, redirect := router.Lookup(http.MethodGet, "/")
+	handle, params, redirect := router.Lookup(http.MethodGet, "/healthz")
 	require.NotNil(t, handle, "Handle is not nil")
 
 	t.Logf("Default route /")
