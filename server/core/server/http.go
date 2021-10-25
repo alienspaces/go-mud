@@ -36,7 +36,7 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 	port := rnr.Config.Get("APP_SERVER_PORT")
 	if port == "" {
 		rnr.Log.Warn("Missing APP_SERVER_PORT, cannot start server")
-		return fmt.Errorf("Missing APP_SERVER_PORT, cannot start server")
+		return fmt.Errorf("missing APP_SERVER_PORT, cannot start server")
 	}
 
 	// cors
@@ -99,7 +99,6 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 		rnr.Log.Warn("Failed default middleware >%v<", err)
 		return nil, err
 	}
-	r.GET("/", h)
 	r.GET("/healthz", h)
 
 	// register configured routes
@@ -217,7 +216,7 @@ func (rnr *Runner) ReadRequest(l logger.Logger, r *http.Request, s interface{}) 
 		err := json.NewDecoder(r).Decode(s)
 		if err != nil {
 			// Include data in error response
-			return fmt.Errorf("Failed decoding request data >%s< >%v<", data.(string), err)
+			return fmt.Errorf("failed decoding request data >%s< >%v<", data.(string), err)
 		}
 	}
 

@@ -10,13 +10,13 @@ import (
 // ErrorCode -
 const (
 	ErrorCodeUnauthorized   string = "unauthorized_error"
-	ErrorDetailUnauthorized string = "Request could not be authorized"
+	ErrorDetailUnauthorized string = "request could not be authorized"
 	ErrorCodeSystem         string = "internal_error"
-	ErrorDetailSystem       string = "An internal error has occurred"
+	ErrorDetailSystem       string = "an internal error has occurred"
 	ErrorCodeValidation     string = "validation_error"
-	ErrorDetailValidation   string = "Request contains validation errors"
+	ErrorDetailValidation   string = "request contains validation errors"
 	ErrorCodeNotFound       string = "not_found"
-	ErrorDetailNotFound     string = "Requested resource could not be found"
+	ErrorDetailNotFound     string = "requested resource could not be found"
 )
 
 // WriteUnauthorizedError -
@@ -32,7 +32,6 @@ func (rnr *Runner) WriteUnauthorizedError(l logger.Logger, w http.ResponseWriter
 		l.Warn("Failed writing response >%v<", err)
 		return
 	}
-	return
 }
 
 // UnauthorizedError -
@@ -61,7 +60,6 @@ func (rnr *Runner) WriteModelError(l logger.Logger, w http.ResponseWriter, err e
 		l.Warn("Failed writing response >%v<", err)
 		return
 	}
-	return
 }
 
 // ModelError -
@@ -90,7 +88,6 @@ func (rnr *Runner) WriteSystemError(l logger.Logger, w http.ResponseWriter, err 
 		rnr.Log.Warn("Failed writing response >%v<", err)
 		return
 	}
-	return
 }
 
 // SystemError -
@@ -110,7 +107,7 @@ func (rnr *Runner) SystemError(err error) Response {
 // ValidationError -
 func (rnr *Runner) ValidationError(err error) Response {
 
-	rnr.Log.Error("Error >%v<", err)
+	rnr.Log.Error("error >%v<", err)
 
 	if err == nil {
 		err = fmt.Errorf(ErrorDetailValidation)
@@ -127,7 +124,7 @@ func (rnr *Runner) ValidationError(err error) Response {
 // WriteNotFoundError -
 func (rnr *Runner) WriteNotFoundError(l logger.Logger, w http.ResponseWriter, id string) {
 
-	err := fmt.Errorf("Resource with ID >%s< not found", id)
+	err := fmt.Errorf("resource with ID >%s< not found", id)
 
 	l.Warn("Not found error >%v<", err)
 
@@ -139,7 +136,6 @@ func (rnr *Runner) WriteNotFoundError(l logger.Logger, w http.ResponseWriter, id
 		l.Warn("Failed writing response >%v<", err)
 		return
 	}
-	return
 }
 
 // NotFoundError -

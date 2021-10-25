@@ -36,7 +36,7 @@ func NewRunner() *Runner {
 	r.HandlerConfig = []server.HandlerConfig{
 		{
 			Method:           http.MethodGet,
-			Path:             "/api/dungeons",
+			Path:             "/api/v1/dungeons",
 			HandlerFunc:      r.GetDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				// AuthTypes: []string{
@@ -50,7 +50,7 @@ func NewRunner() *Runner {
 		},
 		{
 			Method:           http.MethodGet,
-			Path:             "/api/dungeons/:dungeon_id",
+			Path:             "/api/v1/dungeons/:dungeon_id",
 			HandlerFunc:      r.GetDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				// AuthTypes: []string{
@@ -64,7 +64,7 @@ func NewRunner() *Runner {
 		},
 		// {
 		// 	Method:      http.MethodPost,
-		// 	Path:        "/api/dungeons",
+		// 	Path:        "/api/v1/dungeons",
 		// 	HandlerFunc: r.PostDungeonsHandler,
 		// 	MiddlewareConfig: server.MiddlewareConfig{
 		// 		AuthTypes: []string{
@@ -83,7 +83,7 @@ func NewRunner() *Runner {
 		// },
 		// {
 		// 	Method:      http.MethodPost,
-		// 	Path:        "/api/dungeons/:dungeon_id",
+		// 	Path:        "/api/v1/dungeons/:dungeon_id",
 		// 	HandlerFunc: r.PostDungeonsHandler,
 		// 	MiddlewareConfig: server.MiddlewareConfig{
 		// 		AuthTypes: []string{
@@ -102,7 +102,7 @@ func NewRunner() *Runner {
 		// },
 		// {
 		// 	Method:      http.MethodPut,
-		// 	Path:        "/api/dungeons/:dungeon_id",
+		// 	Path:        "/api/v1/dungeons/:dungeon_id",
 		// 	HandlerFunc: r.PutDungeonsHandler,
 		// 	MiddlewareConfig: server.MiddlewareConfig{
 		// 		AuthTypes: []string{
@@ -121,7 +121,7 @@ func NewRunner() *Runner {
 		// },
 		{
 			Method:           http.MethodGet,
-			Path:             "/api",
+			Path:             "/",
 			HandlerFunc:      r.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 		},

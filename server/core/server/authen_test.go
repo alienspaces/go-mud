@@ -163,7 +163,7 @@ func TestAuthenHandler(t *testing.T) {
 						Path:             "/test",
 						MiddlewareConfig: MiddlewareConfig{},
 						HandlerFunc: func(w http.ResponseWriter, r *http.Request, pathParams httprouter.Params, queryParams map[string]interface{}, l logger.Logger, m modeller.Modeller) {
-							return
+
 						},
 					},
 				}
@@ -203,7 +203,6 @@ func TestAuthenHandler(t *testing.T) {
 								return
 							}
 							w.WriteHeader(http.StatusUnauthorized)
-							return
 						},
 					},
 				}
@@ -238,7 +237,7 @@ func TestAuthenHandler(t *testing.T) {
 							},
 						},
 						HandlerFunc: func(w http.ResponseWriter, r *http.Request, pathParams httprouter.Params, queryParams map[string]interface{}, l logger.Logger, m modeller.Modeller) {
-							return
+
 						},
 					},
 				}

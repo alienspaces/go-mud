@@ -48,7 +48,7 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 		return nil, err
 	}
 
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, _ map[string]interface{}, l logger.Logger, m modeller.Modeller) {
 
 		l.Debug("** Validate ** request URI >%s< method >%s<", r.RequestURI, r.Method)
 
@@ -60,7 +60,7 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 		}
 
 		// validate query parameters
-		qp, err = rnr.validateQueryParameters(l, hc.Path, r)
+		qp, err := rnr.validateQueryParameters(l, hc.Path, r)
 		if err != nil {
 			rnr.WriteResponse(l, w, rnr.ValidationError(err))
 			return
@@ -92,13 +92,13 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 
 		// load the data
 		var dataLoader gojsonschema.JSONLoader
-		switch data.(type) {
+		switch data := data.(type) {
 		case nil:
 			l.Warn("Data is nil")
 			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("Data is nil")))
 			return
 		case string:
-			dataLoader = gojsonschema.NewStringLoader(data.(string))
+			dataLoader = gojsonschema.NewStringLoader(data)
 		default:
 			dataLoader = gojsonschema.NewGoLoader(data)
 		}
@@ -108,14 +108,14 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 		if err != nil {
 			l.Warn("Failed validate >%v<", err)
 			if err.Error() == "EOF" {
-				rnr.WriteResponse(l, w, rnr.ValidationError(fmt.Errorf("Posted data is empty, check request content")))
+				rnr.WriteResponse(l, w, rnr.ValidationError(fmt.Errorf("posted data is empty, check request content")))
 				return
 			}
 			rnr.WriteResponse(l, w, rnr.SystemError(err))
 			return
 		}
 
-		if result.Valid() != true {
+		if !result.Valid() {
 			errStr := ""
 			for _, e := range result.Errors() {
 				l.Warn("Invalid data >%s<", e)
@@ -205,7 +205,7 @@ func (rnr *Runner) validateQueryParameters(l logger.Logger, path string, r *http
 				found = true
 			}
 		}
-		if found != true {
+		if !found {
 			msg := fmt.Sprintf("Parameter >%s< not allowed", paramName)
 			l.Warn(msg)
 			return nil, fmt.Errorf(msg)

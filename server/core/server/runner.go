@@ -160,7 +160,7 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 
 	rnr.Log = l
 	if rnr.Log == nil {
-		msg := "Logger undefined, cannot init runner"
+		msg := "logger undefined, cannot init runner"
 		return fmt.Errorf(msg)
 	}
 
@@ -168,14 +168,14 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 
 	rnr.Config = c
 	if rnr.Config == nil {
-		msg := "Configurer undefined, cannot init runner"
+		msg := "configurer undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
 	rnr.Store = s
 	if rnr.Store == nil {
-		msg := "Storer undefined, cannot init runner"
+		msg := "storer undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
@@ -326,7 +326,7 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 		return b / 1024 / 1024
 	}
 
-	err = fmt.Errorf("Received SIG >%v< Mem Alloc >%d MiB< TotalAlloc >%d MiB< Sys >%d MiB< NumGC >%d<",
+	err = fmt.Errorf("received SIG >%v< Mem Alloc >%d MiB< TotalAlloc >%d MiB< Sys >%d MiB< NumGC >%d<",
 		sig,
 		bToMb(m.Alloc),
 		bToMb(m.TotalAlloc),

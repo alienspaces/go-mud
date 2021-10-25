@@ -139,8 +139,8 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 
 	for count, config := range rnr.HandlerConfig {
 
-		if config.DocumentationConfig.Document != true {
-			// skip documenting this endpoint
+		// Skip documenting this endpoint
+		if !config.DocumentationConfig.Document {
 			continue
 		}
 

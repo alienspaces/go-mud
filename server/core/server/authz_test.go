@@ -17,7 +17,7 @@ import (
 const (
 	testRoleDefault       string = "default"
 	testRoleAdministrator string = "administrator"
-	testIdentityPlayer   string = "account_id"
+	testIdentityPlayer    string = "account_id"
 	testIdentityCompany   string = "company_id"
 )
 
@@ -223,11 +223,6 @@ func TestAuthzHandler(t *testing.T) {
 	c, l, s, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
-	const (
-		testRoleName    string = "administrator"
-		testIdentityKey string = "account"
-	)
-
 	// Test configuration
 	type TestCase struct {
 		name           string
@@ -238,7 +233,6 @@ func TestAuthzHandler(t *testing.T) {
 
 	// handlerFunc - Default handler function
 	handlerFunc := func(w http.ResponseWriter, r *http.Request, pathParams httprouter.Params, queryParams map[string]interface{}, l logger.Logger, m modeller.Modeller) {
-		return
 	}
 
 	tests := []TestCase{
@@ -308,7 +302,7 @@ func TestAuthzHandler(t *testing.T) {
 			},
 			requestContext: func(tr TestRunner, ctx context.Context) context.Context {
 				ctx, _ = tr.addContextIdentity(ctx, map[string]interface{}{
-					testIdentityPlayer: gofakeit.UUID(),
+					testIdentityPlayer:  gofakeit.UUID(),
 					testIdentityCompany: gofakeit.UUID(),
 				})
 				return ctx

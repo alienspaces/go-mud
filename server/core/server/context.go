@@ -41,7 +41,7 @@ func (rnr *Runner) hasContextRole(ctx context.Context, roleName string) (bool, e
 	if err != nil {
 		return false, err
 	}
-	if roles != nil {
+	if len(roles) != 0 {
 		for _, contextRoleName := range roles {
 			if contextRoleName == roleName {
 				rnr.Log.Info("Context role >%s< name exists", contextRoleName)
@@ -83,7 +83,7 @@ func (rnr *Runner) getContextIdentityValue(ctx context.Context, identityKey stri
 	if err != nil {
 		return nil, err
 	}
-	if identity != nil {
+	if len(identity) != 0 {
 		for contextIdentityKey, contextIdentityValue := range identity {
 			if contextIdentityKey == identityKey {
 				rnr.Log.Info("Context identity key >%s< value >%v<", contextIdentityKey, contextIdentityValue)

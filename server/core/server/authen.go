@@ -85,7 +85,7 @@ func (rnr *Runner) handleAuthen(r *http.Request, l logger.Logger, m modeller.Mod
 			// Get authentication token
 			authString := r.Header.Get("Authorization")
 			if authString == "" {
-				msg := "Authorization header is empty"
+				msg := "authorization header is empty"
 				l.Warn(msg)
 				return ctx, fmt.Errorf(msg)
 			}
@@ -117,7 +117,7 @@ func (rnr *Runner) handleAuthen(r *http.Request, l logger.Logger, m modeller.Mod
 
 		default:
 			// Unsupported authentication configuration
-			msg := "Unsupported authentication configuration"
+			msg := "unsupported authentication configuration"
 			return ctx, fmt.Errorf(msg)
 		}
 	}
@@ -135,9 +135,7 @@ func (rnr *Runner) authenCacheConfig(hc HandlerConfig) error {
 		if authenCache[hc.Path] == nil {
 			authenCache[hc.Path] = make(map[string][]string)
 		}
-		for _, authType := range hc.MiddlewareConfig.AuthTypes {
-			authenCache[hc.Path][hc.Method] = append(authenCache[hc.Path][hc.Method], authType)
-		}
+		authenCache[hc.Path][hc.Method] = append(authenCache[hc.Path][hc.Method], hc.MiddlewareConfig.AuthTypes...)
 	}
 
 	return nil

@@ -68,7 +68,7 @@ func (rnr *Runner) handleAuthz(r *http.Request, l logger.Logger, m modeller.Mode
 	authzIdentityMethods = authzAllIdentitiesCache[hc.Path]
 	if authzIdentityMethods != nil {
 		authzIdentities = authzIdentityMethods[hc.Method]
-		if authzIdentities != nil {
+		if len(authzIdentities) != 0 {
 			for _, identityKey := range authzIdentities {
 				identityValue, err := rnr.getContextIdentityValue(ctx, identityKey)
 				if err != nil {
@@ -105,7 +105,7 @@ func (rnr *Runner) handleAuthz(r *http.Request, l logger.Logger, m modeller.Mode
 				l.Info("Context missing identity key >%s< value", identityKey)
 			}
 			if !found {
-				msg := fmt.Sprintf("Missing any identities")
+				msg := "missing any identities"
 				l.Warn(msg)
 				return fmt.Errorf(msg)
 			}
@@ -121,14 +121,14 @@ func (rnr *Runner) handleAuthz(r *http.Request, l logger.Logger, m modeller.Mode
 	if authzRoleMethods != nil {
 		l.Info("Have roles >%#v<", authzRoleMethods[hc.Method])
 		authzRoles = authzRoleMethods[hc.Method]
-		if authzRoles != nil {
+		if len(authzRoles) != 0 {
 			for _, roleName := range authzRoles {
 				hasRole, err := rnr.hasContextRole(ctx, roleName)
 				if err != nil {
 					l.Warn("Failed checking context role >%s< >%v<", roleName, err)
 					return err
 				}
-				if hasRole != true {
+				if !hasRole {
 					msg := fmt.Sprintf("Context missing role >%s< value", roleName)
 					l.Warn(msg)
 					return fmt.Errorf(msg)
@@ -150,7 +150,7 @@ func (rnr *Runner) handleAuthz(r *http.Request, l logger.Logger, m modeller.Mode
 					l.Warn("Failed checking context role >%s< >%v<", roleName, err)
 					return err
 				}
-				if hasRole == true {
+				if hasRole {
 					l.Info("Have role")
 					found = true
 					break
@@ -158,7 +158,7 @@ func (rnr *Runner) handleAuthz(r *http.Request, l logger.Logger, m modeller.Mode
 				l.Info("Missing role >%s<", roleName)
 			}
 			if !found {
-				msg := fmt.Sprintf("Missing any role")
+				msg := "missing any role"
 				l.Warn(msg)
 				return fmt.Errorf(msg)
 			}
