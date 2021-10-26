@@ -25,8 +25,13 @@ shopt -s nullglob
 # Service directory list
 SERVICE_BASE_PATH=./service
 cd $SERVICE_BASE_PATH || exit
-SERVICE_NAMES=(*)
+SERVICE_NAMES=(game)
 cd - || exit
+
+# TODO: The client test job depends on a server build with the same
+# commit sha as the current client commit so we need to "force" a 
+# build. Perhaps the client should always just use "latest" for testing..
+FORCE_BUILD=1
 
 for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
@@ -41,13 +46,15 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
     SERVICE_DIR="./service/$SERVICE_NAME"
     echo "Directory: $SERVICE_DIR";
     echo ""
-    ls -la
 
     # build if anything changed in common
     CHANGED=$(git diff "$PREV_COMMIT" --name-only .gitlab-ci.yml ./core ./build ./script/deploy ./script/build)
     if [ -z "$CHANGED" ]; then
         # build if anything changed in the service
         CHANGED=$(git diff "$PREV_COMMIT" --name-only -- "$SERVICE_DIR")
+    fi
+    if [ "$FORCE_BUILD" = 1 ]; then
+        CHANGED=1
     fi
     if [ -z "$CHANGED" ]; then
         echo "No changes"
