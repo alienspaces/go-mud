@@ -167,6 +167,8 @@ func (rnr *Runner) PostDungeonCharactersHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	l.Info("Creating character record >%#v<", rec)
+
 	err = m.(*model.Model).CreateDungeonCharacterRec(&rec)
 	if err != nil {
 		rnr.WriteModelError(l, w, err)
@@ -280,10 +282,17 @@ func (rnr *Runner) DungeonCharacterRequestDataToRecord(data schema.DungeonCharac
 func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec *record.DungeonCharacter) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
-		ID:        dungeonCharacterRec.ID,
-		Name:      dungeonCharacterRec.Name,
-		CreatedAt: dungeonCharacterRec.CreatedAt,
-		UpdatedAt: dungeonCharacterRec.UpdatedAt.Time,
+		ID:               dungeonCharacterRec.ID,
+		Name:             dungeonCharacterRec.Name,
+		Strength:         dungeonCharacterRec.Strength,
+		Dexterity:        dungeonCharacterRec.Dexterity,
+		Intelligence:     dungeonCharacterRec.Intelligence,
+		Health:           dungeonCharacterRec.Health,
+		Fatigue:          dungeonCharacterRec.Fatigue,
+		AttributePoints:  dungeonCharacterRec.AttributePoints,
+		ExperiencePoints: dungeonCharacterRec.ExperiencePoints,
+		CreatedAt:        dungeonCharacterRec.CreatedAt,
+		UpdatedAt:        dungeonCharacterRec.UpdatedAt.Time,
 	}
 
 	return data, nil

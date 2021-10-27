@@ -154,7 +154,7 @@ class API {
 
     String responseBody = response.body;
 
-    if (response.statusCode != 201) {
+    if (response.statusCode != 201 && response.statusCode != 200) {
       log.warning('Failed: $responseBody');
       return APIResponse(error: responseBody);
     }

@@ -57,20 +57,20 @@ func (r *Repository) sqlFromParamsAndOperator(
 
 		operator, found := operators[param]
 		if !found {
-			sqlStmt += fmt.Sprintf("AND %s", param)
+			sqlStmt += fmt.Sprintf("AND \"%s\"", param)
 
-			switch val.(type) {
+			switch val := val.(type) {
 			case []string:
-				if len(val.([]string)) == 0 {
+				if len(val) == 0 {
 					return "", nil, fmt.Errorf("value for param >%s< is empty", param)
 				}
 				// in
 				sqlStmt += " IN ("
-				for idx, paramVal := range val.([]string) {
+				for idx, paramVal := range val {
 					paramName := fmt.Sprintf("%s%d", param, idx)
 					sqlStmt += fmt.Sprintf(":%s", paramName)
 					queryParams[paramName] = paramVal
-					if idx < len(val.([]string))-1 {
+					if idx < len(val)-1 {
 						sqlStmt += ", "
 					}
 				}
@@ -80,16 +80,16 @@ func (r *Repository) sqlFromParamsAndOperator(
 				delete(queryParams, param)
 
 			case []int64:
-				if len(val.([]int64)) == 0 {
+				if len(val) == 0 {
 					return "", nil, fmt.Errorf("value for param >%s< is empty", param)
 				}
 				// in
 				sqlStmt += " IN ("
-				for idx, paramVal := range val.([]int64) {
+				for idx, paramVal := range val {
 					paramName := fmt.Sprintf("%s%d", param, idx)
 					sqlStmt += fmt.Sprintf(":%s", paramName)
 					queryParams[paramName] = paramVal
-					if idx < len(val.([]int64))-1 {
+					if idx < len(val)-1 {
 						sqlStmt += ", "
 					}
 				}
@@ -113,7 +113,7 @@ func (r *Repository) sqlFromParamsAndOperator(
 			}
 			split := strings.Split(valStr, ",")
 			if len(split) != 2 {
-				return "", nil, fmt.Errorf("Param >%s< should have 2 values separated by a comma", param)
+				return "", nil, fmt.Errorf("param >%s< should have 2 values separated by a comma", param)
 			}
 
 			firstParamName := param + "_1"
