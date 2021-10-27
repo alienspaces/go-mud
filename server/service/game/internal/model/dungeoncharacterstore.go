@@ -7,6 +7,10 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+const defaultCoins = 100
+const defaultExperiencePoints = 0
+const defaultAttributePoints = 36
+
 // GetDungeonCharacterRecs -
 func (m *Model) GetDungeonCharacterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonCharacter, error) {
 
@@ -63,6 +67,11 @@ func (m *Model) CreateDungeonCharacterRec(rec *record.DungeonCharacter) error {
 	}
 
 	rec.DungeonLocationID = locationRecs[0].ID
+	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
+	rec.ExperiencePoints = defaultExperiencePoints
+	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)
+	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
+	rec.Coins = defaultCoins
 
 	err = m.ValidateDungeonCharacterRec(rec)
 	if err != nil {
@@ -129,4 +138,12 @@ func (m *Model) RemoveDungeonCharacterRec(recID string) error {
 	}
 
 	return r.RemoveOne(recID)
+}
+
+func (m *Model) calculateHealth(strength int, dexterity int) int {
+	return strength + dexterity*10
+}
+
+func (m *Model) calculateFatigue(strength int, intelligence int) int {
+	return strength + intelligence*10
 }
