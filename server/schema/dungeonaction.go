@@ -7,17 +7,11 @@ import (
 // DungeonActionResponse -
 type DungeonActionResponse struct {
 	Response
-	Data []DungeonActionData `json:"data"`
+	Data []DungeonActionResponseData `json:"data"`
 }
 
-// DungeonActionRequest -
-type DungeonActionRequest struct {
-	Request
-	Data DungeonActionData `json:"data"`
-}
-
-// DungeonActionData -
-type DungeonActionData struct {
+// DungeonActionResponseData -
+type DungeonActionResponseData struct {
 	Action     ActionData      `json:"action"`
 	Location   LocationData    `json:"location"`
 	Character  CharacterData   `json:"character,omitempty"`
@@ -25,6 +19,17 @@ type DungeonActionData struct {
 	Characters []CharacterData `json:"characters"`
 	Monsters   []MonsterData   `json:"monsters"`
 	Objects    []ObjectData    `json:"objects"`
+}
+
+// DungeonActionRequest -
+type DungeonActionRequest struct {
+	Request
+	Data DungeonActionRequestData `json:"data"`
+}
+
+// DungeonActionRequestData -
+type DungeonActionRequestData struct {
+	Sentence string `json:"sentence"`
 }
 
 type ActionData struct {

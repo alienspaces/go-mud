@@ -96,6 +96,19 @@ func NewRunner() *Runner {
 				Description: "Update a character.",
 			},
 		},
+		{
+			Method:      http.MethodPost,
+			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
+			HandlerFunc: r.PostDungeonCharacterActionsHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateSchemaLocation: "game",
+				ValidateSchemaMain:     "create.schema.json",
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Create a dungeon character action.",
+			},
+		},
 		// {
 		// 	Method:      http.MethodPost,
 		// 	Path:        "/api/v1/dungeons",

@@ -1,11 +1,16 @@
 package model
 
 import (
+	"fmt"
+
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
 type DungeonActionRecordSet struct {
 	DungeonActionRec           *record.DungeonAction
+	DungeonLocationRec         *record.DungeonLocation
+	DungeonCharacterRec        *record.DungeonCharacter
+	DungeonMonsterRec          *record.DungeonMonster
 	DungeonActionCharacterRecs []*record.DungeonActionCharacter
 	DungeonActionMonsterRecs   []*record.DungeonActionMonster
 	DungeonActionObjectRecs    []*record.DungeonActionObject
@@ -20,9 +25,22 @@ type DungeonLocationRecordSet struct {
 	LocationRecs  []*record.DungeonLocation
 }
 
-func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentence string) (*DungeonActionRecordSet, error) {
+func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacterID string, sentence string) (*DungeonActionRecordSet, error) {
 
 	m.Log.Info("Processing dungeon character ID >%s< action command >%s<", dungeonCharacterID, sentence)
+
+	// Character
+	dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonCharacterID, false)
+	if err != nil {
+		m.Log.Warn("Failed getting dungeon character record before performing action >%v<", err)
+		return nil, err
+	}
+
+	if dungeonCharacterRec.DungeonID != dungeonID {
+		msg := fmt.Sprintf("Failed performing dungeon character action, character ID >%s< does not exist in dungeon ID >%s<", dungeonCharacterID, dungeonID)
+		m.Log.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
 
 	// Get current dungeon location record set
 	dungeonLocationRecordSet, err := m.getDungeonLocationRecordSet(dungeonCharacterID, true)
@@ -45,6 +63,20 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 		return nil, err
 	}
 
+	// Location
+	dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.DungeonLocationID, false)
+	if err != nil {
+		m.Log.Warn("Failed getting dungeon location record after performing action >%v<", err)
+		return nil, err
+	}
+
+	// Updated character
+	dungeonCharacterRec, err = m.GetDungeonCharacterRec(dungeonCharacterID, false)
+	if err != nil {
+		m.Log.Warn("Failed getting dungeon character record after performing action >%v<", err)
+		return nil, err
+	}
+
 	// Refetch current dungeon location record set
 	dungeonLocationRecordSet, err = m.getDungeonLocationRecordSet(dungeonCharacterID, true)
 	if err != nil {
@@ -63,6 +95,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonCharacterID string, sentenc
 
 	dungeonActionRecordSet := DungeonActionRecordSet{
 		DungeonActionRec:           dungeonActionRec,
+		DungeonCharacterRec:        dungeonCharacterRec,
+		DungeonLocationRec:         dungeonLocationRec,
 		DungeonActionCharacterRecs: []*record.DungeonActionCharacter{},
 		DungeonActionMonsterRecs:   []*record.DungeonActionMonster{},
 		DungeonActionObjectRecs:    []*record.DungeonActionObject{},

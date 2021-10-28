@@ -16,19 +16,6 @@ func (m *Model) performDungeonCharacterAction(
 		"look": m.performDungeonActionLook,
 	}
 
-	// const actionFuncs = {
-	// 	move: (dungeonActionRecord: DungeonActionRepositoryRecord, records: DungeonLocationRecordSet) =>
-	// 		this.performDungeonActionMove(dungeonActionRecord, records),
-	// 	look: (dungeonActionRecord: DungeonActionRepositoryRecord, records: DungeonLocationRecordSet) =>
-	// 		this.performDungeonActionLook(dungeonActionRecord, records),
-	// 	equip: (dungeonActionRecord: DungeonActionRepositoryRecord, records: DungeonLocationRecordSet) =>
-	// 		this.performDungeonActionEquip(dungeonActionRecord, records),
-	// 	stash: (dungeonActionRecord: DungeonActionRepositoryRecord, records: DungeonLocationRecordSet) =>
-	// 		this.performDungeonActionStash(dungeonActionRecord, records),
-	// 	drop: (dungeonActionRecord: DungeonActionRepositoryRecord, records: DungeonLocationRecordSet) =>
-	// 		this.performDungeonActionDrop(dungeonActionRecord, records),
-	// };
-
 	actionFunc, ok := actionFuncs[dungeonActionRec.ResolvedCommand]
 	if !ok {
 		msg := fmt.Sprintf("Action >%s< not supported", dungeonActionRec.ResolvedCommand)
