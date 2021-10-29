@@ -172,19 +172,21 @@ func (t *Testing) CreateData() error {
 
 		// Create action records
 		for _, dungeonActionConfig := range dungeonConfig.DungeonActionConfig {
+			dungeonID := ""
 			dungeonCharacterID := ""
 			for _, characterRecord := range data.DungeonCharacterRecs {
 				if characterRecord.Name == dungeonActionConfig.CharacterName {
+					dungeonID = characterRecord.DungeonID
 					dungeonCharacterID = characterRecord.ID
 				}
 			}
-			if dungeonCharacterID == "" {
+			if dungeonID == "" || dungeonCharacterID == "" {
 				msg := fmt.Sprintf("Failed to find dungeon character record name >%s<", dungeonActionConfig.CharacterName)
 				t.Log.Error(msg)
 				return fmt.Errorf(msg)
 			}
 
-			dungeonActionRecordSet, err := t.createDungeonCharacterActionRec(dungeonCharacterID, dungeonActionConfig.Command)
+			dungeonActionRecordSet, err := t.createDungeonCharacterActionRec(dungeonID, dungeonCharacterID, dungeonActionConfig.Command)
 			if err != nil {
 				t.Log.Warn("Failed creating dungeon action record >%v<", err)
 				return err

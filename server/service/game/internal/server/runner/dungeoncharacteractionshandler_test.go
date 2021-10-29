@@ -20,7 +20,7 @@ import (
 )
 
 // TODO: Update dungeon character handler tests
-func TestDungeonCharacterHandler(t *testing.T) {
+func TestDungeonCharacterActionHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()

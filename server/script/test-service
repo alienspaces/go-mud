@@ -44,21 +44,33 @@ function test_service {
 }
 
 function test_services {
-   
-    for TEST_SERVICE in "$BASE_DIRECTORY"/*; do
-        cd "$TEST_SERVICE" || exit
+
+    CURRENT_DIRECTORY=$PWD
+    cd "$BASE_DIRECTORY" || exit
+
+    for SERVICE_NAME in *; do
+
+        # Ingoring template
+        if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
+            echo "=> (start_services) - Skipping service $SERVICE_NAME"
+            continue
+        fi
+
+        cd "$SERVICE_NAME" || exit
         test_service
         cd - || exit
     done
+
+    cd "$CURRENT_DIRECTORY" || exit
 }
 
 # Specific service / All services
-TEST_SERVICE=""
+TEST_SERVICE_NAME=""
 if [ -n "$1" ]; then
-    TEST_SERVICE=$1
+    TEST_SERVICE_NAME=$1
     shift
 
-    cd "$TEST_SERVICE" || exit
+    cd "$TEST_SERVICE_NAME" || exit
     test_service;
     cd - || exit
 else
