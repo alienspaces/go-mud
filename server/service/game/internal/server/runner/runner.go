@@ -101,7 +101,7 @@ func NewRunner() *Runner {
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
 			HandlerFunc: r.PostDungeonCharacterActionsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation: "game",
+				ValidateSchemaLocation: "dungeonaction",
 				ValidateSchemaMain:     "create.schema.json",
 			},
 			DocumentationConfig: server.DocumentationConfig{
