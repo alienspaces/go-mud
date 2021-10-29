@@ -11,17 +11,6 @@ function retry_cmd {
   echo "=> Command $*"
 
   while true; do
-    # "$@" && break || {
-    #   if [[ $n -lt $max ]]; then
-    #     ((n++))
-    #     echo "=> Command failed. Trying again in $delay seconds. Attempt $n/$max:"
-    #     sleep $delay;
-    #     delay=$[$delay+$delay_inc]
-    #   else
-    #     echo "=> Command failed after $n attempts, exiting.." >&2
-    #     exit 1
-    #   fi
-    # }
     "$@" && break
     if [[ $n -lt $max ]]; then
       ((n++))

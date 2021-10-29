@@ -13,11 +13,6 @@ if [ "$(command -v gvm)" ]; then
     gvm use "$APP_SERVER_GO_VERSION" || exit $?
 fi
 
-# if [[ -z ${APP_SERVER_DB_SERVICE} ]]; then
-#     echo "=> (test-ci) Missing APP_SERVER_DB_SERVICE"
-#     exit 1
-# fi
-
 # start database
 source "${BASH_SOURCE%/*}"/db-start || exit $?
 

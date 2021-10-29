@@ -16,12 +16,6 @@ if [ -n "$1" ]; then
     shift
 fi
 
-# # copy ci env
-# cp .env.ci .env
-
-# # Environment
-# source "${BASH_SOURCE%/*}"/environment || exit $?
-
 # Service directory list
 SERVICE_BASE_PATH=./service
 cd $SERVICE_BASE_PATH || exit
