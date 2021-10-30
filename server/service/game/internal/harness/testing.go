@@ -25,10 +25,10 @@ type Data struct {
 	DungeonCharacterRecs       []*record.DungeonCharacter
 	DungeonMonsterRecs         []*record.DungeonMonster
 	DungeonObjectRecs          []*record.DungeonObject
-	DungeonActionRecs          []*record.DungeonAction
-	DungeonActionCharacterRecs []*record.DungeonActionCharacter
-	DungeonActionMonsterRecs   []*record.DungeonActionMonster
-	DungeonActionObjectRecs    []*record.DungeonActionObject
+	DungeonActionRecs          []record.DungeonAction
+	DungeonActionCharacterRecs []record.DungeonActionCharacter
+	DungeonActionMonsterRecs   []record.DungeonActionMonster
+	DungeonActionObjectRecs    []record.DungeonActionObject
 }
 
 // teardownData -
@@ -191,21 +191,15 @@ func (t *Testing) CreateData() error {
 				t.Log.Warn("Failed creating dungeon action record >%v<", err)
 				return err
 			}
-			data.DungeonActionRecs = append(data.DungeonActionRecs, dungeonActionRecordSet.DungeonActionRec)
+			data.DungeonActionRecs = append(data.DungeonActionRecs, *dungeonActionRecordSet.DungeonActionRec)
 			data.DungeonActionCharacterRecs = append(data.DungeonActionCharacterRecs, dungeonActionRecordSet.DungeonActionCharacterRecs...)
 			data.DungeonActionMonsterRecs = append(data.DungeonActionMonsterRecs, dungeonActionRecordSet.DungeonActionMonsterRecs...)
 			data.DungeonActionObjectRecs = append(data.DungeonActionObjectRecs, dungeonActionRecordSet.DungeonActionObjectRecs...)
 
 			teardownData.DungeonActionRecs = append(teardownData.DungeonActionRecs, *dungeonActionRecordSet.DungeonActionRec)
-			for _, dungeonActionCharacterRec := range dungeonActionRecordSet.DungeonActionCharacterRecs {
-				teardownData.DungeonActionCharacterRecs = append(teardownData.DungeonActionCharacterRecs, *dungeonActionCharacterRec)
-			}
-			for _, dungeonActionMonsterRec := range dungeonActionRecordSet.DungeonActionMonsterRecs {
-				teardownData.DungeonActionMonsterRecs = append(teardownData.DungeonActionMonsterRecs, *dungeonActionMonsterRec)
-			}
-			for _, dungeonActionObjectRec := range dungeonActionRecordSet.DungeonActionObjectRecs {
-				teardownData.DungeonActionObjectRecs = append(teardownData.DungeonActionObjectRecs, *dungeonActionObjectRec)
-			}
+			teardownData.DungeonActionCharacterRecs = append(teardownData.DungeonActionCharacterRecs, dungeonActionRecordSet.DungeonActionCharacterRecs...)
+			teardownData.DungeonActionMonsterRecs = append(teardownData.DungeonActionMonsterRecs, dungeonActionRecordSet.DungeonActionMonsterRecs...)
+			teardownData.DungeonActionObjectRecs = append(teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.DungeonActionObjectRecs...)
 		}
 	}
 

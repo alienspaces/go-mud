@@ -61,8 +61,8 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecordSet *model.DungeonActionRecordSet) (schema.DungeonActionResponseData, error) {
 
 	dungeonActionRec := dungeonActionRecordSet.DungeonActionRec
-	dungeonLocationRec := dungeonActionRecordSet.DungeonLocationRec
 
+	dungeonLocationRec := dungeonActionRecordSet.DungeonLocationRec
 	dungeonLocations := []string{}
 	if dungeonLocationRec.NorthDungeonLocationID.Valid {
 		dungeonLocations = append(dungeonLocations, "north")
@@ -98,6 +98,50 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 		dungeonLocations = append(dungeonLocations, "down")
 	}
 
+	var characterData schema.CharacterData
+	if dungeonActionRecordSet.DungeonCharacterRec != nil {
+		characterData = schema.CharacterData{
+			Name: dungeonActionRecordSet.DungeonCharacterRec.Name,
+		}
+	}
+
+	var monsterData schema.MonsterData
+	if dungeonActionRecordSet.DungeonMonsterRec != nil {
+		monsterData = schema.MonsterData{
+			Name: dungeonActionRecordSet.DungeonMonsterRec.Name,
+		}
+	}
+
+	var dungeonCharacterData []schema.CharacterData
+	if len(dungeonActionRecordSet.DungeonCharacterRecs) > 0 {
+		for _, dungeonCharacterRec := range dungeonActionRecordSet.DungeonCharacterRecs {
+			dungeonCharacterData = append(dungeonCharacterData,
+				schema.CharacterData{
+					Name: dungeonCharacterRec.Name,
+				})
+		}
+	}
+
+	var dungeonMonsterData []schema.MonsterData
+	if len(dungeonActionRecordSet.DungeonMonsterRecs) > 0 {
+		for _, dungeonMonsterRec := range dungeonActionRecordSet.DungeonMonsterRecs {
+			dungeonMonsterData = append(dungeonMonsterData,
+				schema.MonsterData{
+					Name: dungeonMonsterRec.Name,
+				})
+		}
+	}
+
+	var dungeonObjectData []schema.ObjectData
+	if len(dungeonActionRecordSet.DungeonObjectRecs) > 0 {
+		for _, dungeonObjectRec := range dungeonActionRecordSet.DungeonObjectRecs {
+			dungeonObjectData = append(dungeonObjectData,
+				schema.ObjectData{
+					Name: dungeonObjectRec.Name,
+				})
+		}
+	}
+
 	data := schema.DungeonActionResponseData{
 		Action: schema.ActionData{
 			ID:                             dungeonActionRec.ID,
@@ -115,6 +159,11 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 			Description: dungeonLocationRec.Description,
 			Directions:  dungeonLocations,
 		},
+		Character:  characterData,
+		Monster:    monsterData,
+		Characters: dungeonCharacterData,
+		Monsters:   dungeonMonsterData,
+		Objects:    dungeonObjectData,
 	}
 
 	return data, nil

@@ -8,12 +8,15 @@ import (
 
 type DungeonActionRecordSet struct {
 	DungeonActionRec           *record.DungeonAction
+	DungeonActionCharacterRecs []record.DungeonActionCharacter
+	DungeonActionMonsterRecs   []record.DungeonActionMonster
+	DungeonActionObjectRecs    []record.DungeonActionObject
 	DungeonLocationRec         *record.DungeonLocation
 	DungeonCharacterRec        *record.DungeonCharacter
 	DungeonMonsterRec          *record.DungeonMonster
-	DungeonActionCharacterRecs []*record.DungeonActionCharacter
-	DungeonActionMonsterRecs   []*record.DungeonActionMonster
-	DungeonActionObjectRecs    []*record.DungeonActionObject
+	DungeonCharacterRecs       []record.DungeonCharacter
+	DungeonMonsterRecs         []record.DungeonMonster
+	DungeonObjectRecs          []record.DungeonObject
 }
 
 type DungeonLocationRecordSet struct {
@@ -63,6 +66,15 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
+	// Create dungeon action event records
+	err = m.CreateDungeonActionRec(dungeonActionRec)
+	if err != nil {
+		m.Log.Warn("Failed creating dungeon action record >%v<", err)
+		return nil, err
+	}
+
+	m.Log.Info("Created dungeon action record ID >%s<", dungeonActionRec.ID)
+
 	// Location
 	dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.DungeonLocationID, false)
 	if err != nil {
@@ -84,22 +96,16 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
-	// Create dungeon action event records
-	err = m.CreateDungeonActionRec(dungeonActionRec)
-	if err != nil {
-		m.Log.Warn("Failed creating dungeon action record >%v<", err)
-		return nil, err
-	}
-
-	m.Log.Info("Created dungeon action record ID >%s<", dungeonActionRec.ID)
-
 	dungeonActionRecordSet := DungeonActionRecordSet{
 		DungeonActionRec:           dungeonActionRec,
 		DungeonCharacterRec:        dungeonCharacterRec,
 		DungeonLocationRec:         dungeonLocationRec,
-		DungeonActionCharacterRecs: []*record.DungeonActionCharacter{},
-		DungeonActionMonsterRecs:   []*record.DungeonActionMonster{},
-		DungeonActionObjectRecs:    []*record.DungeonActionObject{},
+		DungeonActionCharacterRecs: []record.DungeonActionCharacter{},
+		DungeonCharacterRecs:       []record.DungeonCharacter{},
+		DungeonActionMonsterRecs:   []record.DungeonActionMonster{},
+		DungeonMonsterRecs:         []record.DungeonMonster{},
+		DungeonActionObjectRecs:    []record.DungeonActionObject{},
+		DungeonObjectRecs:          []record.DungeonObject{},
 	}
 
 	if len(dungeonLocationRecordSet.CharacterRecs) > 0 {
@@ -116,7 +122,15 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 			}
 
 			m.Log.Info("Created dungeon action character record ID >%s<", dungeonActionCharacterRec.ID)
-			dungeonActionRecordSet.DungeonActionCharacterRecs = append(dungeonActionRecordSet.DungeonActionCharacterRecs, &dungeonActionCharacterRec)
+			dungeonActionRecordSet.DungeonActionCharacterRecs = append(dungeonActionRecordSet.DungeonActionCharacterRecs, dungeonActionCharacterRec)
+
+			_dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionCharacterRec.DungeonCharacterID, false)
+			if err != nil {
+				m.Log.Warn("Failed getting dungeon character record >%v<", err)
+				return nil, err
+			}
+
+			dungeonActionRecordSet.DungeonCharacterRecs = append(dungeonActionRecordSet.DungeonCharacterRecs, *_dungeonCharacterRec)
 		}
 	}
 
@@ -131,8 +145,17 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				m.Log.Warn("Failed creating dungeon action monster record >%v<", err)
 				return nil, err
 			}
+
 			m.Log.Info("Created dungeon action monster record ID >%s<", dungeonActionMonsterRec.ID)
-			dungeonActionRecordSet.DungeonActionMonsterRecs = append(dungeonActionRecordSet.DungeonActionMonsterRecs, &dungeonActionMonsterRec)
+			dungeonActionRecordSet.DungeonActionMonsterRecs = append(dungeonActionRecordSet.DungeonActionMonsterRecs, dungeonActionMonsterRec)
+
+			_dungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionMonsterRec.DungeonMonsterID, false)
+			if err != nil {
+				m.Log.Warn("Failed getting dungeon monster record >%v<", err)
+				return nil, err
+			}
+
+			dungeonActionRecordSet.DungeonMonsterRecs = append(dungeonActionRecordSet.DungeonMonsterRecs, *_dungeonMonsterRec)
 		}
 	}
 
@@ -147,8 +170,17 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				m.Log.Warn("Failed creating dungeon action object record >%v<", err)
 				return nil, err
 			}
+
 			m.Log.Info("Created dungeon action object record ID >%s<", dungeonActionObjectRec.ID)
-			dungeonActionRecordSet.DungeonActionObjectRecs = append(dungeonActionRecordSet.DungeonActionObjectRecs, &dungeonActionObjectRec)
+			dungeonActionRecordSet.DungeonActionObjectRecs = append(dungeonActionRecordSet.DungeonActionObjectRecs, dungeonActionObjectRec)
+
+			_dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonActionObjectRec.DungeonObjectID, false)
+			if err != nil {
+				m.Log.Warn("Failed getting dungeon object record >%v<", err)
+				return nil, err
+			}
+
+			dungeonActionRecordSet.DungeonObjectRecs = append(dungeonActionRecordSet.DungeonObjectRecs, *_dungeonObjectRec)
 		}
 	}
 

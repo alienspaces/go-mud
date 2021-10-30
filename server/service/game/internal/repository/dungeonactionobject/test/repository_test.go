@@ -174,19 +174,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonActionObject
+		rec  func() record.DungeonActionObject
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonActionObject {
+			rec: func() record.DungeonActionObject {
 				return h.Data.DungeonActionObjectRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonActionObject {
+			rec: func() record.DungeonActionObject {
 				rec := h.Data.DungeonActionObjectRecs[0]
 				rec.ID = ""
 				return rec
@@ -219,7 +219,7 @@ func TestUpdateOne(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := r.UpdateOne(rec)
+			err := r.UpdateOne(&rec)
 			if tc.err == true {
 				require.Error(t, err, "UpdateOne returns error")
 				return
