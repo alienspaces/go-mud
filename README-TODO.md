@@ -8,16 +8,12 @@
 
 ## Now
 
-- Test manager
-- Repository tests
-- Model tests
+- Client: Populating room contents
 
 ## Next
 
-- Dungeon API handler
-- Character API handler
-- Action API handler
+- Client: Scrolling rooms
 
 ## Later
 
-- Feature parity with previous version
+- Server: Improve model tests
