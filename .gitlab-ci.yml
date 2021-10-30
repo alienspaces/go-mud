@@ -11,7 +11,7 @@ stages:
 sast:
   variables:
     SAST_EXCLUDED_ANALYZERS: bandit, brakeman, flawfinder, phpcs-security-audit, pmd-apex,
-      security-code-scan, sobelow, spotbugs, eslint
+      security-code-scan, sobelow, spotbugs, eslint, gosec
   stage: test
 
 # Testing the client requires the server and postgres to be running as services.
