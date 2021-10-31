@@ -165,6 +165,9 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
           // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'look $objectName');
         },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.green,
+        ),
         child: Text(objectName),
       ),
     );
@@ -188,6 +191,9 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
           // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'look $objectName');
         },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.orange,
+        ),
         child: Text(objectName),
       ),
     );
@@ -211,6 +217,9 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
           // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'look $objectName');
         },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.brown,
+        ),
         child: Text(objectName),
       ),
     );
