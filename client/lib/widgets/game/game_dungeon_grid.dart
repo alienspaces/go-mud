@@ -56,6 +56,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
       return [];
     }
 
+    // TODO: Move the following blocks into a separate testable function
     Map<int, String> populatedByIndex =
         locationPopulatedByIndex[dungeonActionRecord.location.name] ?? {};
     Map<String, int> populatedByName =
