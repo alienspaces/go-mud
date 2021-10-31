@@ -8,7 +8,7 @@
 
 ## Now
 
-- Client: Populating room contents
+- Client: Display different icons for room contents
 
 ## Next
 
