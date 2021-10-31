@@ -57,6 +57,8 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     // TODO: Objects, monsters and characters should be randomly scattered through the
     // room but not change position in grid with a widget rebuild..
     log.warning('*** Dungeon objects ${dungeonActionCubit.dungeonActionRecord?.objects}');
+    log.warning('*** Dungeon characters ${dungeonActionCubit.dungeonActionRecord?.characters}');
+    log.warning('*** Dungeon monsters ${dungeonActionCubit.dungeonActionRecord?.monsters}');
 
     int roomGridIdx = 0;
 

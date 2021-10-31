@@ -71,12 +71,24 @@ class DungeonActionRecord extends Equatable {
       dungeonObjects = objects.map((e) => DungeonObject.fromJson(e)).toList();
     }
 
+    List<dynamic>? characters = json['characters'];
+    List<DungeonCharacter>? dungeonCharacters;
+    if (characters != null) {
+      dungeonCharacters = characters.map((e) => DungeonCharacter.fromJson(e)).toList();
+    }
+
+    List<dynamic>? monsters = json['monsters'];
+    List<DungeonMonster>? dungeonMonsters;
+    if (monsters != null) {
+      dungeonMonsters = monsters.map((e) => DungeonMonster.fromJson(e)).toList();
+    }
+
     return DungeonActionRecord(
       action: dungeonAction,
       location: dungeonLocation,
       objects: dungeonObjects,
-      characters: null,
-      monsters: null,
+      characters: dungeonCharacters,
+      monsters: dungeonMonsters,
     );
   }
 
