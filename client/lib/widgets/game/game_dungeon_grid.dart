@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
@@ -17,20 +18,8 @@ class GameDungeonGridWidget extends StatefulWidget {
 
 typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
-// Room content location maps
-const int roomLocationCount = 14;
-Map<String, Map<int, String>> locationPopulatedByIndex = {};
-Map<String, Map<String, int>> locationPopulatedByName = {};
-List<int> roomLocationsUnpopulated = [for (var i = 0; i < roomLocationCount; i++) i];
-
-int characterIdx = 0;
-int monsterIdx = 0;
-int objectIdx = 0;
-
 double gridMemberWidth = 50;
 double gridMemberHeight = 50;
-
-enum MemberType { character, monster, object }
 
 class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   Map<String, String> directionLabelMap = {
@@ -56,99 +45,39 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
       return [];
     }
 
-    // TODO: Move the following blocks into a separate testable function
-    Map<int, String> populatedByIndex =
-        locationPopulatedByIndex[dungeonActionRecord.location.name] ?? {};
-    Map<String, int> populatedByName =
-        locationPopulatedByName[dungeonActionRecord.location.name] ?? {};
-
-    Map<String, MemberType> newLocationContents = {};
-    List<String> roomContentNames = [];
-
-    log.warning('*** Dungeon objects ${dungeonActionRecord.objects}');
-    if (dungeonActionRecord.objects != null) {
-      for (var dungeonObject in dungeonActionRecord.objects!) {
-        newLocationContents[dungeonObject.name] = MemberType.object;
-        roomContentNames.add(dungeonObject.name);
-      }
-    }
-    log.warning('*** Dungeon characters ${dungeonActionRecord.characters}');
-    if (dungeonActionRecord.characters != null) {
-      for (var dungeonCharacter in dungeonActionRecord.characters!) {
-        newLocationContents[dungeonCharacter.name] = MemberType.character;
-        roomContentNames.add(dungeonCharacter.name);
-      }
-    }
-    log.warning('*** Dungeon monsters ${dungeonActionRecord.monsters}');
-    if (dungeonActionRecord.monsters != null) {
-      for (var dungeonMonster in dungeonActionRecord.monsters!) {
-        newLocationContents[dungeonMonster.name] = MemberType.monster;
-        roomContentNames.add(dungeonMonster.name);
-      }
-    }
-
-    // Remove objects, characters or monsters already allocated and remove
-    // object, characters and monsters that are no longer present
-    var currentContentNames = populatedByIndex.values.toList();
-    for (var contentName in currentContentNames) {
-      if (newLocationContents[contentName] != null) {
-        // Location object, character or monster already allocated
-        newLocationContents.remove(contentName);
-      } else {
-        // Location object, character or monster no longer present
-        var contentIdx = populatedByName[contentName];
-        if (contentIdx != null) {
-          populatedByName.remove(contentName);
-          populatedByIndex.remove(contentIdx);
-          roomLocationsUnpopulated.remove(contentIdx);
-        }
-      }
-    }
-
-    // Shuffle unpopulated room locations
-    roomLocationsUnpopulated.shuffle();
-
-    // Allocate remaining objects, characters and monsters
-    newLocationContents.forEach((name, type) {
-      var contentIdx = roomLocationsUnpopulated.removeAt(0);
-      populatedByName[name] = contentIdx;
-      populatedByIndex[contentIdx] = name;
-    });
-
-    locationPopulatedByIndex[dungeonActionRecord.location.name] = populatedByIndex;
-    locationPopulatedByName[dungeonActionRecord.location.name] = populatedByName;
+    var locationContents = getLocationContents(dungeonActionRecord);
 
     int roomGridIdx = 0;
     List<Widget Function()> dunegonGridMemberFunctions = [
       // Top Row
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'northwest'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'north'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'northeast'),
       // Second Row
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'up'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       // Third Row
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'west'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'east'),
       // Fourth Row
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'down'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       // Bottom Row
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'southwest'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'south'),
-      () => roomWidget(context, populatedByIndex, roomGridIdx++),
+      () => roomWidget(context, locationContents, roomGridIdx++),
       () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'southeast'),
     ];
 
@@ -187,8 +116,39 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     );
   }
 
-  // Object widget
-  Widget objectWidget(BuildContext context, String objectName, String direction) {
+  // Room widget
+  Widget roomWidget(BuildContext context, Map<int, LocationContent> locationContents, int idx) {
+    if (locationContents[idx] == null) {
+      return emptyWidget('E$idx');
+    }
+    Widget returnWidget;
+    var locationContent = locationContents[idx];
+    switch (locationContent!.type) {
+      case ContentType.character:
+        {
+          returnWidget = characterWidget(context, locationContent.name);
+        }
+        break;
+      case ContentType.monster:
+        {
+          returnWidget = monsterWidget(context, locationContent.name);
+        }
+        break;
+      case ContentType.object:
+        {
+          returnWidget = objectWidget(context, locationContent.name);
+        }
+        break;
+      default:
+        {
+          returnWidget = emptyWidget('E$idx');
+        }
+    }
+    return returnWidget;
+  }
+
+  // Character widget
+  Widget characterWidget(BuildContext context, String objectName) {
     return Container(
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
@@ -210,13 +170,50 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     );
   }
 
-  // Room widget
-  Widget roomWidget(BuildContext context, Map<int, String> populatedByIndex, int idx) {
-    if (populatedByIndex[idx] != null) {
-      return emptyWidget(populatedByIndex[idx]!);
-    }
+  // Monster widget
+  Widget monsterWidget(BuildContext context, String objectName) {
+    return Container(
+      margin: const EdgeInsets.all(2),
+      child: ElevatedButton(
+        onPressed: () {
+          final log = getLogger('GameDungeonGridWidget');
 
-    return emptyWidget('E$idx');
+          final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
+          if (dungeonCubit.dungeonRecord == null) {
+            log.warning(
+              'onPressed - Dungeon cubit missing dungeon record, cannot initialise action',
+            );
+            return;
+          }
+          // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
+          _submitAction(context, 'look $objectName');
+        },
+        child: Text(objectName),
+      ),
+    );
+  }
+
+  // Object widget
+  Widget objectWidget(BuildContext context, String objectName) {
+    return Container(
+      margin: const EdgeInsets.all(2),
+      child: ElevatedButton(
+        onPressed: () {
+          final log = getLogger('GameDungeonGridWidget');
+
+          final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
+          if (dungeonCubit.dungeonRecord == null) {
+            log.warning(
+              'onPressed - Dungeon cubit missing dungeon record, cannot initialise action',
+            );
+            return;
+          }
+          // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
+          _submitAction(context, 'look $objectName');
+        },
+        child: Text(objectName),
+      ),
+    );
   }
 
   // Empty widget
