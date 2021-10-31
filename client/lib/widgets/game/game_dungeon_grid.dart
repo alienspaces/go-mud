@@ -108,7 +108,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'move $direction');
         },
         child: Text('${directionLabelMap[direction]}'),
@@ -162,7 +161,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'look $objectName');
         },
         style: ElevatedButton.styleFrom(
@@ -188,7 +186,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'look $objectName');
         },
         style: ElevatedButton.styleFrom(
@@ -214,7 +211,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          // TODO: Check action has been selected prior to allowing direction to be selected for consistent support of look actions
           _submitAction(context, 'look $objectName');
         },
         style: ElevatedButton.styleFrom(
