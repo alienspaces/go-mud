@@ -21,10 +21,16 @@ class CreateDungeonActionRecord extends Equatable {
 class DungeonActionRecord extends Equatable {
   final DungeonAction action;
   final DungeonLocation location;
+  final List<DungeonObject>? objects;
+  final List<DungeonCharacter>? characters;
+  final List<DungeonMonster>? monsters;
 
   const DungeonActionRecord({
     required this.action,
     required this.location,
+    required this.objects,
+    required this.characters,
+    required this.monsters,
   });
 
   factory DungeonActionRecord.fromJson(Map<String, dynamic> json) {
@@ -53,16 +59,24 @@ class DungeonActionRecord extends Equatable {
     }
 
     List<dynamic> directions = location['directions'];
-
     dungeonLocation = DungeonLocation(
       name: location['name'],
       description: location['description'],
       directions: directions.map((e) => e.toString()).toList(),
     );
 
+    List<dynamic>? objects = json['objects'];
+    List<DungeonObject>? dungeonObjects;
+    if (objects != null) {
+      dungeonObjects = objects.map((e) => DungeonObject.fromJson(e)).toList();
+    }
+
     return DungeonActionRecord(
       action: dungeonAction,
       location: dungeonLocation,
+      objects: dungeonObjects,
+      characters: null,
+      monsters: null,
     );
   }
 
@@ -103,6 +117,32 @@ class DungeonLocation {
   final String name;
   final String description;
   final List<String> directions;
-
   DungeonLocation({required this.name, required this.description, required this.directions});
+}
+
+class DungeonObject {
+  final String name;
+  DungeonObject({required this.name});
+
+  factory DungeonObject.fromJson(Map<String, dynamic> json) {
+    return DungeonObject(name: json['name']);
+  }
+}
+
+class DungeonCharacter {
+  final String name;
+  DungeonCharacter({required this.name});
+
+  factory DungeonCharacter.fromJson(Map<String, dynamic> json) {
+    return DungeonCharacter(name: json['name']);
+  }
+}
+
+class DungeonMonster {
+  final String name;
+  DungeonMonster({required this.name});
+
+  factory DungeonMonster.fromJson(Map<String, dynamic> json) {
+    return DungeonMonster(name: json['name']);
+  }
 }

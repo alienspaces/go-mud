@@ -19,8 +19,7 @@ void main() {
 
   // Dependencies
 
-  // When hostname is localhost and we are running
-  // in an emulator set backend to specific IP
+  // When hostname is localhost and we are running in an emulator set backend to specific IP
   if (!kIsWeb && config['serverHost'].toString() == 'localhost') {
     config['serverHost'] = '10.0.3.2';
   }

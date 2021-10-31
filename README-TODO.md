@@ -12,8 +12,10 @@
 
 ## Next
 
-- Client: Scrolling rooms
+- Client: Select action then select target
+- Client: Scrolling rooms for look and move actions
 
 ## Later
 
-- Server: Improve model tests
+- Server: Expand model tests
+- Server: Expand handler tests
