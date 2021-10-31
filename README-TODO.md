@@ -8,11 +8,10 @@
 
 ## Now
 
-- Client: Display different icons for room contents
+- Client: Select action then select target
 
 ## Next
 
-- Client: Select action then select target
 - Client: Scrolling rooms for look and move actions
 
 ## Later
@@ -24,3 +23,4 @@
 - Server: Look monster
 - Server: Look character
 - Server: Get and drop object
+- Client: Icons for room contents
