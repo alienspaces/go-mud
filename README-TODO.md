@@ -19,3 +19,8 @@
 
 - Server: Expand model tests
 - Server: Expand handler tests
+- Server: Look direction
+- Server: Look object
+- Server: Look monster
+- Server: Look character
+- Server: Get and drop object

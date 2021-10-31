@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,8 +21,6 @@ typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, 
 const int roomLocationCount = 14;
 Map<String, Map<int, String>> locationPopulatedByIndex = {};
 Map<String, Map<String, int>> locationPopulatedByName = {};
-// Map<int, String> populatedByIndex = {};
-// Map<String, int> populatedByName = {};
 List<int> roomLocationsUnpopulated = [for (var i = 0; i < roomLocationCount; i++) i];
 
 int characterIdx = 0;
