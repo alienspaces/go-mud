@@ -10,7 +10,7 @@ A M.U.D (multi user dungeon) with a back end API built with [`Go`](https://go.de
 
 ## Server
 
-📝 _Look at what these scripts actually do before running them!_
+📝 _Might be a good idea to look at what these scripts do before running them!_
 
 ### Start Server
 
