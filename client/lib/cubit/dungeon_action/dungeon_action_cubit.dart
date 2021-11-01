@@ -12,51 +12,20 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
 
-  String? action;
-  String? target;
-
   List<DungeonActionRecord>? dungeonActionRecords;
   DungeonActionRecord? dungeonActionRecord;
 
   DungeonActionCubit({required this.config, required this.repositories})
       : super(const DungeonActionStateInitial());
 
-  Future<void> selectAction(String selectAction) async {
+  Future<void> createAction(String dungeonID, String characterID, String command) async {
     final log = getLogger('DungeonActionCubit');
-    log.info('Selecting action $selectAction');
-    action = selectAction;
-    emit(DungeonActionStateCommand(action: action, target: target));
-  }
+    log.info('Creating dungeon action command >$command<');
 
-  Future<void> unselectAction() async {
-    final log = getLogger('DungeonActionCubit');
-    log.info('Unselecting action $action');
-    action = null;
-    emit(DungeonActionStateCommand(action: action, target: target));
-  }
+    emit(DungeonActionStateCreating(sentence: command));
 
-  Future<void> selectTarget(String selectTarget) async {
-    final log = getLogger('DungeonActionCubit');
-    log.info('Selecting target $selectTarget');
-    target = selectTarget;
-    emit(DungeonActionStateCommand(action: action, target: target));
-  }
-
-  Future<void> unselectTarget() async {
-    final log = getLogger('DungeonActionCubit');
-    log.info('Unselecting target $target');
-    target = null;
-    emit(DungeonActionStateCommand(action: action, target: target));
-  }
-
-  Future<void> submitAction(String dungeonID, String characterID) async {
-    final log = getLogger('DungeonActionCubit');
-    log.info('Creating dungeon action >$action< target >$target<');
-
-    emit(DungeonActionStateCreating(sentence: '$action $target'));
-
-    DungeonActionRecord? createdDungeonActionRecord = await repositories.dungeonActionRepository
-        .create(dungeonID, characterID, '$action $target');
+    DungeonActionRecord? createdDungeonActionRecord =
+        await repositories.dungeonActionRepository.create(dungeonID, characterID, command);
 
     log.info('Created dungeon action $createdDungeonActionRecord');
 

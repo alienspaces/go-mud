@@ -14,10 +14,10 @@ class DungeonActionStateInitial extends DungeonActionState {
 }
 
 @immutable
-class DungeonActionStateCommand extends DungeonActionState {
+class DungeonActionStatePreparing extends DungeonActionState {
   final String? action;
   final String? target;
-  const DungeonActionStateCommand({this.action, this.target});
+  const DungeonActionStatePreparing({this.action, this.target});
 
   @override
   List<Object?> get props => [action, target];

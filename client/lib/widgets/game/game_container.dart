@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 class GameContainerWidget extends StatefulWidget {
@@ -43,17 +44,19 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
       return;
     }
 
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    dungeonActionCubit.selectAction(
+    final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
+    dungeonCommandCubit.selectAction(
       'look',
     );
 
-    dungeonActionCubit.submitAction(
+    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
+    dungeonActionCubit.createAction(
       dungeonCubit.dungeonRecord!.id,
       characterCubit.characterRecord!.id,
+      dungeonCommandCubit.command(),
     );
 
-    dungeonActionCubit.unselectAction();
+    dungeonCommandCubit.unselectAction();
   }
 
   @override

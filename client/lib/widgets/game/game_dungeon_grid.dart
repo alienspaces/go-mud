@@ -6,6 +6,7 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
@@ -18,10 +19,10 @@ class GameDungeonGridWidget extends StatefulWidget {
 
 typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
-double gridMemberWidth = 50;
-double gridMemberHeight = 50;
-
 class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
+  double gridMemberWidth = 50;
+  double gridMemberHeight = 50;
+
   Map<String, String> directionLabelMap = {
     'north': 'N',
     'northeast': 'NE',
@@ -35,7 +36,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     'down': 'D',
   };
 
-  List<Widget> generateGrid(BuildContext context) {
+  List<Widget> _generateGrid(BuildContext context) {
     final log = getLogger('CharacterCreateWidget');
 
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
@@ -50,35 +51,35 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     int roomGridIdx = 0;
     List<Widget Function()> dunegonGridMemberFunctions = [
       // Top Row
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'northwest'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'north'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'northeast'),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'northwest'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'north'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'northeast'),
       // Second Row
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'up'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'up'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
       // Third Row
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'west'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'east'),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'west'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'east'),
       // Fourth Row
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'down'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'down'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
       // Bottom Row
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'southwest'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'south'),
-      () => roomWidget(context, locationContents, roomGridIdx++),
-      () => directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'southeast'),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'southwest'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'south'),
+      () => _roomWidget(context, locationContents, roomGridIdx++),
+      () => _directionWidget(context, dungeonActionCubit.dungeonActionRecord!, 'southeast'),
     ];
 
     List<Widget> gridWidgets = [];
@@ -90,9 +91,9 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   // Direction widget
-  Widget directionWidget(BuildContext context, DungeonActionRecord record, String direction) {
+  Widget _directionWidget(BuildContext context, DungeonActionRecord record, String direction) {
     if (!record.location.directions.contains(direction)) {
-      return emptyWidget('${directionLabelMap[direction]}');
+      return _emptyWidget('${directionLabelMap[direction]}');
     }
 
     return Container(
@@ -108,7 +109,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          _submitTarget(context, direction);
+          _selectTarget(context, direction);
         },
         child: Text('${directionLabelMap[direction]}'),
       ),
@@ -116,102 +117,81 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   // Room widget
-  Widget roomWidget(BuildContext context, Map<int, LocationContent> locationContents, int idx) {
+  Widget _roomWidget(BuildContext context, Map<int, LocationContent> locationContents, int idx) {
     if (locationContents[idx] == null) {
-      return emptyWidget('E$idx');
+      return _emptyWidget('E$idx');
     }
     Widget returnWidget;
     var locationContent = locationContents[idx];
     switch (locationContent!.type) {
       case ContentType.character:
         {
-          returnWidget = characterWidget(context, locationContent.name);
+          returnWidget = _characterWidget(context, locationContent.name);
         }
         break;
       case ContentType.monster:
         {
-          returnWidget = monsterWidget(context, locationContent.name);
+          returnWidget = _monsterWidget(context, locationContent.name);
         }
         break;
       case ContentType.object:
         {
-          returnWidget = objectWidget(context, locationContent.name);
+          returnWidget = _objectWidget(context, locationContent.name);
         }
         break;
       default:
         {
-          returnWidget = emptyWidget('E$idx');
+          returnWidget = _emptyWidget('E$idx');
         }
     }
     return returnWidget;
   }
 
   // Character widget
-  Widget characterWidget(BuildContext context, String objectName) {
+  Widget _characterWidget(BuildContext context, String characterName) {
     return Container(
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameDungeonGridWidget');
-
-          final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-          if (dungeonCubit.dungeonRecord == null) {
-            log.warning(
-              'onPressed - Dungeon cubit missing dungeon record, cannot initialise action',
-            );
-            return;
-          }
-          _submitTarget(context, 'look $objectName');
+          log.info('Selecting character >$characterName<');
+          _selectTarget(context, characterName);
         },
         style: ElevatedButton.styleFrom(
           primary: Colors.green,
         ),
-        child: Text(objectName),
+        child: Text(characterName),
       ),
     );
   }
 
   // Monster widget
-  Widget monsterWidget(BuildContext context, String objectName) {
+  Widget _monsterWidget(BuildContext context, String monsterName) {
     return Container(
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameDungeonGridWidget');
-
-          final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-          if (dungeonCubit.dungeonRecord == null) {
-            log.warning(
-              'onPressed - Dungeon cubit missing dungeon record, cannot initialise action',
-            );
-            return;
-          }
-          _submitTarget(context, 'look $objectName');
+          log.info('Selecting monster >$monsterName<');
+          _selectTarget(context, monsterName);
         },
         style: ElevatedButton.styleFrom(
           primary: Colors.orange,
         ),
-        child: Text(objectName),
+        child: Text(monsterName),
       ),
     );
   }
 
   // Object widget
-  Widget objectWidget(BuildContext context, String objectName) {
+  Widget _objectWidget(BuildContext context, String objectName) {
     return Container(
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameDungeonGridWidget');
-
-          final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-          if (dungeonCubit.dungeonRecord == null) {
-            log.warning(
-              'onPressed - Dungeon cubit missing dungeon record, cannot initialise action',
-            );
-            return;
-          }
-          _submitTarget(context, 'look $objectName');
+          log.info('Selecting object >$objectName<');
+          _selectTarget(context, objectName);
         },
         style: ElevatedButton.styleFrom(
           primary: Colors.brown,
@@ -222,7 +202,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   // Empty widget
-  Widget emptyWidget(String label) {
+  Widget _emptyWidget(String label) {
     return Container(
       width: gridMemberWidth,
       height: gridMemberHeight,
@@ -239,7 +219,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     );
   }
 
-  void _submitTarget(BuildContext context, String target) {
+  void _selectTarget(BuildContext context, String target) {
     final log = getLogger('GameDungeonGridWidget');
     log.info('Submitting move action..');
 
@@ -255,20 +235,15 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
       return;
     }
 
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
+    final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
+    if (dungeonCommandCubit.target == target) {
+      log.info('++ Unselecting target $target');
+      dungeonCommandCubit.unselectTarget();
+      return;
+    }
 
-    // TODO: Select action beforehand..
-    dungeonActionCubit.selectAction('move');
-
-    dungeonActionCubit.selectTarget(target);
-
-    dungeonActionCubit.submitAction(
-      dungeonCubit.dungeonRecord!.id,
-      characterCubit.characterRecord!.id,
-    );
-
-    dungeonActionCubit.unselectTarget();
-    dungeonActionCubit.unselectAction();
+    log.info('++ Selecting target $target');
+    dungeonCommandCubit.selectTarget(target);
   }
 
   @override
@@ -296,7 +271,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             height: gridMemberHeight * 5,
             child: GridView.count(
               crossAxisCount: 5,
-              children: generateGrid(context),
+              children: _generateGrid(context),
             ),
           );
         }

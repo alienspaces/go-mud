@@ -11,6 +11,7 @@ import 'package:go_mud_client/theme.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 void main() {
@@ -55,6 +56,10 @@ class MainApp extends StatelessWidget {
           BlocProvider<DungeonActionCubit>(
             create: (BuildContext context) =>
                 DungeonActionCubit(config: config, repositories: repositories),
+          ),
+          BlocProvider<DungeonCommandCubit>(
+            create: (BuildContext context) =>
+                DungeonCommandCubit(config: config, repositories: repositories),
           ),
           BlocProvider<CharacterCubit>(
             create: (BuildContext context) =>

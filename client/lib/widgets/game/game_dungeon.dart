@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_grid.dart';
 
 class GameDungeonWidget extends StatefulWidget {
@@ -39,9 +41,9 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
                   margin: const EdgeInsets.fromLTRB(5, 5, 5, 10),
                   child: Text('${state.dungeonActionRecord?.location.description}'),
                 ),
-                // Dungeon location directions
                 const GameDungeonGridWidget(),
-                Text('Command: ${state.dungeonActionRecord?.action.command}'),
+                const GameDungeonActionWidget(),
+                const GameDungeonCommandWidget(),
               ],
             ),
           );

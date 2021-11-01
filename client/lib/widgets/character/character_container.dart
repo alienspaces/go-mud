@@ -49,7 +49,12 @@ class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
         }
 
         // Shouldn't get here..
-        return Container();
+        log.info('Character state >$characterState<');
+
+        // ignore: avoid_unnecessary_containers
+        return Container(
+          child: const Text('Character Container, failed getting character'),
+        );
       },
     );
   }

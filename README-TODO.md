@@ -8,10 +8,11 @@
 
 ## Now
 
-- Client: Select action then select target
+- Server: Update API documentation
 
 ## Next
 
+- Server: Better handling of command input and errors
 - Client: Scrolling rooms for look and move actions
 - All: Docker Compose
 

@@ -8,7 +8,7 @@ import 'package:go_mud_client/cubit/character/character_cubit.dart';
 class CharacterWidget extends StatelessWidget {
   const CharacterWidget({Key? key}) : super(key: key);
   Widget _buildAttribute(String name, int? value) {
-    EdgeInsetsGeometry padding = const EdgeInsets.fromLTRB(10, 10, 10, 10);
+    EdgeInsetsGeometry padding = const EdgeInsets.fromLTRB(10, 7, 10, 7);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
