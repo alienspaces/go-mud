@@ -1,4 +1,3 @@
-import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,6 +7,7 @@ import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
 class GameDungeonGridWidget extends StatefulWidget {
   const GameDungeonGridWidget({Key? key}) : super(key: key);
@@ -108,7 +108,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          _submitAction(context, 'move $direction');
+          _submitTarget(context, direction);
         },
         child: Text('${directionLabelMap[direction]}'),
       ),
@@ -161,7 +161,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          _submitAction(context, 'look $objectName');
+          _submitTarget(context, 'look $objectName');
         },
         style: ElevatedButton.styleFrom(
           primary: Colors.green,
@@ -186,7 +186,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          _submitAction(context, 'look $objectName');
+          _submitTarget(context, 'look $objectName');
         },
         style: ElevatedButton.styleFrom(
           primary: Colors.orange,
@@ -211,7 +211,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
             );
             return;
           }
-          _submitAction(context, 'look $objectName');
+          _submitTarget(context, 'look $objectName');
         },
         style: ElevatedButton.styleFrom(
           primary: Colors.brown,
@@ -239,7 +239,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     );
   }
 
-  void _submitAction(BuildContext context, String action) {
+  void _submitTarget(BuildContext context, String target) {
     final log = getLogger('GameDungeonGridWidget');
     log.info('Submitting move action..');
 
@@ -256,11 +256,19 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
     }
 
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    dungeonActionCubit.createAction(
+
+    // TODO: Select action beforehand..
+    dungeonActionCubit.selectAction('move');
+
+    dungeonActionCubit.selectTarget(target);
+
+    dungeonActionCubit.submitAction(
       dungeonCubit.dungeonRecord!.id,
       characterCubit.characterRecord!.id,
-      action,
     );
+
+    dungeonActionCubit.unselectTarget();
+    dungeonActionCubit.unselectAction();
   }
 
   @override

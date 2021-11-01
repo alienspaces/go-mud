@@ -44,11 +44,16 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
     }
 
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    dungeonActionCubit.createAction(
-      dungeonCubit.dungeonRecord!.id,
-      characterCubit.characterRecord!.id,
+    dungeonActionCubit.selectAction(
       'look',
     );
+
+    dungeonActionCubit.submitAction(
+      dungeonCubit.dungeonRecord!.id,
+      characterCubit.characterRecord!.id,
+    );
+
+    dungeonActionCubit.unselectAction();
   }
 
   @override
