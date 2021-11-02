@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/brianvoe/gofakeit"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
 
@@ -185,6 +187,36 @@ func TestDungeonCharacterHandler(t *testing.T) {
 			},
 			responseCode: http.StatusNotFound,
 		},
+		{
+			name: "POST - Create one with valid attributes",
+			config: func(rnr *Runner) server.HandlerConfig {
+				return rnr.HandlerConfig[4]
+			},
+			requestHeaders: func(data harness.Data) map[string]string {
+				headers := map[string]string{
+					"Authorization": "Bearer " + validAuthToken(),
+				}
+				return headers
+			},
+			requestParams: func(data harness.Data) map[string]string {
+				params := map[string]string{
+					":dungeon_id": data.DungeonRecs[0].ID,
+				}
+				return params
+			},
+			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
+				res := schema.DungeonCharacterRequest{
+					Data: schema.DungeonCharacterData{
+						Name:         gofakeit.Name() + gofakeit.Name(),
+						Strength:     10,
+						Dexterity:    10,
+						Intelligence: 10,
+					},
+				}
+				return &res
+			},
+			responseCode: http.StatusOK,
+		},
 	}
 
 	for _, tc := range tests {
@@ -317,6 +349,12 @@ func TestDungeonCharacterHandler(t *testing.T) {
 				}
 				if cfg.Method == http.MethodPut {
 					require.False(t, res.Data[0].UpdatedAt.IsZero(), "UpdatedAt is not zero")
+				}
+
+				if cfg.Method == http.MethodPost {
+					if len(res.Data) != 0 {
+						th.AddDungeonCharacterTeardownID(res.Data[0].ID)
+					}
 				}
 			}
 		}()

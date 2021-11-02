@@ -56,7 +56,7 @@ func NewRunner() *Runner {
 				Description: "Get a dungeon.",
 			},
 		},
-		// Characters - 2
+		// Characters - 2 - Get many
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters",
@@ -67,7 +67,7 @@ func NewRunner() *Runner {
 				Description: "Get characters.",
 			},
 		},
-		// Characters - 3
+		// Characters - 3 - Get one
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters/:character_id",
@@ -78,7 +78,7 @@ func NewRunner() *Runner {
 				Description: "Get a character.",
 			},
 		},
-		// Characters - 4
+		// Characters - 4 - Create
 		{
 			Method:           http.MethodPost,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters",
@@ -89,7 +89,7 @@ func NewRunner() *Runner {
 				Description: "Create a character.",
 			},
 		},
-		// Characters - 5
+		// Characters - 5 - Update
 		{
 			Method:           http.MethodPut,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters",
@@ -100,7 +100,7 @@ func NewRunner() *Runner {
 				Description: "Update a character.",
 			},
 		},
-		// Characters - 6
+		// Character Action - 6 - Create
 		{
 			Method:      http.MethodPost,
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",

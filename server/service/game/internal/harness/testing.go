@@ -452,6 +452,26 @@ func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, du
 	return dungeonConfig, nil
 }
 
+func (t *Testing) AddDungeonCharacterTeardownID(id string) {
+	rec := record.DungeonCharacter{}
+	rec.ID = id
+
+	t.teardownData.DungeonCharacterRecs = append(
+		t.teardownData.DungeonCharacterRecs,
+		rec,
+	)
+}
+
+func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
+	rec := record.DungeonAction{}
+	rec.ID = id
+
+	t.teardownData.DungeonActionRecs = append(
+		t.teardownData.DungeonActionRecs,
+		rec,
+	)
+}
+
 // RemoveData -
 func (t *Testing) RemoveData() error {
 
