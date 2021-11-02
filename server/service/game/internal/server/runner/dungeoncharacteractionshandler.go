@@ -153,6 +153,8 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 			TargetDungeonMonsterName:       dungeonActionRec.ResolvedTargetDungeonMonsterName.String,
 			TargetDungeonLocationName:      dungeonActionRec.ResolvedTargetDungeonLocationName.String,
 			TargetDungeonLocationDirection: dungeonActionRec.ResolvedTargetDungeonLocationDirection.String,
+			CreatedAt:                      dungeonActionRec.CreatedAt,
+			UpdatedAt:                      dungeonActionRec.UpdatedAt.Time,
 		},
 		Location: schema.LocationData{
 			Name:        dungeonLocationRec.Name,

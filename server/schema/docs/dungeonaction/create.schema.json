@@ -9,7 +9,6 @@
     }
   },
   "required": ["data"],
-  "additionalProperties": false,
   "definitions": {
     "data": {
       "type": "object",

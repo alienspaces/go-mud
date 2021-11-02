@@ -460,6 +460,8 @@ func (t *Testing) AddDungeonCharacterTeardownID(id string) {
 		t.teardownData.DungeonCharacterRecs,
 		rec,
 	)
+
+	// TODO: Get all related character child records and add those for teardown
 }
 
 func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
@@ -470,6 +472,23 @@ func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
 		t.teardownData.DungeonActionRecs,
 		rec,
 	)
+
+	if t.CommitData {
+		t.InitTx(nil)
+	}
+	dungeonActionRecordSet, err := t.Model.(*model.Model).GetDungeonActionRecordSet(id)
+	if err != nil {
+		t.Log.Warn("Failed fetch dungeon action record set >%v<", err)
+		return
+	}
+
+	t.teardownData.DungeonActionCharacterRecs = append(t.teardownData.DungeonActionCharacterRecs, dungeonActionRecordSet.DungeonActionCharacterRecs...)
+	t.teardownData.DungeonActionMonsterRecs = append(t.teardownData.DungeonActionMonsterRecs, dungeonActionRecordSet.DungeonActionMonsterRecs...)
+	t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.DungeonActionObjectRecs...)
+
+	if t.CommitData {
+		t.RollbackTx()
+	}
 }
 
 // RemoveData -
