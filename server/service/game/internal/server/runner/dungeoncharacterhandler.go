@@ -28,8 +28,18 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 		rnr.WriteNotFoundError(l, w, dungeonID)
 		return
 	}
+	if !m.(*model.Model).IsUUID(dungeonID) {
+		l.Warn("Dungeon ID >%s< is not a UUID", dungeonID)
+		rnr.WriteNotFoundError(l, w, dungeonID)
+		return
+	}
 
 	if characterID == "" {
+		rnr.WriteNotFoundError(l, w, characterID)
+		return
+	}
+	if !m.(*model.Model).IsUUID(characterID) {
+		l.Warn("Character ID >%s< is not a UUID", characterID)
 		rnr.WriteNotFoundError(l, w, characterID)
 		return
 	}
@@ -96,8 +106,27 @@ func (rnr *Runner) GetDungeonCharactersHandler(w http.ResponseWriter, r *http.Re
 		rnr.WriteNotFoundError(l, w, dungeonID)
 		return
 	}
+	if !m.(*model.Model).IsUUID(dungeonID) {
+		l.Warn("Dungeon ID >%s< is not a UUID", dungeonID)
+		rnr.WriteNotFoundError(l, w, dungeonID)
+		return
+	}
 
-	l.Info("Querying dungeon records")
+	l.Info("Querying dungeon record")
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	if err != nil {
+		l.Warn("Failed getting dungeon record >%v<", err)
+		rnr.WriteModelError(l, w, err)
+		return
+	}
+
+	if dungeonRec == nil {
+		l.Warn("Dungeon ID >%s< not found", dungeonID)
+		rnr.WriteNotFoundError(l, w, dungeonID)
+		return
+	}
+
+	l.Info("Querying dungeon character records")
 
 	// Add query parameters
 	params := make(map[string]interface{})
@@ -111,6 +140,7 @@ func (rnr *Runner) GetDungeonCharactersHandler(w http.ResponseWriter, r *http.Re
 
 	recs, err = m.(*model.Model).GetDungeonCharacterRecs(params, nil, false)
 	if err != nil {
+		l.Warn("Failed getting dungeon character records >%v<", err)
 		rnr.WriteModelError(l, w, err)
 		return
 	}

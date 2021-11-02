@@ -6,19 +6,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
 func NewTestHarness() (*harness.Testing, error) {
 
 	// harness
-	config := harness.DataConfig{
-		DungeonConfig: []harness.DungeonConfig{
-			{
-				Record: record.Dungeon{},
-			},
-		},
-	}
+	config := harness.DefaultDataConfig
 
 	h, err := harness.NewTesting(config)
 	if err != nil {

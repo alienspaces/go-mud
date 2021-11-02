@@ -34,7 +34,7 @@ func NewRunner() *Runner {
 	r.ModellerFunc = r.Modeller
 
 	r.HandlerConfig = []server.HandlerConfig{
-		// Dungeons
+		// Dungeons - 0
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons",
@@ -45,6 +45,7 @@ func NewRunner() *Runner {
 				Description: "Query dungeons.",
 			},
 		},
+		// Dungeons - 1
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons/:dungeon_id",
@@ -55,7 +56,7 @@ func NewRunner() *Runner {
 				Description: "Get a dungeon.",
 			},
 		},
-		// Characters
+		// Characters - 2
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters",
@@ -66,6 +67,7 @@ func NewRunner() *Runner {
 				Description: "Get characters.",
 			},
 		},
+		// Characters - 3
 		{
 			Method:           http.MethodGet,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters/:character_id",
@@ -76,6 +78,7 @@ func NewRunner() *Runner {
 				Description: "Get a character.",
 			},
 		},
+		// Characters - 4
 		{
 			Method:           http.MethodPost,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters",
@@ -86,6 +89,7 @@ func NewRunner() *Runner {
 				Description: "Create a character.",
 			},
 		},
+		// Characters - 5
 		{
 			Method:           http.MethodPut,
 			Path:             "/api/v1/dungeons/:dungeon_id/characters",
@@ -96,6 +100,7 @@ func NewRunner() *Runner {
 				Description: "Update a character.",
 			},
 		},
+		// Characters - 6
 		{
 			Method:      http.MethodPost,
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
@@ -109,63 +114,7 @@ func NewRunner() *Runner {
 				Description: "Create a dungeon character action.",
 			},
 		},
-		// {
-		// 	Method:      http.MethodPost,
-		// 	Path:        "/api/v1/dungeons",
-		// 	HandlerFunc: r.PostDungeonsHandler,
-		// 	MiddlewareConfig: server.MiddlewareConfig{
-		// 		AuthTypes: []string{
-		// 			auth.AuthTypeJWT,
-		// 		},
-		// 		ValidateSchemaLocation: "dungeon",
-		// 		ValidateSchemaMain:     "main.schema.json",
-		// 		ValidateSchemaReferences: []string{
-		// 			"data.schema.json",
-		// 		},
-		// 	},
-		// 	DocumentationConfig: server.DocumentationConfig{
-		// 		Document:    true,
-		// 		Description: "Create a dungeon.",
-		// 	},
-		// },
-		// {
-		// 	Method:      http.MethodPost,
-		// 	Path:        "/api/v1/dungeons/:dungeon_id",
-		// 	HandlerFunc: r.PostDungeonsHandler,
-		// 	MiddlewareConfig: server.MiddlewareConfig{
-		// 		AuthTypes: []string{
-		// 			auth.AuthTypeJWT,
-		// 		},
-		// 		ValidateSchemaLocation: "dungeon",
-		// 		ValidateSchemaMain:     "main.schema.json",
-		// 		ValidateSchemaReferences: []string{
-		// 			"data.schema.json",
-		// 		},
-		// 	},
-		// 	DocumentationConfig: server.DocumentationConfig{
-		// 		Document:    true,
-		// 		Description: "Create a dungeon.",
-		// 	},
-		// },
-		// {
-		// 	Method:      http.MethodPut,
-		// 	Path:        "/api/v1/dungeons/:dungeon_id",
-		// 	HandlerFunc: r.PutDungeonsHandler,
-		// 	MiddlewareConfig: server.MiddlewareConfig{
-		// 		AuthTypes: []string{
-		// 			auth.AuthTypeJWT,
-		// 		},
-		// 		ValidateSchemaLocation: "dungeon",
-		// 		ValidateSchemaMain:     "main.schema.json",
-		// 		ValidateSchemaReferences: []string{
-		// 			"data.schema.json",
-		// 		},
-		// 	},
-		// 	DocumentationConfig: server.DocumentationConfig{
-		// 		Document:    true,
-		// 		Description: "Update a dungeon.",
-		// 	},
-		// },
+		// Documentation - 7
 		{
 			Method:           http.MethodGet,
 			Path:             "/",

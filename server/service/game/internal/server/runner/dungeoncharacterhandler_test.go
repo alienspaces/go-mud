@@ -19,7 +19,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
-// TODO: Update dungeon character handler tests
 func TestDungeonCharacterHandler(t *testing.T) {
 
 	// Test harness
@@ -36,9 +35,9 @@ func TestDungeonCharacterHandler(t *testing.T) {
 		requestHeaders func(data harness.Data) map[string]string
 		requestParams  func(data harness.Data) map[string]string
 		queryParams    func(data harness.Data) map[string]string
-		requestData    func(data harness.Data) *schema.DungeonRequest
+		requestData    func(data harness.Data) *schema.DungeonCharacterRequest
 		responseCode   int
-		responseData   func(data harness.Data) *schema.DungeonResponse
+		responseData   func(data harness.Data) *schema.DungeonCharacterResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -53,9 +52,9 @@ func TestDungeonCharacterHandler(t *testing.T) {
 
 	tests := []TestCase{
 		{
-			name: "GET - Get existing",
+			name: "GET - Get many",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[1]
+				return rnr.HandlerConfig[2]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -69,15 +68,15 @@ func TestDungeonCharacterHandler(t *testing.T) {
 				}
 				return params
 			},
-			requestData: func(data harness.Data) *schema.DungeonRequest {
+			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
 				return nil
 			},
 			responseCode: http.StatusOK,
-			responseData: func(data harness.Data) *schema.DungeonResponse {
-				res := schema.DungeonResponse{
-					Data: []schema.DungeonData{
+			responseData: func(data harness.Data) *schema.DungeonCharacterResponse {
+				res := schema.DungeonCharacterResponse{
+					Data: []schema.DungeonCharacterData{
 						{
-							ID: data.DungeonRecs[0].ID,
+							ID: data.DungeonCharacterRecs[0].ID,
 						},
 					},
 				}
@@ -85,9 +84,67 @@ func TestDungeonCharacterHandler(t *testing.T) {
 			},
 		},
 		{
-			name: "GET - Get non-existant",
+			name: "GET - Get many with invalid dungeon ID",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[1]
+				return rnr.HandlerConfig[2]
+			},
+			requestHeaders: func(data harness.Data) map[string]string {
+				headers := map[string]string{
+					"Authorization": "Bearer " + validAuthToken(),
+				}
+				return headers
+			},
+			requestParams: func(data harness.Data) map[string]string {
+				params := map[string]string{
+					":dungeon_id": "21954f35-76fb-4a4a-bc39-fba15432b28b",
+				}
+				return params
+			},
+			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
+				return nil
+			},
+			responseCode: http.StatusNotFound,
+			responseData: func(data harness.Data) *schema.DungeonCharacterResponse {
+				return nil
+			},
+		},
+		{
+			name: "GET - Get one",
+			config: func(rnr *Runner) server.HandlerConfig {
+				return rnr.HandlerConfig[3]
+			},
+			requestHeaders: func(data harness.Data) map[string]string {
+				headers := map[string]string{
+					"Authorization": "Bearer " + validAuthToken(),
+				}
+				return headers
+			},
+			requestParams: func(data harness.Data) map[string]string {
+				params := map[string]string{
+					":dungeon_id":   data.DungeonRecs[0].ID,
+					":character_id": data.DungeonCharacterRecs[0].ID,
+				}
+				return params
+			},
+			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
+				return nil
+			},
+			responseCode: http.StatusOK,
+			responseData: func(data harness.Data) *schema.DungeonCharacterResponse {
+				res := schema.DungeonCharacterResponse{
+					Data: []schema.DungeonCharacterData{
+						{
+							ID: data.DungeonCharacterRecs[0].ID,
+						},
+					},
+				}
+				return &res
+			},
+		},
+		{
+			name: "GET - Get one with invalid dungeon ID",
+			config: func(rnr *Runner) server.HandlerConfig {
+				return rnr.HandlerConfig[3]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -101,7 +158,29 @@ func TestDungeonCharacterHandler(t *testing.T) {
 				}
 				return params
 			},
-			requestData: func(data harness.Data) *schema.DungeonRequest {
+			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
+				return nil
+			},
+			responseCode: http.StatusNotFound,
+		},
+		{
+			name: "GET - Get one with invalid character ID",
+			config: func(rnr *Runner) server.HandlerConfig {
+				return rnr.HandlerConfig[3]
+			},
+			requestHeaders: func(data harness.Data) map[string]string {
+				headers := map[string]string{
+					"Authorization": "Bearer " + validAuthToken(),
+				}
+				return headers
+			},
+			requestParams: func(data harness.Data) map[string]string {
+				params := map[string]string{
+					":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+				}
+				return params
+			},
+			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
 				return nil
 			},
 			responseCode: http.StatusNotFound,
@@ -213,12 +292,12 @@ func TestDungeonCharacterHandler(t *testing.T) {
 			// test status
 			require.Equalf(t, tc.responseCode, rec.Code, "%s - Response code equals expected", tc.name)
 
-			res := schema.DungeonResponse{}
+			res := schema.DungeonCharacterResponse{}
 			err = json.NewDecoder(rec.Body).Decode(&res)
 			require.NoError(t, err, "Decode returns without error")
 
 			// response data
-			var resData *schema.DungeonResponse
+			var resData *schema.DungeonCharacterResponse
 			if tc.responseData != nil {
 				resData = tc.responseData(th.Data)
 			}
