@@ -8,11 +8,10 @@
 
 ## Now
 
-- Server: Update API documentation
+- Client: Scrolling rooms for look and move actions
 
 ## Next
 
-- Client: Scrolling rooms for look and move actions
 - All: Docker Compose
 
 ## Later
