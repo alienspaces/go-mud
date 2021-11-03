@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strings"
 
 	"gitlab.com/alienspaces/go-mud/server/core/store"
@@ -28,7 +29,14 @@ func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet
 		// "drop":  m.resolveDropAction,
 	}
 
-	dungeonActionRec, err := resolveFuncs[resolved.Command](resolved.Sentence, records)
+	resolveFunc, ok := resolveFuncs[resolved.Command]
+	if !ok {
+		msg := fmt.Sprintf("Command >%s< could not be resolved", resolved.Command)
+		m.Log.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	dungeonActionRec, err := resolveFunc(resolved.Sentence, records)
 	if err != nil {
 		m.Log.Warn("Failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err

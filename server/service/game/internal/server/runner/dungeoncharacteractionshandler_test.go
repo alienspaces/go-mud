@@ -52,7 +52,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 
 	tests := []TestCase{
 		{
-			name: "POST - Create one with valid attributes",
+			name: "POST - Create one with valid sentence",
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[6]
 			},
@@ -78,6 +78,34 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				return &res
 			},
 			responseCode: http.StatusOK,
+		},
+		{
+			name: "POST - Create one with empty sentence",
+			config: func(rnr *Runner) server.HandlerConfig {
+				return rnr.HandlerConfig[6]
+			},
+			requestHeaders: func(data harness.Data) map[string]string {
+				headers := map[string]string{
+					"Authorization": "Bearer " + validAuthToken(),
+				}
+				return headers
+			},
+			requestParams: func(data harness.Data) map[string]string {
+				params := map[string]string{
+					":dungeon_id":   data.DungeonRecs[0].ID,
+					":character_id": data.DungeonCharacterRecs[0].ID,
+				}
+				return params
+			},
+			requestData: func(data harness.Data) *schema.DungeonActionRequest {
+				res := schema.DungeonActionRequest{
+					Data: schema.DungeonActionRequestData{
+						Sentence: "",
+					},
+				}
+				return &res
+			},
+			responseCode: http.StatusBadRequest,
 		},
 	}
 
