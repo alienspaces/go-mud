@@ -8,6 +8,8 @@
 
 ## API Design
 
+📝 _Incomplete_
+
 The API is designed to emulate the experience of hand typed commands with responses that describe the result of that command.
 
 Each time a command is submitted an event is created. Responses include the results of the command along with the names and descriptions of locations, characters, monsters and objects that are present at the location when the event occurred.
