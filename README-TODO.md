@@ -25,3 +25,6 @@
 - Server: Look character
 - Server: Stash, equip and drop object
 - Client: Icons for room contents
+- Server: Implement 2 second turns
+- Client: Implement 2 second progress bar and retries
+- Server: Implement monster movement
