@@ -12,7 +12,6 @@
 
 ## Next
 
-- Server: Better handling of command input and errors
 - Client: Scrolling rooms for look and move actions
 - All: Docker Compose
 
@@ -24,5 +23,5 @@
 - Server: Look object
 - Server: Look monster
 - Server: Look character
-- Server: Get and drop object
+- Server: Stash, equip and drop object
 - Client: Icons for room contents
