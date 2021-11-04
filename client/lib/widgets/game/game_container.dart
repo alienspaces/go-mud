@@ -66,6 +66,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
 
     // ignore: avoid_unnecessary_containers
     return Container(
+      color: Colors.yellow[100],
       child: Column(
         children: const <Widget>[
           GameCharacterWidget(),

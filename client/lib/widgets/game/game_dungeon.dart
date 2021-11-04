@@ -6,7 +6,7 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_grid.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_grid_container.dart';
 
 class GameDungeonWidget extends StatefulWidget {
   const GameDungeonWidget({Key? key}) : super(key: key);
@@ -29,6 +29,7 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
         if (state is DungeonActionStateCreated) {
           // ignore: avoid_unnecessary_containers
           return Container(
+            color: Colors.orange[100],
             child: Column(
               children: <Widget>[
                 // Dungeon location description
@@ -41,7 +42,7 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
                   margin: const EdgeInsets.fromLTRB(5, 5, 5, 10),
                   child: Text('${state.dungeonActionRecord?.location.description}'),
                 ),
-                const GameDungeonGridWidget(),
+                const GameDungeonGridContainerWidget(),
                 const GameDungeonActionWidget(),
                 const GameDungeonCommandWidget(),
               ],
