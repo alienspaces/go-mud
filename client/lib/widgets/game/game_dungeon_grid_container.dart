@@ -25,6 +25,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
       },
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
+          // TODO: Based on the resulting dungeon action command animate the result
           return Stack(
             children: const [
               GameDungeonGridWidget(),

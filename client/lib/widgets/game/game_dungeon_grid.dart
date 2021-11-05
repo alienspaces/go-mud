@@ -256,28 +256,23 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
         log.info('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
-        if (state is DungeonActionStateCreated) {
-          return Container(
-            decoration: BoxDecoration(
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFDEDEDE),
+            border: Border.all(
               color: const Color(0xFFDEDEDE),
-              border: Border.all(
-                color: const Color(0xFFDEDEDE),
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            padding: const EdgeInsets.all(1),
-            margin: const EdgeInsets.all(5),
-            width: gridMemberWidth * 5,
-            height: gridMemberHeight * 5,
-            child: GridView.count(
-              crossAxisCount: 5,
-              children: _generateGrid(context),
-            ),
-          );
-        }
-
-        // Empty
-        return Container();
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+          ),
+          padding: const EdgeInsets.all(1),
+          margin: const EdgeInsets.all(5),
+          width: gridMemberWidth * 5,
+          height: gridMemberHeight * 5,
+          child: GridView.count(
+            crossAxisCount: 5,
+            children: _generateGrid(context),
+          ),
+        );
       },
     );
   }
