@@ -6,6 +6,7 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_description_container.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_grid_container.dart';
 
 class GameDungeonWidget extends StatefulWidget {
@@ -31,20 +32,11 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
           return Container(
             color: Colors.orange[100],
             child: Column(
-              children: <Widget>[
-                // Dungeon location description
-                Container(
-                  margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
-                  child: Text('${state.dungeonActionRecord?.location.name}',
-                      style: Theme.of(context).textTheme.headline5),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(5, 5, 5, 10),
-                  child: Text('${state.dungeonActionRecord?.location.description}'),
-                ),
-                const GameDungeonGridContainerWidget(),
-                const GameDungeonActionWidget(),
-                const GameDungeonCommandWidget(),
+              children: const <Widget>[
+                GameDungeonDescriptionContainerWidget(),
+                GameDungeonGridContainerWidget(),
+                GameDungeonActionWidget(),
+                GameDungeonCommandWidget(),
               ],
             ),
           );
