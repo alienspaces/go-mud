@@ -25,11 +25,22 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
       },
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
+          List<Widget> widgets = [];
           // TODO: Based on the resulting dungeon action command animate the result
+          var dungeonActionRecord = state.dungeonActionRecord;
+
+          if (dungeonActionRecord != null) {
+            log.info('Animating action command ${dungeonActionRecord.action.command}');
+            if (dungeonActionRecord.action.command == 'move') {
+              log.info('Animating move action');
+              widgets.add(const GameDungeonGridWidget());
+            } else if (dungeonActionRecord.action.command == 'look') {
+              log.info('Animating look action');
+              widgets.add(const GameDungeonGridWidget());
+            }
+          }
           return Stack(
-            children: const [
-              GameDungeonGridWidget(),
-            ],
+            children: widgets,
           );
         }
         return Container();
