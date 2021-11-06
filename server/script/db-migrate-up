@@ -18,49 +18,28 @@ if [[ "$MIGRATE_PATH" != *"$APP_SERVER_GO_VERSION"* ]]; then
     source "${BASH_SOURCE%/*}"/db-migrate-install || exit $?
 fi
 
-function migrate_up {
-    for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
+# NOTE: Add new services here
+SERVICE_NAMES=(template game)
+echo "=> (db-migrate-up) - Service names" "${SERVICE_NAMES[@]}"
 
-        # Ingoring template
-        if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
-            echo "=> (db-migrate-up) - Skipping database $SERVICE_NAME"
-            continue
-        fi
+for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
-        # run migrations
-        if [ -d "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" ]; then
+    # Ingoring template
+    if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
+        echo "=> (db-migrate-up) - Skipping database $SERVICE_NAME"
+        continue
+    fi
 
-            # load service specific environment
-            source "${BASH_SOURCE%/*}"/environment "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
+    # run migrations
+    if [ -d "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" ]; then
 
-            URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
+        # load service specific environment
+        source "${BASH_SOURCE%/*}"/environment "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
 
-            echo "=> Migration path $SERVICE_BASE_PATH/$SERVICE_NAME/migration"
+        URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
 
-            migrate -verbose -path "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" -database "$URL" -- up
-        fi
-    done
-}
+        echo "=> Migration path $SERVICE_BASE_PATH/$SERVICE_NAME/migration"
 
-# service directory list
-shopt -s dotglob
-shopt -s nullglob
-
-SERVICE_BASE_PATH=./service
-cd $SERVICE_BASE_PATH || exit
-SERVICE_NAMES=(*)
-cd - || exit
-
-migrate_up
-
-# Service example directory list
-if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
-    echo " => Migrating example services"
-
-    SERVICE_BASE_PATH=./service/example
-    cd $SERVICE_BASE_PATH || exit
-    SERVICE_NAMES=(*)
-    cd - || exit
-
-    migrate_up
-fi
+        migrate -verbose -path "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" -database "$URL" -- up
+    fi
+done

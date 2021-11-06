@@ -6,9 +6,10 @@ if [ -z "$APP_SERVER_GO_VERSION" ]; then
 fi
 
 # NOTE: Add new services here
-SERVICES=(game)
+SERVICE_NAMES=(game)
+echo "=> (load-seed-data) - Service names " "${SERVICE_NAMES[@]}"
 
-for SERVICE in "${SERVICES[@]}"; do
+for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
 
     # Reset APP_SERVER_PORT as each service should define
     # a unique server port in their local env
@@ -16,14 +17,14 @@ for SERVICE in "${SERVICES[@]}"; do
 
     # Ingoring template
     if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
-        echo "=> (start_service_databases) - Skipping database $SERVICE_NAME"
+        echo "=> (load-seed-data) - Skipping database $SERVICE_NAME"
         continue
     fi
 
-    cd "service/${SERVICE}" || exit
+    cd "service/${SERVICE_NAME}" || exit
 
     echo
-    echo "** Loading ${SERVICE} service seed data"
+    echo "=> (load-seed-data) - Loading ${SERVICE_NAME} service seed data"
     echo
 
     # Environment
