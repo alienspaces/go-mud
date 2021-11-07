@@ -26,7 +26,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
           List<Widget> widgets = [];
-          // TODO: Based on the resulting dungeon action command animate the result
+          // TODO: "play" actions here?
           var dungeonActionRecord = state.dungeonActionRecord;
 
           if (dungeonActionRecord != null) {

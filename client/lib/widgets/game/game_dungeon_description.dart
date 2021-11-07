@@ -6,8 +6,11 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
+enum DescriptionOpacity { fadeIn, fadeOut }
+
 class GameDungeonDescriptionWidget extends StatefulWidget {
-  const GameDungeonDescriptionWidget({Key? key}) : super(key: key);
+  final DescriptionOpacity fade;
+  const GameDungeonDescriptionWidget({Key? key, required this.fade}) : super(key: key);
 
   @override
   _GameDungeonDescriptionWidgetState createState() => _GameDungeonDescriptionWidgetState();
@@ -19,7 +22,7 @@ class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWid
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonDescriptionWidget');
-    log.info('Building..');
+    log.info('Building.. ${widget.fade}');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
@@ -28,7 +31,9 @@ class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWid
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
           // ignore: avoid_unnecessary_containers
-          return Container(
+          return AnimatedOpacity(
+            duration: const Duration(milliseconds: 1500),
+            opacity: widget.fade == DescriptionOpacity.fadeIn ? 1.0 : 0.0,
             child: Column(
               children: [
                 Container(

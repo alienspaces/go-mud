@@ -32,7 +32,7 @@ class _GameDungeonDescriptionContainerWidgetState
           var dungeonActionRecord = state.dungeonActionRecord;
 
           if (dungeonActionRecord != null) {
-            widgets.add(const GameDungeonDescriptionWidget());
+            widgets.add(const GameDungeonDescriptionWidget(fade: DescriptionOpacity.fadeIn));
           }
           return Stack(
             children: widgets,

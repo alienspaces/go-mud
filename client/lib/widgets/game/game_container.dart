@@ -57,6 +57,8 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
     );
 
     dungeonCommandCubit.unselectAction();
+
+    // TODO: Initial look action, maybe no "play" actions here..
   }
 
   @override
@@ -69,8 +71,14 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
       color: Colors.yellow[100],
       child: Column(
         children: const <Widget>[
-          GameCharacterWidget(),
-          GameDungeonWidget(),
+          Expanded(
+            flex: 1,
+            child: GameCharacterWidget(),
+          ),
+          Expanded(
+            flex: 2,
+            child: GameDungeonWidget(),
+          ),
         ],
       ),
     );
