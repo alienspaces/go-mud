@@ -12,7 +12,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
 
-  List<DungeonActionRecord>? dungeonActionRecords;
+  List<DungeonActionRecord> dungeonActionRecords = [];
   DungeonActionRecord? dungeonActionRecord;
 
   DungeonActionCubit({required this.config, required this.repositories})
@@ -31,7 +31,31 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
 
     if (createdDungeonActionRecord != null) {
       dungeonActionRecord = createdDungeonActionRecord;
-      emit(DungeonActionStateCreated(dungeonActionRecord: createdDungeonActionRecord));
+      dungeonActionRecords.add(createdDungeonActionRecord);
+
+      emit(
+        DungeonActionStateCreated(dungeonActionRecord: createdDungeonActionRecord),
+      );
     }
+  }
+
+  Future<bool> playAction(String dungeonID, String characterID, String command) async {
+    final log = getLogger('DungeonActionCubit');
+    log.info('Creating dungeon action command >$command<');
+
+    if (dungeonActionRecords.length <= 1) {
+      return false;
+    }
+
+    emit(
+      DungeonActionStatePlaying(
+          previous: dungeonActionRecords.removeAt(0), current: dungeonActionRecords[0]),
+    );
+
+    if (dungeonActionRecords.length <= 1) {
+      return false;
+    }
+
+    return true;
   }
 }
