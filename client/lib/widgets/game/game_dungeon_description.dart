@@ -18,7 +18,25 @@ class GameDungeonDescriptionWidget extends StatefulWidget {
 
 typedef DungeonDescriptionMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
-class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWidget> {
+class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWidget>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 1),
+    vsync: this,
+    lowerBound: widget.fade == DescriptionOpacity.fadeIn ? 0.0 : 1.0,
+    upperBound: widget.fade == DescriptionOpacity.fadeIn ? 1.0 : 0.0,
+  );
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeIn,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonDescriptionWidget');
@@ -30,10 +48,12 @@ class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWid
       },
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
+          // start animation
+          _controller.forward();
+
           // ignore: avoid_unnecessary_containers
-          return AnimatedOpacity(
-            duration: const Duration(milliseconds: 1500),
-            opacity: widget.fade == DescriptionOpacity.fadeIn ? 1.0 : 0.0,
+          return FadeTransition(
+            opacity: _animation,
             child: Column(
               children: [
                 Container(
