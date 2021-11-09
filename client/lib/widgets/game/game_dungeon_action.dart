@@ -90,7 +90,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
     dungeonCommandCubit.selectAction(action);
   }
 
-  void _submitAction(BuildContext context) {
+  void _submitAction(BuildContext context) async {
     final log = getLogger('GameDungeonGridWidget');
     log.info('Submitting action..');
 
@@ -109,14 +109,16 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
     log.info('++ Submitting action');
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
-    dungeonActionCubit.createAction(
+    await dungeonActionCubit.createAction(
       dungeonCubit.dungeonRecord!.id,
       characterCubit.characterRecord!.id,
       dungeonCommandCubit.command(),
     );
     dungeonCommandCubit.unselectAll();
 
-    // TODO: "play" actions here..
+    // TODO: Loop this using a timer allowing animations to complete
+    var moreActions = dungeonActionCubit.playAction();
+    log.info('++ More actions >$moreActions<');
   }
 
   @override

@@ -20,14 +20,14 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
 
   Future<void> createAction(String dungeonID, String characterID, String command) async {
     final log = getLogger('DungeonActionCubit');
-    log.info('Creating dungeon action command >$command<');
+    log.info('(createAction) Creating dungeon action command >$command<');
 
     emit(DungeonActionStateCreating(sentence: command));
 
     DungeonActionRecord? createdDungeonActionRecord =
         await repositories.dungeonActionRepository.create(dungeonID, characterID, command);
 
-    log.info('Created dungeon action $createdDungeonActionRecord');
+    log.info('(createAction) Created dungeon action $createdDungeonActionRecord');
 
     if (createdDungeonActionRecord != null) {
       dungeonActionRecord = createdDungeonActionRecord;
@@ -39,13 +39,16 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     }
   }
 
-  Future<bool> playAction(String dungeonID, String characterID, String command) async {
+  /// Returns true when there are more actions to play
+  bool playAction() {
     final log = getLogger('DungeonActionCubit');
-    log.info('Creating dungeon action command >$command<');
 
-    if (dungeonActionRecords.length <= 1) {
+    if (dungeonActionRecords.length < 2) {
+      log.info('(playAction) Not enough dungeon action records, not playing action');
       return false;
     }
+
+    log.info('(playAction) Playing action..');
 
     emit(
       DungeonActionStatePlaying(

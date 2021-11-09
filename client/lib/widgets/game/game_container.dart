@@ -57,8 +57,6 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
     );
 
     dungeonCommandCubit.unselectAction();
-
-    // TODO: Initial look action, maybe no "play" actions here..
   }
 
   @override

@@ -42,8 +42,25 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           return Stack(
             children: widgets,
           );
+        } else if (state is DungeonActionStatePlaying) {
+          List<Widget> widgets = [];
+          // TODO: "play" actions here?
+          var dungeonActionRecord = state.current;
+
+          log.info('Animating action command ${dungeonActionRecord.action.command}');
+          if (dungeonActionRecord.action.command == 'move') {
+            log.info('Animating move action');
+            widgets.add(const GameDungeonGridWidget());
+          } else if (dungeonActionRecord.action.command == 'look') {
+            log.info('Animating look action');
+            widgets.add(const GameDungeonGridWidget());
+          }
+          return Stack(
+            children: widgets,
+          );
         }
-        return Container();
+
+        return Container(child: Text("Blah"));
       },
     );
   }

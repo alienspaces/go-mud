@@ -10,7 +10,11 @@ enum DescriptionOpacity { fadeIn, fadeOut }
 
 class GameDungeonDescriptionWidget extends StatefulWidget {
   final DescriptionOpacity fade;
-  const GameDungeonDescriptionWidget({Key? key, required this.fade}) : super(key: key);
+  final DungeonActionRecord dungeonActionRecord;
+
+  const GameDungeonDescriptionWidget(
+      {Key? key, required this.fade, required this.dungeonActionRecord})
+      : super(key: key);
 
   @override
   _GameDungeonDescriptionWidgetState createState() => _GameDungeonDescriptionWidgetState();
@@ -23,8 +27,8 @@ class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWid
   late final AnimationController _controller = AnimationController(
     duration: const Duration(seconds: 1),
     vsync: this,
-    lowerBound: widget.fade == DescriptionOpacity.fadeIn ? 0.0 : 1.0,
-    upperBound: widget.fade == DescriptionOpacity.fadeIn ? 1.0 : 0.0,
+    lowerBound: 0.0,
+    upperBound: 1.0,
   );
   late final Animation<double> _animation = CurvedAnimation(
     parent: _controller,
@@ -47,31 +51,29 @@ class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWid
         log.info('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
-        if (state is DungeonActionStateCreated) {
-          // start animation
-          _controller.forward();
+        widget.fade == DescriptionOpacity.fadeIn
+            ? _controller.forward(from: 0.0)
+            : _controller.reverse(from: 1.0);
 
-          // ignore: avoid_unnecessary_containers
-          return FadeTransition(
-            opacity: _animation,
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
-                  child: Text('${state.dungeonActionRecord?.location.name}',
-                      style: Theme.of(context).textTheme.headline5),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(5, 5, 5, 10),
-                  child: Text('${state.dungeonActionRecord?.location.description}'),
-                ),
-              ],
-            ),
-          );
-        }
-
-        // Empty
-        return Container();
+        // ignore: avoid_unnecessary_containers
+        return FadeTransition(
+          opacity: _animation,
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+                child: Text(widget.dungeonActionRecord.location.name,
+                    style: Theme.of(context).textTheme.headline5),
+              ),
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.fromLTRB(5, 5, 5, 10),
+                child: Text(widget.dungeonActionRecord.location.description),
+              ),
+            ],
+          ),
+        );
       },
     );
   }

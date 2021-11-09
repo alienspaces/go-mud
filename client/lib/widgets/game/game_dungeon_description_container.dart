@@ -18,7 +18,7 @@ class _GameDungeonDescriptionContainerWidgetState
     extends State<GameDungeonDescriptionContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonDescriptionWidget');
+    final log = getLogger('GameDungeonDescriptionContainerWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
@@ -27,13 +27,27 @@ class _GameDungeonDescriptionContainerWidgetState
       },
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
+          log.info('dungeon state is created');
           List<Widget> widgets = [];
-          // TODO: Animate description fade out/in
           var dungeonActionRecord = state.dungeonActionRecord;
-
           if (dungeonActionRecord != null) {
-            widgets.add(const GameDungeonDescriptionWidget(fade: DescriptionOpacity.fadeIn));
+            widgets.add(GameDungeonDescriptionWidget(
+                fade: DescriptionOpacity.fadeIn, dungeonActionRecord: dungeonActionRecord));
           }
+          return Stack(
+            children: widgets,
+          );
+        } else if (state is DungeonActionStatePlaying) {
+          log.info('dungeon state is playing');
+          List<Widget> widgets = [];
+          widgets.add(GameDungeonDescriptionWidget(
+            fade: DescriptionOpacity.fadeOut,
+            dungeonActionRecord: state.previous,
+          ));
+          widgets.add(GameDungeonDescriptionWidget(
+            fade: DescriptionOpacity.fadeIn,
+            dungeonActionRecord: state.current,
+          ));
           return Stack(
             children: widgets,
           );

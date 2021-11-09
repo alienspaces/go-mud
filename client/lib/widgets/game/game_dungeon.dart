@@ -27,7 +27,7 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
         log.info('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
-        if (state is DungeonActionStateCreated) {
+        if (state is DungeonActionStateCreated || state is DungeonActionStatePlaying) {
           // ignore: avoid_unnecessary_containers
           return Container(
             color: Colors.orange[100],
