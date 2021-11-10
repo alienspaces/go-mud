@@ -33,10 +33,20 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             log.info('Animating action command ${dungeonActionRecord.action.command}');
             if (dungeonActionRecord.action.command == 'move') {
               log.info('Animating move action');
-              widgets.add(const GameDungeonGridWidget());
+              widgets.add(
+                GameDungeonGridWidget(
+                  scroll: DungeonGridScroll.scrollNone,
+                  dungeonActionRecord: dungeonActionRecord,
+                ),
+              );
             } else if (dungeonActionRecord.action.command == 'look') {
               log.info('Animating look action');
-              widgets.add(const GameDungeonGridWidget());
+              widgets.add(
+                GameDungeonGridWidget(
+                  scroll: DungeonGridScroll.scrollNone,
+                  dungeonActionRecord: dungeonActionRecord,
+                ),
+              );
             }
           }
           return Stack(
@@ -50,17 +60,33 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           log.info('Animating action command ${dungeonActionRecord.action.command}');
           if (dungeonActionRecord.action.command == 'move') {
             log.info('Animating move action');
-            widgets.add(const GameDungeonGridWidget());
+            widgets.add(
+              GameDungeonGridWidget(
+                scroll: DungeonGridScroll.scrollOut,
+                dungeonActionRecord: state.previous,
+              ),
+            );
+            widgets.add(
+              GameDungeonGridWidget(
+                scroll: DungeonGridScroll.scrollIn,
+                dungeonActionRecord: state.current,
+              ),
+            );
           } else if (dungeonActionRecord.action.command == 'look') {
             log.info('Animating look action');
-            widgets.add(const GameDungeonGridWidget());
+            widgets.add(
+              GameDungeonGridWidget(
+                scroll: DungeonGridScroll.scrollNone,
+                dungeonActionRecord: dungeonActionRecord,
+              ),
+            );
           }
           return Stack(
             children: widgets,
           );
         }
 
-        return Container(child: Text("Blah"));
+        return Container();
       },
     );
   }
