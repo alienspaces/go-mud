@@ -8,10 +8,11 @@
 
 ## Now
 
-- Client: Scrolling rooms for look and move actions
+- Client: Scroll rooms for move actions
 
 ## Next
 
+- Client: Scroll rooms for look actions
 - All: Docker Compose
 
 ## Later
