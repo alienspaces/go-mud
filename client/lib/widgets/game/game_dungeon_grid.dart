@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+// import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
@@ -25,7 +25,23 @@ class GameDungeonGridWidget extends StatefulWidget {
 
 typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
-class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
+class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
+    with SingleTickerProviderStateMixin {
+  // Animation controller
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 1),
+    vsync: this,
+  );
+  late final Animation<Offset> _offsetAnimation = Tween<Offset>(
+    // begin: Offset.zero,
+    // end: const Offset(1.5, 0.0),
+    begin: widget.scroll == DungeonGridScroll.scrollNone ? Offset.zero : const Offset(-1, -0.0),
+    end: const Offset(0.0, 0.0),
+  ).animate(CurvedAnimation(
+    parent: _controller,
+    curve: Curves.linear,
+  ));
+
   double gridMemberWidth = 50;
   double gridMemberHeight = 50;
 
@@ -237,33 +253,42 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonGridWidget');
     log.info('Building..');
 
-    return BlocConsumer<DungeonActionCubit, DungeonActionState>(
-      listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
-      },
-      builder: (BuildContext context, DungeonActionState state) {
-        return Container(
-          decoration: BoxDecoration(
+    if (widget.scroll != DungeonGridScroll.scrollNone) {
+      _controller.forward();
+    }
+
+    double gridWidth = gridMemberWidth * 5;
+    double gridHeight = gridMemberHeight * 5;
+
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFDEDEDE),
+          border: Border.all(
             color: const Color(0xFFDEDEDE),
-            border: Border.all(
-              color: const Color(0xFFDEDEDE),
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
-          padding: const EdgeInsets.all(1),
-          margin: const EdgeInsets.all(5),
-          width: gridMemberWidth * 5,
-          height: gridMemberHeight * 5,
-          child: GridView.count(
-            crossAxisCount: 5,
-            children: _generateGrid(context),
-          ),
-        );
-      },
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+        ),
+        padding: const EdgeInsets.all(1),
+        margin: const EdgeInsets.all(5),
+        width: gridWidth,
+        height: gridHeight,
+        child: GridView.count(
+          crossAxisCount: 5,
+          children: _generateGrid(context),
+        ),
+      ),
     );
   }
 }

@@ -82,6 +82,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             );
           }
           return Stack(
+            clipBehavior: Clip.hardEdge,
             children: widgets,
           );
         }
