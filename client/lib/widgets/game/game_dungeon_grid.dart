@@ -15,8 +15,10 @@ enum DungeonGridScroll { scrollIn, scrollOut, scrollNone }
 class GameDungeonGridWidget extends StatefulWidget {
   final DungeonGridScroll scroll;
   final DungeonActionRecord dungeonActionRecord;
+  final String? direction;
 
-  const GameDungeonGridWidget({Key? key, required this.scroll, required this.dungeonActionRecord})
+  const GameDungeonGridWidget(
+      {Key? key, required this.scroll, required this.dungeonActionRecord, this.direction})
       : super(key: key);
 
   @override
@@ -25,22 +27,70 @@ class GameDungeonGridWidget extends StatefulWidget {
 
 typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
+Map<String, Offset> scrollInBeginOffset = {
+  'north': const Offset(0, -1),
+  'northeast': const Offset(1, -1),
+  'east': const Offset(1, 0),
+  'southeast': const Offset(1, 1),
+  'south': const Offset(0, 1),
+  'southwest': const Offset(-1, 1),
+  'west': const Offset(-1, 0),
+  'northwest': const Offset(-1, -1),
+};
+
+Map<String, Offset> scrollOutEndOffset = {
+  'north': const Offset(0, 1),
+  'northeast': const Offset(-1, 1),
+  'east': const Offset(-1, 0), //
+  'southeast': const Offset(-1, -1),
+  'south': const Offset(0, -1),
+  'southwest': const Offset(1, -1),
+  'west': const Offset(1, 0),
+  'northwest': const Offset(1, 1),
+};
+
 class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
     with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
   // Animation controller
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 1),
-    vsync: this,
-  );
-  late final Animation<Offset> _offsetAnimation = Tween<Offset>(
-    // begin: Offset.zero,
-    // end: const Offset(1.5, 0.0),
-    begin: widget.scroll == DungeonGridScroll.scrollNone ? Offset.zero : const Offset(-1, -0.0),
-    end: const Offset(0.0, 0.0),
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.linear,
-  ));
+  late final Animation<Offset> _offsetAnimation;
+  @override
+  void initState() {
+    final log = getLogger('DungeonActionCubit');
+
+    // Animation controller
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+
+    Offset beginOffset = Offset.zero;
+    Offset endOffset = Offset.zero;
+
+    String command = widget.dungeonActionRecord.action.command;
+    log.info('(initState) Target dungeon location command $command');
+    log.info('(initState) Target dungeon location direction ${widget.direction}');
+
+    if (command == 'move' && widget.direction != null) {
+      if (widget.scroll == DungeonGridScroll.scrollIn) {
+        beginOffset = scrollInBeginOffset[widget.direction]!;
+        endOffset = Offset.zero;
+      } else if (widget.scroll == DungeonGridScroll.scrollOut) {
+        beginOffset = Offset.zero;
+        endOffset = scrollOutEndOffset[widget.direction]!;
+      }
+    }
+
+    _offsetAnimation = Tween<Offset>(
+      begin: beginOffset,
+      end: endOffset,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ));
+
+    super.initState();
+  }
 
   double gridMemberWidth = 50;
   double gridMemberHeight = 50;

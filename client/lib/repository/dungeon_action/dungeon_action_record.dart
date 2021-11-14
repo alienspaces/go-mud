@@ -42,14 +42,14 @@ class DungeonActionRecord extends Equatable {
     dungeonAction = DungeonAction(
       id: action['id'],
       command: action['command'],
-      commandResult: action['commandResult'],
-      equippedDungeonObjectName: action['equippedDungeonObjectName'],
-      stashedDungeonObjectName: action['stashedDungeonObjectName'],
-      targetDungeonObjectName: action['targetDungeonObjectName'],
-      targetDungeonCharacterName: action['targetDungeonCharacterName'],
-      targetDungeonMonsterName: action['targetDungeonMonsterName'],
-      targetDungeonLocationDirection: action['targetDungeonLocationDirection'],
-      targetDungeonLocationName: action['targetDungeonLocationName'],
+      commandResult: action['command_result'],
+      equippedDungeonObjectName: action['equipped_dungeon_object_name'],
+      stashedDungeonObjectName: action['stashed_dungeon_object_name'],
+      targetDungeonObjectName: action['target_dungeon_object_name'],
+      targetDungeonCharacterName: action['target_dungeon_character_name'],
+      targetDungeonMonsterName: action['target_dungeon_monster_name'],
+      targetDungeonLocationDirection: action['target_dungeon_location_direction'],
+      targetDungeonLocationName: action['target_dungeon_location_name'],
     );
 
     DungeonLocation? dungeonLocation;

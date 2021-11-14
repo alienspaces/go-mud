@@ -63,16 +63,19 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             widgets.add(
               GameDungeonGridWidget(
                 scroll: DungeonGridScroll.scrollOut,
+                direction: state.direction,
                 dungeonActionRecord: state.previous,
               ),
             );
             widgets.add(
               GameDungeonGridWidget(
                 scroll: DungeonGridScroll.scrollIn,
+                direction: state.direction,
                 dungeonActionRecord: state.current,
               ),
             );
           } else if (dungeonActionRecord.action.command == 'look') {
+            // TODO: Scroll out and in for look action
             log.info('Animating look action');
             widgets.add(
               GameDungeonGridWidget(
@@ -82,7 +85,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             );
           }
           return Stack(
-            clipBehavior: Clip.hardEdge,
+            clipBehavior: Clip.antiAlias,
             children: widgets,
           );
         }

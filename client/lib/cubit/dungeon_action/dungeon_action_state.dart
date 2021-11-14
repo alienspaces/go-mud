@@ -46,9 +46,18 @@ class DungeonActionStateCreated extends DungeonActionState {
 class DungeonActionStatePlaying extends DungeonActionState {
   final DungeonActionRecord previous;
   final DungeonActionRecord current;
+  final String? direction;
 
-  const DungeonActionStatePlaying({required this.previous, required this.current});
+  const DungeonActionStatePlaying({
+    required this.previous,
+    required this.current,
+    this.direction,
+  });
 
   @override
-  List<Object?> get props => [previous, current];
+  List<Object?> get props => [
+        previous,
+        current,
+        direction,
+      ];
 }

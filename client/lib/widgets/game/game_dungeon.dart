@@ -32,11 +32,15 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
           return Container(
             color: Colors.orange[100],
             child: Column(
-              children: const <Widget>[
-                GameDungeonDescriptionContainerWidget(),
-                GameDungeonGridContainerWidget(),
-                GameDungeonActionWidget(),
-                GameDungeonCommandWidget(),
+              children: <Widget>[
+                const GameDungeonDescriptionContainerWidget(),
+                Container(
+                  decoration: const BoxDecoration(color: Colors.black),
+                  clipBehavior: Clip.antiAlias,
+                  child: const GameDungeonGridContainerWidget(),
+                ),
+                const GameDungeonActionWidget(),
+                const GameDungeonCommandWidget(),
               ],
             ),
           );

@@ -15,6 +15,10 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   List<DungeonActionRecord> dungeonActionRecords = [];
   DungeonActionRecord? dungeonActionRecord;
 
+  // TODO: Keep these up to date as we play through
+  DungeonActionRecord? currentDungeonActionRecord;
+  DungeonActionRecord? nextDungeonActionRecord;
+
   DungeonActionCubit({required this.config, required this.repositories})
       : super(const DungeonActionStateInitial());
 
@@ -48,11 +52,21 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       return false;
     }
 
-    log.info('(playAction) Playing action..');
+    DungeonActionRecord previous = dungeonActionRecords.removeAt(0);
+    DungeonActionRecord current = dungeonActionRecords[0];
+    String? direction;
+    if (current.action.command == 'move' || current.action.command == 'look') {
+      direction = current.action.targetDungeonLocationDirection;
+    }
+
+    log.info('(playAction) Play action command >${current.action.command}< direction >$direction<');
 
     emit(
       DungeonActionStatePlaying(
-          previous: dungeonActionRecords.removeAt(0), current: dungeonActionRecords[0]),
+        previous: previous,
+        current: current,
+        direction: direction,
+      ),
     );
 
     if (dungeonActionRecords.length <= 1) {
