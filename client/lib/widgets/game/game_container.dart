@@ -70,11 +70,11 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
       child: Column(
         children: const <Widget>[
           Expanded(
-            flex: 1,
+            flex: 2,
             child: GameCharacterWidget(),
           ),
           Expanded(
-            flex: 2,
+            flex: 5,
             child: GameDungeonWidget(),
           ),
         ],

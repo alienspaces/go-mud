@@ -26,6 +26,8 @@ class _GameDungeonCommandWidgetState extends State<GameDungeonCommandWidget> {
         if (state is DungeonCommandStatePreparing) {
           // ignore: avoid_unnecessary_containers
           return Container(
+            color: Colors.brown[200],
+            alignment: Alignment.center,
             child: Text('${state.action ?? ''} ${state.target ?? ''}'.trimRight()),
           );
         }

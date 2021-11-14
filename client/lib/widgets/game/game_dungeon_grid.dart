@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
-// import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
@@ -51,9 +50,27 @@ Map<String, Offset> scrollOutEndOffset = {
 
 class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
   // Animation controller
+  late final AnimationController _controller;
+  // Animation
   late final Animation<Offset> _offsetAnimation;
+
+  double gridMemberWidth = 0;
+  double gridMemberHeight = 0;
+
+  Map<String, String> directionLabelMap = {
+    'north': 'N',
+    'northeast': 'NE',
+    'east': 'E',
+    'southeast': 'SE',
+    'south': 'S',
+    'southwest': 'SW',
+    'west': 'W',
+    'northwest': 'NW',
+    'up': 'U',
+    'down': 'D',
+  };
+
   @override
   void initState() {
     final log = getLogger('DungeonActionCubit');
@@ -91,22 +108,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
 
     super.initState();
   }
-
-  double gridMemberWidth = 50;
-  double gridMemberHeight = 50;
-
-  Map<String, String> directionLabelMap = {
-    'north': 'N',
-    'northeast': 'NE',
-    'east': 'E',
-    'southeast': 'SE',
-    'south': 'S',
-    'southwest': 'SW',
-    'west': 'W',
-    'northwest': 'NW',
-    'up': 'U',
-    'down': 'D',
-  };
 
   List<Widget> _generateGrid(BuildContext context) {
     var dungeonActionRecord = widget.dungeonActionRecord;
@@ -311,34 +312,49 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonGridWidget');
-    log.info('Building..');
 
     if (widget.scroll != DungeonGridScroll.scrollNone) {
       _controller.forward();
     }
 
-    double gridWidth = gridMemberWidth * 5;
-    double gridHeight = gridMemberHeight * 5;
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        log.info('Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
 
-    return SlideTransition(
-      position: _offsetAnimation,
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFDEDEDE),
-          border: Border.all(
-            color: const Color(0xFFDEDEDE),
+        // Set grid member dimensions
+        gridMemberWidth = (constraints.maxWidth / 5) - 2;
+        gridMemberHeight = (constraints.maxHeight / 5) - 2;
+        if (gridMemberHeight > gridMemberWidth) {
+          gridMemberHeight = gridMemberWidth;
+        }
+        if (gridMemberWidth > gridMemberHeight) {
+          gridMemberWidth = gridMemberHeight;
+        }
+
+        double gridWidth = gridMemberWidth * 5;
+        double gridHeight = gridMemberHeight * 5;
+
+        return SlideTransition(
+          position: _offsetAnimation,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFDEDEDE),
+              border: Border.all(
+                color: const Color(0xFFDEDEDE),
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+            ),
+            padding: const EdgeInsets.all(1),
+            margin: const EdgeInsets.all(5),
+            width: gridWidth,
+            height: gridHeight,
+            child: GridView.count(
+              crossAxisCount: 5,
+              children: _generateGrid(context),
+            ),
           ),
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
-        ),
-        padding: const EdgeInsets.all(1),
-        margin: const EdgeInsets.all(5),
-        width: gridWidth,
-        height: gridHeight,
-        child: GridView.count(
-          crossAxisCount: 5,
-          children: _generateGrid(context),
-        ),
-      ),
+        );
+      },
     );
   }
 }

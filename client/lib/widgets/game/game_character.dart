@@ -27,11 +27,7 @@ class _GameCharacterWidgetState extends State<GameCharacterWidget> {
         if (state is CharacterStateSelected) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            child: Column(
-              children: const <Widget>[
-                CharacterWidget(),
-              ],
-            ),
+            child: const CharacterWidget(),
           );
         }
 

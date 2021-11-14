@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_description_container.dart';
@@ -22,33 +20,50 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
     final log = getLogger('GameCharacterWidget');
     log.info('Building..');
 
-    return BlocConsumer<DungeonActionCubit, DungeonActionState>(
-      listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
-      },
-      builder: (BuildContext context, DungeonActionState state) {
-        if (state is DungeonActionStateCreated || state is DungeonActionStatePlaying) {
-          // ignore: avoid_unnecessary_containers
-          return Container(
-            color: Colors.orange[100],
-            child: Column(
-              children: <Widget>[
-                const GameDungeonDescriptionContainerWidget(),
-                Container(
-                  decoration: const BoxDecoration(color: Colors.black),
-                  clipBehavior: Clip.antiAlias,
-                  child: const GameDungeonGridContainerWidget(),
-                ),
-                const GameDungeonActionWidget(),
-                const GameDungeonCommandWidget(),
-              ],
+    // return LayoutBuilder(
+    //   builder: (BuildContext context, BoxConstraints constraints) {
+    return Container(
+      color: Colors.orange[100],
+      child: Column(
+        children: <Widget>[
+          // Location Description
+          const Expanded(
+            flex: 1,
+            child: GameDungeonDescriptionContainerWidget(),
+          ),
+          Expanded(
+            flex: 4,
+            child: Container(
+              color: Colors.purple,
+              child: Column(
+                children: <Widget>[
+                  // Location Grid
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      decoration: const BoxDecoration(color: Colors.black),
+                      clipBehavior: Clip.antiAlias,
+                      child: const GameDungeonGridContainerWidget(),
+                    ),
+                  ),
+                  // Location Actions
+                  const Expanded(
+                    flex: 1,
+                    child: GameDungeonActionWidget(),
+                  ),
+                ],
+              ),
             ),
-          );
-        }
-
-        // Empty
-        return Container();
-      },
+          ),
+          // Location Command
+          const Expanded(
+            flex: 1,
+            child: GameDungeonCommandWidget(),
+          ),
+        ],
+      ),
     );
+    //   },
+    // );
   }
 }
