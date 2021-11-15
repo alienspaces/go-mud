@@ -8,16 +8,18 @@
 
 ## Now
 
-- Bigger testing dungeon
+- Better error recovery on client side.
 
 ## Next
+
+- Better error handling on server side.
+- Improve automated tests
+
+## Later
 
 - Server: Look direction
 - Client: Scroll rooms for look actions
 - All: Docker Compose
-
-## Later
-
 - Server: Expand model tests
 - Server: Expand handler tests
 - Server: Look object

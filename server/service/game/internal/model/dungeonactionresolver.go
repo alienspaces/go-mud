@@ -125,6 +125,12 @@ func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecor
 		}
 	}
 
+	if targetDungeonLocationID == "" {
+		msg := fmt.Sprintf("failed to resolve target dungeon location id with sentence >%s<", sentence)
+		m.Log.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
 	dungeonActionRecord := record.DungeonAction{
 		// TODO: Should DungeonID, DungeonLocationID, DungeonCharacterID be set to the target location
 		// when the character is moving, or is another dungeon action record created when the character

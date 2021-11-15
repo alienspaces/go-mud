@@ -35,6 +35,8 @@ Map<String, Offset> scrollInBeginOffset = {
   'southwest': const Offset(-1, 1),
   'west': const Offset(-1, 0),
   'northwest': const Offset(-1, -1),
+  'up': const Offset(-.1, -1),
+  'down': const Offset(.1, 1),
 };
 
 Map<String, Offset> scrollOutEndOffset = {
@@ -46,6 +48,8 @@ Map<String, Offset> scrollOutEndOffset = {
   'southwest': const Offset(1, -1),
   'west': const Offset(1, 0),
   'northwest': const Offset(1, 1),
+  'up': const Offset(.1, 1),
+  'down': const Offset(-.1, -1),
 };
 
 class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
@@ -77,7 +81,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
 
     // Animation controller
     _controller = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
