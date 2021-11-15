@@ -8,10 +8,11 @@
 
 ## Now
 
-- Client: Scroll rooms for move actions
+- Bigger testing dungeon
 
 ## Next
 
+- Server: Look direction
 - Client: Scroll rooms for look actions
 - All: Docker Compose
 
@@ -19,7 +20,6 @@
 
 - Server: Expand model tests
 - Server: Expand handler tests
-- Server: Look direction
 - Server: Look object
 - Server: Look monster
 - Server: Look character
@@ -28,3 +28,4 @@
 - Server: Implement 2 second turns
 - Client: Implement 2 second progress bar and retries
 - Server: Implement monster movement
+- Smoother room scrolling without redrawing previous location

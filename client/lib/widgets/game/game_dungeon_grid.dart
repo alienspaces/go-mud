@@ -85,8 +85,10 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
     Offset endOffset = Offset.zero;
 
     String command = widget.dungeonActionRecord.action.command;
+    log.info('(initState) Target dungeon action id ${widget.dungeonActionRecord.action.id}');
     log.info('(initState) Target dungeon location command $command');
     log.info('(initState) Target dungeon location direction ${widget.direction}');
+    log.info('(initState) Target dungeon location scroll ${widget.scroll}');
 
     if (command == 'move' && widget.direction != null) {
       if (widget.scroll == DungeonGridScroll.scrollIn) {

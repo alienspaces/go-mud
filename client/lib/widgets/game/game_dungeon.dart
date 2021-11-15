@@ -34,14 +34,14 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
           Expanded(
             flex: 4,
             child: Container(
-              color: Colors.purple,
+              color: Colors.orange[100],
               child: Column(
                 children: <Widget>[
                   // Location Grid
                   Expanded(
                     flex: 4,
                     child: Container(
-                      decoration: const BoxDecoration(color: Colors.black),
+                      decoration: BoxDecoration(color: Colors.orange[100]),
                       clipBehavior: Clip.antiAlias,
                       child: const GameDungeonGridContainerWidget(),
                     ),
