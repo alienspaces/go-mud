@@ -8,10 +8,11 @@
 
 ## Now
 
-- Better error recovery on client side.
+- Review server code
 
 ## Next
 
+- Better error recovery on client side.
 - Better error handling on server side.
 - Improve automated tests
 
