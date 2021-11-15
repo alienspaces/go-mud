@@ -37,7 +37,7 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	}
 
 	// Response data
-	responseData, err := rnr.RecordToDungeonCharacterActionResponseData(dungeonActionRecordSet)
+	responseData, err := rnr.RecordToDungeonCharacterActionResponseData(*dungeonActionRecordSet)
 	if err != nil {
 		rnr.WriteSystemError(l, w, err)
 		return
@@ -58,7 +58,7 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 }
 
 // RecordToCharacterResponseData -
-func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecordSet *model.DungeonActionRecordSet) (schema.DungeonActionResponseData, error) {
+func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecordSet model.DungeonActionRecordSet) (schema.DungeonActionResponseData, error) {
 
 	dungeonActionRec := dungeonActionRecordSet.DungeonActionRec
 

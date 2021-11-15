@@ -71,7 +71,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	for _, rec := range recs {
 
 		// Response data
-		responseData, err := rnr.RecordToDungeonCharacterResponseData(rec)
+		responseData, err := rnr.RecordToDungeonCharacterResponseData(*rec)
 		if err != nil {
 			rnr.WriteSystemError(l, w, err)
 			return
@@ -150,7 +150,7 @@ func (rnr *Runner) GetDungeonCharactersHandler(w http.ResponseWriter, r *http.Re
 	for _, rec := range recs {
 
 		// Response data
-		responseData, err := rnr.RecordToDungeonCharacterResponseData(rec)
+		responseData, err := rnr.RecordToDungeonCharacterResponseData(*rec)
 		if err != nil {
 			rnr.WriteSystemError(l, w, err)
 			return
@@ -206,7 +206,7 @@ func (rnr *Runner) PostDungeonCharactersHandler(w http.ResponseWriter, r *http.R
 	}
 
 	// Response data
-	responseData, err := rnr.RecordToDungeonCharacterResponseData(&rec)
+	responseData, err := rnr.RecordToDungeonCharacterResponseData(rec)
 	if err != nil {
 		rnr.WriteSystemError(l, w, err)
 		return
@@ -277,7 +277,7 @@ func (rnr *Runner) PutDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// Response data
-	responseData, err := rnr.RecordToDungeonCharacterResponseData(rec)
+	responseData, err := rnr.RecordToDungeonCharacterResponseData(*rec)
 	if err != nil {
 		rnr.WriteSystemError(l, w, err)
 		return
@@ -309,7 +309,7 @@ func (rnr *Runner) DungeonCharacterRequestDataToRecord(data schema.DungeonCharac
 }
 
 // RecordToCharacterResponseData -
-func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec *record.DungeonCharacter) (schema.DungeonCharacterData, error) {
+func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec record.DungeonCharacter) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
 		ID:               dungeonCharacterRec.ID,

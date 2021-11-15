@@ -49,7 +49,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 	for _, rec := range recs {
 
 		// Response data
-		responseData, err := rnr.RecordToDungeonResponseData(rec)
+		responseData, err := rnr.RecordToDungeonResponseData(*rec)
 		if err != nil {
 			rnr.WriteSystemError(l, w, err)
 			return
@@ -96,7 +96,7 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 	for _, rec := range recs {
 
 		// Response data
-		responseData, err := rnr.RecordToDungeonResponseData(rec)
+		responseData, err := rnr.RecordToDungeonResponseData(*rec)
 		if err != nil {
 			rnr.WriteSystemError(l, w, err)
 			return
@@ -125,7 +125,7 @@ func (rnr *Runner) DungeonRequestDataToRecord(data schema.DungeonData, rec *reco
 }
 
 // RecordToDungeonResponseData -
-func (rnr *Runner) RecordToDungeonResponseData(dungeonRec *record.Dungeon) (schema.DungeonData, error) {
+func (rnr *Runner) RecordToDungeonResponseData(dungeonRec record.Dungeon) (schema.DungeonData, error) {
 
 	data := schema.DungeonData{
 		ID:          dungeonRec.ID,
