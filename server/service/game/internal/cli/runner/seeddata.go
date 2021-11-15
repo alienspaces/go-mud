@@ -33,8 +33,9 @@ func (rnr *Runner) LoadSeedData(c *cli.Context) error {
 							Name:        "Cave Tunnel",
 							Description: "A cave tunnel descends into the mountain.",
 						},
-						NorthLocationName: "Cave Room",
-						SouthLocationName: "Cave Entrance",
+						NorthLocationName:     "Cave Room",
+						SouthLocationName:     "Cave Entrance",
+						NorthwestLocationName: "Narrow Tunnel",
 					},
 					{
 						Record: record.DungeonLocation{
@@ -42,6 +43,29 @@ func (rnr *Runner) LoadSeedData(c *cli.Context) error {
 							Description: "A large cave room.",
 						},
 						SouthLocationName: "Cave Tunnel",
+					},
+					{
+						Record: record.DungeonLocation{
+							Name:        "Narrow Tunnel",
+							Description: "A narrow tunnel gradually descending into the darkness.",
+						},
+						NorthwestLocationName: "Dark Narrow Tunnel",
+						SoutheastLocationName: "Cave Tunnel",
+					},
+					{
+						Record: record.DungeonLocation{
+							Name:        "Dark Narrow Tunnel",
+							Description: "A dark narrow tunnel.",
+						},
+						SoutheastLocationName: "Narrow Tunnel",
+						DownLocationName:      "Dark Room",
+					},
+					{
+						Record: record.DungeonLocation{
+							Name:        "Dark Room",
+							Description: "A dark room.",
+						},
+						UpLocationName: "Dark Narrow Tunnel",
 					},
 				},
 				DungeonMonsterConfig: []harness.DungeonMonsterConfig{
