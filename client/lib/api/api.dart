@@ -40,9 +40,9 @@ class API {
       );
       response =
           await client.get(uri, headers: {'Content-Type': 'application/json; charset=utf-8'});
-    } on http.ClientException catch (err) {
-      log.warning('Failed: ${err.message}');
-      return APIResponse(error: err.message);
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
     } finally {
       client.close();
     }
@@ -68,9 +68,9 @@ class API {
       log.warning('URI $uri');
       response =
           await client.get(uri, headers: {'Content-Type': 'application/json; charset=utf-8'});
-    } on http.ClientException catch (err) {
-      log.warning('Failed: ${err.message}');
-      return APIResponse(error: err.message);
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
     } finally {
       client.close();
     }
@@ -95,9 +95,9 @@ class API {
       log.warning('URI $uri');
       response =
           await client.get(uri, headers: {'Content-Type': 'application/json; charset=utf-8'});
-    } on http.ClientException catch (err) {
-      log.warning('Failed: ${err.message}');
-      return APIResponse(error: err.message);
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
     } finally {
       client.close();
     }
@@ -145,8 +145,8 @@ class API {
         },
         body: bodyData,
       );
-    } on Error catch (err) {
-      log.warning('Failed: $err');
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -184,9 +184,9 @@ class API {
           'Content-Type': 'application/json; charset=utf-8',
         },
       );
-    } on http.ClientException catch (err) {
-      log.warning('Failed: ${err.message}');
-      return APIResponse(error: err.message);
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
     } finally {
       client.close();
     }
@@ -229,9 +229,9 @@ class API {
         },
         body: bodyData,
       );
-    } on http.ClientException catch (err) {
-      log.warning('Failed: ${err.message}');
-      return APIResponse(error: err.message);
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
     } finally {
       client.close();
     }
