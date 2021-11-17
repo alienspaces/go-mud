@@ -24,7 +24,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
     final log = getLogger('CharacterRepository');
     log.warning('Creating character ${createRecord.name}');
 
-    APIResponse response = await api.createCharacter(
+    var response = await api.createCharacter(
       dungeonID,
       name: createRecord.name,
       strength: createRecord.strength,
@@ -49,7 +49,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
         log.info('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
-          throw Exception('Unexpected number of records returned');
+          throw RecordCountException('Unexpected number of records returned');
         }
         record = CharacterRecord.fromJson(data[0]);
       }
@@ -61,7 +61,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
   Future<CharacterRecord?> load(String dungeonID, String characterID) async {
     final log = getLogger('CharacterRepository');
 
-    APIResponse response = await api.loadCharacter(
+    var response = await api.loadCharacter(
       dungeonID,
       characterID,
     );
@@ -80,7 +80,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
         log.info('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
-          throw Exception('Unexpected number of records returned');
+          throw RecordCountException('Unexpected number of records returned');
         }
         record = CharacterRecord.fromJson(data[0]);
       }

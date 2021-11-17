@@ -5,16 +5,7 @@ import 'package:http/retry.dart';
 
 // Application
 import 'package:go_mud_client/logger.dart';
-
-class APIResponse {
-  String? body;
-  String? error;
-  APIResponse({this.body, this.error});
-
-  bool isNotEmpty() {
-    return body != null || error != null;
-  }
-}
+import 'package:go_mud_client/api/response.dart';
 
 class API {
   final Map<String, String> config;

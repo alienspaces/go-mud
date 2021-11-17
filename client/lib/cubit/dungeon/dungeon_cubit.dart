@@ -28,7 +28,14 @@ class DungeonCubit extends Cubit<DungeonState> {
     log.info('Loading dungeons...');
     emit(const DungeonStateLoading());
 
-    dungeonRecords = await repositories.dungeonRepository.getMany();
+    List<DungeonRecord>? dungeonRecords;
+
+    try {
+      dungeonRecords = await repositories.dungeonRepository.getMany();
+    } catch (err) {
+      emit(const DungeonStateLoadError());
+      return;
+    }
 
     emit(DungeonStateLoaded(dungeonRecords: dungeonRecords));
   }

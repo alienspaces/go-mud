@@ -10,6 +10,10 @@ class DuplicateValueException extends RepositoryException {
   DuplicateValueException(String message) : super(message);
 }
 
+class RecordCountException extends RepositoryException {
+  RecordCountException(String message) : super(message);
+}
+
 // Analyses the API error message string and return a specific error class
 RepositoryException resolveApiException(String message) {
   if (message.contains(

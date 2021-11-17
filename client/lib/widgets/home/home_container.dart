@@ -62,6 +62,16 @@ class _HomeContainerWidgetState extends State<HomeContainerWidget> {
               ),
             );
           });
+        } else if (state is DungeonStateLoadError) {
+          widgets.add(
+            // ignore: avoid_unnecessary_containers
+            Container(
+              child: ElevatedButton(
+                onPressed: () => _loadDungeons(context),
+                child: const Text('Load Dungeons'),
+              ),
+            ),
+          );
         } else {
           widgets.add(
             // ignore: avoid_unnecessary_containers

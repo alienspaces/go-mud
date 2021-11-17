@@ -1,7 +1,9 @@
+import 'dart:io' show Platform;
+
 // Application
 import 'package:go_mud_client/api/api.dart';
+import 'package:go_mud_client/api/response.dart';
 import 'package:go_mud_client/repository/repository.dart';
-import 'dart:io' show Platform;
 
 Map<String, String> getConfig() {
   Map<String, String> envVars = Platform.environment;

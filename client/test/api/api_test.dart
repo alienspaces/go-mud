@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Application
 import 'package:go_mud_client/api/api.dart';
+import 'package:go_mud_client/api/response.dart';
 
 // Local Test Utilities
 import '../utility.dart';

@@ -31,3 +31,11 @@ class DungeonStateLoaded extends DungeonState {
   @override
   List<Object?> get props => [dungeonRecords, currentDungeonRecord];
 }
+
+@immutable
+class DungeonStateLoadError extends DungeonState {
+  const DungeonStateLoadError();
+
+  @override
+  List<Object?> get props => [];
+}
