@@ -8,16 +8,17 @@
 
 ## Now
 
-- Review server code
+- Better error recovery on client side.
+  - Move thing causes error and client doesn't recover..
 
 ## Next
 
-- Better error recovery on client side.
-- Better error handling on server side.
-- Improve automated tests
+- Review server code, where were we at?
 
 ## Later
 
+- Better error handling on server side.
+- Improve automated tests
 - Server: Look direction
 - Client: Scroll rooms for look actions
 - All: Docker Compose
