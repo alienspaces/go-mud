@@ -38,7 +38,11 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       dungeonActionRecords.add(createdDungeonActionRecord);
 
       emit(
-        DungeonActionStateCreated(dungeonActionRecord: createdDungeonActionRecord),
+        DungeonActionStateCreated(
+          current: createdDungeonActionRecord,
+          action: createdDungeonActionRecord.action.command,
+          direction: createdDungeonActionRecord.action.targetDungeonLocationDirection,
+        ),
       );
     }
   }
@@ -65,6 +69,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       DungeonActionStatePlaying(
         previous: previous,
         current: current,
+        action: current.action.command,
         direction: direction,
       ),
     );

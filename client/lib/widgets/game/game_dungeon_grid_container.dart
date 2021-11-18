@@ -27,28 +27,29 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
         if (state is DungeonActionStateCreated) {
           List<Widget> widgets = [];
           // TODO: "play" actions here?
-          var dungeonActionRecord = state.dungeonActionRecord;
+          var dungeonActionRecord = state.current;
 
-          if (dungeonActionRecord != null) {
-            log.info('Animating action command ${dungeonActionRecord.action.command}');
-            if (dungeonActionRecord.action.command == 'move') {
-              log.info('Animating move action');
-              widgets.add(
-                GameDungeonGridWidget(
-                  scroll: DungeonGridScroll.scrollNone,
-                  dungeonActionRecord: dungeonActionRecord,
-                ),
-              );
-            } else if (dungeonActionRecord.action.command == 'look') {
-              log.info('Animating look action');
-              widgets.add(
-                GameDungeonGridWidget(
-                  scroll: DungeonGridScroll.scrollNone,
-                  dungeonActionRecord: dungeonActionRecord,
-                ),
-              );
-            }
+          log.info('Animating action command ${dungeonActionRecord.action.command}');
+          if (dungeonActionRecord.action.command == 'move') {
+            log.info('Animating move action');
+            widgets.add(
+              GameDungeonGridWidget(
+                scroll: DungeonGridScroll.scrollNone,
+                action: state.action,
+                dungeonActionRecord: dungeonActionRecord,
+              ),
+            );
+          } else if (dungeonActionRecord.action.command == 'look') {
+            log.info('Animating look action');
+            widgets.add(
+              GameDungeonGridWidget(
+                scroll: DungeonGridScroll.scrollNone,
+                action: state.action,
+                dungeonActionRecord: dungeonActionRecord,
+              ),
+            );
           }
+
           return Stack(
             children: widgets,
           );
@@ -64,6 +65,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               GameDungeonGridWidget(
                 scroll: DungeonGridScroll.scrollOut,
                 direction: state.direction,
+                action: state.action,
                 dungeonActionRecord: state.previous,
               ),
             );
@@ -71,6 +73,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               GameDungeonGridWidget(
                 scroll: DungeonGridScroll.scrollIn,
                 direction: state.direction,
+                action: state.action,
                 dungeonActionRecord: state.current,
               ),
             );
@@ -80,6 +83,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             widgets.add(
               GameDungeonGridWidget(
                 scroll: DungeonGridScroll.scrollNone,
+                action: state.action,
                 dungeonActionRecord: dungeonActionRecord,
               ),
             );

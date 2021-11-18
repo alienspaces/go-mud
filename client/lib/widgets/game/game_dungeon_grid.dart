@@ -14,11 +14,16 @@ enum DungeonGridScroll { scrollIn, scrollOut, scrollNone }
 class GameDungeonGridWidget extends StatefulWidget {
   final DungeonGridScroll scroll;
   final DungeonActionRecord dungeonActionRecord;
+  final String action;
   final String? direction;
 
-  const GameDungeonGridWidget(
-      {Key? key, required this.scroll, required this.dungeonActionRecord, this.direction})
-      : super(key: key);
+  const GameDungeonGridWidget({
+    Key? key,
+    required this.scroll,
+    required this.dungeonActionRecord,
+    required this.action,
+    this.direction,
+  }) : super(key: key);
 
   @override
   _GameDungeonGridWidgetState createState() => _GameDungeonGridWidgetState();
@@ -111,6 +116,10 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
       parent: _controller,
       curve: Curves.linear,
     ));
+
+    if (widget.scroll != DungeonGridScroll.scrollNone) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) => _controller.forward());
+    }
 
     super.initState();
   }
@@ -318,10 +327,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonGridWidget');
-
-    if (widget.scroll != DungeonGridScroll.scrollNone) {
-      _controller.forward();
-    }
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {

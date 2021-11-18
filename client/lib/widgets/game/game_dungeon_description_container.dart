@@ -29,11 +29,10 @@ class _GameDungeonDescriptionContainerWidgetState
         if (state is DungeonActionStateCreated) {
           log.info('dungeon state is created');
           List<Widget> widgets = [];
-          var dungeonActionRecord = state.dungeonActionRecord;
-          if (dungeonActionRecord != null) {
-            widgets.add(GameDungeonDescriptionWidget(
-                fade: DescriptionOpacity.fadeIn, dungeonActionRecord: dungeonActionRecord));
-          }
+          widgets.add(GameDungeonDescriptionWidget(
+            fade: DescriptionOpacity.fadeIn,
+            dungeonActionRecord: state.current,
+          ));
           return Stack(
             children: widgets,
           );

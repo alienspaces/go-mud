@@ -25,7 +25,7 @@ typedef DungeonDescriptionMemberFunction = Widget Function(DungeonActionRecord r
 class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWidget>
     with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 1),
+    duration: const Duration(milliseconds: 500),
     vsync: this,
     lowerBound: 0.0,
     upperBound: 1.0,
