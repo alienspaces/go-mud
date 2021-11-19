@@ -9,17 +9,13 @@ import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
-enum DungeonGridScroll { scrollIn, scrollOut, scrollNone }
-
 class GameDungeonGridWidget extends StatefulWidget {
-  final DungeonGridScroll scroll;
   final DungeonActionRecord dungeonActionRecord;
   final String action;
   final String? direction;
 
   const GameDungeonGridWidget({
     Key? key,
-    required this.scroll,
     required this.dungeonActionRecord,
     required this.action,
     this.direction,
@@ -31,39 +27,8 @@ class GameDungeonGridWidget extends StatefulWidget {
 
 typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
-Map<String, Offset> scrollInBeginOffset = {
-  'north': const Offset(0, -1),
-  'northeast': const Offset(1, -1),
-  'east': const Offset(1, 0),
-  'southeast': const Offset(1, 1),
-  'south': const Offset(0, 1),
-  'southwest': const Offset(-1, 1),
-  'west': const Offset(-1, 0),
-  'northwest': const Offset(-1, -1),
-  'up': const Offset(-.1, -1),
-  'down': const Offset(.1, 1),
-};
-
-Map<String, Offset> scrollOutEndOffset = {
-  'north': const Offset(0, 1),
-  'northeast': const Offset(-1, 1),
-  'east': const Offset(-1, 0), //
-  'southeast': const Offset(-1, -1),
-  'south': const Offset(0, -1),
-  'southwest': const Offset(1, -1),
-  'west': const Offset(1, 0),
-  'northwest': const Offset(1, 1),
-  'up': const Offset(.1, 1),
-  'down': const Offset(-.1, -1),
-};
-
 class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
     with SingleTickerProviderStateMixin {
-  // Animation controller
-  late final AnimationController _controller;
-  // Animation
-  late final Animation<Offset> _offsetAnimation;
-
   double gridMemberWidth = 0;
   double gridMemberHeight = 0;
 
@@ -82,45 +47,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
 
   @override
   void initState() {
-    final log = getLogger('DungeonActionCubit');
-
-    // Animation controller
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    Offset beginOffset = Offset.zero;
-    Offset endOffset = Offset.zero;
-
-    String command = widget.dungeonActionRecord.action.command;
-    log.info('(initState) Target dungeon action id ${widget.dungeonActionRecord.action.id}');
-    log.info('(initState) Target dungeon location command $command');
-    log.info('(initState) Target dungeon location direction ${widget.direction}');
-    log.info('(initState) Target dungeon location scroll ${widget.scroll}');
-
-    if (command == 'move' && widget.direction != null) {
-      if (widget.scroll == DungeonGridScroll.scrollIn) {
-        beginOffset = scrollInBeginOffset[widget.direction]!;
-        endOffset = Offset.zero;
-      } else if (widget.scroll == DungeonGridScroll.scrollOut) {
-        beginOffset = Offset.zero;
-        endOffset = scrollOutEndOffset[widget.direction]!;
-      }
-    }
-
-    _offsetAnimation = Tween<Offset>(
-      begin: beginOffset,
-      end: endOffset,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ));
-
-    if (widget.scroll != DungeonGridScroll.scrollNone) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) => _controller.forward());
-    }
-
     super.initState();
   }
 
@@ -319,12 +245,6 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonGridWidget');
 
@@ -345,24 +265,21 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
         double gridWidth = gridMemberWidth * 5;
         double gridHeight = gridMemberHeight * 5;
 
-        return SlideTransition(
-          position: _offsetAnimation,
-          child: Container(
-            decoration: BoxDecoration(
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFDEDEDE),
+            border: Border.all(
               color: const Color(0xFFDEDEDE),
-              border: Border.all(
-                color: const Color(0xFFDEDEDE),
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            padding: const EdgeInsets.all(1),
-            margin: const EdgeInsets.all(5),
-            width: gridWidth,
-            height: gridHeight,
-            child: GridView.count(
-              crossAxisCount: 5,
-              children: _generateGrid(context),
-            ),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+          ),
+          padding: const EdgeInsets.all(1),
+          margin: const EdgeInsets.all(5),
+          width: gridWidth,
+          height: gridHeight,
+          child: GridView.count(
+            crossAxisCount: 5,
+            children: _generateGrid(context),
           ),
         );
       },

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_grid.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_sliding_grid.dart';
 
 class GameDungeonGridContainerWidget extends StatefulWidget {
   const GameDungeonGridContainerWidget({Key? key}) : super(key: key);
@@ -33,8 +33,8 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           if (dungeonActionRecord.action.command == 'move') {
             log.info('Animating move action');
             widgets.add(
-              GameDungeonGridWidget(
-                scroll: DungeonGridScroll.scrollNone,
+              GameDungeonSlidingGridWidget(
+                slide: Slide.slideNone,
                 action: state.action,
                 dungeonActionRecord: dungeonActionRecord,
               ),
@@ -42,8 +42,8 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           } else if (dungeonActionRecord.action.command == 'look') {
             log.info('Animating look action');
             widgets.add(
-              GameDungeonGridWidget(
-                scroll: DungeonGridScroll.scrollNone,
+              GameDungeonSlidingGridWidget(
+                slide: Slide.slideNone,
                 action: state.action,
                 dungeonActionRecord: dungeonActionRecord,
               ),
@@ -62,16 +62,16 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           if (dungeonActionRecord.action.command == 'move') {
             log.info('Animating move action');
             widgets.add(
-              GameDungeonGridWidget(
-                scroll: DungeonGridScroll.scrollOut,
+              GameDungeonSlidingGridWidget(
+                slide: Slide.slideOut,
                 direction: state.direction,
                 action: state.action,
                 dungeonActionRecord: state.previous,
               ),
             );
             widgets.add(
-              GameDungeonGridWidget(
-                scroll: DungeonGridScroll.scrollIn,
+              GameDungeonSlidingGridWidget(
+                slide: Slide.slideIn,
                 direction: state.direction,
                 action: state.action,
                 dungeonActionRecord: state.current,
@@ -81,8 +81,8 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             // TODO: Scroll out and in for look action
             log.info('Animating look action');
             widgets.add(
-              GameDungeonGridWidget(
-                scroll: DungeonGridScroll.scrollNone,
+              GameDungeonSlidingGridWidget(
+                slide: Slide.slideNone,
                 action: state.action,
                 dungeonActionRecord: dungeonActionRecord,
               ),
