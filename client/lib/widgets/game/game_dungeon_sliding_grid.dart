@@ -129,12 +129,18 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
     final log = getLogger('GameDungeonSlidingGridWidget');
     log.info('Building..');
 
-    return SlideTransition(
-      position: _offsetAnimation,
+    return AnimatedBuilder(
+      animation: _controller,
       child: GameDungeonGridWidget(
         dungeonActionRecord: widget.dungeonActionRecord,
         action: widget.action,
       ),
+      builder: (BuildContext context, Widget? child) {
+        return SlideTransition(
+          position: _offsetAnimation,
+          child: child,
+        );
+      },
     );
   }
 }
