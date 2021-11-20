@@ -11,7 +11,7 @@ import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repositor
 
 class GameDungeonGridWidget extends StatefulWidget {
   final DungeonActionRecord dungeonActionRecord;
-  final String action;
+  final String? action;
   final String? direction;
 
   const GameDungeonGridWidget({
@@ -27,8 +27,7 @@ class GameDungeonGridWidget extends StatefulWidget {
 
 typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
 
-class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget>
-    with SingleTickerProviderStateMixin {
+class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   double gridMemberWidth = 0;
   double gridMemberHeight = 0;
 

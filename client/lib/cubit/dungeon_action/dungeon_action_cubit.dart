@@ -26,7 +26,10 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     final log = getLogger('DungeonActionCubit');
     log.info('(createAction) Creating dungeon action command >$command<');
 
-    emit(DungeonActionStateCreating(sentence: command));
+    emit(DungeonActionStateCreating(
+      sentence: command,
+      current: dungeonActionRecord,
+    ));
 
     DungeonActionRecord? createdDungeonActionRecord =
         await repositories.dungeonActionRepository.create(dungeonID, characterID, command);

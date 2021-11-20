@@ -109,6 +109,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
     log.info('++ Submitting action');
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
+
     await dungeonActionCubit.createAction(
       dungeonCubit.dungeonRecord!.id,
       characterCubit.characterRecord!.id,

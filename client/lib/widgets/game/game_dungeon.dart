@@ -20,8 +20,6 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
     final log = getLogger('GameCharacterWidget');
     log.info('Building..');
 
-    // return LayoutBuilder(
-    //   builder: (BuildContext context, BoxConstraints constraints) {
     return Container(
       color: Colors.orange[100],
       child: Column(
@@ -63,7 +61,5 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
         ],
       ),
     );
-    //   },
-    // );
   }
 }

@@ -9,10 +9,12 @@ import 'package:go_mud_client/api/response.dart';
 
 class API {
   final Map<String, String> config;
+  late final String _scheme;
   late final String _hostname;
   late final String _port;
 
   API({required this.config}) {
+    _scheme = config['serverScheme'].toString();
     _hostname = config['serverHost'].toString();
     _port = config['serverPort'].toString();
   }
@@ -25,7 +27,7 @@ class API {
     http.Response? response;
     try {
       Uri uri = Uri(
-        scheme: 'http',
+        scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
       );
@@ -51,7 +53,7 @@ class API {
     http.Response? response;
     try {
       Uri uri = Uri(
-        scheme: 'http',
+        scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID',
@@ -78,7 +80,7 @@ class API {
     http.Response? response;
     try {
       Uri uri = Uri(
-        scheme: 'http',
+        scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
         path: '/api/v1/dungeons',
@@ -112,7 +114,7 @@ class API {
     http.Response? response;
     try {
       Uri uri = Uri(
-        scheme: 'http',
+        scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID/characters',
@@ -162,7 +164,7 @@ class API {
     http.Response? response;
     try {
       Uri uri = Uri(
-        scheme: 'http',
+        scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
@@ -199,7 +201,7 @@ class API {
     http.Response? response;
     try {
       Uri uri = Uri(
-        scheme: 'http',
+        scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/actions',

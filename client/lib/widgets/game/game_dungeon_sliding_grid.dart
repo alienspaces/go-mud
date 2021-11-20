@@ -10,14 +10,14 @@ enum Slide { slideIn, slideOut, slideNone }
 class GameDungeonSlidingGridWidget extends StatefulWidget {
   final Slide slide;
   final DungeonActionRecord dungeonActionRecord;
-  final String action;
+  final String? action;
   final String? direction;
 
   const GameDungeonSlidingGridWidget({
     Key? key,
     required this.slide,
     required this.dungeonActionRecord,
-    required this.action,
+    this.action,
     this.direction,
   }) : super(key: key);
 

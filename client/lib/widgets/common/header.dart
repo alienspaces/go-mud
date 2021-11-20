@@ -70,7 +70,7 @@ void _navigateGame(BuildContext context, NavigationCallbacks callbacks) {
 
 Widget _buildLink(BuildContext context, String label, void Function() navigateFunc) {
   return Container(
-    padding: const EdgeInsets.fromLTRB(20, 10, 5, 0),
+    padding: const EdgeInsets.fromLTRB(1, 10, 1, 0),
     child: ElevatedButton(
       onPressed: navigateFunc,
       style: ElevatedButton.styleFrom(
@@ -81,7 +81,7 @@ Widget _buildLink(BuildContext context, String label, void Function() navigateFu
       child: Text(
         label,
         style: Theme.of(context).textTheme.button!.copyWith(
-              fontSize: 18,
+              fontSize: 14,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
       ),
@@ -122,12 +122,14 @@ AppBar header(BuildContext context, NavigationCallbacks callbacks) {
             "Dungeon",
             style: Theme.of(context).textTheme.headline6!.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 16,
                 ),
           ),
           Text(
             "Doom",
             style: Theme.of(context).textTheme.headline6!.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 16,
                 ),
           ),
         ],

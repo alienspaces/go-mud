@@ -15,9 +15,11 @@ Future<void> main() async {
 
   log.warning('APP_CLIENT_API_HOST = ${dotenv.env["APP_CLIENT_API_HOST"]}');
   log.warning('APP_CLIENT_API_PORT = ${dotenv.env["APP_CLIENT_API_PORT"]}');
+  log.warning('APP_CLIENT_API_HOST = ${dotenv.env["APP_CLIENT_API_SCHEME"]}');
 
   final config = {
     'serverHost': dotenv.env['APP_CLIENT_API_HOST'],
+    'serverScheme': dotenv.env['APP_CLIENT_API_SCHEME'],
     'serverPort': dotenv.env['APP_CLIENT_API_PORT'],
   };
 

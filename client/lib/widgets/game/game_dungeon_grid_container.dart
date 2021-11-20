@@ -53,9 +53,33 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           return Stack(
             children: widgets,
           );
+        } else if (state is DungeonActionStateCreating) {
+          List<Widget> widgets = [];
+          var dungeonActionRecord = state.current;
+
+          log.info('Rendering action command ${dungeonActionRecord?.action.command}');
+          if (dungeonActionRecord != null) {
+            log.info('Animating move action');
+            widgets.add(
+              GameDungeonSlidingGridWidget(
+                slide: Slide.slideNone,
+                dungeonActionRecord: dungeonActionRecord,
+              ),
+            );
+          } else {
+            widgets.add(
+              Container(
+                color: Colors.blueAccent,
+                child: const Text('Loading'),
+              ),
+            );
+          }
+          return Stack(
+            clipBehavior: Clip.antiAlias,
+            children: widgets,
+          );
         } else if (state is DungeonActionStatePlaying) {
           List<Widget> widgets = [];
-          // TODO: "play" actions here?
           var dungeonActionRecord = state.current;
 
           log.info('Animating action command ${dungeonActionRecord.action.command}');
@@ -78,7 +102,6 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               ),
             );
           } else if (dungeonActionRecord.action.command == 'look') {
-            // TODO: Scroll out and in for look action
             log.info('Animating look action');
             widgets.add(
               GameDungeonSlidingGridWidget(
