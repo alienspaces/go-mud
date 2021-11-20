@@ -30,7 +30,7 @@ class DungeonActionStateCreating extends DungeonActionState {
   const DungeonActionStateCreating({required this.sentence, this.current});
 
   @override
-  List<Object> get props => [sentence];
+  List<Object?> get props => [sentence, current];
 }
 
 @immutable

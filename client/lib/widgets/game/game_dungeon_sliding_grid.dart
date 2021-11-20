@@ -54,7 +54,11 @@ Map<String, Offset> slideOutEndOffset = {
 class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWidget>
     with SingleTickerProviderStateMixin {
   // Animation controller
-  late final AnimationController _controller;
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 500),
+    vsync: this,
+  );
+
   // Animation
   late final Animation<Offset> _offsetAnimation;
 
@@ -77,12 +81,6 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
   @override
   void initState() {
     final log = getLogger('GameDungeonSlidingGridWidget');
-
-    // Animation controller
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
 
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
@@ -127,7 +125,7 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonSlidingGridWidget');
-    log.info('Building..');
+    log.info('Building ${widget.key} - ${widget.slide}..');
 
     return AnimatedBuilder(
       animation: _controller,
