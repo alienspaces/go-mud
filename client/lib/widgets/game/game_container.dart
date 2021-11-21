@@ -74,7 +74,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
             child: GameCharacterWidget(),
           ),
           Expanded(
-            flex: 5,
+            flex: 6,
             child: GameDungeonWidget(),
           ),
         ],

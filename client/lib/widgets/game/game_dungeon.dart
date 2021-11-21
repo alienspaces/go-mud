@@ -26,18 +26,18 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
         children: <Widget>[
           // Location Description
           const Expanded(
-            flex: 1,
+            flex: 2,
             child: GameDungeonDescriptionContainerWidget(),
           ),
           Expanded(
-            flex: 4,
+            flex: 6,
             child: Container(
               color: Colors.orange[100],
               child: Column(
                 children: <Widget>[
                   // Location Grid
                   Expanded(
-                    flex: 4,
+                    flex: 10,
                     child: Container(
                       decoration: BoxDecoration(color: Colors.orange[100]),
                       clipBehavior: Clip.antiAlias,
@@ -46,7 +46,7 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
                   ),
                   // Location Actions
                   const Expanded(
-                    flex: 1,
+                    flex: 4,
                     child: GameDungeonActionWidget(),
                   ),
                 ],

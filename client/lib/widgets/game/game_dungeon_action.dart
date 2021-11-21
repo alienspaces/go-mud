@@ -15,16 +15,18 @@ class GameDungeonActionWidget extends StatefulWidget {
   _GameDungeonActionWidgetState createState() => _GameDungeonActionWidgetState();
 }
 
-double gridMemberWidth = 50;
-double gridMemberHeight = 50;
+double gridMemberWidth = 0;
+double gridMemberHeight = 0;
 
 class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
   List<Widget> _generateActions(BuildContext context) {
     return [
-      _actionWidget(context, 'L', 'look'),
-      _actionWidget(context, 'M', 'move'),
-      _actionWidget(context, 'G', 'get'),
-      _submitActionWidget(context),
+      _actionWidget(context, 'Look', 'look'),
+      _actionWidget(context, 'Move', 'move'),
+      _actionWidget(context, 'Equip', 'equip'),
+      _actionWidget(context, 'Stash', 'stash'),
+      _actionWidget(context, 'Drop', 'drop'),
+      _actionWidget(context, 'Use', 'use'),
     ];
   }
 
@@ -32,6 +34,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
     return Container(
       margin: const EdgeInsets.all(2),
       width: gridMemberWidth,
+      height: gridMemberHeight,
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameDungeonActionWidget');
@@ -41,13 +44,19 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
         style: ElevatedButton.styleFrom(
           primary: Colors.green,
         ),
-        child: Text(label),
+        child: Text(
+          label,
+          textDirection: TextDirection.ltr,
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 6),
+        ),
       ),
     );
   }
 
   Widget _submitActionWidget(BuildContext context) {
     return Container(
+      width: gridMemberWidth * 2,
+      height: gridMemberHeight * 2,
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
@@ -64,7 +73,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
   }
 
   void _selectAction(BuildContext context, String action) {
-    final log = getLogger('GameDungeonGridWidget');
+    final log = getLogger('GameDungeonActionWidget');
     log.info('Selecting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -91,7 +100,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
   }
 
   void _submitAction(BuildContext context) async {
-    final log = getLogger('GameDungeonGridWidget');
+    final log = getLogger('GameDungeonActionWidget');
     log.info('Submitting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -124,15 +133,29 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonGridWidget');
+    final log = getLogger('GameDungeonActionWidget');
     log.info('Building..');
 
-    return BlocConsumer<DungeonCommandCubit, DungeonCommandState>(
-      listener: (BuildContext context, DungeonCommandState state) {
-        log.info('listener...');
-      },
-      builder: (BuildContext context, DungeonCommandState state) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        log.info('Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
+
+        // Set grid member dimensions
+        gridMemberWidth = (constraints.maxWidth / 5) - 2;
+        gridMemberHeight = (constraints.maxHeight / 2) - 2;
+        if (gridMemberHeight > gridMemberWidth) {
+          gridMemberHeight = gridMemberWidth;
+        }
+        if (gridMemberWidth > gridMemberHeight) {
+          gridMemberWidth = gridMemberHeight;
+        }
+
+        double gridWidth = gridMemberWidth * 5;
+        double gridHeight = gridMemberHeight * 2;
+
         return Container(
+          width: gridWidth,
+          height: gridHeight,
           decoration: BoxDecoration(
             color: const Color(0xFFDEDEDE),
             border: Border.all(
@@ -142,10 +165,22 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
           ),
           padding: const EdgeInsets.all(1),
           margin: const EdgeInsets.all(5),
-          width: gridMemberWidth * 5,
-          height: gridMemberHeight * 1,
           child: Row(
-            children: _generateActions(context),
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  children: _generateActions(context),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: _submitActionWidget(
+                  context,
+                ),
+              ),
+            ],
           ),
         );
       },
