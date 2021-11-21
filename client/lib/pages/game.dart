@@ -63,7 +63,7 @@ class _GameScreenState extends State<GameScreen> {
       appBar: header(context, widget.callbacks),
       resizeToAvoidBottomInset: false,
       body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        // padding: const EdgeInsets.symmetric(vertical: 16),
         alignment: Alignment.center,
         child: const GameContainerWidget(),
       ),
