@@ -8,8 +8,13 @@ import 'package:go_mud_client/repository/repository.dart';
 Map<String, String> getConfig() {
   Map<String, String> envVars = Platform.environment;
 
+  String? serverScheme = envVars['APP_CLIENT_API_SCHEME'];
   String? serverHost = envVars['APP_CLIENT_API_HOST'];
   String? serverPort = envVars['APP_CLIENT_API_PORT'];
+
+  if (serverScheme == null) {
+    throw Exception('Test setup failure, environment missing APP_CLIENT_API_SCHEME');
+  }
 
   if (serverHost == null) {
     throw Exception('Test setup failure, environment missing APP_CLIENT_API_HOST');
@@ -20,6 +25,7 @@ Map<String, String> getConfig() {
   }
 
   return {
+    "serverScheme": envVars["APP_CLIENT_API_SCHEME"] ?? '',
     "serverHost": envVars['APP_CLIENT_API_HOST'] ?? '',
     "serverPort": envVars['APP_CLIENT_API_PORT'] ?? '',
   };

@@ -27,6 +27,7 @@ test-client:
     APP_SERVER_DB_PORT: 5432
     APP_SERVER_DB_USER: "go-mud-user"
     APP_SERVER_DB_PASSWORD: "go-mud-pass"
+    APP_CLIENT_API_SCHEME: "http"
     APP_CLIENT_API_HOST: game-server
     APP_CLIENT_API_PORT: 8084
   image: $CI_REGISTRY/alienspaces/go-mud/cirrusci/flutter:stable
