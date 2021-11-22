@@ -52,7 +52,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 
 	tests := []TestCase{
 		{
-			name: "POST - Create one with valid sentence",
+			name: "POST - look",
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[6]
 			},
@@ -80,7 +80,35 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 			responseCode: http.StatusOK,
 		},
 		{
-			name: "POST - Create one with empty sentence",
+			name: "POST - move north",
+			config: func(rnr *Runner) server.HandlerConfig {
+				return rnr.HandlerConfig[6]
+			},
+			requestHeaders: func(data harness.Data) map[string]string {
+				headers := map[string]string{
+					"Authorization": "Bearer " + validAuthToken(),
+				}
+				return headers
+			},
+			requestParams: func(data harness.Data) map[string]string {
+				params := map[string]string{
+					":dungeon_id":   data.DungeonRecs[0].ID,
+					":character_id": data.DungeonCharacterRecs[0].ID,
+				}
+				return params
+			},
+			requestData: func(data harness.Data) *schema.DungeonActionRequest {
+				res := schema.DungeonActionRequest{
+					Data: schema.DungeonActionRequestData{
+						Sentence: "move north",
+					},
+				}
+				return &res
+			},
+			responseCode: http.StatusOK,
+		},
+		{
+			name: "POST - empty",
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[6]
 			},
@@ -244,7 +272,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				if cfg.Method == http.MethodPost {
 					t.Logf("Method is post, checking response data >%#v<", res.Data)
 					if len(res.Data) != 0 {
-						t.Logf("Adding dungeon character action ID >%s<", res.Data[0].Action.ID)
+						t.Logf("Adding dungeon character action ID >%s< for teardown", res.Data[0].Action.ID)
 						th.AddDungeonCharacterActionTeardownID(res.Data[0].Action.ID)
 					}
 				}
