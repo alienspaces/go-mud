@@ -84,7 +84,6 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
 
           if (dungeonActionRecord.action.command == 'move') {
             log.info('DungeonActionStatePlaying - Rendering move');
-            // TODO: This one is not rendering
             widgets.add(
               GameDungeonSlidingGridWidget(
                 key: UniqueKey(),
@@ -94,7 +93,6 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
                 dungeonActionRecord: state.previous,
               ),
             );
-            // TODO: This one is rendering
             widgets.add(
               GameDungeonSlidingGridWidget(
                 key: UniqueKey(),
