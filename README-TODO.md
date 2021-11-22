@@ -8,8 +8,8 @@
 
 ## Now
 
-- Better error recovery on client side.
-  - Move thing causes error and client doesn't recover..
+- Server: Look direction
+- Client: Scroll rooms for look actions
 
 ## Next
 
@@ -19,8 +19,6 @@
 
 - Better error handling on server side.
 - Improve automated tests
-- Server: Look direction
-- Client: Scroll rooms for look actions
 - All: Docker Compose
 - Server: Expand model tests
 - Server: Expand handler tests
