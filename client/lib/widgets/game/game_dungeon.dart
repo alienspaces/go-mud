@@ -30,7 +30,7 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
             child: GameDungeonDescriptionContainerWidget(),
           ),
           Expanded(
-            flex: 6,
+            flex: 7,
             child: Container(
               color: Colors.orange[100],
               child: Column(

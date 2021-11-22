@@ -21,8 +21,8 @@ double gridMemberHeight = 0;
 class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
   List<Widget> _generateActions(BuildContext context) {
     return [
-      _actionWidget(context, 'Look', 'look'),
       _actionWidget(context, 'Move', 'move'),
+      _actionWidget(context, 'Look', 'look'),
       _actionWidget(context, 'Equip', 'equip'),
       _actionWidget(context, 'Stash', 'stash'),
       _actionWidget(context, 'Drop', 'drop'),
@@ -57,7 +57,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
     return Container(
       width: gridMemberWidth * 2,
       height: gridMemberHeight * 2,
-      margin: const EdgeInsets.all(2),
+      margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameDungeonActionWidget');
@@ -67,7 +67,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
         style: ElevatedButton.styleFrom(
           primary: Colors.green,
         ),
-        child: const Text('Submit'),
+        child: const Text('Play'),
       ),
     );
   }
@@ -164,7 +164,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
             borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
           padding: const EdgeInsets.all(1),
-          margin: const EdgeInsets.all(5),
+          // margin: const EdgeInsets.all(5),
           child: Row(
             children: <Widget>[
               Expanded(
