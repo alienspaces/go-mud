@@ -19,27 +19,28 @@ if [[ "$MIGRATE_PATH" != *"$APP_SERVER_GO_VERSION"* ]]; then
 fi
 
 # NOTE: Add new services here
-SERVICE_NAMES=(template game)
-echo "=> (db-migrate-up) - Service names" "${SERVICE_NAMES[@]}"
+service_base_path=./service
+service_names=(template game)
+echo "=> (db-migrate-up) - Service names" "${service_names[@]}"
 
-for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
+for service_name in "${service_names[@]}"; do
 
     # Ingoring template
-    if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
-        echo "=> (db-migrate-up) - Skipping database $SERVICE_NAME"
+    if [ "$service_name" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
+        echo "=> (db-migrate-up) - Skipping database $service_name"
         continue
     fi
 
     # run migrations
-    if [ -d "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" ]; then
+    if [ -d "$service_base_path/$service_name/migration" ]; then
 
         # load service specific environment
-        source "${BASH_SOURCE%/*}"/environment "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
+        source "${BASH_SOURCE%/*}"/environment "$service_base_path/$service_name" || exit $?
 
         URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
 
-        echo "=> Migration path $SERVICE_BASE_PATH/$SERVICE_NAME/migration"
+        echo "=> Migration path $service_base_path/$service_name/migration"
 
-        migrate -verbose -path "$SERVICE_BASE_PATH/$SERVICE_NAME/migration" -database "$URL" -- up
+        migrate -verbose -path "$service_base_path/$service_name/migration" -database "$URL" -- up
     fi
 done

@@ -26,14 +26,14 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 	require.NoError(t, err, "New test data returns without error")
 
 	type TestCase struct {
-		name           string
-		config         func(rnr *Runner) server.HandlerConfig
-		requestHeaders func(data harness.Data) map[string]string
-		requestParams  func(data harness.Data) map[string]string
-		queryParams    func(data harness.Data) map[string]string
-		requestData    func(data harness.Data) *schema.DungeonActionRequest
-		responseCode   int
-		responseData   func(data harness.Data) *schema.DungeonActionResponse
+		name                       string
+		config                     func(rnr *Runner) server.HandlerConfig
+		requestHeaders             func(data harness.Data) map[string]string
+		requestParams              func(data harness.Data) map[string]string
+		queryParams                func(data harness.Data) map[string]string
+		requestData                func(data harness.Data) *schema.DungeonActionRequest
+		responseDungeonActionCount int
+		responseCode               int
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -73,7 +73,8 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 				return &res
 			},
-			responseCode: http.StatusOK,
+			responseDungeonActionCount: 1,
+			responseCode:               http.StatusOK,
 		},
 		{
 			name: "POST - move north",
@@ -101,7 +102,8 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 				return &res
 			},
-			responseCode: http.StatusOK,
+			responseDungeonActionCount: 1,
+			responseCode:               http.StatusOK,
 		},
 		{
 			name: "POST - empty",
@@ -129,7 +131,8 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 				return &res
 			},
-			responseCode: http.StatusBadRequest,
+			responseDungeonActionCount: 0,
+			responseCode:               http.StatusBadRequest,
 		},
 	}
 
@@ -242,19 +245,11 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 			err = json.NewDecoder(rec.Body).Decode(&res)
 			require.NoError(t, err, "Decode returns without error")
 
-			// response data
-			var resData *schema.DungeonActionResponse
-			if tc.responseData != nil {
-				resData = tc.responseData(th.Data)
-			}
-
 			// test data
 			if tc.responseCode == http.StatusOK {
 
 				// response data
-				if resData != nil {
-					require.Equal(t, resData.Data[0].Action.ID, res.Data[0].Action.ID, "ID equals expected")
-				}
+				require.Equal(t, tc.responseDungeonActionCount, len(res.Data), "Response dungeon action count equals expected")
 
 				// record timestamps
 				require.False(t, res.Data[0].Action.CreatedAt.IsZero(), "CreatedAt is not zero")
