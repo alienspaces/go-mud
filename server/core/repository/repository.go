@@ -49,11 +49,11 @@ func (r *Repository) Init(p preparer.Preparer, tx *sqlx.Tx) error {
 	}
 
 	if r.Tx == nil {
-		return errors.New("Tx is nil, cannot initialise")
+		return errors.New("tx is nil, cannot initialise")
 	}
 
 	if r.Prepare == nil {
-		return errors.New("Prepare is nil, cannot initialise")
+		return errors.New("prepare is nil, cannot initialise")
 	}
 
 	return nil
@@ -205,7 +205,7 @@ func (r *Repository) deleteOneRec(recordID string) error {
 
 	// expect a single row
 	if raf != 1 {
-		return fmt.Errorf("Expecting to delete exactly one row but deleted >%d<", raf)
+		return fmt.Errorf("expecting to delete exactly one row but deleted >%d<", raf)
 	}
 
 	r.Log.Debug("Deleted >%d< records", raf)
@@ -247,7 +247,7 @@ func (r *Repository) removeOneRec(recordID string) error {
 
 	// expect a single row
 	if raf != 1 {
-		return fmt.Errorf("Expecting to remove exactly one row but removed >%d<", raf)
+		return fmt.Errorf("expecting to remove exactly one row but removed >%d<", raf)
 	}
 
 	r.Log.Debug("Removed >%d< records", raf)

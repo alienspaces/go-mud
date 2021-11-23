@@ -27,10 +27,6 @@ func TestDungeonCharacterHandler(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
-	//  Test dependencies
-	c, l, s, err := th.NewDefaultDependencies()
-	require.NoError(t, err, "NewDefaultDependencies returns without error")
-
 	type TestCase struct {
 		name           string
 		config         func(rnr *Runner) server.HandlerConfig
@@ -44,7 +40,7 @@ func TestDungeonCharacterHandler(t *testing.T) {
 
 	// validAuthToken - Generate a valid authentication token for this handler
 	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(c, l)
+		authen, _ := auth.NewAuth(th.Config, th.Log)
 		token, _ := authen.EncodeJWT(&auth.Claims{
 			Roles:    []string{},
 			Identity: map[string]interface{}{},
@@ -226,7 +222,7 @@ func TestDungeonCharacterHandler(t *testing.T) {
 		func() {
 			rnr := NewRunner()
 
-			err = rnr.Init(c, l, s)
+			err = rnr.Init(th.Config, th.Log, th.Store)
 			require.NoError(t, err, "Runner init returns without error")
 
 			err = th.Setup()

@@ -3,10 +3,7 @@ package harness
 import (
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-mud/server/core/config"
-	"gitlab.com/alienspaces/go-mud/server/core/log"
 	"gitlab.com/alienspaces/go-mud/server/core/prepare"
-	"gitlab.com/alienspaces/go-mud/server/core/store"
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -43,9 +40,13 @@ type Testing struct {
 }
 
 // NewTesting -
-func NewTesting() (t *Testing, err error) {
+func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer) (t *Testing, err error) {
 
-	t = &Testing{}
+	t = &Testing{
+		Config: c,
+		Log:    l,
+		Store:  s,
+	}
 
 	return t, nil
 }
@@ -53,15 +54,29 @@ func NewTesting() (t *Testing, err error) {
 // Init -
 func (t *Testing) Init() (err error) {
 
-	// default dependencies
-	c, l, s, err := t.NewDefaultDependencies()
-	if err != nil {
-		return err
+	if t.Config == nil {
+		c, err := NewDefaultConfig()
+		if err != nil {
+			return err
+		}
+		t.Config = c
 	}
 
-	t.Config = c
-	t.Log = l
-	t.Store = s
+	if t.Log == nil {
+		l, err := NewDefaultLogger(t.Config)
+		if err != nil {
+			return err
+		}
+		t.Log = l
+	}
+
+	if t.Store == nil {
+		s, err := NewDefaultStorer(t.Config, t.Log)
+		if err != nil {
+			return err
+		}
+		t.Store = s
+	}
 
 	// preparer
 	t.Prepare, err = prepare.NewPrepare(t.Log)
@@ -94,56 +109,6 @@ func (t *Testing) Init() (err error) {
 	t.Log.Debug("Modeller ready")
 
 	return nil
-}
-
-// NewDefaultDependencies -
-func (t *Testing) NewDefaultDependencies() (configurer.Configurer, logger.Logger, storer.Storer, error) {
-
-	// configurer
-	c, err := config.NewConfig(nil, false)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	configVars := []string{
-		// logger
-		"APP_SERVER_LOG_LEVEL",
-		// database
-		"APP_SERVER_DB_HOST",
-		"APP_SERVER_DB_PORT",
-		"APP_SERVER_DB_NAME",
-		"APP_SERVER_DB_USER",
-		"APP_SERVER_DB_PASSWORD",
-		// schema
-		"APP_SERVER_SCHEMA_PATH",
-		// jwt signing key
-		"APP_SERVER_JWT_SIGNING_KEY",
-	}
-	for _, key := range configVars {
-		err = c.Add(key, true)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-	}
-
-	// logger
-	l, err := log.NewLogger(c)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	// storer
-	s, err := store.NewStore(c, l)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	err = s.Init()
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	return c, l, s, nil
 }
 
 // InitTx -

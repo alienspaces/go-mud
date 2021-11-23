@@ -30,12 +30,7 @@ func TestNewRunner(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
-	//  Test dependencies
-	c, l, s, err := th.NewDefaultDependencies()
-	require.NoError(t, err, "NewDefaultDependencies returns without error")
-
 	r := NewRunner()
-
-	err = r.Init(c, l, s)
+	err = r.Init(th.Config, th.Log, th.Store)
 	require.NoError(t, err, "Init returns without error")
 }
