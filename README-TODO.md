@@ -8,18 +8,18 @@
 
 ## Now
 
-- Server: Look direction
-- Client: Scroll rooms for look actions
+- Server - Validate API responses against JSON schemas in tests
+- Server - Improve handler tests
+- Server - Improve model tests
 
 ## Next
 
-- Review server code, where were we at?
+- Server - Improve API error responses
 
 ## Later
 
-- Better error handling on server side.
-- Improve automated tests
-- All: Docker Compose
+- Server: Look direction
+- Client: Scroll rooms for look actions
 - Server: Expand model tests
 - Server: Expand handler tests
 - Server: Look object
@@ -31,3 +31,4 @@
 - Client: Implement 2 second progress bar and retries
 - Server: Implement monster movement
 - Smoother room scrolling without redrawing previous location
+- All: Docker Compose
