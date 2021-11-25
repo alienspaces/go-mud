@@ -13,7 +13,9 @@ type RequestPagination struct {
 
 // Response -
 type Response struct {
-	Error      *ResponseError      `json:"error,omitempty"`
+	// Populated when response code is not 2XX
+	Error *ResponseError `json:"error,omitempty"`
+	// Populated when response is a collection
 	Pagination *ResponsePagination `json:"pagination,omitempty"`
 }
 

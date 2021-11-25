@@ -67,6 +67,7 @@ func (l *Log) Init() error {
 
 	// logger
 	l.log = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	l.log = l.log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	// logger level
 	configLevel := l.Config.Get("APP_SERVER_LOG_LEVEL")
