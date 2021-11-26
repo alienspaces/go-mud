@@ -26,14 +26,14 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 	require.NoError(t, err, "New test data returns without error")
 
 	type TestCase struct {
-		name           string
-		config         func(rnr *Runner) server.HandlerConfig
-		requestHeaders func(data harness.Data) map[string]string
-		requestParams  func(data harness.Data) map[string]string
-		queryParams    func(data harness.Data) map[string]string
-		requestBody    func(data harness.Data) *schema.DungeonActionRequest
-		responseBody   func(data harness.Data) *schema.DungeonActionResponse
-		responseCode   int
+		name               string
+		config             func(rnr *Runner) server.HandlerConfig
+		requestHeaders     func(data harness.Data) map[string]string
+		requestParams      func(data harness.Data) map[string]string
+		queryParams        func(data harness.Data) map[string]string
+		requestBody        func(data harness.Data) *schema.DungeonActionRequest
+		expectResponseBody func(data harness.Data) *schema.DungeonActionResponse
+		expectResponseCode int
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -73,7 +73,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 				return &res
 			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
@@ -86,7 +86,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 				return &res
 			},
-			responseCode: http.StatusOK,
+			expectResponseCode: http.StatusOK,
 		},
 		{
 			name: "POST - move north",
@@ -114,7 +114,20 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 				return &res
 			},
-			responseCode: http.StatusOK,
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
+				res := schema.DungeonActionResponse{
+					Data: []schema.DungeonActionResponseData{
+						{
+							Action: schema.ActionData{
+								Command:                   "move",
+								TargetDungeonLocationName: "Cave Tunnel",
+							},
+						},
+					},
+				}
+				return &res
+			},
+			expectResponseCode: http.StatusOK,
 		},
 		// {
 		// 	name: "POST - empty",
@@ -249,37 +262,46 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 			rtr.ServeHTTP(rec, req)
 
 			// test status
-			require.Equalf(t, tc.responseCode, rec.Code, "%s - Response code equals expected", tc.name)
+			require.Equalf(t, tc.expectResponseCode, rec.Code, "%s - Response code equals expected", tc.name)
 
-			res := schema.DungeonActionResponse{}
-			err = json.NewDecoder(rec.Body).Decode(&res)
+			responseBody := schema.DungeonActionResponse{}
+			err = json.NewDecoder(rec.Body).Decode(&responseBody)
 			require.NoError(t, err, "Decode returns without error")
 
+			if tc.expectResponseCode != http.StatusOK {
+				return
+			}
+
 			// test data
-			if tc.responseCode == http.StatusOK {
+			if tc.expectResponseBody != nil {
+				expectResponseBody := tc.expectResponseBody(th.Data)
+				if expectResponseBody != nil {
+					for idx, expectData := range expectResponseBody.Data {
+						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
+						require.NotNil(t, responseBody.Data[idx].Action, "Response body action is not empty")
+						require.Equal(t, responseBody.Data[idx].Action.Command, expectData.Action.Command)
+					}
+				}
+			}
 
-				// TODO: Improve these tests!
+			require.NotNil(t, responseBody, "Response body is not nil")
+			require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-				// response data
-				// responseBody := tc.responseBody(th.Data)
-				// if responseBody != nil {
-				// 	require.Equal(t, len(responseBody.Data), len(res.Data), "Response data length equals expected")
-				// }
+			for _, data := range responseBody.Data {
 
 				// record timestamps
-				require.False(t, res.Data[0].Action.CreatedAt.IsZero(), "CreatedAt is not zero")
+				require.False(t, data.Action.CreatedAt.IsZero(), "CreatedAt is not zero")
 				if cfg.Method == http.MethodPost {
-					require.True(t, res.Data[0].Action.UpdatedAt.IsZero(), "UpdatedAt is zero")
+					require.True(t, data.Action.UpdatedAt.IsZero(), "UpdatedAt is zero")
 				}
 				if cfg.Method == http.MethodPut {
-					require.False(t, res.Data[0].Action.UpdatedAt.IsZero(), "UpdatedAt is not zero")
+					require.False(t, data.Action.UpdatedAt.IsZero(), "UpdatedAt is not zero")
 				}
 
 				if cfg.Method == http.MethodPost {
-					t.Logf("Method is post, checking response data >%#v<", res.Data)
-					if len(res.Data) != 0 {
-						t.Logf("Adding dungeon character action ID >%s< for teardown", res.Data[0].Action.ID)
-						th.AddDungeonCharacterActionTeardownID(res.Data[0].Action.ID)
+					if len(responseBody.Data) != 0 {
+						t.Logf("Adding dungeon character action ID >%s< for teardown", data.Action.ID)
+						th.AddDungeonCharacterActionTeardownID(data.Action.ID)
 					}
 				}
 			}

@@ -101,7 +101,7 @@ func (r *Repository) GetMany(
 		recs = append(recs, rec)
 	}
 
-	r.Log.Warn("Fetched >%d< records", len(recs))
+	r.Log.Debug("Fetched >%d< records", len(recs))
 
 	return recs, nil
 }
