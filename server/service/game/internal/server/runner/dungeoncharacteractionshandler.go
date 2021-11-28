@@ -36,6 +36,11 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 		return
 	}
 
+	l.Debug("Resulting dungeon action >%#v<", dungeonActionRecordSet.DungeonActionRec)
+	l.Debug("Resulting dungeon action location >%#v<", dungeonActionRecordSet.DungeonLocationRec)
+	l.Debug("Resulting dungeon action character >%#v<", dungeonActionRecordSet.DungeonCharacterRec)
+	l.Debug("Resulting dungeon action monster >%#v<", dungeonActionRecordSet.DungeonMonsterRec)
+
 	// Response data
 	responseData, err := rnr.RecordToDungeonCharacterActionResponseData(*dungeonActionRecordSet)
 	if err != nil {
@@ -98,16 +103,16 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 		dungeonLocations = append(dungeonLocations, "down")
 	}
 
-	var characterData schema.CharacterData
+	var characterData *schema.CharacterData
 	if dungeonActionRecordSet.DungeonCharacterRec != nil {
-		characterData = schema.CharacterData{
+		characterData = &schema.CharacterData{
 			Name: dungeonActionRecordSet.DungeonCharacterRec.Name,
 		}
 	}
 
-	var monsterData schema.MonsterData
+	var monsterData *schema.MonsterData
 	if dungeonActionRecordSet.DungeonMonsterRec != nil {
-		monsterData = schema.MonsterData{
+		monsterData = &schema.MonsterData{
 			Name: dungeonActionRecordSet.DungeonMonsterRec.Name,
 		}
 	}
@@ -162,8 +167,8 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 			Directions:  dungeonLocations,
 		},
 		Character:  characterData,
-		Monster:    monsterData,
 		Characters: dungeonCharacterData,
+		Monster:    monsterData,
 		Monsters:   dungeonMonsterData,
 		Objects:    dungeonObjectData,
 	}

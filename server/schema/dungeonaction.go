@@ -14,8 +14,8 @@ type DungeonActionResponse struct {
 type DungeonActionResponseData struct {
 	Action     ActionData      `json:"action"`
 	Location   LocationData    `json:"location"`
-	Character  CharacterData   `json:"character,omitempty"`
-	Monster    MonsterData     `json:"monster,omitempty"`
+	Character  *CharacterData  `json:"character,omitempty"`
+	Monster    *MonsterData    `json:"monster,omitempty"`
 	Characters []CharacterData `json:"characters"`
 	Monsters   []MonsterData   `json:"monsters"`
 	Objects    []ObjectData    `json:"objects"`

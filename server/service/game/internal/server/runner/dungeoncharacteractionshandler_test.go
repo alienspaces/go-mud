@@ -22,8 +22,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 
 	type testCase struct {
 		TestCase
-		// requestBody        func(data harness.Data) *schema.DungeonActionRequest
-		expectResponseBody func(data harness.Data) *schema.DungeonActionResponse
+		responseBody func(data harness.Data) *schema.DungeonActionResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -66,21 +65,21 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				},
 				ResponseCode: http.StatusOK,
 			},
-			// requestBody: func(data harness.Data) *schema.DungeonActionRequest {
-			// 	res := schema.DungeonActionRequest{
-			// 		Data: schema.DungeonActionRequestData{
-			// 			Sentence: "look",
-			// 		},
-			// 	}
-			// 	return &res
-			// },
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
 							Action: schema.ActionData{
 								Command:                   "look",
-								TargetDungeonLocationName: "Cave Entrance",
+								TargetDungeonLocationName: data.DungeonLocationRecs[0].Name,
+							},
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[0].Name,
+								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+							},
+							Character: &schema.CharacterData{
+								Name: data.DungeonCharacterRecs[0].Name,
 							},
 						},
 					},
@@ -117,13 +116,21 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				},
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
 							Action: schema.ActionData{
 								Command:                   "move",
-								TargetDungeonLocationName: "Cave Tunnel",
+								TargetDungeonLocationName: data.DungeonLocationRecs[1].Name,
+							},
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[1].Name,
+								Description: data.DungeonLocationRecs[1].Description,
+								Directions:  []string{"north", "south"},
+							},
+							Character: &schema.CharacterData{
+								Name: data.DungeonCharacterRecs[0].Name,
 							},
 						},
 					},
@@ -177,14 +184,50 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				return
 			}
 
+			isCharacterNil := func(c *schema.CharacterData) bool {
+				return c == nil
+			}
+			isMonsterNil := func(c *schema.MonsterData) bool {
+				return c == nil
+			}
+
 			// test data
-			if testCase.expectResponseBody != nil {
-				expectResponseBody := testCase.expectResponseBody(th.Data)
-				if expectResponseBody != nil {
+			if testCase.responseBody != nil {
+				expectResponseBody := testCase.responseBody(th.Data)
+				if responseBody != nil {
 					for idx, expectData := range expectResponseBody.Data {
+						// Response data
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
+						// Response action
 						require.NotNil(t, responseBody.Data[idx].Action, "Response body action is not empty")
 						require.Equal(t, responseBody.Data[idx].Action.Command, expectData.Action.Command)
+						t.Logf("Checking action target dungeon object name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonObjectName, expectData.Action.TargetDungeonObjectName)
+						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonObjectName, expectData.Action.TargetDungeonObjectName)
+						t.Logf("Checking action target dungeon character name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonCharacterName, expectData.Action.TargetDungeonCharacterName)
+						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonCharacterName, expectData.Action.TargetDungeonCharacterName)
+						t.Logf("Checking action target dungeon monster name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonMonsterName, expectData.Action.TargetDungeonMonsterName)
+						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonMonsterName, expectData.Action.TargetDungeonMonsterName)
+						t.Logf("Checking action target dungeon location name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonLocationName, expectData.Action.TargetDungeonLocationName)
+						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonLocationName, expectData.Action.TargetDungeonLocationName)
+						// Response location
+						require.NotNil(t, responseBody.Data[idx].Location, "Response body location is not empty")
+						t.Logf("Checking location name >%s< >%s<", responseBody.Data[idx].Location.Name, expectData.Location.Name)
+						require.Equal(t, responseBody.Data[idx].Location.Name, expectData.Location.Name)
+						t.Logf("Checking location description >%s< >%s<", responseBody.Data[idx].Location.Description, expectData.Location.Description)
+						require.Equal(t, responseBody.Data[idx].Location.Description, expectData.Location.Description)
+						t.Logf("Checking location directions >%s< >%s<", responseBody.Data[idx].Location.Directions, expectData.Location.Directions)
+						require.Equal(t, responseBody.Data[idx].Location.Directions, expectData.Location.Directions)
+						// Response character
+						require.Equal(t, isCharacterNil(responseBody.Data[idx].Character), isCharacterNil(expectData.Character), "Response body character is nil or not nil as expected")
+						if !isCharacterNil(expectData.Character) {
+							t.Logf("Checking action character name >%s< >%s<", responseBody.Data[idx].Character.Name, expectData.Character.Name)
+						}
+
+						// Response monster
+						require.Equal(t, isMonsterNil(responseBody.Data[idx].Monster), isMonsterNil(expectData.Monster), "Response body character is nil or not nil as expected")
+						if !isMonsterNil(expectData.Monster) {
+							t.Logf("Checking action monster name >%s< >%s<", responseBody.Data[idx].Monster.Name, expectData.Monster.Name)
+						}
 					}
 				}
 			}
