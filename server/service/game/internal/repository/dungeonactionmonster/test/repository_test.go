@@ -34,8 +34,9 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.DungeonActionMonster {
 				return &record.DungeonActionMonster{
-					DungeonActionID:  data.DungeonActionRecs[0].ID,
-					DungeonMonsterID: data.DungeonMonsterRecs[0].ID,
+					DungeonActionID:   data.DungeonActionRecs[0].ID,
+					DungeonLocationID: data.DungeonLocationRecs[0].ID,
+					DungeonMonsterID:  data.DungeonMonsterRecs[0].ID,
 				}
 			},
 			err: false,
@@ -44,8 +45,9 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.DungeonActionMonster {
 				rec := &record.DungeonActionMonster{
-					DungeonActionID:  data.DungeonActionRecs[0].ID,
-					DungeonMonsterID: data.DungeonMonsterRecs[0].ID,
+					DungeonActionID:   data.DungeonActionRecs[0].ID,
+					DungeonLocationID: data.DungeonLocationRecs[0].ID,
+					DungeonMonsterID:  data.DungeonMonsterRecs[0].ID,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

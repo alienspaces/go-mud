@@ -12,13 +12,20 @@ type DungeonActionResponse struct {
 
 // DungeonActionResponseData -
 type DungeonActionResponseData struct {
-	Action     ActionData      `json:"action"`
-	Location   LocationData    `json:"location"`
-	Character  *CharacterData  `json:"character,omitempty"`
-	Monster    *MonsterData    `json:"monster,omitempty"`
-	Characters []CharacterData `json:"characters"`
-	Monsters   []MonsterData   `json:"monsters"`
-	Objects    []ObjectData    `json:"objects"`
+	ID              string         `json:"id,omitempty"`
+	Command         string         `json:"command"`
+	CommandResult   string         `json:"command_result"`
+	Location        LocationData   `json:"location"`
+	Character       *CharacterData `json:"character,omitempty"`
+	Monster         *MonsterData   `json:"monster,omitempty"`
+	EquippedObject  *ObjectData    `json:"equipped_object,omitempty"`
+	StashedObject   *ObjectData    `json:"stashed_object,omitempty"`
+	TargetObject    *ObjectData    `json:"target_object,omitempty"`
+	TargetCharacter *CharacterData `json:"target_character,omitempty"`
+	TargetMonster   *MonsterData   `json:"target_monster,omitempty"`
+	TargetLocation  *LocationData  `json:"target_location,omitempty"`
+	CreatedAt       time.Time      `json:"created_at,omitempty"`
+	UpdatedAt       time.Time      `json:"updated_at,omitempty"`
 }
 
 // DungeonActionRequest -
@@ -32,35 +39,27 @@ type DungeonActionRequestData struct {
 	Sentence string `json:"sentence"`
 }
 
-type ActionData struct {
-	ID                             string    `json:"id,omitempty"`
-	Command                        string    `json:"command"`
-	CommandResult                  string    `json:"command_result"`
-	EquippedDungeonObjectName      string    `json:"equipped_dungeon_object_name,omitempty"`
-	StashedDungeonObjectName       string    `json:"stashed_dungeon_object_name,omitempty"`
-	TargetDungeonObjectName        string    `json:"target_dungeon_object_name,omitempty"`
-	TargetDungeonCharacterName     string    `json:"target_dungeon_character_name,omitempty"`
-	TargetDungeonMonsterName       string    `json:"target_dungeon_monster_name,omitempty"`
-	TargetDungeonLocationDirection string    `json:"target_dungeon_location_direction,omitempty"`
-	TargetDungeonLocationName      string    `json:"target_dungeon_location_name,omitempty"`
-	CreatedAt                      time.Time `json:"created_at,omitempty"`
-	UpdatedAt                      time.Time `json:"updated_at,omitempty"`
-}
-
 type LocationData struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Directions  []string `json:"directions"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Direction   string          `json:"direction,omitempty"`
+	Directions  []string        `json:"directions"`
+	Characters  []CharacterData `json:"characters"`
+	Monsters    []MonsterData   `json:"monsters"`
+	Objects     []ObjectData    `json:"objects"`
 }
 
 type CharacterData struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type MonsterData struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type ObjectData struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }

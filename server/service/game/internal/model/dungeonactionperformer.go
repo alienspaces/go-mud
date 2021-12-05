@@ -7,11 +7,12 @@ import (
 )
 
 func (m *Model) performDungeonCharacterAction(
+	dungeonCharacterRec *record.DungeonCharacter,
 	dungeonActionRec *record.DungeonAction,
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
 
-	actionFuncs := map[string]func(dungeonActionRecord *record.DungeonAction, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error){
+	actionFuncs := map[string]func(dungeonCharacterRec *record.DungeonCharacter, dungeonActionRec *record.DungeonAction, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error){
 		"move": m.performDungeonActionMove,
 		"look": m.performDungeonActionLook,
 	}
@@ -24,7 +25,7 @@ func (m *Model) performDungeonCharacterAction(
 	}
 
 	var err error
-	dungeonActionRec, err = actionFunc(dungeonActionRec, dungeonLocationRecordSet)
+	dungeonActionRec, err = actionFunc(dungeonCharacterRec, dungeonActionRec, dungeonLocationRecordSet)
 	if err != nil {
 		m.Log.Warn("Failed performing action >%s< >%v<", dungeonActionRec.ResolvedCommand, err)
 		return nil, err
@@ -36,16 +37,16 @@ func (m *Model) performDungeonCharacterAction(
 }
 
 func (m *Model) performDungeonActionMove(
+	dungeonCharacterRec *record.DungeonCharacter,
 	dungeonActionRec *record.DungeonAction,
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
 
 	if dungeonActionRec.DungeonCharacterID.Valid {
 		// Character move direction
-		characterRec := dungeonLocationRecordSet.CharacterRec
-		characterRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID.String
+		dungeonCharacterRec.DungeonLocationID = dungeonActionRec.ResolvedTargetDungeonLocationID.String
 
-		err := m.UpdateDungeonCharacterRec(characterRec)
+		err := m.UpdateDungeonCharacterRec(dungeonCharacterRec)
 		if err != nil {
 			m.Log.Warn("Failed updated dungeon character record >%v<", err)
 			return nil, err
@@ -62,17 +63,17 @@ func (m *Model) performDungeonActionMove(
 }
 
 func (m *Model) performDungeonActionLook(
+	dungeonCharacterRec *record.DungeonCharacter,
 	dungeonActionRec *record.DungeonAction,
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
 
 	if dungeonActionRec.DungeonCharacterID.Valid {
-		// TODO: Character look direction. Looking at anything multiple times should result in
-		// additional information within a short timeframe
+		// TODO: Looking at anything multiple times should result in additional information within a short timeframe
 
 	} else if dungeonActionRec.DungeonMonsterID.Valid {
 		// TODO: Monster look at current room, a direction, another monster, a character, or an object
-		return nil, fmt.Errorf("monsters lokking is currently not supported")
+		return nil, fmt.Errorf("monsters looking is currently not supported")
 	}
 
 	return dungeonActionRec, nil

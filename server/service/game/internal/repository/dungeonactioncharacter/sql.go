@@ -4,11 +4,13 @@ var createOneSQL = `
 INSERT INTO dungeon_action_character (
 	id,
 	dungeon_action_id,
+	dungeon_location_id,
 	dungeon_character_id,
 	created_at
 ) VALUES (
 	:id,
 	:dungeon_action_id,
+	:dungeon_location_id,
 	:dungeon_character_id,
 	:created_at
 )
@@ -18,6 +20,7 @@ RETURNING *
 var updateOneSQL = `
 UPDATE dungeon_action_character SET
 	dungeon_action_id    = :dungeon_action_id,
+	dungeon_location_id  = :dungeon_location_id,
 	dungeon_character_id = :dungeon_character_id,
 	updated_at 		     = :updated_at
 WHERE id = :id

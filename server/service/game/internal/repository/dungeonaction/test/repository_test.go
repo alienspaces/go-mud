@@ -36,11 +36,10 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.DungeonAction {
 				return &record.DungeonAction{
-					DungeonID:                       data.DungeonRecs[0].ID,
-					DungeonLocationID:               data.DungeonLocationRecs[0].ID,
-					DungeonCharacterID:              store.NullString(data.DungeonCharacterRecs[0].ID),
-					ResolvedTargetDungeonObjectID:   store.NullString(data.DungeonObjectRecs[0].ID),
-					ResolvedTargetDungeonObjectName: store.NullString(data.DungeonObjectRecs[0].Name),
+					DungeonID:                     data.DungeonRecs[0].ID,
+					DungeonLocationID:             data.DungeonLocationRecs[0].ID,
+					DungeonCharacterID:            store.NullString(data.DungeonCharacterRecs[0].ID),
+					ResolvedTargetDungeonObjectID: store.NullString(data.DungeonObjectRecs[0].ID),
 				}
 			},
 			err: false,
@@ -49,11 +48,10 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.DungeonAction {
 				rec := &record.DungeonAction{
-					DungeonID:                       data.DungeonRecs[0].ID,
-					DungeonLocationID:               data.DungeonLocationRecs[0].ID,
-					DungeonCharacterID:              store.NullString(data.DungeonCharacterRecs[0].ID),
-					ResolvedTargetDungeonObjectID:   store.NullString(data.DungeonObjectRecs[0].ID),
-					ResolvedTargetDungeonObjectName: store.NullString(data.DungeonObjectRecs[0].Name),
+					DungeonID:                     data.DungeonRecs[0].ID,
+					DungeonLocationID:             data.DungeonLocationRecs[0].ID,
+					DungeonCharacterID:            store.NullString(data.DungeonCharacterRecs[0].ID),
+					ResolvedTargetDungeonObjectID: store.NullString(data.DungeonObjectRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

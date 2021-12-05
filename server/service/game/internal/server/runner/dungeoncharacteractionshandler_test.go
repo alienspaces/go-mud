@@ -35,26 +35,32 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 		return token
 	}
 
+	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
+		return rnr.HandlerConfig[6]
+	}
+
+	testCaseRequestHeaders := func(data harness.Data) map[string]string {
+		headers := map[string]string{
+			"Authorization": "Bearer " + validAuthToken(),
+		}
+		return headers
+	}
+
+	testCaseRequestPathParams := func(data harness.Data) map[string]string {
+		params := map[string]string{
+			":dungeon_id":   data.DungeonRecs[0].ID,
+			":character_id": data.DungeonCharacterRecs[0].ID,
+		}
+		return params
+	}
+
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name: "POST - look",
-				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[6]
-				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
-				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						":dungeon_id":   data.DungeonRecs[0].ID,
-						":character_id": data.DungeonCharacterRecs[0].ID,
-					}
-					return params
-				},
+				Name:              "POST - look",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.DungeonActionRequest{
 						Data: schema.DungeonActionRequestData{
@@ -69,17 +75,23 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Action: schema.ActionData{
-								Command:                   "look",
-								TargetDungeonLocationName: data.DungeonLocationRecs[0].Name,
-							},
+							Command: "look",
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
-								Directions:  []string{"north"},
 							},
 							Character: &schema.CharacterData{
 								Name: data.DungeonCharacterRecs[0].Name,
+							},
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation: &schema.LocationData{
+								Name:        data.DungeonLocationRecs[0].Name,
+								Description: data.DungeonLocationRecs[0].Description,
 							},
 						},
 					},
@@ -87,76 +99,103 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				return &res
 			},
 		},
+		// {
+		// 	TestCase: TestCase{
+		// 		Name:              "POST - move north",
+		// 		HandlerConfig:     testCaseHandlerConfig,
+		// 		RequestHeaders:    testCaseRequestHeaders,
+		// 		RequestPathParams: testCaseRequestPathParams,
+		// 		RequestBody: func(data harness.Data) interface{} {
+		// 			res := schema.DungeonActionRequest{
+		// 				Data: schema.DungeonActionRequestData{
+		// 					Sentence: "move north",
+		// 				},
+		// 			}
+		// 			return &res
+		// 		},
+		// 		ResponseCode: http.StatusOK,
+		// 	},
+		// 	responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+		// 		res := schema.DungeonActionResponse{
+		// 			Data: []schema.DungeonActionResponseData{
+		// 				{
+		// 					Action: schema.ActionData{
+		// 						Command:                   "move",
+		// 						TargetDungeonLocationName: data.DungeonLocationRecs[1].Name,
+		// 					},
+		// 					Location: schema.LocationData{
+		// 						Name:        data.DungeonLocationRecs[1].Name,
+		// 						Description: data.DungeonLocationRecs[1].Description,
+		// 						Directions:  []string{"north", "south"},
+		// 					},
+		// 					Character: &schema.CharacterData{
+		// 						Name: data.DungeonCharacterRecs[0].Name,
+		// 					},
+		// 					Characters: []schema.CharacterData{
+		// 						{
+		// 							Name: data.DungeonCharacterRecs[0].Name,
+		// 						},
+		// 					},
+		// 					Monsters: []schema.MonsterData{
+		// 						{
+		// 							Name: data.DungeonMonsterRecs[1].Name,
+		// 						},
+		// 					},
+		// 				},
+		// 			},
+		// 		}
+		// 		return &res
+		// 	},
+		// },
+		// {
+		// 	TestCase: TestCase{
+		// 		Name:              "POST - look north",
+		// 		HandlerConfig:     testCaseHandlerConfig,
+		// 		RequestHeaders:    testCaseRequestHeaders,
+		// 		RequestPathParams: testCaseRequestPathParams,
+		// 		RequestBody: func(data harness.Data) interface{} {
+		// 			res := schema.DungeonActionRequest{
+		// 				Data: schema.DungeonActionRequestData{
+		// 					Sentence: "look north",
+		// 				},
+		// 			}
+		// 			return &res
+		// 		},
+		// 		ResponseCode: http.StatusOK,
+		// 	},
+		// 	responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+		// 		res := schema.DungeonActionResponse{
+		// 			Data: []schema.DungeonActionResponseData{
+		// 				{
+		// 					Action: schema.ActionData{
+		// 						Command:                   "look",
+		// 						TargetDungeonLocationName: data.DungeonLocationRecs[1].Name,
+		// 					},
+		// 					Location: schema.LocationData{
+		// 						Name:        data.DungeonLocationRecs[1].Name,
+		// 						Description: data.DungeonLocationRecs[1].Description,
+		// 						Directions:  []string{"north", "south"},
+		// 					},
+		// 					Character: &schema.CharacterData{
+		// 						Name: data.DungeonCharacterRecs[0].Name,
+		// 					},
+		// 					Monsters: []schema.MonsterData{
+		// 						{
+		// 							Name: data.DungeonMonsterRecs[1].Name,
+		// 						},
+		// 					},
+		// 				},
+		// 			},
+		// 		}
+		// 		return &res
+		// 	},
+		// },
 		{
 			TestCase: TestCase{
-				Name: "POST - move north",
-				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[6]
-				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
-				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						":dungeon_id":   data.DungeonRecs[0].ID,
-						":character_id": data.DungeonCharacterRecs[0].ID,
-					}
-					return params
-				},
-				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
-							Sentence: "move north",
-						},
-					}
-					return &res
-				},
-				ResponseCode: http.StatusOK,
-			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
-						{
-							Action: schema.ActionData{
-								Command:                   "move",
-								TargetDungeonLocationName: data.DungeonLocationRecs[1].Name,
-							},
-							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[1].Name,
-								Description: data.DungeonLocationRecs[1].Description,
-								Directions:  []string{"north", "south"},
-							},
-							Character: &schema.CharacterData{
-								Name: data.DungeonCharacterRecs[0].Name,
-							},
-						},
-					},
-				}
-				return &res
-			},
-		},
-		{
-			TestCase: TestCase{
-				Name: "POST - empty",
-				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[6]
-				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
-				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						":dungeon_id":   data.DungeonRecs[0].ID,
-						":character_id": data.DungeonCharacterRecs[0].ID,
-					}
-					return params
-				},
+				Name:              "POST - empty",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.DungeonActionRequest{
 						Data: schema.DungeonActionRequestData{
@@ -198,36 +237,105 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					for idx, expectData := range expectResponseBody.Data {
 						// Response data
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
-						// Response action
-						require.NotNil(t, responseBody.Data[idx].Action, "Response body action is not empty")
-						require.Equal(t, responseBody.Data[idx].Action.Command, expectData.Action.Command)
-						t.Logf("Checking action target dungeon object name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonObjectName, expectData.Action.TargetDungeonObjectName)
-						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonObjectName, expectData.Action.TargetDungeonObjectName)
-						t.Logf("Checking action target dungeon character name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonCharacterName, expectData.Action.TargetDungeonCharacterName)
-						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonCharacterName, expectData.Action.TargetDungeonCharacterName)
-						t.Logf("Checking action target dungeon monster name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonMonsterName, expectData.Action.TargetDungeonMonsterName)
-						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonMonsterName, expectData.Action.TargetDungeonMonsterName)
-						t.Logf("Checking action target dungeon location name >%s< >%s<", responseBody.Data[idx].Action.TargetDungeonLocationName, expectData.Action.TargetDungeonLocationName)
-						require.Equal(t, responseBody.Data[idx].Action.TargetDungeonLocationName, expectData.Action.TargetDungeonLocationName)
-						// Response location
-						require.NotNil(t, responseBody.Data[idx].Location, "Response body location is not empty")
-						t.Logf("Checking location name >%s< >%s<", responseBody.Data[idx].Location.Name, expectData.Location.Name)
-						require.Equal(t, responseBody.Data[idx].Location.Name, expectData.Location.Name)
-						t.Logf("Checking location description >%s< >%s<", responseBody.Data[idx].Location.Description, expectData.Location.Description)
-						require.Equal(t, responseBody.Data[idx].Location.Description, expectData.Location.Description)
-						t.Logf("Checking location directions >%s< >%s<", responseBody.Data[idx].Location.Directions, expectData.Location.Directions)
-						require.Equal(t, responseBody.Data[idx].Location.Directions, expectData.Location.Directions)
+
+						// Command
+						require.Equal(t, expectData.Command, responseBody.Data[idx].Command)
+
+						// Current location
+						t.Logf("Checking location name >%s< >%s<", expectData.Location.Name, responseBody.Data[idx].Location.Name)
+						require.Equal(t, expectData.Location.Name, responseBody.Data[idx].Location.Name)
+						t.Logf("Checking location description >%s< >%s<", expectData.Location.Description, responseBody.Data[idx].Location.Description)
+						require.Equal(t, expectData.Location.Description, responseBody.Data[idx].Location.Description)
+						t.Logf("Checking location directions >%s< >%s<", expectData.Location.Directions, responseBody.Data[idx].Location.Directions)
+						require.Equal(t, expectData.Location.Directions, responseBody.Data[idx].Location.Directions)
+
+						// Current location characters
+						t.Logf("Checking character count >%d< >%d<", len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters))
+						require.Equal(t, len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters), "Response characters count equals expected")
+						if len(expectData.TargetLocation.Characters) > 0 {
+							for cIdx, character := range expectData.TargetLocation.Characters {
+								t.Logf("Checking character name >%s< >%s<", character.Name, responseBody.Data[idx].TargetLocation.Characters[cIdx].Name)
+								require.Equal(t, character.Name, responseBody.Data[idx].TargetLocation.Characters[cIdx].Name, "Character name equals expected")
+							}
+						}
+
+						// Current location monsters
+						t.Logf("Checking monster count >%d< >%d<", len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters))
+						require.Equal(t, len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters), "Response monsters count equals expected")
+						if len(expectData.TargetLocation.Monsters) > 0 {
+							for mIdx, monster := range expectData.TargetLocation.Monsters {
+								t.Logf("Checking monster name >%s< >%s<", monster.Name, responseBody.Data[idx].TargetLocation.Monsters[mIdx].Name)
+								require.Equal(t, monster.Name, responseBody.Data[idx].TargetLocation.Monsters[mIdx].Name, "Monster name equals expected")
+							}
+						}
+
+						// Current location objects
+						t.Logf("Checking object count >%d< >%d<", len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects))
+						require.Equal(t, len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects), "Response objects count equals expected")
+						if len(expectData.TargetLocation.Objects) > 0 {
+							for oIdx, object := range expectData.TargetLocation.Objects {
+								t.Logf("Checking object name >%s< >%s<", object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name)
+								require.Equal(t, object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name, "Object name equals expected")
+							}
+						}
+
+						// Target location
+						if expectData.TargetLocation != nil {
+							require.NotNil(t, responseBody.Data[idx].TargetLocation, "Response target location is not empty")
+							t.Logf("Checking location name >%s< >%s<", expectData.TargetLocation.Name, responseBody.Data[idx].TargetLocation.Name)
+							require.Equal(t, expectData.TargetLocation.Name, responseBody.Data[idx].TargetLocation.Name)
+							t.Logf("Checking location description >%s< >%s<", expectData.TargetLocation.Description, responseBody.Data[idx].TargetLocation.Description)
+							require.Equal(t, expectData.TargetLocation.Description, responseBody.Data[idx].TargetLocation.Description)
+							t.Logf("Checking location directions >%s< >%s<", expectData.TargetLocation.Directions, responseBody.Data[idx].TargetLocation.Directions)
+							require.Equal(t, expectData.TargetLocation.Directions, responseBody.Data[idx].TargetLocation.Directions)
+
+							// Target location characters
+							t.Logf("Checking character count >%d< >%d<", len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters))
+							require.Equal(t, len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters), "Response characters count equals expected")
+							if len(expectData.TargetLocation.Characters) > 0 {
+								for cIdx, character := range expectData.TargetLocation.Characters {
+									t.Logf("Checking character name >%s< >%s<", character.Name, responseBody.Data[idx].TargetLocation.Characters[cIdx].Name)
+									require.Equal(t, character.Name, responseBody.Data[idx].TargetLocation.Characters[cIdx].Name, "Character name equals expected")
+								}
+							}
+
+							// Target location monsters
+							t.Logf("Checking monster count >%d< >%d<", len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters))
+							require.Equal(t, len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters), "Response monsters count equals expected")
+							if len(expectData.TargetLocation.Monsters) > 0 {
+								for mIdx, monster := range expectData.TargetLocation.Monsters {
+									t.Logf("Checking monster name >%s< >%s<", monster.Name, responseBody.Data[idx].TargetLocation.Monsters[mIdx].Name)
+									require.Equal(t, monster.Name, responseBody.Data[idx].TargetLocation.Monsters[mIdx].Name, "Monster name equals expected")
+								}
+							}
+
+							// Target location objects
+							t.Logf("Checking object count >%d< >%d<", len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects))
+							require.Equal(t, len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects), "Response objects count equals expected")
+							if len(expectData.TargetLocation.Objects) > 0 {
+								for oIdx, object := range expectData.TargetLocation.Objects {
+									t.Logf("Checking object name >%s< >%s<", object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name)
+									require.Equal(t, object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name, "Object name equals expected")
+								}
+							}
+						}
+
 						// Response character
-						require.Equal(t, isCharacterNil(responseBody.Data[idx].Character), isCharacterNil(expectData.Character), "Response body character is nil or not nil as expected")
+						t.Logf("Checking character nil >%t< >%t<", isCharacterNil(expectData.Character), isCharacterNil(responseBody.Data[idx].Character))
+						require.Equal(t, isCharacterNil(expectData.Character), isCharacterNil(responseBody.Data[idx].Character), "Response character is nil or not nil as expected")
 						if !isCharacterNil(expectData.Character) {
-							t.Logf("Checking action character name >%s< >%s<", responseBody.Data[idx].Character.Name, expectData.Character.Name)
+							t.Logf("Checking action character name >%s< >%s<", expectData.Character.Name, responseBody.Data[idx].Character.Name)
+							require.Equal(t, expectData.Character.Name, responseBody.Data[idx].Character.Name, "Response monster name equals expected")
 						}
 
 						// Response monster
-						require.Equal(t, isMonsterNil(responseBody.Data[idx].Monster), isMonsterNil(expectData.Monster), "Response body character is nil or not nil as expected")
+						t.Logf("Checking monster nil >%t< >%t<", isMonsterNil(expectData.Monster), isMonsterNil(responseBody.Data[idx].Monster))
+						require.Equal(t, isMonsterNil(expectData.Monster), isMonsterNil(responseBody.Data[idx].Monster), "Response monster is nil or not nil as expected")
 						if !isMonsterNil(expectData.Monster) {
-							t.Logf("Checking action monster name >%s< >%s<", responseBody.Data[idx].Monster.Name, expectData.Monster.Name)
+							t.Logf("Checking action monster name >%s< >%s<", expectData.Monster.Name, responseBody.Data[idx].Monster.Name)
+							require.Equal(t, expectData.Monster.Name, responseBody.Data[idx].Monster.Name, "Response character name equals expected")
 						}
+
 					}
 				}
 			}
@@ -238,19 +346,17 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 			for _, data := range responseBody.Data {
 
 				// record timestamps
-				require.False(t, data.Action.CreatedAt.IsZero(), "CreatedAt is not zero")
+				require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
 				if method == http.MethodPost {
-					require.True(t, data.Action.UpdatedAt.IsZero(), "UpdatedAt is zero")
+					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
 				}
 				if method == http.MethodPut {
-					require.False(t, data.Action.UpdatedAt.IsZero(), "UpdatedAt is not zero")
+					require.False(t, data.UpdatedAt.IsZero(), "UpdatedAt is not zero")
 				}
 
 				if method == http.MethodPost {
-					if len(responseBody.Data) != 0 {
-						t.Logf("Adding dungeon character action ID >%s< for teardown", data.Action.ID)
-						th.AddDungeonCharacterActionTeardownID(data.Action.ID)
-					}
+					t.Logf("Adding dungeon character action ID >%s< for teardown", data.ID)
+					th.AddDungeonCharacterActionTeardownID(data.ID)
 				}
 			}
 		}

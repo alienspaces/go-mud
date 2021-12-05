@@ -10,7 +10,7 @@ import (
 // GetDungeonLocationRecs -
 func (m *Model) GetDungeonLocationRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonLocation, error) {
 
-	m.Log.Info("Getting dungeon location records params >%s<", params)
+	m.Log.Debug("Getting dungeon location records params >%s<", params)
 
 	r := m.DungeonLocationRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonLocationRecs(params map[string]interface{}, operators 
 // GetDungeonLocationRec -
 func (m *Model) GetDungeonLocationRec(recID string, forUpdate bool) (*record.DungeonLocation, error) {
 
-	m.Log.Info("Getting dungeon location rec ID >%s<", recID)
+	m.Log.Debug("Getting dungeon location rec ID >%s<", recID)
 
 	r := m.DungeonLocationRepository()
 
@@ -41,13 +41,13 @@ func (m *Model) GetDungeonLocationRec(recID string, forUpdate bool) (*record.Dun
 // CreateDungeonLocationRec -
 func (m *Model) CreateDungeonLocationRec(rec *record.DungeonLocation) error {
 
-	m.Log.Info("Creating dungeon location rec >%#v<", rec)
+	m.Log.Debug("Creating dungeon location rec >%#v<", rec)
 
 	r := m.DungeonLocationRepository()
 
 	err := m.ValidateDungeonLocationRec(rec)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -57,13 +57,13 @@ func (m *Model) CreateDungeonLocationRec(rec *record.DungeonLocation) error {
 // UpdateDungeonLocationRec -
 func (m *Model) UpdateDungeonLocationRec(rec *record.DungeonLocation) error {
 
-	m.Log.Info("Updating dungeon location rec >%#v<", rec)
+	m.Log.Debug("Updating dungeon location rec >%#v<", rec)
 
 	r := m.DungeonLocationRepository()
 
 	err := m.ValidateDungeonLocationRec(rec)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonLocationRec(rec *record.DungeonLocation) error {
 // DeleteDungeonLocationRec -
 func (m *Model) DeleteDungeonLocationRec(recID string) error {
 
-	m.Log.Info("Deleting dungeon location rec ID >%s<", recID)
+	m.Log.Debug("Deleting dungeon location rec ID >%s<", recID)
 
 	r := m.DungeonLocationRepository()
 
@@ -84,7 +84,7 @@ func (m *Model) DeleteDungeonLocationRec(recID string) error {
 
 	err := m.ValidateDeleteDungeonLocationRec(recID)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonLocationRec(recID string) error {
 // RemoveDungeonLocationRec -
 func (m *Model) RemoveDungeonLocationRec(recID string) error {
 
-	m.Log.Info("Removing dungeon location rec ID >%s<", recID)
+	m.Log.Debug("Removing dungeon location rec ID >%s<", recID)
 
 	r := m.DungeonLocationRepository()
 
@@ -105,7 +105,7 @@ func (m *Model) RemoveDungeonLocationRec(recID string) error {
 
 	err := m.ValidateDeleteDungeonLocationRec(recID)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

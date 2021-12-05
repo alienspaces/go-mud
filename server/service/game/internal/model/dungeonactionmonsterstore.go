@@ -10,7 +10,7 @@ import (
 // GetDungeonActionMonsterRecs -
 func (m *Model) GetDungeonActionMonsterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonActionMonster, error) {
 
-	m.Log.Info("Getting dungeon action monster records params >%s<", params)
+	m.Log.Debug("Getting dungeon action monster records params >%s<", params)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonActionMonsterRecs(params map[string]interface{}, opera
 // GetDungeonActionMonsterRec -
 func (m *Model) GetDungeonActionMonsterRec(recID string, forUpdate bool) (*record.DungeonActionMonster, error) {
 
-	m.Log.Info("Getting dungeon action monster rec ID >%s<", recID)
+	m.Log.Debug("Getting dungeon action monster rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -41,13 +41,13 @@ func (m *Model) GetDungeonActionMonsterRec(recID string, forUpdate bool) (*recor
 // CreateDungeonActionMonsterRec -
 func (m *Model) CreateDungeonActionMonsterRec(rec *record.DungeonActionMonster) error {
 
-	m.Log.Info("Creating dungeon action monster rec >%#v<", rec)
+	m.Log.Debug("Creating dungeon action monster rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterRepository()
 
 	err := m.ValidateDungeonActionMonsterRec(rec)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -57,13 +57,13 @@ func (m *Model) CreateDungeonActionMonsterRec(rec *record.DungeonActionMonster) 
 // UpdateDungeonActionMonsterRec -
 func (m *Model) UpdateDungeonActionMonsterRec(rec *record.DungeonActionMonster) error {
 
-	m.Log.Info("Updating dungeon action monster rec >%#v<", rec)
+	m.Log.Debug("Updating dungeon action monster rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterRepository()
 
 	err := m.ValidateDungeonActionMonsterRec(rec)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonActionMonsterRec(rec *record.DungeonActionMonster) 
 // DeleteDungeonActionMonsterRec -
 func (m *Model) DeleteDungeonActionMonsterRec(recID string) error {
 
-	m.Log.Info("Deleting dungeon action monster rec ID >%s<", recID)
+	m.Log.Debug("Deleting dungeon action monster rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -84,7 +84,7 @@ func (m *Model) DeleteDungeonActionMonsterRec(recID string) error {
 
 	err := m.ValidateDeleteDungeonActionMonsterRec(recID)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonActionMonsterRec(recID string) error {
 // RemoveDungeonActionMonsterRec -
 func (m *Model) RemoveDungeonActionMonsterRec(recID string) error {
 
-	m.Log.Info("Removing dungeon action monster rec ID >%s<", recID)
+	m.Log.Debug("Removing dungeon action monster rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterRepository()
 
@@ -105,7 +105,7 @@ func (m *Model) RemoveDungeonActionMonsterRec(recID string) error {
 
 	err := m.ValidateDeleteDungeonActionMonsterRec(recID)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

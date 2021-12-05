@@ -83,35 +83,32 @@ type DungeonAction struct {
 	SerialID                               sql.NullInt16  `db:"serial_id"`
 	ResolvedCommand                        string         `db:"resolved_command"`
 	ResolvedEquippedDungeonObjectID        sql.NullString `db:"resolved_equipped_dungeon_object_id"`
-	ResolvedEquippedDungeonObjectName      sql.NullString `db:"resolved_equipped_dungeon_object_name"`
 	ResolvedStashedDungeonObjectID         sql.NullString `db:"resolved_stashed_dungeon_object_id"`
-	ResolvedStashedDungeonObjectName       sql.NullString `db:"resolved_stashed_dungeon_object_name"`
 	ResolvedTargetDungeonObjectID          sql.NullString `db:"resolved_target_dungeon_object_id"`
-	ResolvedTargetDungeonObjectName        sql.NullString `db:"resolved_target_dungeon_object_name"`
 	ResolvedTargetDungeonCharacterID       sql.NullString `db:"resolved_target_dungeon_character_id"`
-	ResolvedTargetDungeonCharacterName     sql.NullString `db:"resolved_target_dungeon_character_name"`
 	ResolvedTargetDungeonMonsterID         sql.NullString `db:"resolved_target_dungeon_monster_id"`
-	ResolvedTargetDungeonMonsterName       sql.NullString `db:"resolved_target_dungeon_monster_name"`
 	ResolvedTargetDungeonLocationDirection sql.NullString `db:"resolved_target_dungeon_location_direction"`
 	ResolvedTargetDungeonLocationID        sql.NullString `db:"resolved_target_dungeon_location_id"`
-	ResolvedTargetDungeonLocationName      sql.NullString `db:"resolved_target_dungeon_location_name"`
 	repository.Record
 }
 
 type DungeonActionCharacter struct {
 	DungeonActionID    string `db:"dungeon_action_id"`
+	DungeonLocationID  string `db:"dungeon_location_id"`
 	DungeonCharacterID string `db:"dungeon_character_id"`
 	repository.Record
 }
 
 type DungeonActionMonster struct {
-	DungeonActionID  string `db:"dungeon_action_id"`
-	DungeonMonsterID string `db:"dungeon_monster_id"`
+	DungeonActionID   string `db:"dungeon_action_id"`
+	DungeonLocationID string `db:"dungeon_location_id"`
+	DungeonMonsterID  string `db:"dungeon_monster_id"`
 	repository.Record
 }
 
 type DungeonActionObject struct {
-	DungeonActionID string `db:"dungeon_action_id"`
-	DungeonObjectID string `db:"dungeon_object_id"`
+	DungeonActionID   string `db:"dungeon_action_id"`
+	DungeonLocationID string `db:"dungeon_location_id"`
+	DungeonObjectID   string `db:"dungeon_object_id"`
 	repository.Record
 }

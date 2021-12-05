@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateOne(t *testing.T) {
+func TestSetupTeardown(t *testing.T) {
 
 	// harness
 	config := DefaultDataConfig
@@ -21,8 +21,6 @@ func TestCreateOne(t *testing.T) {
 	h.CommitData = true
 
 	func() {
-
-		// Test harness
 		err = h.Setup()
 		require.NoError(t, err, "Setup returns without error")
 		defer func() {

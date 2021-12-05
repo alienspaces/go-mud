@@ -35,6 +35,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonActionCharacter {
 				return &record.DungeonActionCharacter{
 					DungeonActionID:    data.DungeonActionRecs[0].ID,
+					DungeonLocationID:  data.DungeonLocationRecs[0].ID,
 					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
 				}
 			},
@@ -45,6 +46,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonActionCharacter {
 				rec := &record.DungeonActionCharacter{
 					DungeonActionID:    data.DungeonActionRecs[0].ID,
+					DungeonLocationID:  data.DungeonLocationRecs[0].ID,
 					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
 				}
 				id, _ := uuid.NewRandom()

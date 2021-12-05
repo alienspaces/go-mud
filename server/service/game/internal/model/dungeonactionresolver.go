@@ -13,7 +13,7 @@ type ResolverSentence struct {
 	Sentence string
 }
 
-func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	resolved, err := m.resolveCommand(sentence)
 	if err != nil {
@@ -21,7 +21,7 @@ func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet
 		return nil, err
 	}
 
-	resolveFuncs := map[string]func(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error){
+	resolveFuncs := map[string]func(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error){
 		"move": m.resolveMoveAction,
 		"look": m.resolveLookAction,
 		// "equip": m.resolveEquipAction,
@@ -36,7 +36,7 @@ func (m *Model) resolveAction(sentence string, records *DungeonLocationRecordSet
 		return nil, fmt.Errorf(msg)
 	}
 
-	dungeonActionRec, err := resolveFunc(resolved.Sentence, records)
+	dungeonActionRec, err := resolveFunc(resolved.Sentence, dungeonCharacterRec, records)
 	if err != nil {
 		m.Log.Warn("Failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
@@ -51,19 +51,19 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	sentenceWords := strings.Split(sentence, " ")
 	resolved := ResolverSentence{}
 
-	m.Log.Info("Have sentence words >%v<", sentenceWords)
+	m.Log.Debug("Have sentence words >%v<", sentenceWords)
 
 	for _, dungeonAction := range []string{"move", "look", "equip", "stash", "drop"} {
-		m.Log.Info("Checking dungeon action >%s<", dungeonAction)
+		m.Log.Debug("Checking dungeon action >%s<", dungeonAction)
 
 		// NOTE: The appended space is important
 		if strings.Contains(sentence, dungeonAction+" ") {
-			m.Log.Info("Sentence contains action >%s<", dungeonAction)
+			m.Log.Debug("Sentence contains action >%s<", dungeonAction)
 			sentence = strings.Replace(sentence, dungeonAction+" ", "", 1)
 			resolved.Command = dungeonAction
 			resolved.Sentence = sentence
 		} else if sentence == dungeonAction {
-			m.Log.Info("Sentence equals action >%s<", dungeonAction)
+			m.Log.Debug("Sentence equals action >%s<", dungeonAction)
 			sentence = strings.Replace(sentence, dungeonAction, "", 1)
 			resolved.Command = dungeonAction
 			resolved.Sentence = sentence
@@ -75,7 +75,7 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	return &resolved, nil
 }
 
-func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	// Resolve move direction
 	var targetDungeonLocationID string
@@ -115,16 +115,6 @@ func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecor
 		}
 	}
 
-	var targetDungeonLocationName string
-	if targetDungeonLocationID != "" && len(records.LocationRecs) > 0 {
-		for _, locationRec := range records.LocationRecs {
-			if locationRec.ID == targetDungeonLocationID {
-				targetDungeonLocationName = locationRec.Name
-				break
-			}
-		}
-	}
-
 	if targetDungeonLocationID == "" {
 		msg := fmt.Sprintf("failed to resolve target dungeon location id with sentence >%s<", sentence)
 		m.Log.Warn(msg)
@@ -136,19 +126,18 @@ func (m *Model) resolveMoveAction(sentence string, records *DungeonLocationRecor
 		// when the character is moving, or is another dungeon action record created when the character
 		// is actually moved in the performActionXxxx function, or is this in fact not correct and
 		// would result in weird replay behaviour?
-		DungeonID:                              records.CharacterRec.DungeonID,
-		DungeonLocationID:                      records.CharacterRec.DungeonLocationID,
-		DungeonCharacterID:                     store.NullString(records.CharacterRec.ID),
+		DungeonID:                              dungeonCharacterRec.DungeonID,
+		DungeonLocationID:                      dungeonCharacterRec.DungeonLocationID,
+		DungeonCharacterID:                     store.NullString(dungeonCharacterRec.ID),
 		ResolvedCommand:                        "move",
 		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
-		ResolvedTargetDungeonLocationName:      store.NullString(targetDungeonLocationName),
 		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
 	}
 
 	return &dungeonActionRecord, nil
 }
 
-func (m *Model) resolveLookAction(sentence string, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	// Resolve look direction
 	var targetDungeonLocationID string
@@ -188,32 +177,20 @@ func (m *Model) resolveLookAction(sentence string, records *DungeonLocationRecor
 		}
 	}
 
-	var targetDungeonLocationName string
-	if targetDungeonLocationID != "" && len(records.LocationRecs) > 0 {
-		for _, locationRec := range records.LocationRecs {
-			if locationRec.ID == targetDungeonLocationID {
-				targetDungeonLocationName = locationRec.Name
-				break
-			}
-		}
-	}
-
 	// TODO: When a location was not identified, try to identify an object, a monster, a character.
 
 	// TODO: When nothing has been identified, assume we are just looking in the current room.
 	if targetDungeonLocationID == "" {
 		targetDungeonLocationID = records.LocationRec.ID
-		targetDungeonLocationName = records.LocationRec.Name
 		targetDungeonLocationDirection = ""
 	}
 
 	dungeonActionRecord := record.DungeonAction{
-		DungeonID:                              records.CharacterRec.DungeonID,
-		DungeonLocationID:                      records.CharacterRec.DungeonLocationID,
-		DungeonCharacterID:                     store.NullString(records.CharacterRec.ID),
+		DungeonID:                              dungeonCharacterRec.DungeonID,
+		DungeonLocationID:                      dungeonCharacterRec.DungeonLocationID,
+		DungeonCharacterID:                     store.NullString(dungeonCharacterRec.ID),
 		ResolvedCommand:                        "look",
 		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
-		ResolvedTargetDungeonLocationName:      store.NullString(targetDungeonLocationName),
 		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
 	}
 

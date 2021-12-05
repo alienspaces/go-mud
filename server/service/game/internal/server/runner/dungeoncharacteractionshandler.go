@@ -3,6 +3,8 @@ package runner
 import (
 	"net/http"
 
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+
 	"github.com/julienschmidt/httprouter"
 
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
@@ -36,10 +38,11 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	l.Debug("Resulting dungeon action >%#v<", dungeonActionRecordSet.DungeonActionRec)
-	l.Debug("Resulting dungeon action location >%#v<", dungeonActionRecordSet.DungeonLocationRec)
-	l.Debug("Resulting dungeon action character >%#v<", dungeonActionRecordSet.DungeonCharacterRec)
-	l.Debug("Resulting dungeon action monster >%#v<", dungeonActionRecordSet.DungeonMonsterRec)
+	l.Debug("Resulting action >%#v<", dungeonActionRecordSet.DungeonActionRec)
+	l.Debug("Resulting action current location >%#v<", dungeonActionRecordSet.CurrentLocation)
+	l.Debug("Resulting action target location >%#v<", dungeonActionRecordSet.TargetLocation)
+	l.Debug("Resulting action character >%#v<", dungeonActionRecordSet.DungeonCharacterRec)
+	l.Debug("Resulting action monster >%#v<", dungeonActionRecordSet.DungeonMonsterRec)
 
 	// Response data
 	responseData, err := rnr.RecordToDungeonCharacterActionResponseData(*dungeonActionRecordSet)
@@ -51,7 +54,7 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	// Assign response properties
 	res := schema.DungeonActionResponse{
 		Data: []schema.DungeonActionResponseData{
-			responseData,
+			*responseData,
 		},
 	}
 
@@ -63,45 +66,9 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 }
 
 // RecordToCharacterResponseData -
-func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecordSet model.DungeonActionRecordSet) (schema.DungeonActionResponseData, error) {
+func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecordSet model.DungeonActionRecordSet) (*schema.DungeonActionResponseData, error) {
 
 	dungeonActionRec := dungeonActionRecordSet.DungeonActionRec
-
-	dungeonLocationRec := dungeonActionRecordSet.DungeonLocationRec
-	dungeonLocations := []string{}
-	if dungeonLocationRec.NorthDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "north")
-	}
-	if dungeonLocationRec.NortheastDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "northeast")
-	}
-	if dungeonLocationRec.EastDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "east")
-	}
-	if dungeonLocationRec.SoutheastDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "southeast")
-	}
-	if dungeonLocationRec.SouthDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "south")
-	}
-	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "southwest")
-	}
-	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "southwest")
-	}
-	if dungeonLocationRec.WestDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "west")
-	}
-	if dungeonLocationRec.NorthwestDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "northwest")
-	}
-	if dungeonLocationRec.UpDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "up")
-	}
-	if dungeonLocationRec.DownDungeonLocationID.Valid {
-		dungeonLocations = append(dungeonLocations, "down")
-	}
 
 	var characterData *schema.CharacterData
 	if dungeonActionRecordSet.DungeonCharacterRec != nil {
@@ -117,60 +84,183 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 		}
 	}
 
-	var dungeonCharacterData []schema.CharacterData
-	if len(dungeonActionRecordSet.DungeonCharacterRecs) > 0 {
-		for _, dungeonCharacterRec := range dungeonActionRecordSet.DungeonCharacterRecs {
-			dungeonCharacterData = append(dungeonCharacterData,
+	// Current location
+	locationData, err := rnr.dungeonActionLocationToResponseLocation(dungeonActionRecordSet.CurrentLocation)
+	if err != nil {
+		return nil, err
+	}
+
+	// Target location
+	targetLocationData := &schema.LocationData{}
+	if dungeonActionRecordSet.TargetLocation != nil {
+		targetLocationData, err = rnr.dungeonActionLocationToResponseLocation(dungeonActionRecordSet.TargetLocation)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Equipped object
+	equippedObjectData := &schema.ObjectData{}
+	if dungeonActionRecordSet.EquippedObjectRec != nil {
+		equippedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.EquippedObjectRec)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Stashed object
+	stashedObjectData := &schema.ObjectData{}
+	if dungeonActionRecordSet.StashedObjectRec != nil {
+		stashedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.StashedObjectRec)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Target object
+	targetObjectData := &schema.ObjectData{}
+	if dungeonActionRecordSet.TargetObjectRec != nil {
+		targetObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.TargetObjectRec)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Target character
+	targetCharacterData := &schema.CharacterData{}
+	if dungeonActionRecordSet.TargetCharacterRec != nil {
+		targetCharacterData, err = rnr.dungeonCharacterToResponseCharacter(dungeonActionRecordSet.TargetCharacterRec)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Target monster
+	targetMonsterData := &schema.MonsterData{}
+	if dungeonActionRecordSet.TargetMonsterRec != nil {
+		targetMonsterData, err = rnr.dungeonMonsterToResponseMonster(dungeonActionRecordSet.TargetMonsterRec)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	data := schema.DungeonActionResponseData{
+		ID:              dungeonActionRec.ID,
+		Command:         dungeonActionRec.ResolvedCommand,
+		Location:        *locationData,
+		Character:       characterData,
+		Monster:         monsterData,
+		EquippedObject:  equippedObjectData,
+		StashedObject:   stashedObjectData,
+		TargetObject:    targetObjectData,
+		TargetCharacter: targetCharacterData,
+		TargetMonster:   targetMonsterData,
+		TargetLocation:  targetLocationData,
+		// TargetLocationDirection: dungeonActionRec.ResolvedTargetLocationDirection.String,
+		CreatedAt: dungeonActionRec.CreatedAt,
+		UpdatedAt: dungeonActionRec.UpdatedAt.Time,
+	}
+
+	return &data, nil
+}
+
+func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonObject) (*schema.ObjectData, error) {
+	return &schema.ObjectData{
+		Name:        dungeonObjectRec.Name,
+		Description: dungeonObjectRec.Description,
+	}, nil
+}
+
+func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *record.DungeonCharacter) (*schema.CharacterData, error) {
+	return &schema.CharacterData{
+		Name: dungeonCharacterRec.Name,
+	}, nil
+}
+
+func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.DungeonMonster) (*schema.MonsterData, error) {
+	return &schema.MonsterData{
+		Name: dungeonMonsterRec.Name,
+	}, nil
+}
+
+// actionLocationToReponseLocation -
+func (rnr *Runner) dungeonActionLocationToResponseLocation(recordSet *model.DungeonActionLocationRecordSet) (*schema.LocationData, error) {
+
+	dungeonLocationRec := recordSet.DungeonLocationRec
+
+	directions := []string{}
+	if dungeonLocationRec.NorthDungeonLocationID.Valid {
+		directions = append(directions, "north")
+	}
+	if dungeonLocationRec.NortheastDungeonLocationID.Valid {
+		directions = append(directions, "northeast")
+	}
+	if dungeonLocationRec.EastDungeonLocationID.Valid {
+		directions = append(directions, "east")
+	}
+	if dungeonLocationRec.SoutheastDungeonLocationID.Valid {
+		directions = append(directions, "southeast")
+	}
+	if dungeonLocationRec.SouthDungeonLocationID.Valid {
+		directions = append(directions, "south")
+	}
+	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
+		directions = append(directions, "southwest")
+	}
+	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
+		directions = append(directions, "southwest")
+	}
+	if dungeonLocationRec.WestDungeonLocationID.Valid {
+		directions = append(directions, "west")
+	}
+	if dungeonLocationRec.NorthwestDungeonLocationID.Valid {
+		directions = append(directions, "northwest")
+	}
+	if dungeonLocationRec.UpDungeonLocationID.Valid {
+		directions = append(directions, "up")
+	}
+	if dungeonLocationRec.DownDungeonLocationID.Valid {
+		directions = append(directions, "down")
+	}
+
+	var charactersData []schema.CharacterData
+	if len(recordSet.DungeonCharacterRecs) > 0 {
+		for _, dungeonCharacterRec := range recordSet.DungeonCharacterRecs {
+			charactersData = append(charactersData,
 				schema.CharacterData{
 					Name: dungeonCharacterRec.Name,
 				})
 		}
 	}
 
-	var dungeonMonsterData []schema.MonsterData
-	if len(dungeonActionRecordSet.DungeonMonsterRecs) > 0 {
-		for _, dungeonMonsterRec := range dungeonActionRecordSet.DungeonMonsterRecs {
-			dungeonMonsterData = append(dungeonMonsterData,
+	var monstersData []schema.MonsterData
+	if len(recordSet.DungeonMonsterRecs) > 0 {
+		for _, dungeonMonsterRec := range recordSet.DungeonMonsterRecs {
+			monstersData = append(monstersData,
 				schema.MonsterData{
 					Name: dungeonMonsterRec.Name,
 				})
 		}
 	}
 
-	var dungeonObjectData []schema.ObjectData
-	if len(dungeonActionRecordSet.DungeonObjectRecs) > 0 {
-		for _, dungeonObjectRec := range dungeonActionRecordSet.DungeonObjectRecs {
-			dungeonObjectData = append(dungeonObjectData,
+	var objectsData []schema.ObjectData
+	if len(recordSet.DungeonObjectRecs) > 0 {
+		for _, dungeonObjectRec := range recordSet.DungeonObjectRecs {
+			objectsData = append(objectsData,
 				schema.ObjectData{
 					Name: dungeonObjectRec.Name,
 				})
 		}
 	}
 
-	data := schema.DungeonActionResponseData{
-		Action: schema.ActionData{
-			ID:                             dungeonActionRec.ID,
-			Command:                        dungeonActionRec.ResolvedCommand,
-			EquippedDungeonObjectName:      dungeonActionRec.ResolvedEquippedDungeonObjectName.String,
-			StashedDungeonObjectName:       dungeonActionRec.ResolvedStashedDungeonObjectName.String,
-			TargetDungeonObjectName:        dungeonActionRec.ResolvedTargetDungeonObjectName.String,
-			TargetDungeonCharacterName:     dungeonActionRec.ResolvedTargetDungeonCharacterName.String,
-			TargetDungeonMonsterName:       dungeonActionRec.ResolvedTargetDungeonMonsterName.String,
-			TargetDungeonLocationName:      dungeonActionRec.ResolvedTargetDungeonLocationName.String,
-			TargetDungeonLocationDirection: dungeonActionRec.ResolvedTargetDungeonLocationDirection.String,
-			CreatedAt:                      dungeonActionRec.CreatedAt,
-			UpdatedAt:                      dungeonActionRec.UpdatedAt.Time,
-		},
-		Location: schema.LocationData{
-			Name:        dungeonLocationRec.Name,
-			Description: dungeonLocationRec.Description,
-			Directions:  dungeonLocations,
-		},
-		Character:  characterData,
-		Characters: dungeonCharacterData,
-		Monster:    monsterData,
-		Monsters:   dungeonMonsterData,
-		Objects:    dungeonObjectData,
+	data := &schema.LocationData{
+		Name:        dungeonLocationRec.Name,
+		Description: dungeonLocationRec.Description,
+		//		Direction:
+		Directions: directions,
+		Characters: charactersData,
+		Monsters:   monstersData,
+		Objects:    objectsData,
 	}
 
 	return data, nil
