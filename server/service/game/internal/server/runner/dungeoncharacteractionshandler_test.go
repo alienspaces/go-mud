@@ -79,6 +79,22 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[0].Name,
+									},
+								},
+								Objects: []schema.ObjectData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+								},
 							},
 							Character: &schema.CharacterData{
 								Name: data.DungeonCharacterRecs[0].Name,
@@ -92,6 +108,22 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 							TargetLocation: &schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[0].Name,
+									},
+								},
+								Objects: []schema.ObjectData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+								},
 							},
 						},
 					},
@@ -99,97 +131,140 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				return &res
 			},
 		},
-		// {
-		// 	TestCase: TestCase{
-		// 		Name:              "POST - move north",
-		// 		HandlerConfig:     testCaseHandlerConfig,
-		// 		RequestHeaders:    testCaseRequestHeaders,
-		// 		RequestPathParams: testCaseRequestPathParams,
-		// 		RequestBody: func(data harness.Data) interface{} {
-		// 			res := schema.DungeonActionRequest{
-		// 				Data: schema.DungeonActionRequestData{
-		// 					Sentence: "move north",
-		// 				},
-		// 			}
-		// 			return &res
-		// 		},
-		// 		ResponseCode: http.StatusOK,
-		// 	},
-		// 	responseBody: func(data harness.Data) *schema.DungeonActionResponse {
-		// 		res := schema.DungeonActionResponse{
-		// 			Data: []schema.DungeonActionResponseData{
-		// 				{
-		// 					Action: schema.ActionData{
-		// 						Command:                   "move",
-		// 						TargetDungeonLocationName: data.DungeonLocationRecs[1].Name,
-		// 					},
-		// 					Location: schema.LocationData{
-		// 						Name:        data.DungeonLocationRecs[1].Name,
-		// 						Description: data.DungeonLocationRecs[1].Description,
-		// 						Directions:  []string{"north", "south"},
-		// 					},
-		// 					Character: &schema.CharacterData{
-		// 						Name: data.DungeonCharacterRecs[0].Name,
-		// 					},
-		// 					Characters: []schema.CharacterData{
-		// 						{
-		// 							Name: data.DungeonCharacterRecs[0].Name,
-		// 						},
-		// 					},
-		// 					Monsters: []schema.MonsterData{
-		// 						{
-		// 							Name: data.DungeonMonsterRecs[1].Name,
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		}
-		// 		return &res
-		// 	},
-		// },
-		// {
-		// 	TestCase: TestCase{
-		// 		Name:              "POST - look north",
-		// 		HandlerConfig:     testCaseHandlerConfig,
-		// 		RequestHeaders:    testCaseRequestHeaders,
-		// 		RequestPathParams: testCaseRequestPathParams,
-		// 		RequestBody: func(data harness.Data) interface{} {
-		// 			res := schema.DungeonActionRequest{
-		// 				Data: schema.DungeonActionRequestData{
-		// 					Sentence: "look north",
-		// 				},
-		// 			}
-		// 			return &res
-		// 		},
-		// 		ResponseCode: http.StatusOK,
-		// 	},
-		// 	responseBody: func(data harness.Data) *schema.DungeonActionResponse {
-		// 		res := schema.DungeonActionResponse{
-		// 			Data: []schema.DungeonActionResponseData{
-		// 				{
-		// 					Action: schema.ActionData{
-		// 						Command:                   "look",
-		// 						TargetDungeonLocationName: data.DungeonLocationRecs[1].Name,
-		// 					},
-		// 					Location: schema.LocationData{
-		// 						Name:        data.DungeonLocationRecs[1].Name,
-		// 						Description: data.DungeonLocationRecs[1].Description,
-		// 						Directions:  []string{"north", "south"},
-		// 					},
-		// 					Character: &schema.CharacterData{
-		// 						Name: data.DungeonCharacterRecs[0].Name,
-		// 					},
-		// 					Monsters: []schema.MonsterData{
-		// 						{
-		// 							Name: data.DungeonMonsterRecs[1].Name,
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		}
-		// 		return &res
-		// 	},
-		// },
+		{
+			TestCase: TestCase{
+				Name:              "POST - move north",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
+				RequestBody: func(data harness.Data) interface{} {
+					res := schema.DungeonActionRequest{
+						Data: schema.DungeonActionRequestData{
+							Sentence: "move north",
+						},
+					}
+					return &res
+				},
+				ResponseCode: http.StatusOK,
+			},
+			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+				res := schema.DungeonActionResponse{
+					Data: []schema.DungeonActionResponseData{
+						{
+							Command: "move",
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[1].Name,
+								Description: data.DungeonLocationRecs[1].Description,
+								Directions:  []string{"north", "south"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[1].Name,
+									},
+								},
+							},
+							Character: &schema.CharacterData{
+								Name: data.DungeonCharacterRecs[0].Name,
+							},
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation: &schema.LocationData{
+								Name:        data.DungeonLocationRecs[1].Name,
+								Description: data.DungeonLocationRecs[1].Description,
+								Direction:   "north",
+								Directions:  []string{"north", "south"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[1].Name,
+									},
+								},
+							},
+						},
+					},
+				}
+				return &res
+			},
+		},
+		{
+			TestCase: TestCase{
+				Name:              "POST - look north",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
+				RequestBody: func(data harness.Data) interface{} {
+					res := schema.DungeonActionRequest{
+						Data: schema.DungeonActionRequestData{
+							Sentence: "look north",
+						},
+					}
+					return &res
+				},
+				ResponseCode: http.StatusOK,
+			},
+			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+				res := schema.DungeonActionResponse{
+					Data: []schema.DungeonActionResponseData{
+						{
+							Command: "look",
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[0].Name,
+								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[0].Name,
+									},
+								},
+								Objects: []schema.ObjectData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+								},
+							},
+							Character: &schema.CharacterData{
+								Name: data.DungeonCharacterRecs[0].Name,
+							},
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation: &schema.LocationData{
+								Name:        data.DungeonLocationRecs[1].Name,
+								Description: data.DungeonLocationRecs[1].Description,
+								Direction:   "north",
+								Directions:  []string{"north", "south"},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[1].Name,
+									},
+								},
+							},
+						},
+					},
+				}
+				return &res
+			},
+		},
 		{
 			TestCase: TestCase{
 				Name:              "POST - empty",
@@ -250,32 +325,32 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.Location.Directions, responseBody.Data[idx].Location.Directions)
 
 						// Current location characters
-						t.Logf("Checking character count >%d< >%d<", len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters))
-						require.Equal(t, len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters), "Response characters count equals expected")
-						if len(expectData.TargetLocation.Characters) > 0 {
-							for cIdx, character := range expectData.TargetLocation.Characters {
-								t.Logf("Checking character name >%s< >%s<", character.Name, responseBody.Data[idx].TargetLocation.Characters[cIdx].Name)
-								require.Equal(t, character.Name, responseBody.Data[idx].TargetLocation.Characters[cIdx].Name, "Character name equals expected")
+						t.Logf("Checking character count >%d< >%d<", len(expectData.Location.Characters), len(responseBody.Data[idx].Location.Characters))
+						require.Equal(t, len(expectData.Location.Characters), len(responseBody.Data[idx].Location.Characters), "Response characters count equals expected")
+						if len(expectData.Location.Characters) > 0 {
+							for cIdx, character := range expectData.Location.Characters {
+								t.Logf("Checking character name >%s< >%s<", character.Name, responseBody.Data[idx].Location.Characters[cIdx].Name)
+								require.Equal(t, character.Name, responseBody.Data[idx].Location.Characters[cIdx].Name, "Character name equals expected")
 							}
 						}
 
 						// Current location monsters
-						t.Logf("Checking monster count >%d< >%d<", len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters))
-						require.Equal(t, len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters), "Response monsters count equals expected")
-						if len(expectData.TargetLocation.Monsters) > 0 {
-							for mIdx, monster := range expectData.TargetLocation.Monsters {
-								t.Logf("Checking monster name >%s< >%s<", monster.Name, responseBody.Data[idx].TargetLocation.Monsters[mIdx].Name)
-								require.Equal(t, monster.Name, responseBody.Data[idx].TargetLocation.Monsters[mIdx].Name, "Monster name equals expected")
+						t.Logf("Checking monster count >%d< >%d<", len(expectData.Location.Monsters), len(responseBody.Data[idx].Location.Monsters))
+						require.Equal(t, len(expectData.Location.Monsters), len(responseBody.Data[idx].Location.Monsters), "Response monsters count equals expected")
+						if len(expectData.Location.Monsters) > 0 {
+							for mIdx, monster := range expectData.Location.Monsters {
+								t.Logf("Checking monster name >%s< >%s<", monster.Name, responseBody.Data[idx].Location.Monsters[mIdx].Name)
+								require.Equal(t, monster.Name, responseBody.Data[idx].Location.Monsters[mIdx].Name, "Monster name equals expected")
 							}
 						}
 
 						// Current location objects
-						t.Logf("Checking object count >%d< >%d<", len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects))
-						require.Equal(t, len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects), "Response objects count equals expected")
-						if len(expectData.TargetLocation.Objects) > 0 {
-							for oIdx, object := range expectData.TargetLocation.Objects {
-								t.Logf("Checking object name >%s< >%s<", object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name)
-								require.Equal(t, object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name, "Object name equals expected")
+						t.Logf("Checking object count >%d< >%d<", len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects))
+						require.Equal(t, len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects), "Response objects count equals expected")
+						if len(expectData.Location.Objects) > 0 {
+							for oIdx, object := range expectData.Location.Objects {
+								t.Logf("Checking object name >%s< >%s<", object.Name, responseBody.Data[idx].Location.Objects[oIdx].Name)
+								require.Equal(t, object.Name, responseBody.Data[idx].Location.Objects[oIdx].Name, "Object name equals expected")
 							}
 						}
 
@@ -286,6 +361,8 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 							require.Equal(t, expectData.TargetLocation.Name, responseBody.Data[idx].TargetLocation.Name)
 							t.Logf("Checking location description >%s< >%s<", expectData.TargetLocation.Description, responseBody.Data[idx].TargetLocation.Description)
 							require.Equal(t, expectData.TargetLocation.Description, responseBody.Data[idx].TargetLocation.Description)
+							t.Logf("Checking location direction >%s< >%s<", expectData.TargetLocation.Direction, responseBody.Data[idx].TargetLocation.Direction)
+							require.Equal(t, expectData.TargetLocation.Direction, responseBody.Data[idx].TargetLocation.Direction)
 							t.Logf("Checking location directions >%s< >%s<", expectData.TargetLocation.Directions, responseBody.Data[idx].TargetLocation.Directions)
 							require.Equal(t, expectData.TargetLocation.Directions, responseBody.Data[idx].TargetLocation.Directions)
 

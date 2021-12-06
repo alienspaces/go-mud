@@ -99,6 +99,10 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 		}
 	}
 
+	if dungeonActionRec.ResolvedTargetDungeonLocationDirection.Valid {
+		targetLocationData.Direction = dungeonActionRec.ResolvedTargetDungeonLocationDirection.String
+	}
+
 	// Equipped object
 	equippedObjectData := &schema.ObjectData{}
 	if dungeonActionRecordSet.EquippedObjectRec != nil {
@@ -156,9 +160,8 @@ func (rnr *Runner) RecordToDungeonCharacterActionResponseData(dungeonActionRecor
 		TargetCharacter: targetCharacterData,
 		TargetMonster:   targetMonsterData,
 		TargetLocation:  targetLocationData,
-		// TargetLocationDirection: dungeonActionRec.ResolvedTargetLocationDirection.String,
-		CreatedAt: dungeonActionRec.CreatedAt,
-		UpdatedAt: dungeonActionRec.UpdatedAt.Time,
+		CreatedAt:       dungeonActionRec.CreatedAt,
+		UpdatedAt:       dungeonActionRec.UpdatedAt.Time,
 	}
 
 	return &data, nil

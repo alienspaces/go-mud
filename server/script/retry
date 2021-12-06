@@ -16,7 +16,7 @@ function retry_cmd {
       ((n++))
       echo "=> Command failed. Trying again in $delay seconds. Attempt $n/$max:"
       sleep $delay;
-      delay=$($delay+$delay_inc)
+      delay=$((delay+delay_inc))
     else
       echo "=> Command failed after $n attempts, exiting.." >&2
       exit 1
