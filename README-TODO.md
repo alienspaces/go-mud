@@ -8,17 +8,18 @@
 
 ## Now
 
-- Server - Validate API responses against JSON schemas in tests
-- Server - Improve handler tests
-- Server - Improve model tests
+- Client: Refactor server action API response parsing
 
 ## Next
 
-- Server - Improve API error responses
+- Server: Look direction
 
 ## Later
 
-- Server: Look direction
+- Server: Validate API responses against JSON schemas in tests
+- Server: Improve handler tests
+- Server: Improve model tests
+- Server: Improve API error responses
 - Client: Scroll rooms for look actions
 - Server: Expand model tests
 - Server: Expand handler tests
