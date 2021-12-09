@@ -162,9 +162,9 @@ class DungeonActionRecord extends Equatable {
       List<dynamic> directions = targetLocation['directions'];
 
       targetLocationData = LocationData(
-        name: location['name'],
-        description: location['description'],
-        direction: location['direction'],
+        name: targetLocation['name'],
+        description: targetLocation['description'],
+        direction: targetLocation['direction'],
         directions: directions.map((e) => e.toString()).toList(),
         characters: locationCharacterData,
         monsters: locationMonsterData,
