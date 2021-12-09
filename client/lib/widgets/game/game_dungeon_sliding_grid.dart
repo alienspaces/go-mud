@@ -85,8 +85,8 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
 
-    String command = widget.dungeonActionRecord.action.command;
-    log.info('(initState) Target dungeon action id ${widget.dungeonActionRecord.action.id}');
+    String command = widget.dungeonActionRecord.command;
+    log.info('(initState) Target dungeon action id ${widget.dungeonActionRecord.id}');
     log.info('(initState) Target dungeon location command $command');
     log.info('(initState) Target dungeon location direction ${widget.direction}');
     log.info('(initState) Target dungeon location slide ${widget.slide}');

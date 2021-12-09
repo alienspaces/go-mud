@@ -28,10 +28,9 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
         if (state is DungeonActionStateCreated) {
           var dungeonActionRecord = state.current;
 
-          log.info(
-              'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.action.command}');
+          log.info('DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
 
-          if (dungeonActionRecord.action.command == 'move') {
+          if (dungeonActionRecord.command == 'move') {
             log.info('DungeonActionStateCreated - Rendering move');
             widgets.add(
               GameDungeonSlidingGridWidget(
@@ -41,7 +40,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
                 dungeonActionRecord: dungeonActionRecord,
               ),
             );
-          } else if (dungeonActionRecord.action.command == 'look') {
+          } else if (dungeonActionRecord.command == 'look') {
             log.info('DungeonActionStateCreated - Rendering look');
             widgets.add(
               GameDungeonSlidingGridWidget(
@@ -56,7 +55,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           var dungeonActionRecord = state.current;
 
           log.info(
-              'DungeonActionStateCreating - Rendering command ${dungeonActionRecord?.action.command}');
+              'DungeonActionStateCreating - Rendering command ${dungeonActionRecord?.command}');
 
           if (dungeonActionRecord != null) {
             log.info('DungeonActionStateCreating - Rendering move');
@@ -79,10 +78,9 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
         } else if (state is DungeonActionStatePlaying) {
           var dungeonActionRecord = state.current;
 
-          log.info(
-              'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.action.command}');
+          log.info('DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
 
-          if (dungeonActionRecord.action.command == 'move') {
+          if (dungeonActionRecord.command == 'move') {
             log.info('DungeonActionStatePlaying - Rendering move');
             widgets.add(
               GameDungeonSlidingGridWidget(
@@ -102,7 +100,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
                 dungeonActionRecord: state.current,
               ),
             );
-          } else if (dungeonActionRecord.action.command == 'look') {
+          } else if (dungeonActionRecord.command == 'look') {
             log.info('DungeonActionStatePlaying - Rendering look');
             widgets.add(
               GameDungeonSlidingGridWidget(

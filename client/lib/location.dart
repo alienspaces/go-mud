@@ -20,33 +20,33 @@ Map<String, List<int>> locationUnpopulated = {};
 Map<int, LocationContent> getLocationContents(DungeonActionRecord dungeonActionRecord) {
   final log = getLogger('GetLocationContents');
 
-  Map<int, LocationContent> populatedByIndex =
-      locationPopulatedByIndex[dungeonActionRecord.location.name] ?? {};
-  Map<String, int> populatedByName =
-      locationPopulatedByName[dungeonActionRecord.location.name] ?? {};
-  List<int> unpopulated = locationUnpopulated[dungeonActionRecord.location.name] ??
-      [for (var i = 0; i < roomLocationCount; i++) i];
+  var location = dungeonActionRecord.location;
+
+  Map<int, LocationContent> populatedByIndex = locationPopulatedByIndex[location.name] ?? {};
+  Map<String, int> populatedByName = locationPopulatedByName[location.name] ?? {};
+  List<int> unpopulated =
+      locationUnpopulated[location.name] ?? [for (var i = 0; i < roomLocationCount; i++) i];
 
   Map<String, ContentType> newLocationContents = {};
   List<String> roomContentNames = [];
 
-  log.warning('*** Dungeon objects ${dungeonActionRecord.objects?.length}');
-  if (dungeonActionRecord.objects != null) {
-    for (var dungeonObject in dungeonActionRecord.objects!) {
+  log.warning('*** Dungeon objects ${location.objects?.length}');
+  if (location.objects != null) {
+    for (var dungeonObject in location.objects!) {
       newLocationContents[dungeonObject.name] = ContentType.object;
       roomContentNames.add(dungeonObject.name);
     }
   }
-  log.warning('*** Dungeon characters ${dungeonActionRecord.characters?.length}');
-  if (dungeonActionRecord.characters != null) {
-    for (var dungeonCharacter in dungeonActionRecord.characters!) {
+  log.warning('*** Dungeon characters ${location.characters?.length}');
+  if (location.characters != null) {
+    for (var dungeonCharacter in location.characters!) {
       newLocationContents[dungeonCharacter.name] = ContentType.character;
       roomContentNames.add(dungeonCharacter.name);
     }
   }
-  log.warning('*** Dungeon monsters ${dungeonActionRecord.monsters?.length}');
-  if (dungeonActionRecord.monsters != null) {
-    for (var dungeonMonster in dungeonActionRecord.monsters!) {
+  log.warning('*** Dungeon monsters ${location.monsters?.length}');
+  if (location.monsters != null) {
+    for (var dungeonMonster in location.monsters!) {
       newLocationContents[dungeonMonster.name] = ContentType.monster;
       roomContentNames.add(dungeonMonster.name);
     }

@@ -19,142 +19,234 @@ class CreateDungeonActionRecord extends Equatable {
 }
 
 class DungeonActionRecord extends Equatable {
-  final DungeonAction action;
-  final DungeonLocation location;
-  final List<DungeonObject>? objects;
-  final List<DungeonCharacter>? characters;
-  final List<DungeonMonster>? monsters;
+  final String id;
+  final String command;
+  final String commandResult;
+  final LocationData location;
+  final CharacterData? character;
+  final MonsterData? monster;
+  final ObjectData? equippedObject;
+  final ObjectData? stashedObject;
+  final ObjectData? targetObject;
+  final CharacterData? targetCharacter;
+  final MonsterData? targetMonster;
+  final LocationData? targetLocation;
 
   const DungeonActionRecord({
-    required this.action,
+    required this.id,
+    required this.command,
+    required this.commandResult,
     required this.location,
-    required this.objects,
-    required this.characters,
-    required this.monsters,
+    required this.character,
+    required this.monster,
+    required this.equippedObject,
+    required this.stashedObject,
+    required this.targetObject,
+    required this.targetCharacter,
+    required this.targetMonster,
+    required this.targetLocation,
   });
 
   factory DungeonActionRecord.fromJson(Map<String, dynamic> json) {
-    DungeonAction? dungeonAction;
-    Map<String, dynamic>? action = json['action'];
-    if (action == null) {
-      throw const FormatException('Missing "action" from JSON');
-    }
-    dungeonAction = DungeonAction(
-      id: action['id'],
-      command: action['command'],
-      commandResult: action['command_result'],
-      equippedDungeonObjectName: action['equipped_dungeon_object_name'],
-      stashedDungeonObjectName: action['stashed_dungeon_object_name'],
-      targetDungeonObjectName: action['target_dungeon_object_name'],
-      targetDungeonCharacterName: action['target_dungeon_character_name'],
-      targetDungeonMonsterName: action['target_dungeon_monster_name'],
-      targetDungeonLocationDirection: action['target_dungeon_location_direction'],
-      targetDungeonLocationName: action['target_dungeon_location_name'],
-    );
-
-    DungeonLocation? dungeonLocation;
+    // Location
     Map<String, dynamic>? location = json['location'];
     if (location == null) {
       throw const FormatException('Missing "location" from JSON');
     }
 
+    List<dynamic>? locationObjects = location['objects'];
+    List<ObjectData>? locationObjectData;
+    if (locationObjects != null) {
+      locationObjectData = locationObjects.map((e) => ObjectData.fromJson(e)).toList();
+    }
+
+    List<dynamic>? locationCharacters = location['characters'];
+    List<CharacterData>? locationCharacterData;
+    if (locationCharacters != null) {
+      locationCharacterData = locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
+    }
+
+    List<dynamic>? locationMonsters = location['monsters'];
+    List<MonsterData>? locationMonsterData;
+    if (locationMonsters != null) {
+      locationMonsterData = locationMonsters.map((e) => MonsterData.fromJson(e)).toList();
+    }
+
     List<dynamic> directions = location['directions'];
-    dungeonLocation = DungeonLocation(
+
+    var locationData = LocationData(
       name: location['name'],
       description: location['description'],
+      direction: location['direction'],
       directions: directions.map((e) => e.toString()).toList(),
+      characters: locationCharacterData,
+      monsters: locationMonsterData,
+      objects: locationObjectData,
     );
 
-    List<dynamic>? objects = json['objects'];
-    List<DungeonObject>? dungeonObjects;
-    if (objects != null) {
-      dungeonObjects = objects.map((e) => DungeonObject.fromJson(e)).toList();
+    // Character or Monster
+    Map<String, dynamic>? character = json['character'];
+    Map<String, dynamic>? monster = json['monster'];
+    if (character == null && monster == null) {
+      throw const FormatException('Missing "character" or "monster" from JSON');
     }
 
-    List<dynamic>? characters = json['characters'];
-    List<DungeonCharacter>? dungeonCharacters;
-    if (characters != null) {
-      dungeonCharacters = characters.map((e) => DungeonCharacter.fromJson(e)).toList();
+    MonsterData? monsterData;
+    if (monster != null) {
+      monsterData = MonsterData.fromJson(monster);
     }
 
-    List<dynamic>? monsters = json['monsters'];
-    List<DungeonMonster>? dungeonMonsters;
-    if (monsters != null) {
-      dungeonMonsters = monsters.map((e) => DungeonMonster.fromJson(e)).toList();
+    CharacterData? characterData;
+    if (character != null) {
+      characterData = CharacterData.fromJson(character);
+    }
+
+    // Equipped object
+    Map<String, dynamic>? equippedObject = json['equipped_object'];
+    ObjectData? equippedObjectData;
+    if (equippedObject != null) {
+      equippedObjectData = ObjectData.fromJson(equippedObject);
+    }
+
+    // Stashed object
+    Map<String, dynamic>? stashedObject = json['stashed_object'];
+    ObjectData? stashedObjectData;
+    if (stashedObject != null) {
+      stashedObjectData = ObjectData.fromJson(stashedObject);
+    }
+
+    // Target object
+    Map<String, dynamic>? targetObject = json['target_object'];
+    ObjectData? targetObjectData;
+    if (targetObject != null) {
+      targetObjectData = ObjectData.fromJson(targetObject);
+    }
+
+    // Target character
+    Map<String, dynamic>? targetCharacter = json['target_character'];
+    CharacterData? targetCharacterData;
+    if (targetCharacter != null) {
+      targetCharacterData = CharacterData.fromJson(targetCharacter);
+    }
+
+    // Target monster
+    Map<String, dynamic>? targetMonster = json['target_monster'];
+    MonsterData? targetMonsterData;
+    if (targetMonster != null) {
+      targetMonsterData = MonsterData.fromJson(targetMonster);
+    }
+
+    // Target location
+    LocationData? targetLocationData;
+
+    Map<String, dynamic>? targetLocation = json['target_location'];
+    if (targetLocation != null) {
+      List<dynamic>? locationObjects = targetLocation['objects'];
+      List<ObjectData>? locationObjectData;
+      if (locationObjects != null) {
+        locationObjectData = locationObjects.map((e) => ObjectData.fromJson(e)).toList();
+      }
+
+      List<dynamic>? locationCharacters = targetLocation['characters'];
+      List<CharacterData>? locationCharacterData;
+      if (locationCharacters != null) {
+        locationCharacterData = locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
+      }
+
+      List<dynamic>? locationMonsters = targetLocation['monsters'];
+      List<MonsterData>? locationMonsterData;
+      if (locationMonsters != null) {
+        locationMonsterData = locationMonsters.map((e) => MonsterData.fromJson(e)).toList();
+      }
+
+      List<dynamic> directions = targetLocation['directions'];
+
+      targetLocationData = LocationData(
+        name: location['name'],
+        description: location['description'],
+        direction: location['direction'],
+        directions: directions.map((e) => e.toString()).toList(),
+        characters: locationCharacterData,
+        monsters: locationMonsterData,
+        objects: locationObjectData,
+      );
     }
 
     return DungeonActionRecord(
-      action: dungeonAction,
-      location: dungeonLocation,
-      objects: dungeonObjects,
-      characters: dungeonCharacters,
-      monsters: dungeonMonsters,
+      id: json['id'],
+      command: json['command'],
+      commandResult: json['command_result'],
+      location: locationData,
+      character: characterData,
+      monster: monsterData,
+      equippedObject: equippedObjectData,
+      stashedObject: stashedObjectData,
+      targetObject: targetObjectData,
+      targetCharacter: targetCharacterData,
+      targetMonster: targetMonsterData,
+      targetLocation: targetLocationData,
     );
   }
 
   @override
-  List<Object> get props => [
-        action,
+  List<Object?> get props => [
+        id,
+        command,
+        commandResult,
         location,
+        character,
+        monster,
+        equippedObject,
+        stashedObject,
+        targetObject,
+        targetCharacter,
+        targetMonster,
+        targetLocation,
       ];
 }
 
-class DungeonAction {
-  final String id;
-  final String command;
-  final String? commandResult;
-  final String? equippedDungeonObjectName;
-  final String? stashedDungeonObjectName;
-  final String? targetDungeonObjectName;
-  final String? targetDungeonCharacterName;
-  final String? targetDungeonMonsterName;
-  final String? targetDungeonLocationDirection;
-  final String? targetDungeonLocationName;
-
-  DungeonAction({
-    required this.id,
-    required this.command,
-    this.commandResult,
-    this.equippedDungeonObjectName,
-    this.stashedDungeonObjectName,
-    this.targetDungeonObjectName,
-    this.targetDungeonCharacterName,
-    this.targetDungeonMonsterName,
-    this.targetDungeonLocationDirection,
-    this.targetDungeonLocationName,
+class LocationData {
+  final String name;
+  final String description;
+  final String? direction;
+  final List<String> directions;
+  final List<CharacterData>? characters;
+  final List<MonsterData>? monsters;
+  final List<ObjectData>? objects;
+  LocationData({
+    required this.name,
+    required this.description,
+    this.direction,
+    required this.directions,
+    this.characters,
+    this.monsters,
+    this.objects,
   });
 }
 
-class DungeonLocation {
+class ObjectData {
   final String name;
-  final String description;
-  final List<String> directions;
-  DungeonLocation({required this.name, required this.description, required this.directions});
-}
+  ObjectData({required this.name});
 
-class DungeonObject {
-  final String name;
-  DungeonObject({required this.name});
-
-  factory DungeonObject.fromJson(Map<String, dynamic> json) {
-    return DungeonObject(name: json['name']);
+  factory ObjectData.fromJson(Map<String, dynamic> json) {
+    return ObjectData(name: json['name']);
   }
 }
 
-class DungeonCharacter {
+class CharacterData {
   final String name;
-  DungeonCharacter({required this.name});
+  CharacterData({required this.name});
 
-  factory DungeonCharacter.fromJson(Map<String, dynamic> json) {
-    return DungeonCharacter(name: json['name']);
+  factory CharacterData.fromJson(Map<String, dynamic> json) {
+    return CharacterData(name: json['name']);
   }
 }
 
-class DungeonMonster {
+class MonsterData {
   final String name;
-  DungeonMonster({required this.name});
+  MonsterData({required this.name});
 
-  factory DungeonMonster.fromJson(Map<String, dynamic> json) {
-    return DungeonMonster(name: json['name']);
+  factory MonsterData.fromJson(Map<String, dynamic> json) {
+    return MonsterData(name: json['name']);
   }
 }

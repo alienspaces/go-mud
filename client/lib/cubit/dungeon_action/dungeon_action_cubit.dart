@@ -43,8 +43,8 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       emit(
         DungeonActionStateCreated(
           current: createdDungeonActionRecord,
-          action: createdDungeonActionRecord.action.command,
-          direction: createdDungeonActionRecord.action.targetDungeonLocationDirection,
+          action: createdDungeonActionRecord.command,
+          direction: createdDungeonActionRecord.targetLocation?.direction,
         ),
       );
     }
@@ -62,17 +62,17 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     DungeonActionRecord previous = dungeonActionRecords.removeAt(0);
     DungeonActionRecord current = dungeonActionRecords[0];
     String? direction;
-    if (current.action.command == 'move' || current.action.command == 'look') {
-      direction = current.action.targetDungeonLocationDirection;
+    if (current.command == 'move' || current.command == 'look') {
+      direction = current.targetLocation?.direction;
     }
 
-    log.info('(playAction) Play action command >${current.action.command}< direction >$direction<');
+    log.info('(playAction) Play action command >${current.command}< direction >$direction<');
 
     emit(
       DungeonActionStatePlaying(
         previous: previous,
         current: current,
-        action: current.action.command,
+        action: current.command,
         direction: direction,
       ),
     );
