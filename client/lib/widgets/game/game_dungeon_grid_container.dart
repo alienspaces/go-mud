@@ -25,6 +25,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
       },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
+        // TODO: When is dungeon action state created?
         if (state is DungeonActionStateCreated) {
           var dungeonActionRecord = state.current;
 
@@ -51,7 +52,9 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               ),
             );
           }
-        } else if (state is DungeonActionStateCreating) {
+        }
+        // TODO: When is dungeon action state createding?
+        else if (state is DungeonActionStateCreating) {
           var dungeonActionRecord = state.current;
 
           log.info(
@@ -75,7 +78,9 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               ),
             );
           }
-        } else if (state is DungeonActionStatePlaying) {
+        }
+        // TODO: When is dungeon action state playing
+        else if (state is DungeonActionStatePlaying) {
           var dungeonActionRecord = state.current;
 
           log.info('DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');

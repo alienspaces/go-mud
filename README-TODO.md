@@ -8,15 +8,14 @@
 
 ## Now
 
-- Client: Refactor server action API response parsing
+- Server: Look direction
 
 ## Next
 
-- Server: Look direction
+- Server: Validate API responses against JSON schemas in tests
 
 ## Later
 
-- Server: Validate API responses against JSON schemas in tests
 - Server: Improve handler tests
 - Server: Improve model tests
 - Server: Improve API error responses
