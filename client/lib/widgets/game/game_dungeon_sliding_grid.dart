@@ -91,7 +91,8 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
     log.info('(initState) Target dungeon location direction ${widget.direction}');
     log.info('(initState) Target dungeon location slide ${widget.slide}');
 
-    if (command == 'move' && widget.direction != null) {
+    // if (command == 'move' && widget.direction != null) {
+    if (widget.direction != null) {
       if (widget.slide == Slide.slideIn) {
         beginOffset = slideInBeginOffset[widget.direction]!;
         endOffset = Offset.zero;

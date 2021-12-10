@@ -25,43 +25,14 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
       },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
-        // TODO: When is dungeon action state created?
-        if (state is DungeonActionStateCreated) {
+
+        // Creating state is emitted with every action
+        if (state is DungeonActionStateCreating) {
           var dungeonActionRecord = state.current;
-
-          log.info('DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
-
-          if (dungeonActionRecord.command == 'move') {
-            log.info('DungeonActionStateCreated - Rendering move');
-            widgets.add(
-              GameDungeonSlidingGridWidget(
-                key: UniqueKey(),
-                slide: Slide.slideNone,
-                action: state.action,
-                dungeonActionRecord: dungeonActionRecord,
-              ),
-            );
-          } else if (dungeonActionRecord.command == 'look') {
-            log.info('DungeonActionStateCreated - Rendering look');
-            widgets.add(
-              GameDungeonSlidingGridWidget(
-                key: UniqueKey(),
-                slide: Slide.slideNone,
-                action: state.action,
-                dungeonActionRecord: dungeonActionRecord,
-              ),
-            );
-          }
-        }
-        // TODO: When is dungeon action state createding?
-        else if (state is DungeonActionStateCreating) {
-          var dungeonActionRecord = state.current;
-
-          log.info(
-              'DungeonActionStateCreating - Rendering command ${dungeonActionRecord?.command}');
 
           if (dungeonActionRecord != null) {
-            log.info('DungeonActionStateCreating - Rendering move');
+            log.info(
+                'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.command}');
             widgets.add(
               GameDungeonSlidingGridWidget(
                 key: UniqueKey(),
@@ -70,7 +41,7 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               ),
             );
           } else {
-            log.info('DungeonActionStateCreating - Record is null');
+            log.info('DungeonActionStateCreating - Rendering loading container..');
             widgets.add(
               Container(
                 color: Colors.blueAccent,
@@ -79,14 +50,29 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             );
           }
         }
-        // TODO: When is dungeon action state playing
+        // Created state is emitted with every action
+        else if (state is DungeonActionStateCreated) {
+          var dungeonActionRecord = state.current;
+
+          log.info('DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
+
+          widgets.add(
+            GameDungeonSlidingGridWidget(
+              key: UniqueKey(),
+              slide: Slide.slideNone,
+              action: state.action,
+              dungeonActionRecord: dungeonActionRecord,
+            ),
+          );
+          // }
+        }
+        // Playing state is emitted only when there is at least one previous action
         else if (state is DungeonActionStatePlaying) {
           var dungeonActionRecord = state.current;
 
           log.info('DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
 
           if (dungeonActionRecord.command == 'move') {
-            log.info('DungeonActionStatePlaying - Rendering move');
             widgets.add(
               GameDungeonSlidingGridWidget(
                 key: UniqueKey(),
@@ -106,7 +92,6 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               ),
             );
           } else if (dungeonActionRecord.command == 'look') {
-            log.info('DungeonActionStatePlaying - Rendering look');
             widgets.add(
               GameDungeonSlidingGridWidget(
                 key: UniqueKey(),

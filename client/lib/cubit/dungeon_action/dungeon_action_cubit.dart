@@ -15,10 +15,6 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   List<DungeonActionRecord> dungeonActionRecords = [];
   DungeonActionRecord? dungeonActionRecord;
 
-  // TODO: Keep these up to date as we play through
-  DungeonActionRecord? currentDungeonActionRecord;
-  DungeonActionRecord? nextDungeonActionRecord;
-
   DungeonActionCubit({required this.config, required this.repositories})
       : super(const DungeonActionStateInitial());
 
