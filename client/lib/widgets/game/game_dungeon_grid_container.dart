@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_sliding_grid.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_move_grid.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_look_grid.dart';
 
 class GameDungeonGridContainerWidget extends StatefulWidget {
   const GameDungeonGridContainerWidget({Key? key}) : super(key: key);
@@ -34,10 +35,10 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
             log.info(
                 'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.command}');
             widgets.add(
-              GameDungeonSlidingGridWidget(
+              GameDungeonMoveGridWidget(
                 key: UniqueKey(),
                 slide: Slide.slideNone,
-                dungeonActionRecord: dungeonActionRecord,
+                locationData: dungeonActionRecord.location,
               ),
             );
           } else {
@@ -57,11 +58,11 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
           log.info('DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
 
           widgets.add(
-            GameDungeonSlidingGridWidget(
+            GameDungeonMoveGridWidget(
               key: UniqueKey(),
               slide: Slide.slideNone,
               action: state.action,
-              dungeonActionRecord: dungeonActionRecord,
+              locationData: dungeonActionRecord.location,
             ),
           );
           // }
@@ -74,30 +75,39 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
 
           if (dungeonActionRecord.command == 'move') {
             widgets.add(
-              GameDungeonSlidingGridWidget(
+              GameDungeonMoveGridWidget(
                 key: UniqueKey(),
                 slide: Slide.slideOut,
                 direction: state.direction,
                 action: state.action,
-                dungeonActionRecord: state.previous,
+                locationData: state.previous.location,
               ),
             );
             widgets.add(
-              GameDungeonSlidingGridWidget(
+              GameDungeonMoveGridWidget(
                 key: UniqueKey(),
                 slide: Slide.slideIn,
                 direction: state.direction,
                 action: state.action,
-                dungeonActionRecord: state.current,
+                locationData: state.current.location,
               ),
             );
           } else if (dungeonActionRecord.command == 'look') {
             widgets.add(
-              GameDungeonSlidingGridWidget(
+              GameDungeonMoveGridWidget(
                 key: UniqueKey(),
                 slide: Slide.slideNone,
+                direction: state.direction,
                 action: state.action,
-                dungeonActionRecord: dungeonActionRecord,
+                locationData: state.current.location,
+              ),
+            );
+            widgets.add(
+              GameDungeonLookGridWidget(
+                key: UniqueKey(),
+                direction: state.direction,
+                action: state.action,
+                locationData: state.current.targetLocation!,
               ),
             );
           }

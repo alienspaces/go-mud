@@ -5,24 +5,20 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_grid.dart';
 
-enum Slide { slideIn, slideOut, slideNone }
-
-class GameDungeonSlidingGridWidget extends StatefulWidget {
-  final Slide slide;
-  final DungeonActionRecord dungeonActionRecord;
+class GameDungeonLookGridWidget extends StatefulWidget {
+  final LocationData locationData;
   final String? action;
   final String? direction;
 
-  const GameDungeonSlidingGridWidget({
+  const GameDungeonLookGridWidget({
     Key? key,
-    required this.slide,
-    required this.dungeonActionRecord,
+    required this.locationData,
     this.action,
     this.direction,
   }) : super(key: key);
 
   @override
-  _GameDungeonSlidingGridWidgetState createState() => _GameDungeonSlidingGridWidgetState();
+  _GameDungeonLookGridWidgetState createState() => _GameDungeonLookGridWidgetState();
 }
 
 Map<String, Offset> slideInBeginOffset = {
@@ -38,24 +34,11 @@ Map<String, Offset> slideInBeginOffset = {
   'down': const Offset(.1, 1),
 };
 
-Map<String, Offset> slideOutEndOffset = {
-  'north': const Offset(0, 1),
-  'northeast': const Offset(-1, 1),
-  'east': const Offset(-1, 0), //
-  'southeast': const Offset(-1, -1),
-  'south': const Offset(0, -1),
-  'southwest': const Offset(1, -1),
-  'west': const Offset(1, 0),
-  'northwest': const Offset(1, 1),
-  'up': const Offset(.1, 1),
-  'down': const Offset(-.1, -1),
-};
-
-class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWidget>
+class _GameDungeonLookGridWidgetState extends State<GameDungeonLookGridWidget>
     with SingleTickerProviderStateMixin {
   // Animation controller
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 500),
+    duration: const Duration(milliseconds: 250),
     vsync: this,
   );
 
@@ -64,6 +47,9 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
 
   double gridMemberWidth = 0;
   double gridMemberHeight = 0;
+
+  double _opacity = 0.0;
+  int _milliseconds = 1;
 
   Map<String, String> directionLabelMap = {
     'north': 'N',
@@ -80,27 +66,34 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
 
   @override
   void initState() {
-    final log = getLogger('GameDungeonSlidingGridWidget');
+    final log = getLogger('GameDungeonLookGridWidget');
 
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
 
-    String command = widget.dungeonActionRecord.command;
-    log.info('(initState) Target dungeon action id ${widget.dungeonActionRecord.id}');
-    log.info('(initState) Target dungeon location command $command');
     log.info('(initState) Target dungeon location direction ${widget.direction}');
-    log.info('(initState) Target dungeon location slide ${widget.slide}');
 
-    // if (command == 'move' && widget.direction != null) {
     if (widget.direction != null) {
-      if (widget.slide == Slide.slideIn) {
-        beginOffset = slideInBeginOffset[widget.direction]!;
-        endOffset = Offset.zero;
-      } else if (widget.slide == Slide.slideOut) {
-        beginOffset = Offset.zero;
-        endOffset = slideOutEndOffset[widget.direction]!;
-      }
+      beginOffset = slideInBeginOffset[widget.direction]!;
+      endOffset = Offset.zero;
     }
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.forward) {
+        setState(() {
+          _opacity = 1.0;
+          _milliseconds = 500;
+        });
+      }
+      if (status == AnimationStatus.completed) {
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          setState(() {
+            _opacity = 0.0;
+            _milliseconds = 500;
+          });
+        });
+      }
+    });
 
     _offsetAnimation = Tween<Offset>(
       begin: beginOffset,
@@ -110,9 +103,7 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
       curve: Curves.linear,
     ));
 
-    if (widget.slide != Slide.slideNone) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) => _controller.forward());
-    }
+    WidgetsBinding.instance?.addPostFrameCallback((_) => _controller.forward());
 
     super.initState();
   }
@@ -125,14 +116,19 @@ class _GameDungeonSlidingGridWidgetState extends State<GameDungeonSlidingGridWid
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonSlidingGridWidget');
-    log.info('Building ${widget.key} - ${widget.slide}..');
+    final log = getLogger('GameDungeonLookGridWidget');
+    log.info('Building ${widget.key}');
 
     return AnimatedBuilder(
       animation: _controller,
-      child: GameDungeonGridWidget(
-        dungeonActionRecord: widget.dungeonActionRecord,
-        action: widget.action,
+      child: AnimatedOpacity(
+        opacity: _opacity,
+        duration: Duration(milliseconds: _milliseconds),
+        child: GameDungeonGridWidget(
+          locationData: widget.locationData,
+          action: widget.action,
+          readonly: true,
+        ),
       ),
       builder: (BuildContext context, Widget? child) {
         return SlideTransition(

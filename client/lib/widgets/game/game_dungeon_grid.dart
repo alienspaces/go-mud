@@ -10,15 +10,17 @@ import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
 class GameDungeonGridWidget extends StatefulWidget {
-  final DungeonActionRecord dungeonActionRecord;
+  final LocationData locationData;
   final String? action;
   final String? direction;
+  final bool readonly;
 
   const GameDungeonGridWidget({
     Key? key,
-    required this.dungeonActionRecord,
+    required this.locationData,
     required this.action,
     this.direction,
+    this.readonly = false,
   }) : super(key: key);
 
   @override
@@ -50,42 +52,40 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   List<Widget> _generateGrid(BuildContext context) {
-    var dungeonActionRecord = widget.dungeonActionRecord;
-
-    var locationContents = getLocationContents(dungeonActionRecord);
+    var locationContents = getLocationContents(widget.locationData);
 
     int roomGridIdx = 0;
     List<Widget Function()> dunegonGridMemberFunctions = [
       // Top Row
-      () => _directionWidget(context, dungeonActionRecord, 'northwest'),
+      () => _directionWidget(context, widget.locationData, 'northwest'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'north'),
+      () => _directionWidget(context, widget.locationData, 'north'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'northeast'),
+      () => _directionWidget(context, widget.locationData, 'northeast'),
       // Second Row
       () => _roomWidget(context, locationContents, roomGridIdx++),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'up'),
+      () => _directionWidget(context, widget.locationData, 'up'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
       () => _roomWidget(context, locationContents, roomGridIdx++),
       // Third Row
-      () => _directionWidget(context, dungeonActionRecord, 'west'),
+      () => _directionWidget(context, widget.locationData, 'west'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
       () => _roomWidget(context, locationContents, roomGridIdx++),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'east'),
+      () => _directionWidget(context, widget.locationData, 'east'),
       // Fourth Row
       () => _roomWidget(context, locationContents, roomGridIdx++),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'down'),
+      () => _directionWidget(context, widget.locationData, 'down'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
       () => _roomWidget(context, locationContents, roomGridIdx++),
       // Bottom Row
-      () => _directionWidget(context, dungeonActionRecord, 'southwest'),
+      () => _directionWidget(context, widget.locationData, 'southwest'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'south'),
+      () => _directionWidget(context, widget.locationData, 'south'),
       () => _roomWidget(context, locationContents, roomGridIdx++),
-      () => _directionWidget(context, dungeonActionRecord, 'southeast'),
+      () => _directionWidget(context, widget.locationData, 'southeast'),
     ];
 
     List<Widget> gridWidgets = [];
@@ -97,8 +97,8 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   // Direction widget
-  Widget _directionWidget(BuildContext context, DungeonActionRecord record, String direction) {
-    if (!record.location.directions.contains(direction)) {
+  Widget _directionWidget(BuildContext context, LocationData locationData, String direction) {
+    if (!locationData.directions.contains(direction)) {
       return _emptyWidget('${directionLabelMap[direction]}');
     }
 
@@ -264,21 +264,24 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
         double gridWidth = gridMemberWidth * 5;
         double gridHeight = gridMemberHeight * 5;
 
-        return Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFDEDEDE),
-            border: Border.all(
-              color: const Color(0xFFDEDEDE),
+        return IgnorePointer(
+          ignoring: widget.readonly ? true : false,
+          child: Container(
+            decoration: BoxDecoration(
+              color: widget.readonly ? Colors.black : const Color(0xFFDEDEDE),
+              border: Border.all(
+                color: const Color(0xFFDEDEDE),
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-          ),
-          padding: const EdgeInsets.all(1),
-          margin: const EdgeInsets.all(5),
-          width: gridWidth,
-          height: gridHeight,
-          child: GridView.count(
-            crossAxisCount: 5,
-            children: _generateGrid(context),
+            padding: const EdgeInsets.all(1),
+            margin: const EdgeInsets.all(5),
+            width: gridWidth,
+            height: gridHeight,
+            child: GridView.count(
+              crossAxisCount: 5,
+              children: _generateGrid(context),
+            ),
           ),
         );
       },
