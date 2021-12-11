@@ -8,7 +8,9 @@
 
 ## Now
 
-- Server: Look direction
+- Server: Look object
+- Server: Look monster
+- Server: Look character
 
 ## Next
 
@@ -22,9 +24,6 @@
 - Client: Scroll rooms for look actions
 - Server: Expand model tests
 - Server: Expand handler tests
-- Server: Look object
-- Server: Look monster
-- Server: Look character
 - Server: Stash, equip and drop object
 - Client: Icons for room contents
 - Server: Implement 2 second turns
