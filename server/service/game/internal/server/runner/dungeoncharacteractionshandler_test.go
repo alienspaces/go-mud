@@ -267,6 +267,66 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
+				Name:              "POST - look north",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
+				RequestBody: func(data harness.Data) interface{} {
+					res := schema.DungeonActionRequest{
+						Data: schema.DungeonActionRequestData{
+							Sentence: "look north",
+						},
+					}
+					return &res
+				},
+				ResponseCode: http.StatusOK,
+			},
+			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+				res := schema.DungeonActionResponse{
+					Data: []schema.DungeonActionResponseData{
+						{
+							Command: "look rusted sword",
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[0].Name,
+								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[0].Name,
+									},
+								},
+								Objects: []schema.ObjectData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+								},
+							},
+							Character: &schema.CharacterData{
+								Name: data.DungeonCharacterRecs[0].Name,
+							},
+							Monster:        nil,
+							EquippedObject: nil,
+							StashedObject:  nil,
+							TargetObject: &schema.ObjectData{
+								Name:        data.DungeonObjectRecs[0].Name,
+								Description: data.DungeonObjectRecs[0].Description,
+							},
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
+						},
+					},
+				}
+				return &res
+			},
+		},
+		{
+			TestCase: TestCase{
 				Name:              "POST - empty",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,

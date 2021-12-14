@@ -7,26 +7,23 @@ import (
 )
 
 type DungeonActionRecordSet struct {
-	DungeonActionRec    *record.DungeonAction
-	DungeonCharacterRec *record.DungeonCharacter
-	DungeonMonsterRec   *record.DungeonMonster
-	CurrentLocation     *DungeonActionLocationRecordSet
-	EquippedObjectRec   *record.DungeonObject
-	StashedObjectRec    *record.DungeonObject
-	TargetObjectRec     *record.DungeonObject
-	TargetCharacterRec  *record.DungeonCharacter
-	TargetMonsterRec    *record.DungeonMonster
-	TargetLocation      *DungeonActionLocationRecordSet
+	ActionRec                *record.DungeonAction
+	ActionCharacterRec       *record.DungeonActionCharacter
+	ActionMonsterRec         *record.DungeonActionMonster
+	CurrentLocation          *DungeonActionLocationRecordSet
+	EquippedActionObjectRec  *record.DungeonActionObject
+	StashedActionObjectRec   *record.DungeonActionObject
+	TargetActionObjectRec    *record.DungeonActionObject
+	TargetActionCharacterRec *record.DungeonActionCharacter
+	TargetActionMonsterRec   *record.DungeonActionMonster
+	TargetLocation           *DungeonActionLocationRecordSet
 }
 
 type DungeonActionLocationRecordSet struct {
-	DungeonLocationRec         *record.DungeonLocation
-	DungeonActionCharacterRecs []record.DungeonActionCharacter
-	DungeonCharacterRecs       []record.DungeonCharacter
-	DungeonActionMonsterRecs   []record.DungeonActionMonster
-	DungeonMonsterRecs         []record.DungeonMonster
-	DungeonActionObjectRecs    []record.DungeonActionObject
-	DungeonObjectRecs          []record.DungeonObject
+	LocationRec         *record.DungeonLocation
+	ActionCharacterRecs []record.DungeonActionCharacter
+	ActionMonsterRecs   []record.DungeonActionMonster
+	ActionObjectRecs    []record.DungeonActionObject
 }
 
 type DungeonLocationRecordSet struct {
@@ -40,12 +37,12 @@ type DungeonLocationRecordSet struct {
 // ProcessDungeonCharacterAction - Processes a submitted character action
 func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacterID string, sentence string) (*DungeonActionRecordSet, error) {
 
-	m.Log.Info("(testing) Processing dungeon character ID >%s< action command >%s<", dungeonCharacterID, sentence)
+	m.Log.Info("Processing dungeon character ID >%s< action command >%s<", dungeonCharacterID, sentence)
 
 	// Verify the character performing the action exists within the specified dungeon
 	dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonCharacterID, true)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon character record before performing action >%v<", err)
+		m.Log.Warn("Failed getting dungeon character record before performing action >%v<", err)
 		return nil, err
 	}
 
@@ -58,14 +55,14 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	// Get the current dungeon location set of related records
 	dungeonLocationRecordSet, err := m.GetDungeonLocationRecordSet(dungeonCharacterRec.DungeonLocationID, true)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon location record set before performing action >%v<", err)
+		m.Log.Warn("Failed getting dungeon location record set before performing action >%v<", err)
 		return nil, err
 	}
 
 	// Resolve the submitted character action
 	dungeonActionRec, err := m.resolveAction(sentence, dungeonCharacterRec, dungeonLocationRecordSet)
 	if err != nil {
-		m.Log.Warn("(testing) Failed resolving dungeon character action >%v<", err)
+		m.Log.Warn("Failed resolving dungeon character action >%v<", err)
 		return nil, err
 	}
 
@@ -76,7 +73,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	// Perform the submitted character action
 	dungeonActionRec, err = m.performDungeonCharacterAction(dungeonCharacterRec, dungeonActionRec, dungeonLocationRecordSet)
 	if err != nil {
-		m.Log.Warn("(testing) Failed performing dungeon character action >%v<", err)
+		m.Log.Warn("Failed performing dungeon character action >%v<", err)
 		return nil, err
 	}
 
@@ -86,30 +83,27 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	// Create the resulting dungeon action event record
 	err = m.CreateDungeonActionRec(dungeonActionRec)
 	if err != nil {
-		m.Log.Warn("(testing) Failed creating dungeon action record >%v<", err)
+		m.Log.Warn("Failed creating dungeon action record >%v<", err)
 		return nil, err
 	}
 
-	m.Log.Info("(testing) Created dungeon action record ID >%s<", dungeonActionRec.ID)
+	m.Log.Info("Created dungeon action record ID >%s<", dungeonActionRec.ID)
 
 	// TODO: Maybe don't need to do this... Get the updated character record
 	dungeonCharacterRec, err = m.GetDungeonCharacterRec(dungeonCharacterID, false)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon character record after performing action >%v<", err)
+		m.Log.Warn("Failed getting dungeon character record after performing action >%v<", err)
 		return nil, err
 	}
 
-	// TODO: And here..
-
 	dungeonActionRecordSet := DungeonActionRecordSet{
-		DungeonActionRec:    dungeonActionRec,
-		DungeonCharacterRec: dungeonCharacterRec,
+		ActionRec: dungeonActionRec,
 	}
 
 	// Get the updated current dungeon location record set
 	dungeonLocationRecordSet, err = m.GetDungeonLocationRecordSet(dungeonActionRec.DungeonLocationID, true)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon location record set after performing action >%v<", err)
+		m.Log.Warn("Failed getting dungeon location record set after performing action >%v<", err)
 		return nil, err
 	}
 
@@ -121,18 +115,15 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	// Current location
 	dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.DungeonLocationID, false)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon location record after performing action >%v<", err)
+		m.Log.Warn("Failed getting dungeon location record after performing action >%v<", err)
 		return nil, err
 	}
 
 	currentLocationRecordSet := DungeonActionLocationRecordSet{
-		DungeonLocationRec:         dungeonLocationRec,
-		DungeonActionCharacterRecs: []record.DungeonActionCharacter{},
-		DungeonCharacterRecs:       []record.DungeonCharacter{},
-		DungeonActionMonsterRecs:   []record.DungeonActionMonster{},
-		DungeonMonsterRecs:         []record.DungeonMonster{},
-		DungeonActionObjectRecs:    []record.DungeonActionObject{},
-		DungeonObjectRecs:          []record.DungeonObject{},
+		LocationRec:         dungeonLocationRec,
+		ActionCharacterRecs: []record.DungeonActionCharacter{},
+		ActionMonsterRecs:   []record.DungeonActionMonster{},
+		ActionObjectRecs:    []record.DungeonActionObject{},
 	}
 
 	// Create the dungeon action character record for each character now at the current location
@@ -146,20 +137,12 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 			err := m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
 			if err != nil {
-				m.Log.Warn("(testing) Failed creating dungeon action character record >%v<", err)
+				m.Log.Warn("Failed creating dungeon action character record >%v<", err)
 				return nil, err
 			}
 
-			m.Log.Info("(testing) Created dungeon action character record ID >%s<", dungeonActionCharacterRec.ID)
-			currentLocationRecordSet.DungeonActionCharacterRecs = append(currentLocationRecordSet.DungeonActionCharacterRecs, dungeonActionCharacterRec)
-
-			_dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionCharacterRec.DungeonCharacterID, false)
-			if err != nil {
-				m.Log.Warn("(testing) Failed getting dungeon character record >%v<", err)
-				return nil, err
-			}
-
-			currentLocationRecordSet.DungeonCharacterRecs = append(currentLocationRecordSet.DungeonCharacterRecs, *_dungeonCharacterRec)
+			m.Log.Info("Created dungeon action character record ID >%s<", dungeonActionCharacterRec.ID)
+			currentLocationRecordSet.ActionCharacterRecs = append(currentLocationRecordSet.ActionCharacterRecs, dungeonActionCharacterRec)
 		}
 	}
 
@@ -173,20 +156,12 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 			}
 			err := m.CreateDungeonActionMonsterRec(&dungeonActionMonsterRec)
 			if err != nil {
-				m.Log.Warn("(testing) Failed creating dungeon action monster record >%v<", err)
+				m.Log.Warn("Failed creating dungeon action monster record >%v<", err)
 				return nil, err
 			}
 
-			m.Log.Info("(testing) Created dungeon action monster record ID >%s<", dungeonActionMonsterRec.ID)
-			currentLocationRecordSet.DungeonActionMonsterRecs = append(currentLocationRecordSet.DungeonActionMonsterRecs, dungeonActionMonsterRec)
-
-			_dungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionMonsterRec.DungeonMonsterID, false)
-			if err != nil {
-				m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
-				return nil, err
-			}
-
-			currentLocationRecordSet.DungeonMonsterRecs = append(currentLocationRecordSet.DungeonMonsterRecs, *_dungeonMonsterRec)
+			m.Log.Info("Created dungeon action monster record ID >%s<", dungeonActionMonsterRec.ID)
+			currentLocationRecordSet.ActionMonsterRecs = append(currentLocationRecordSet.ActionMonsterRecs, dungeonActionMonsterRec)
 		}
 	}
 
@@ -200,20 +175,12 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 			}
 			err := m.CreateDungeonActionObjectRec(&dungeonActionObjectRec)
 			if err != nil {
-				m.Log.Warn("(testing) Failed creating dungeon action object record >%v<", err)
+				m.Log.Warn("Failed creating dungeon action object record >%v<", err)
 				return nil, err
 			}
 
-			m.Log.Info("(testing) Created dungeon action object record ID >%s<", dungeonActionObjectRec.ID)
-			currentLocationRecordSet.DungeonActionObjectRecs = append(currentLocationRecordSet.DungeonActionObjectRecs, dungeonActionObjectRec)
-
-			_dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonActionObjectRec.DungeonObjectID, false)
-			if err != nil {
-				m.Log.Warn("(testing) Failed getting dungeon object record >%v<", err)
-				return nil, err
-			}
-
-			currentLocationRecordSet.DungeonObjectRecs = append(currentLocationRecordSet.DungeonObjectRecs, *_dungeonObjectRec)
+			m.Log.Info("Created dungeon action object record ID >%s<", dungeonActionObjectRec.ID)
+			currentLocationRecordSet.ActionObjectRecs = append(currentLocationRecordSet.ActionObjectRecs, dungeonActionObjectRec)
 		}
 	}
 
@@ -224,25 +191,22 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 		dungeonLocationRecordSet, err := m.GetDungeonLocationRecordSet(dungeonActionRec.ResolvedTargetDungeonLocationID.String, true)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting target dungeon location record set after performing action >%v<", err)
+			m.Log.Warn("Failed getting target dungeon location record set after performing action >%v<", err)
 			return nil, err
 		}
 
 		// Target location
 		dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.ResolvedTargetDungeonLocationID.String, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon location record after performing action >%v<", err)
+			m.Log.Warn("Failed getting dungeon location record after performing action >%v<", err)
 			return nil, err
 		}
 
 		targetLocationRecordSet := DungeonActionLocationRecordSet{
-			DungeonLocationRec:         dungeonLocationRec,
-			DungeonActionCharacterRecs: []record.DungeonActionCharacter{},
-			DungeonCharacterRecs:       []record.DungeonCharacter{},
-			DungeonActionMonsterRecs:   []record.DungeonActionMonster{},
-			DungeonMonsterRecs:         []record.DungeonMonster{},
-			DungeonActionObjectRecs:    []record.DungeonActionObject{},
-			DungeonObjectRecs:          []record.DungeonObject{},
+			LocationRec:         dungeonLocationRec,
+			ActionCharacterRecs: []record.DungeonActionCharacter{},
+			ActionMonsterRecs:   []record.DungeonActionMonster{},
+			ActionObjectRecs:    []record.DungeonActionObject{},
 		}
 
 		// Create the dungeon action character record for each character at the target location
@@ -256,20 +220,12 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 				err := m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
 				if err != nil {
-					m.Log.Warn("(testing) Failed creating dungeon action character record >%v<", err)
+					m.Log.Warn("Failed creating dungeon action character record >%v<", err)
 					return nil, err
 				}
 
-				m.Log.Info("(testing) Created dungeon action character record ID >%s<", dungeonActionCharacterRec.ID)
-				targetLocationRecordSet.DungeonActionCharacterRecs = append(targetLocationRecordSet.DungeonActionCharacterRecs, dungeonActionCharacterRec)
-
-				_dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionCharacterRec.DungeonCharacterID, false)
-				if err != nil {
-					m.Log.Warn("(testing) Failed getting dungeon character record >%v<", err)
-					return nil, err
-				}
-
-				targetLocationRecordSet.DungeonCharacterRecs = append(targetLocationRecordSet.DungeonCharacterRecs, *_dungeonCharacterRec)
+				m.Log.Info("Created dungeon action character record ID >%s<", dungeonActionCharacterRec.ID)
+				targetLocationRecordSet.ActionCharacterRecs = append(targetLocationRecordSet.ActionCharacterRecs, dungeonActionCharacterRec)
 			}
 		}
 
@@ -283,20 +239,12 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				}
 				err := m.CreateDungeonActionMonsterRec(&dungeonActionMonsterRec)
 				if err != nil {
-					m.Log.Warn("(testing) Failed creating dungeon action monster record >%v<", err)
+					m.Log.Warn("Failed creating dungeon action monster record >%v<", err)
 					return nil, err
 				}
 
-				m.Log.Info("(testing) Created dungeon action monster record ID >%s<", dungeonActionMonsterRec.ID)
-				targetLocationRecordSet.DungeonActionMonsterRecs = append(targetLocationRecordSet.DungeonActionMonsterRecs, dungeonActionMonsterRec)
-
-				_dungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionMonsterRec.DungeonMonsterID, false)
-				if err != nil {
-					m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
-					return nil, err
-				}
-
-				targetLocationRecordSet.DungeonMonsterRecs = append(targetLocationRecordSet.DungeonMonsterRecs, *_dungeonMonsterRec)
+				m.Log.Info("Created dungeon action monster record ID >%s<", dungeonActionMonsterRec.ID)
+				targetLocationRecordSet.ActionMonsterRecs = append(targetLocationRecordSet.ActionMonsterRecs, dungeonActionMonsterRec)
 			}
 		}
 
@@ -310,25 +258,90 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				}
 				err := m.CreateDungeonActionObjectRec(&dungeonActionObjectRec)
 				if err != nil {
-					m.Log.Warn("(testing) Failed creating dungeon action object record >%v<", err)
+					m.Log.Warn("Failed creating dungeon action object record >%v<", err)
 					return nil, err
 				}
 
-				m.Log.Info("(testing) Created dungeon action object record ID >%s<", dungeonActionObjectRec.ID)
-				targetLocationRecordSet.DungeonActionObjectRecs = append(targetLocationRecordSet.DungeonActionObjectRecs, dungeonActionObjectRec)
-
-				_dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonActionObjectRec.DungeonObjectID, false)
-				if err != nil {
-					m.Log.Warn("(testing) Failed getting dungeon object record >%v<", err)
-					return nil, err
-				}
-
-				targetLocationRecordSet.DungeonObjectRecs = append(targetLocationRecordSet.DungeonObjectRecs, *_dungeonObjectRec)
+				m.Log.Info("Created dungeon action object record ID >%s<", dungeonActionObjectRec.ID)
+				targetLocationRecordSet.ActionObjectRecs = append(targetLocationRecordSet.ActionObjectRecs, dungeonActionObjectRec)
 			}
 		}
 
 		dungeonActionRecordSet.TargetLocation = &targetLocationRecordSet
 	}
+
+	// TODO: Characters, monsters and objects change over time. Create current
+	// representations of these entities per action and return those..
+
+	// Get the target dungeon character
+	if dungeonActionRec.ResolvedTargetDungeonCharacterID.Valid {
+		targetDungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionRec.ResolvedTargetDungeonCharacterID.String, false)
+		if err != nil {
+			m.Log.Warn("Failed getting dungeon character record >%v<", err)
+			return nil, err
+		}
+
+		rec := &record.DungeonActionCharacter{
+			RecordType:         record.DungeonActionCharacterRecordTypeTarget,
+			DungeonLocationID:  dungeonLocationRec.ID,
+			DungeonCharacterID: targetDungeonCharacterRec.ID,
+		}
+
+		err = m.CreateDungeonActionCharacterRec(rec)
+		if err != nil {
+			m.Log.Warn("Failed creating dungeon action character record >%v<", err)
+			return nil, err
+		}
+		dungeonActionRecordSet.TargetActionCharacterRec = rec
+	}
+
+	// Get the target dungeon monster
+	if dungeonActionRec.ResolvedTargetDungeonMonsterID.Valid {
+		targetDungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionRec.ResolvedTargetDungeonMonsterID.String, false)
+		if err != nil {
+			m.Log.Warn("Failed getting dungeon monster record >%v<", err)
+			return nil, err
+		}
+
+		rec := &record.DungeonActionMonster{
+			RecordType:        record.DungeonActionMonsterRecordTypeTarget,
+			DungeonLocationID: dungeonLocationRec.ID,
+			DungeonMonsterID:  targetDungeonMonsterRec.ID,
+		}
+
+		err = m.CreateDungeonActionMonsterRec(rec)
+		if err != nil {
+			m.Log.Warn("Failed creating dungeon action monster record >%v<", err)
+			return nil, err
+		}
+		dungeonActionRecordSet.TargetActionMonsterRec = rec
+	}
+
+	// Get the target dungeon object
+	if dungeonActionRec.ResolvedTargetDungeonObjectID.Valid {
+		targetDungeonObjectRec, err := m.GetDungeonObjectRec(dungeonActionRec.ResolvedTargetDungeonObjectID.String, false)
+		if err != nil {
+			m.Log.Warn("Failed getting dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		rec := &record.DungeonActionObject{
+			RecordType:        record.DungeonActionObjectRecordTypeTarget,
+			DungeonLocationID: dungeonLocationRec.ID,
+			DungeonObjectID:   targetDungeonObjectRec.ID,
+		}
+
+		err = m.CreateDungeonActionObjectRec(rec)
+		if err != nil {
+			m.Log.Warn("Failed creating dungeon action object record >%v<", err)
+			return nil, err
+		}
+		dungeonActionRecordSet.TargetActionObjectRec = rec
+	}
+
+	// TODO:
+	// EquippedObjectRec   *record.DungeonObject
+	// StashedObjectRec    *record.DungeonObject
 
 	return &dungeonActionRecordSet, nil
 }
@@ -339,51 +352,61 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 
 	dungeonActionRec, err := m.GetDungeonActionRec(dungeonActionID, false)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon action record >%v<", err)
+		m.Log.Warn("Failed getting dungeon action record >%v<", err)
 		return nil, err
 	}
-	dungeonActionRecordSet.DungeonActionRec = dungeonActionRec
+	dungeonActionRecordSet.ActionRec = dungeonActionRec
 
 	// Add the dungeon action character record that performed the dungeon action.
 	if dungeonActionRec.DungeonCharacterID.Valid {
-		dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionRec.DungeonCharacterID.String, false)
+		dungeonActionCharacterRecs, err := m.GetDungeonActionCharacterRecs(
+			map[string]interface{}{
+				"dungeon_action_id":    dungeonActionID,
+				"record_type":          record.DungeonActionCharacterRecordTypeSource,
+				"dungeon_character_id": dungeonActionRec.DungeonCharacterID.Valid,
+			}, nil, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon character record >%v<", err)
+			m.Log.Warn("Failed getting dungeon action character records >%v<", err)
 			return nil, err
 		}
-		dungeonActionRecordSet.DungeonCharacterRec = dungeonCharacterRec
+		if len(dungeonActionCharacterRecs) != 1 {
+			msg := fmt.Sprintf("Unexpected number of dungeon action character records returned >%d<", len(dungeonActionCharacterRecs))
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+		dungeonActionRecordSet.ActionCharacterRec = dungeonActionCharacterRecs[0]
 	}
 
 	// Add the dungeon action monster record that performed the dungeon action.
 	if dungeonActionRec.DungeonMonsterID.Valid {
 		dungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionRec.DungeonMonsterID.String, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
+			m.Log.Warn("Failed getting dungeon monster record >%v<", err)
 			return nil, err
 		}
-		dungeonActionRecordSet.DungeonMonsterRec = dungeonMonsterRec
+		dungeonActionRecordSet.ActionMonsterRec = dungeonMonsterRec
 	}
 
 	// Add the current location record set where the action was performed.
 	dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.DungeonLocationID, false)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon location record >%v<", err)
+		m.Log.Warn("Failed getting dungeon location record >%v<", err)
 		return nil, err
 	}
 
 	currentLocationRecordSet := DungeonActionLocationRecordSet{
-		DungeonLocationRec:         dungeonLocationRec,
-		DungeonActionCharacterRecs: []record.DungeonActionCharacter{},
-		DungeonCharacterRecs:       []record.DungeonCharacter{},
-		DungeonActionMonsterRecs:   []record.DungeonActionMonster{},
-		DungeonMonsterRecs:         []record.DungeonMonster{},
-		DungeonActionObjectRecs:    []record.DungeonActionObject{},
-		DungeonObjectRecs:          []record.DungeonObject{},
+		DungeonLocationRec:   dungeonLocationRec,
+		ActionCharacterRecs:  []record.DungeonActionCharacter{},
+		DungeonCharacterRecs: []record.DungeonCharacter{},
+		ActionMonsterRecs:    []record.DungeonActionMonster{},
+		DungeonMonsterRecs:   []record.DungeonMonster{},
+		ActionObjectRecs:     []record.DungeonActionObject{},
+		DungeonObjectRecs:    []record.DungeonObject{},
 	}
 
 	// Add the dungeon action character records that existed at the action location
 	// at the time the action was performed.
-	dungeonActionCharacterRecs, err := m.GetDungeonActionCharacterRecs(
+	dungeonActionCharacterRecs, err := m.GetActionCharacterRecs(
 		map[string]interface{}{
 			"dungeon_action_id": dungeonActionID,
 		},
@@ -391,18 +414,18 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 		false,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon action character records >%v<", err)
+		m.Log.Warn("Failed getting dungeon action character records >%v<", err)
 		return nil, err
 	}
 
-	currentLocationRecordSet.DungeonActionCharacterRecs = []record.DungeonActionCharacter{}
+	currentLocationRecordSet.ActionCharacterRecs = []record.DungeonActionCharacter{}
 	currentLocationRecordSet.DungeonCharacterRecs = []record.DungeonCharacter{}
 
 	for _, dungeonActionCharacterRec := range dungeonActionCharacterRecs {
-		currentLocationRecordSet.DungeonActionCharacterRecs = append(currentLocationRecordSet.DungeonActionCharacterRecs, *dungeonActionCharacterRec)
+		currentLocationRecordSet.ActionCharacterRecs = append(currentLocationRecordSet.ActionCharacterRecs, *dungeonActionCharacterRec)
 		dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionCharacterRec.DungeonCharacterID, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon character record >%v<", err)
+			m.Log.Warn("Failed getting dungeon character record >%v<", err)
 			return nil, err
 		}
 		currentLocationRecordSet.DungeonCharacterRecs = append(currentLocationRecordSet.DungeonCharacterRecs, *dungeonCharacterRec)
@@ -410,7 +433,7 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 
 	// Add the dungeon action monster records that existed at the action location
 	// at the time the action was performed.
-	dungeonActionMonsterRecs, err := m.GetDungeonActionMonsterRecs(
+	dungeonActionMonsterRecs, err := m.GetActionMonsterRecs(
 		map[string]interface{}{
 			"dungeon_action_id": dungeonActionID,
 		},
@@ -418,18 +441,18 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 		false,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon action monster records >%v<", err)
+		m.Log.Warn("Failed getting dungeon action monster records >%v<", err)
 		return nil, err
 	}
 
-	currentLocationRecordSet.DungeonActionMonsterRecs = []record.DungeonActionMonster{}
+	currentLocationRecordSet.ActionMonsterRecs = []record.DungeonActionMonster{}
 	currentLocationRecordSet.DungeonMonsterRecs = []record.DungeonMonster{}
 
 	for _, dungeonActionMonsterRec := range dungeonActionMonsterRecs {
-		currentLocationRecordSet.DungeonActionMonsterRecs = append(currentLocationRecordSet.DungeonActionMonsterRecs, *dungeonActionMonsterRec)
+		currentLocationRecordSet.ActionMonsterRecs = append(currentLocationRecordSet.ActionMonsterRecs, *dungeonActionMonsterRec)
 		dungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionMonsterRec.DungeonMonsterID, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
+			m.Log.Warn("Failed getting dungeon monster record >%v<", err)
 			return nil, err
 		}
 		currentLocationRecordSet.DungeonMonsterRecs = append(currentLocationRecordSet.DungeonMonsterRecs, *dungeonMonsterRec)
@@ -437,7 +460,7 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 
 	// Add the dungeon action object records that existed at the action location
 	// at the time the action was performed.
-	dungeonActionObjectRecs, err := m.GetDungeonActionObjectRecs(
+	dungeonActionObjectRecs, err := m.GetActionObjectRecs(
 		map[string]interface{}{
 			"dungeon_action_id": dungeonActionID,
 		},
@@ -445,18 +468,18 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 		false,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed getting dungeon action monster records >%v<", err)
+		m.Log.Warn("Failed getting dungeon action monster records >%v<", err)
 		return nil, err
 	}
 
-	currentLocationRecordSet.DungeonActionObjectRecs = []record.DungeonActionObject{}
+	currentLocationRecordSet.ActionObjectRecs = []record.DungeonActionObject{}
 	currentLocationRecordSet.DungeonObjectRecs = []record.DungeonObject{}
 
 	for _, dungeonActionObjectRec := range dungeonActionObjectRecs {
-		currentLocationRecordSet.DungeonActionObjectRecs = append(currentLocationRecordSet.DungeonActionObjectRecs, *dungeonActionObjectRec)
+		currentLocationRecordSet.ActionObjectRecs = append(currentLocationRecordSet.ActionObjectRecs, *dungeonActionObjectRec)
 		dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonActionObjectRec.DungeonObjectID, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
+			m.Log.Warn("Failed getting dungeon monster record >%v<", err)
 			return nil, err
 		}
 		currentLocationRecordSet.DungeonObjectRecs = append(currentLocationRecordSet.DungeonObjectRecs, *dungeonObjectRec)
@@ -470,23 +493,23 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 		// Target location
 		dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.ResolvedTargetDungeonLocationID.String, false)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon location record after performing action >%v<", err)
+			m.Log.Warn("Failed getting dungeon location record after performing action >%v<", err)
 			return nil, err
 		}
 
 		targetLocationRecordSet := DungeonActionLocationRecordSet{
-			DungeonLocationRec:         dungeonLocationRec,
-			DungeonActionCharacterRecs: []record.DungeonActionCharacter{},
-			DungeonCharacterRecs:       []record.DungeonCharacter{},
-			DungeonActionMonsterRecs:   []record.DungeonActionMonster{},
-			DungeonMonsterRecs:         []record.DungeonMonster{},
-			DungeonActionObjectRecs:    []record.DungeonActionObject{},
-			DungeonObjectRecs:          []record.DungeonObject{},
+			DungeonLocationRec:   dungeonLocationRec,
+			ActionCharacterRecs:  []record.DungeonActionCharacter{},
+			DungeonCharacterRecs: []record.DungeonCharacter{},
+			ActionMonsterRecs:    []record.DungeonActionMonster{},
+			DungeonMonsterRecs:   []record.DungeonMonster{},
+			ActionObjectRecs:     []record.DungeonActionObject{},
+			DungeonObjectRecs:    []record.DungeonObject{},
 		}
 
 		// Add the dungeon action character records that existed at the action location
 		// at the time the action was performed.
-		dungeonActionCharacterRecs, err := m.GetDungeonActionCharacterRecs(
+		dungeonActionCharacterRecs, err := m.GetActionCharacterRecs(
 			map[string]interface{}{
 				"dungeon_action_id": dungeonActionID,
 			},
@@ -494,18 +517,18 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 			false,
 		)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon action character records >%v<", err)
+			m.Log.Warn("Failed getting dungeon action character records >%v<", err)
 			return nil, err
 		}
 
-		targetLocationRecordSet.DungeonActionCharacterRecs = []record.DungeonActionCharacter{}
+		targetLocationRecordSet.ActionCharacterRecs = []record.DungeonActionCharacter{}
 		targetLocationRecordSet.DungeonCharacterRecs = []record.DungeonCharacter{}
 
 		for _, dungeonActionCharacterRec := range dungeonActionCharacterRecs {
-			targetLocationRecordSet.DungeonActionCharacterRecs = append(targetLocationRecordSet.DungeonActionCharacterRecs, *dungeonActionCharacterRec)
+			targetLocationRecordSet.ActionCharacterRecs = append(targetLocationRecordSet.ActionCharacterRecs, *dungeonActionCharacterRec)
 			dungeonCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionCharacterRec.DungeonCharacterID, false)
 			if err != nil {
-				m.Log.Warn("(testing) Failed getting dungeon character record >%v<", err)
+				m.Log.Warn("Failed getting dungeon character record >%v<", err)
 				return nil, err
 			}
 			targetLocationRecordSet.DungeonCharacterRecs = append(targetLocationRecordSet.DungeonCharacterRecs, *dungeonCharacterRec)
@@ -513,7 +536,7 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 
 		// Add the dungeon action monster records that existed at the action location
 		// at the time the action was performed.
-		dungeonActionMonsterRecs, err := m.GetDungeonActionMonsterRecs(
+		dungeonActionMonsterRecs, err := m.GetActionMonsterRecs(
 			map[string]interface{}{
 				"dungeon_action_id": dungeonActionID,
 			},
@@ -521,18 +544,18 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 			false,
 		)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon action monster records >%v<", err)
+			m.Log.Warn("Failed getting dungeon action monster records >%v<", err)
 			return nil, err
 		}
 
-		targetLocationRecordSet.DungeonActionMonsterRecs = []record.DungeonActionMonster{}
+		targetLocationRecordSet.ActionMonsterRecs = []record.DungeonActionMonster{}
 		targetLocationRecordSet.DungeonMonsterRecs = []record.DungeonMonster{}
 
 		for _, dungeonActionMonsterRec := range dungeonActionMonsterRecs {
-			targetLocationRecordSet.DungeonActionMonsterRecs = append(targetLocationRecordSet.DungeonActionMonsterRecs, *dungeonActionMonsterRec)
+			targetLocationRecordSet.ActionMonsterRecs = append(targetLocationRecordSet.ActionMonsterRecs, *dungeonActionMonsterRec)
 			dungeonMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionMonsterRec.DungeonMonsterID, false)
 			if err != nil {
-				m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
+				m.Log.Warn("Failed getting dungeon monster record >%v<", err)
 				return nil, err
 			}
 			targetLocationRecordSet.DungeonMonsterRecs = append(targetLocationRecordSet.DungeonMonsterRecs, *dungeonMonsterRec)
@@ -540,7 +563,7 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 
 		// Add the dungeon action object records that existed at the action location
 		// at the time the action was performed.
-		dungeonActionObjectRecs, err := m.GetDungeonActionObjectRecs(
+		dungeonActionObjectRecs, err := m.GetActionObjectRecs(
 			map[string]interface{}{
 				"dungeon_action_id": dungeonActionID,
 			},
@@ -548,18 +571,18 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 			false,
 		)
 		if err != nil {
-			m.Log.Warn("(testing) Failed getting dungeon action monster records >%v<", err)
+			m.Log.Warn("Failed getting dungeon action monster records >%v<", err)
 			return nil, err
 		}
 
-		targetLocationRecordSet.DungeonActionObjectRecs = []record.DungeonActionObject{}
+		targetLocationRecordSet.ActionObjectRecs = []record.DungeonActionObject{}
 		targetLocationRecordSet.DungeonObjectRecs = []record.DungeonObject{}
 
 		for _, dungeonActionObjectRec := range dungeonActionObjectRecs {
-			targetLocationRecordSet.DungeonActionObjectRecs = append(targetLocationRecordSet.DungeonActionObjectRecs, *dungeonActionObjectRec)
+			targetLocationRecordSet.ActionObjectRecs = append(targetLocationRecordSet.ActionObjectRecs, *dungeonActionObjectRec)
 			dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonActionObjectRec.DungeonObjectID, false)
 			if err != nil {
-				m.Log.Warn("(testing) Failed getting dungeon monster record >%v<", err)
+				m.Log.Warn("Failed getting dungeon monster record >%v<", err)
 				return nil, err
 			}
 			targetLocationRecordSet.DungeonObjectRecs = append(targetLocationRecordSet.DungeonObjectRecs, *dungeonObjectRec)
@@ -579,7 +602,7 @@ func (m *Model) GetDungeonLocationRecordSet(dungeonLocationID string, forUpdate 
 	// // Character record
 	// characterRec, err := m.GetDungeonCharacterRec(dungeonCharacterID, forUpdate)
 	// if err != nil {
-	// 	m.Log.Warn("(testing) Failed to get dungeon character record >%v<", err)
+	// 	m.Log.Warn("Failed to get dungeon character record >%v<", err)
 	// 	return nil, err
 	// }
 	// dungeonLocationRecordSet.CharacterRec = characterRec
@@ -587,7 +610,7 @@ func (m *Model) GetDungeonLocationRecordSet(dungeonLocationID string, forUpdate 
 	// Location record
 	locationRec, err := m.GetDungeonLocationRec(dungeonLocationID, forUpdate)
 	if err != nil {
-		m.Log.Warn("(testing) Failed to get dungeon location record >%v<", err)
+		m.Log.Warn("Failed to get dungeon location record >%v<", err)
 		return nil, err
 	}
 	dungeonLocationRecordSet.LocationRec = locationRec
@@ -601,7 +624,7 @@ func (m *Model) GetDungeonLocationRecordSet(dungeonLocationID string, forUpdate 
 		forUpdate,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed to get dungeon location character records >%v<", err)
+		m.Log.Warn("Failed to get dungeon location character records >%v<", err)
 		return nil, err
 	}
 	dungeonLocationRecordSet.CharacterRecs = characterRecs
@@ -615,7 +638,7 @@ func (m *Model) GetDungeonLocationRecordSet(dungeonLocationID string, forUpdate 
 		forUpdate,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed to get dungeon location monster records >%v<", err)
+		m.Log.Warn("Failed to get dungeon location monster records >%v<", err)
 		return nil, err
 	}
 	dungeonLocationRecordSet.MonsterRecs = monsterRecs
@@ -629,7 +652,7 @@ func (m *Model) GetDungeonLocationRecordSet(dungeonLocationID string, forUpdate 
 		forUpdate,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed to get dungeon location object records >%v<", err)
+		m.Log.Warn("Failed to get dungeon location object records >%v<", err)
 		return nil, err
 	}
 	dungeonLocationRecordSet.ObjectRecs = objectRecs
@@ -674,7 +697,7 @@ func (m *Model) GetDungeonLocationRecordSet(dungeonLocationID string, forUpdate 
 		forUpdate,
 	)
 	if err != nil {
-		m.Log.Warn("(testing) Failed to get dungeon location direction location records >%v<", err)
+		m.Log.Warn("Failed to get dungeon location direction location records >%v<", err)
 		return nil, err
 	}
 	dungeonLocationRecordSet.LocationRecs = locationRecs

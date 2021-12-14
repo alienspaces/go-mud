@@ -2,6 +2,7 @@ package runner
 
 import (
 	"net/http"
+	"strings"
 
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 
@@ -29,6 +30,8 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 		rnr.WriteSystemError(l, w, err)
 		return
 	}
+
+	req.Data.Sentence = strings.ToLower(req.Data.Sentence)
 
 	l.Info("Creating dungeon character action >%s<", req.Data.Sentence)
 

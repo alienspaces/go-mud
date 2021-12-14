@@ -78,40 +78,15 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	// Resolve move direction
+	var err error
 	var targetDungeonLocationID string
 	var targetDungeonLocationDirection string
 
 	if sentence != "" {
-		if records.LocationRec.NortheastDungeonLocationID.Valid && strings.Contains(sentence, "northeast") {
-			targetDungeonLocationID = records.LocationRec.NortheastDungeonLocationID.String
-			targetDungeonLocationDirection = "northeast"
-		} else if records.LocationRec.NorthwestDungeonLocationID.Valid && strings.Contains(sentence, "northwest") {
-			targetDungeonLocationID = records.LocationRec.NorthwestDungeonLocationID.String
-			targetDungeonLocationDirection = "northwest"
-		} else if records.LocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
-			targetDungeonLocationID = records.LocationRec.SoutheastDungeonLocationID.String
-			targetDungeonLocationDirection = "southeast"
-		} else if records.LocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
-			targetDungeonLocationID = records.LocationRec.SoutheastDungeonLocationID.String
-			targetDungeonLocationDirection = "southeast"
-		} else if records.LocationRec.NorthDungeonLocationID.Valid && strings.Contains(sentence, "north") {
-			targetDungeonLocationID = records.LocationRec.NorthDungeonLocationID.String
-			targetDungeonLocationDirection = "north"
-		} else if records.LocationRec.EastDungeonLocationID.Valid && strings.Contains(sentence, "east") {
-			targetDungeonLocationID = records.LocationRec.EastDungeonLocationID.String
-			targetDungeonLocationDirection = "east"
-		} else if records.LocationRec.SouthDungeonLocationID.Valid && strings.Contains(sentence, "south") {
-			targetDungeonLocationID = records.LocationRec.SouthDungeonLocationID.String
-			targetDungeonLocationDirection = "south"
-		} else if records.LocationRec.WestDungeonLocationID.Valid && strings.Contains(sentence, "west") {
-			targetDungeonLocationID = records.LocationRec.WestDungeonLocationID.String
-			targetDungeonLocationDirection = "west"
-		} else if records.LocationRec.UpDungeonLocationID.Valid && strings.Contains(sentence, "up") {
-			targetDungeonLocationID = records.LocationRec.UpDungeonLocationID.String
-			targetDungeonLocationDirection = "up"
-		} else if records.LocationRec.DownDungeonLocationID.Valid && strings.Contains(sentence, "down") {
-			targetDungeonLocationID = records.LocationRec.DownDungeonLocationID.String
-			targetDungeonLocationDirection = "down"
+		targetDungeonLocationID, targetDungeonLocationDirection, err = m.resolveSentenceLocationDirection(sentence, records.LocationRec)
+		if err != nil {
+			m.Log.Warn("Failed to resolve sentence location direction >%v<", err)
+			return nil, err
 		}
 	}
 
@@ -122,10 +97,6 @@ func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.D
 	}
 
 	dungeonActionRecord := record.DungeonAction{
-		// TODO: Should DungeonID, DungeonLocationID, DungeonCharacterID be set to the target location
-		// when the character is moving, or is another dungeon action record created when the character
-		// is actually moved in the performActionXxxx function, or is this in fact not correct and
-		// would result in weird replay behaviour?
 		DungeonID:                              dungeonCharacterRec.DungeonID,
 		DungeonLocationID:                      dungeonCharacterRec.DungeonLocationID,
 		DungeonCharacterID:                     store.NullString(dungeonCharacterRec.ID),
@@ -140,47 +111,56 @@ func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.D
 func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	// Resolve look direction
+	var err error
 	var targetDungeonLocationID string
 	var targetDungeonLocationDirection string
+	var targetDungeonObjectID string
+	var targetDungeonMonsterID string
+	var targetDungeonCharacterID string
 
 	if sentence != "" {
-		if records.LocationRec.NortheastDungeonLocationID.Valid && strings.Contains(sentence, "northeast") {
-			targetDungeonLocationID = records.LocationRec.NortheastDungeonLocationID.String
-			targetDungeonLocationDirection = "northeast"
-		} else if records.LocationRec.NorthwestDungeonLocationID.Valid && strings.Contains(sentence, "northwest") {
-			targetDungeonLocationID = records.LocationRec.NorthwestDungeonLocationID.String
-			targetDungeonLocationDirection = "northwest"
-		} else if records.LocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
-			targetDungeonLocationID = records.LocationRec.SoutheastDungeonLocationID.String
-			targetDungeonLocationDirection = "southeast"
-		} else if records.LocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
-			targetDungeonLocationID = records.LocationRec.SoutheastDungeonLocationID.String
-			targetDungeonLocationDirection = "southeast"
-		} else if records.LocationRec.NorthDungeonLocationID.Valid && strings.Contains(sentence, "north") {
-			targetDungeonLocationID = records.LocationRec.NorthDungeonLocationID.String
-			targetDungeonLocationDirection = "north"
-		} else if records.LocationRec.EastDungeonLocationID.Valid && strings.Contains(sentence, "east") {
-			targetDungeonLocationID = records.LocationRec.EastDungeonLocationID.String
-			targetDungeonLocationDirection = "east"
-		} else if records.LocationRec.SouthDungeonLocationID.Valid && strings.Contains(sentence, "south") {
-			targetDungeonLocationID = records.LocationRec.SouthDungeonLocationID.String
-			targetDungeonLocationDirection = "south"
-		} else if records.LocationRec.WestDungeonLocationID.Valid && strings.Contains(sentence, "west") {
-			targetDungeonLocationID = records.LocationRec.WestDungeonLocationID.String
-			targetDungeonLocationDirection = "west"
-		} else if records.LocationRec.UpDungeonLocationID.Valid && strings.Contains(sentence, "up") {
-			targetDungeonLocationID = records.LocationRec.UpDungeonLocationID.String
-			targetDungeonLocationDirection = "up"
-		} else if records.LocationRec.DownDungeonLocationID.Valid && strings.Contains(sentence, "down") {
-			targetDungeonLocationID = records.LocationRec.DownDungeonLocationID.String
-			targetDungeonLocationDirection = "down"
+		targetDungeonLocationID, targetDungeonLocationDirection, err = m.resolveSentenceLocationDirection(sentence, records.LocationRec)
+		if err != nil {
+			m.Log.Warn("Failed to resolve sentence location direction >%v<", err)
+			return nil, err
+		}
+
+		if targetDungeonLocationID == "" {
+			dungeonObjectRec, err := m.resolveSentenceObject(sentence, records.ObjectRecs)
+			if err != nil {
+				m.Log.Warn("Failed to resolve sentence object >%v<", err)
+				return nil, err
+			}
+			if dungeonObjectRec != nil {
+				targetDungeonObjectID = dungeonObjectRec.ID
+			}
+		}
+
+		if targetDungeonLocationID == "" && targetDungeonObjectID == "" {
+			dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, records.MonsterRecs)
+			if err != nil {
+				m.Log.Warn("Failed to resolve sentence monster >%v<", err)
+				return nil, err
+			}
+			if dungeonMonsterRec != nil {
+				targetDungeonMonsterID = dungeonMonsterRec.ID
+			}
+		}
+
+		if targetDungeonLocationID == "" && targetDungeonObjectID == "" && targetDungeonMonsterID == "" {
+			dungeonCharacterRec, err := m.resolveSentenceCharacter(sentence, records.CharacterRecs)
+			if err != nil {
+				m.Log.Warn("Failed to resolve sentence character >%v<", err)
+				return nil, err
+			}
+			if dungeonCharacterRec != nil {
+				targetDungeonCharacterID = dungeonCharacterRec.ID
+			}
 		}
 	}
 
-	// TODO: When a location was not identified, try to identify an object, a monster, a character.
-
 	// TODO: When nothing has been identified, assume we are just looking in the current room.
-	if targetDungeonLocationID == "" {
+	if targetDungeonLocationID == "" && targetDungeonObjectID == "" && targetDungeonMonsterID == "" && targetDungeonCharacterID == "" {
 		targetDungeonLocationID = records.LocationRec.ID
 		targetDungeonLocationDirection = ""
 	}
@@ -190,11 +170,82 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 		DungeonLocationID:                      dungeonCharacterRec.DungeonLocationID,
 		DungeonCharacterID:                     store.NullString(dungeonCharacterRec.ID),
 		ResolvedCommand:                        "look",
+		ResolvedTargetDungeonObjectID:          store.NullString(targetDungeonObjectID),
+		ResolvedTargetDungeonMonsterID:         store.NullString(targetDungeonMonsterID),
+		ResolvedTargetDungeonCharacterID:       store.NullString(targetDungeonCharacterID),
 		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
 		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
 	}
 
 	return &dungeonActionRecord, nil
+}
+
+func (m *Model) resolveSentenceLocationDirection(sentence string, dungeonLocationRec *record.DungeonLocation) (string, string, error) {
+
+	var dungeonLocationID string
+	var dungeonLocationDirection string
+
+	if dungeonLocationRec.NortheastDungeonLocationID.Valid && strings.Contains(sentence, "northeast") {
+		dungeonLocationID = dungeonLocationRec.NortheastDungeonLocationID.String
+		dungeonLocationDirection = "northeast"
+	} else if dungeonLocationRec.NorthwestDungeonLocationID.Valid && strings.Contains(sentence, "northwest") {
+		dungeonLocationID = dungeonLocationRec.NorthwestDungeonLocationID.String
+		dungeonLocationDirection = "northwest"
+	} else if dungeonLocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
+		dungeonLocationID = dungeonLocationRec.SoutheastDungeonLocationID.String
+		dungeonLocationDirection = "southeast"
+	} else if dungeonLocationRec.SoutheastDungeonLocationID.Valid && strings.Contains(sentence, "southeast") {
+		dungeonLocationID = dungeonLocationRec.SoutheastDungeonLocationID.String
+		dungeonLocationDirection = "southeast"
+	} else if dungeonLocationRec.NorthDungeonLocationID.Valid && strings.Contains(sentence, "north") {
+		dungeonLocationID = dungeonLocationRec.NorthDungeonLocationID.String
+		dungeonLocationDirection = "north"
+	} else if dungeonLocationRec.EastDungeonLocationID.Valid && strings.Contains(sentence, "east") {
+		dungeonLocationID = dungeonLocationRec.EastDungeonLocationID.String
+		dungeonLocationDirection = "east"
+	} else if dungeonLocationRec.SouthDungeonLocationID.Valid && strings.Contains(sentence, "south") {
+		dungeonLocationID = dungeonLocationRec.SouthDungeonLocationID.String
+		dungeonLocationDirection = "south"
+	} else if dungeonLocationRec.WestDungeonLocationID.Valid && strings.Contains(sentence, "west") {
+		dungeonLocationID = dungeonLocationRec.WestDungeonLocationID.String
+		dungeonLocationDirection = "west"
+	} else if dungeonLocationRec.UpDungeonLocationID.Valid && strings.Contains(sentence, "up") {
+		dungeonLocationID = dungeonLocationRec.UpDungeonLocationID.String
+		dungeonLocationDirection = "up"
+	} else if dungeonLocationRec.DownDungeonLocationID.Valid && strings.Contains(sentence, "down") {
+		dungeonLocationID = dungeonLocationRec.DownDungeonLocationID.String
+		dungeonLocationDirection = "down"
+	}
+
+	return dungeonLocationID, dungeonLocationDirection, nil
+}
+
+func (m *Model) resolveSentenceObject(sentence string, dungeonObjectRecs []*record.DungeonObject) (*record.DungeonObject, error) {
+
+	for _, dungeonObjectRec := range dungeonObjectRecs {
+		if strings.Contains(sentence, strings.ToLower(dungeonObjectRec.Name)) {
+			return dungeonObjectRec, nil
+		}
+	}
+	return nil, nil
+}
+
+func (m *Model) resolveSentenceMonster(sentence string, dungeonMonsterRecs []*record.DungeonMonster) (*record.DungeonMonster, error) {
+	for _, dungeonMonsterRec := range dungeonMonsterRecs {
+		if strings.Contains(sentence, strings.ToLower(dungeonMonsterRec.Name)) {
+			return dungeonMonsterRec, nil
+		}
+	}
+	return nil, nil
+}
+
+func (m *Model) resolveSentenceCharacter(sentence string, dungeonCharacterRecs []*record.DungeonCharacter) (*record.DungeonCharacter, error) {
+	for _, dungeonCharacterRec := range dungeonCharacterRecs {
+		if strings.Contains(sentence, strings.ToLower(dungeonCharacterRec.Name)) {
+			return dungeonCharacterRec, nil
+		}
+	}
+	return nil, nil
 }
 
 // func (m *Model) resolveEquipAction(sentence: string, records: DungeonLocationRecordSet): DungeonActionRepositoryRecord {

@@ -92,21 +92,40 @@ type DungeonAction struct {
 	repository.Record
 }
 
+const (
+	DungeonActionCharacterRecordTypeSource string = "source"
+	DungeonActionCharacterRecordTypeTarget string = "target"
+)
+
 type DungeonActionCharacter struct {
+	RecordType         string `db:"record_type"`
 	DungeonActionID    string `db:"dungeon_action_id"`
 	DungeonLocationID  string `db:"dungeon_location_id"`
 	DungeonCharacterID string `db:"dungeon_character_id"`
 	repository.Record
 }
 
+const (
+	DungeonActionMonsterRecordTypeSource string = "source"
+	DungeonActionMonsterRecordTypeTarget string = "target"
+)
+
 type DungeonActionMonster struct {
+	RecordType        string `db:"record_type"`
 	DungeonActionID   string `db:"dungeon_action_id"`
 	DungeonLocationID string `db:"dungeon_location_id"`
 	DungeonMonsterID  string `db:"dungeon_monster_id"`
 	repository.Record
 }
 
+const (
+	DungeonActionObjectRecordTypeEquipped string = "equipped"
+	DungeonActionObjectRecordTypeStashed  string = "stashed"
+	DungeonActionObjectRecordTypeTarget   string = "target"
+)
+
 type DungeonActionObject struct {
+	RecordType        string `db:"record_type"`
 	DungeonActionID   string `db:"dungeon_action_id"`
 	DungeonLocationID string `db:"dungeon_location_id"`
 	DungeonObjectID   string `db:"dungeon_object_id"`

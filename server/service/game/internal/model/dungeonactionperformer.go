@@ -68,12 +68,21 @@ func (m *Model) performDungeonActionLook(
 	dungeonLocationRecordSet *DungeonLocationRecordSet,
 ) (*record.DungeonAction, error) {
 
-	if dungeonActionRec.DungeonCharacterID.Valid {
-		// TODO: Looking at anything multiple times should result in additional information within a short timeframe
+	// TODO: Register the number of times the character has looked at any other
+	// location, object, monster of character. Looking at anything multiple times
+	// should result in additional information within X turns.
 
-	} else if dungeonActionRec.DungeonMonsterID.Valid {
-		// TODO: Monster look at current room, a direction, another monster, a character, or an object
-		return nil, fmt.Errorf("monsters looking is currently not supported")
+	if dungeonActionRec.ResolvedTargetDungeonLocationID.Valid {
+		m.Log.Info("Looking at location ID >%s<", dungeonActionRec.ResolvedTargetDungeonLocationID.String)
+
+	} else if dungeonActionRec.ResolvedTargetDungeonObjectID.Valid {
+		m.Log.Info("Looking at object ID >%s<", dungeonActionRec.ResolvedTargetDungeonObjectID.String)
+
+	} else if dungeonActionRec.ResolvedTargetDungeonMonsterID.Valid {
+		m.Log.Info("Looking at monster ID >%s<", dungeonActionRec.ResolvedTargetDungeonMonsterID.String)
+
+	} else if dungeonActionRec.ResolvedTargetDungeonCharacterID.Valid {
+		m.Log.Info("Looking at character ID >%s<", dungeonActionRec.ResolvedTargetDungeonCharacterID.String)
 	}
 
 	return dungeonActionRec, nil
