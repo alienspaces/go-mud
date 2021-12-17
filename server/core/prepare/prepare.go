@@ -75,7 +75,7 @@ func NewPrepare(l logger.Logger) (*Prepare, error) {
 func (p *Prepare) Init(db *sqlx.DB) error {
 
 	if db == nil {
-		msg := "Database db is nil, cannot init"
+		msg := "database db is nil, cannot init"
 		p.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}

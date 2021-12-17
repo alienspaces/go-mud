@@ -93,8 +93,9 @@ type DungeonAction struct {
 }
 
 const (
-	DungeonActionCharacterRecordTypeSource string = "source"
-	DungeonActionCharacterRecordTypeTarget string = "target"
+	DungeonActionCharacterRecordTypeSource   string = "source"
+	DungeonActionCharacterRecordTypeTarget   string = "target"
+	DungeonActionCharacterRecordTypeOccupant string = "occupant"
 )
 
 type DungeonActionCharacter struct {
@@ -106,8 +107,9 @@ type DungeonActionCharacter struct {
 }
 
 const (
-	DungeonActionMonsterRecordTypeSource string = "source"
-	DungeonActionMonsterRecordTypeTarget string = "target"
+	DungeonActionMonsterRecordTypeSource   string = "source"
+	DungeonActionMonsterRecordTypeTarget   string = "target"
+	DungeonActionMonsterRecordTypeOccupant string = "occupant"
 )
 
 type DungeonActionMonster struct {
@@ -122,6 +124,7 @@ const (
 	DungeonActionObjectRecordTypeEquipped string = "equipped"
 	DungeonActionObjectRecordTypeStashed  string = "stashed"
 	DungeonActionObjectRecordTypeTarget   string = "target"
+	DungeonActionObjectRecordTypeOccupant string = "occupant"
 )
 
 type DungeonActionObject struct {
