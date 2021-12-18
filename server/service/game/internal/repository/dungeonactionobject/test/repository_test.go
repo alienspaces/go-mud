@@ -34,9 +34,11 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.DungeonActionObject {
 				return &record.DungeonActionObject{
+					RecordType:        record.DungeonActionObjectRecordTypeOccupant,
 					DungeonActionID:   data.DungeonActionRecs[0].ID,
 					DungeonLocationID: data.DungeonLocationRecs[0].ID,
 					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
+					Name:              data.DungeonObjectRecs[0].Name,
 				}
 			},
 			err: false,
@@ -45,9 +47,11 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.DungeonActionObject {
 				rec := &record.DungeonActionObject{
+					RecordType:        record.DungeonActionObjectRecordTypeOccupant,
 					DungeonActionID:   data.DungeonActionRecs[0].ID,
 					DungeonLocationID: data.DungeonLocationRecs[0].ID,
 					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
+					Name:              data.DungeonObjectRecs[0].Name,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -176,19 +180,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() record.DungeonActionObject
+		rec  func() *record.DungeonActionObject
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() record.DungeonActionObject {
+			rec: func() *record.DungeonActionObject {
 				return h.Data.DungeonActionObjectRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() record.DungeonActionObject {
+			rec: func() *record.DungeonActionObject {
 				rec := h.Data.DungeonActionObjectRecs[0]
 				rec.ID = ""
 				return rec
@@ -221,7 +225,7 @@ func TestUpdateOne(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := r.UpdateOne(&rec)
+			err := r.UpdateOne(rec)
 			if tc.err == true {
 				require.Error(t, err, "UpdateOne returns error")
 				return
