@@ -103,6 +103,12 @@ type DungeonActionCharacter struct {
 	DungeonActionID    string `db:"dungeon_action_id"`
 	DungeonLocationID  string `db:"dungeon_location_id"`
 	DungeonCharacterID string `db:"dungeon_character_id"`
+	Name               string `db:"name"`
+	Strength           int    `db:"strength"`
+	Dexterity          int    `db:"dexterity"`
+	Intelligence       int    `db:"intelligence"`
+	Health             int    `db:"health"`
+	Fatigue            int    `db:"fatigue"`
 	repository.Record
 }
 
@@ -117,6 +123,12 @@ type DungeonActionMonster struct {
 	DungeonActionID   string `db:"dungeon_action_id"`
 	DungeonLocationID string `db:"dungeon_location_id"`
 	DungeonMonsterID  string `db:"dungeon_monster_id"`
+	Name              string `db:"name"`
+	Strength          int    `db:"strength"`
+	Dexterity         int    `db:"dexterity"`
+	Intelligence      int    `db:"intelligence"`
+	Health            int    `db:"health"`
+	Fatigue           int    `db:"fatigue"`
 	repository.Record
 }
 
@@ -132,5 +144,6 @@ type DungeonActionObject struct {
 	DungeonActionID   string `db:"dungeon_action_id"`
 	DungeonLocationID string `db:"dungeon_location_id"`
 	DungeonObjectID   string `db:"dungeon_object_id"`
+	Name              string `db:"name"`
 	repository.Record
 }

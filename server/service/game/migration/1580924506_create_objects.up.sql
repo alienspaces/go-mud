@@ -156,13 +156,19 @@ CREATE TABLE "dungeon_action_character" (
   "dungeon_action_id"    uuid NOT NULL,
   "dungeon_location_id"  uuid NOT NULL,
   "dungeon_character_id" uuid NOT NULL,
+  "name"                 text NOT NULL,
+  "strength"             integer NOT NULL,
+  "dexterity"            integer NOT NULL,
+  "intelligence"         integer NOT NULL,
+  "health"               integer NOT NULL,
+  "fatigue"              integer NOT NULL,
   "created_at"           timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at"           timestamp WITH TIME ZONE,
   "deleted_at"           timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_action_character_dungeon_action_id_fk" FOREIGN KEY (dungeon_action_id) REFERENCES dungeon_action(id),
   CONSTRAINT "dungeon_action_character_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
   CONSTRAINT "dungeon_action_character_dungeon_character_id_fk" FOREIGN KEY (dungeon_character_id) REFERENCES dungeon_character(id),
-  CONSTRAINT "dungeon_action_character_record_type_ck" CHECK (record_type = 'source' OR record_type = 'target')
+  CONSTRAINT "dungeon_action_character_record_type_ck" CHECK (record_type = 'source' OR record_type = 'target' OR record_type = 'occupant')
 );
 
 -- table dungeon_action_monster
@@ -172,13 +178,19 @@ CREATE TABLE "dungeon_action_monster" (
   "dungeon_action_id"    uuid NOT NULL,
   "dungeon_location_id"  uuid NOT NULL,
   "dungeon_monster_id"   uuid NOT NULL,
+  "name"                 text NOT NULL,
+  "strength"             integer NOT NULL,
+  "dexterity"            integer NOT NULL,
+  "intelligence"         integer NOT NULL,
+  "health"               integer NOT NULL,
+  "fatigue"              integer NOT NULL,
   "created_at"           timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at"           timestamp WITH TIME ZONE,
   "deleted_at"           timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_action_monster_dungeon_action_id_fk" FOREIGN KEY (dungeon_action_id) REFERENCES dungeon_action(id),
   CONSTRAINT "dungeon_action_monster_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
   CONSTRAINT "dungeon_action_monster_dungeon_monster_id_fk" FOREIGN KEY (dungeon_monster_id) REFERENCES dungeon_monster(id),
-  CONSTRAINT "dungeon_action_monster_record_type_ck" CHECK (record_type = 'source' OR record_type = 'target')
+  CONSTRAINT "dungeon_action_monster_record_type_ck" CHECK (record_type = 'source' OR record_type = 'target' OR record_type = 'occupant')
 );
 
 -- table dungeon_action_object
@@ -188,11 +200,12 @@ CREATE TABLE "dungeon_action_object" (
   "dungeon_action_id"    uuid NOT NULL,
   "dungeon_location_id"  uuid NOT NULL,
   "dungeon_object_id"    uuid NOT NULL,
+  "name"                 text NOT NULL,
   "created_at"           timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at"           timestamp WITH TIME ZONE,
   "deleted_at"           timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_action_object_dungeon_action_id_fk" FOREIGN KEY (dungeon_action_id) REFERENCES dungeon_action(id),
   CONSTRAINT "dungeon_action_object_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
   CONSTRAINT "dungeon_action_object_dungeon_object_id_fk" FOREIGN KEY (dungeon_object_id) REFERENCES dungeon_object(id),
-  CONSTRAINT "dungeon_action_object_record_type_ck" CHECK (record_type = 'equipped' OR record_type = 'stashed' OR record_type = 'target')
+  CONSTRAINT "dungeon_action_object_record_type_ck" CHECK (record_type = 'equipped' OR record_type = 'stashed' OR record_type = 'target' OR record_type = 'occupant')
 );

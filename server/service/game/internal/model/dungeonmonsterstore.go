@@ -45,6 +45,12 @@ func (m *Model) CreateDungeonMonsterRec(rec *record.DungeonMonster) error {
 
 	r := m.DungeonMonsterRepository()
 
+	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
+	rec.ExperiencePoints = defaultExperiencePoints
+	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)
+	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
+	rec.Coins = defaultCoins
+
 	err := m.ValidateDungeonMonsterRec(rec)
 	if err != nil {
 		m.Log.Debug("Failed model validation >%v<", err)

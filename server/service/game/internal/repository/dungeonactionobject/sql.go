@@ -3,15 +3,19 @@ package dungeonactionobject
 var createOneSQL = `
 INSERT INTO dungeon_action_object (
 	id,
+	record_type,
 	dungeon_action_id,
 	dungeon_location_id,
 	dungeon_object_id,
+	name,
 	created_at
 ) VALUES (
 	:id,
+	:record_type,
 	:dungeon_action_id,
 	:dungeon_location_id,
 	:dungeon_object_id,
+	:name,
 	:created_at
 )
 RETURNING *
@@ -19,9 +23,11 @@ RETURNING *
 
 var updateOneSQL = `
 UPDATE dungeon_action_object SET
+	record_type         = :record_type,
 	dungeon_action_id   = :dungeon_action_id,
 	dungeon_location_id = :dungeon_location_id,
 	dungeon_object_id   = :dungeon_object_id,
+	name                = :name,
 	updated_at 		    = :updated_at
 WHERE id = :id
 AND   deleted_at IS NULL

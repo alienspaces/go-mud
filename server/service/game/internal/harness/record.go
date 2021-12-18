@@ -1,6 +1,7 @@
 package harness
 
 import (
+	"github.com/brianvoe/gofakeit"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
@@ -53,7 +54,19 @@ func (t *Testing) createDungeonCharacterRec(dungeonRec *record.Dungeon, dungeonC
 
 	rec := dungeonCharacterConfig.Record
 
-	// NOTE: Add default values for required properties here
+	// Default values
+	if rec.Name == "" {
+		rec.Name = gofakeit.Name() + " " + gofakeit.Name()
+	}
+	if rec.Strength == 0 {
+		rec.Strength = 10
+	}
+	if rec.Dexterity == 0 {
+		rec.Dexterity = 10
+	}
+	if rec.Intelligence == 0 {
+		rec.Intelligence = 10
+	}
 
 	t.Log.Info("(testing) Creating dungeon character record >%#v<", rec)
 
@@ -69,7 +82,19 @@ func (t *Testing) createDungeonMonsterRec(dungeonRec *record.Dungeon, dungeonMon
 
 	rec := dungeonMonsterConfig.Record
 
-	// NOTE: Add default values for required properties here
+	// Default values
+	if rec.Name == "" {
+		rec.Name = gofakeit.Name() + " " + gofakeit.Name()
+	}
+	if rec.Strength == 0 {
+		rec.Strength = 10
+	}
+	if rec.Dexterity == 0 {
+		rec.Dexterity = 10
+	}
+	if rec.Intelligence == 0 {
+		rec.Intelligence = 10
+	}
 
 	t.Log.Info("(testing) Creating dungeon monster record >%#v<", rec)
 
