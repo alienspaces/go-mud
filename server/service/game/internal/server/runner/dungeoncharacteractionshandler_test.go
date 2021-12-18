@@ -267,14 +267,14 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name:              "POST - look north",
+				Name:              "POST - look rusted sword",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.DungeonActionRequest{
 						Data: schema.DungeonActionRequestData{
-							Sentence: "look north",
+							Sentence: "look rusted sword",
 						},
 					}
 					return &res
@@ -285,7 +285,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "look rusted sword",
+							Command: "look",
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,

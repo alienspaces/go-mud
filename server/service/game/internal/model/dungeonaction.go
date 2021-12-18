@@ -333,6 +333,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 		rec := &record.DungeonActionCharacter{
 			RecordType:         record.DungeonActionCharacterRecordTypeTarget,
+			DungeonActionID:    dungeonActionRec.ID,
 			DungeonLocationID:  dungeonLocationRec.ID,
 			DungeonCharacterID: targetCharacterRec.ID,
 			Name:               targetCharacterRec.Name,
@@ -361,6 +362,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 		rec := &record.DungeonActionMonster{
 			RecordType:        record.DungeonActionMonsterRecordTypeTarget,
+			DungeonActionID:   dungeonActionRec.ID,
 			DungeonLocationID: dungeonLocationRec.ID,
 			DungeonMonsterID:  targetMonsterRec.ID,
 			Name:              targetMonsterRec.Name,
@@ -389,6 +391,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 		rec := &record.DungeonActionObject{
 			RecordType:        record.DungeonActionObjectRecordTypeTarget,
+			DungeonActionID:   dungeonActionRec.ID,
 			DungeonLocationID: dungeonLocationRec.ID,
 			DungeonObjectID:   targetObjectRec.ID,
 			Name:              targetObjectRec.Name,
@@ -589,7 +592,7 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 		}
 		targetLocationRecordSet.ActionObjectRecs = dungeonActionObjectRecs
 
-		dungeonActionRecordSet.CurrentLocation = &targetLocationRecordSet
+		dungeonActionRecordSet.TargetLocation = &targetLocationRecordSet
 	}
 
 	// Get the target dungeon character action record

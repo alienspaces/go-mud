@@ -12,4 +12,4 @@ source "${BASH_SOURCE%/*}"/db-start || exit $?
 
 source "${BASH_SOURCE%/*}"/db-migrate-up || exit $?
 
-source "${BASH_SOURCE%/*}"/load-test-data || exit $?
+source "${BASH_SOURCE%/*}"/db-load-seed-data || exit $?

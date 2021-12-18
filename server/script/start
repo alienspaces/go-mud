@@ -18,7 +18,7 @@ source "${BASH_SOURCE%/*}"/db-start "$1" || exit $?
 source "${BASH_SOURCE%/*}"/db-migrate-up || exit $?
 
 # load seed data
-source "${BASH_SOURCE%/*}"/load-seed-data || exit $?
+source "${BASH_SOURCE%/*}"/db-load-seed-data || exit $?
 
 # start krakend
 source "${BASH_SOURCE%/*}"/krakend-start "$1" || exit $?
