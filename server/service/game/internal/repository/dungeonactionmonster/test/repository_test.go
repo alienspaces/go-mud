@@ -196,16 +196,17 @@ func TestUpdateOne(t *testing.T) {
 		{
 			name: "With ID",
 			rec: func() *record.DungeonActionMonster {
-				return h.Data.DungeonActionMonsterRecs[0]
+				rec := *h.Data.DungeonActionMonsterRecs[0]
+				return &rec
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
 			rec: func() *record.DungeonActionMonster {
-				rec := h.Data.DungeonActionMonsterRecs[0]
+				rec := *h.Data.DungeonActionMonsterRecs[0]
 				rec.ID = ""
-				return rec
+				return &rec
 			},
 			err: true,
 		},

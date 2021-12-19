@@ -18,13 +18,12 @@ void main() {
   // Initialise logger
   initLogger();
 
-  // Dependencies
-
   // When hostname is localhost and we are running in an emulator set backend to specific IP
   if (!kIsWeb && config['serverHost'].toString() == 'localhost') {
     config['serverHost'] = '10.0.3.2';
   }
 
+  // Dependencies
   final API api = API(config: config);
 
   final repositories = RepositoryCollection(config: config, api: api);
@@ -37,7 +36,8 @@ class MainApp extends StatelessWidget {
   final Map<String, String> config;
   final RepositoryCollection repositories;
 
-  MainApp({Key? key, required this.config, required this.repositories}) : super(key: key);
+  MainApp({Key? key, required this.config, required this.repositories})
+      : super(key: key);
 
   final log = getLogger('MainApp');
 
