@@ -107,7 +107,7 @@ func NewRunner() *Runner {
 			HandlerFunc: r.PostDungeonCharacterActionsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				ValidateSchemaLocation: "dungeonaction",
-				ValidateSchemaMain:     "create.schema.json",
+				ValidateSchemaMain:     "create.request.schema.json",
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,

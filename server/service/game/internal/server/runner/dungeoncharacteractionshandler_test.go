@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"gitlab.com/alienspaces/go-mud/server/core/auth"
+	coreschema "gitlab.com/alienspaces/go-mud/server/core/schema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
@@ -344,6 +345,9 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 		},
 	}
 
+	v, err := coreschema.NewValidator(th.Config, th.Log)
+	require.NoError(t, err, "Validator returns without error")
+
 	for _, testCase := range testCases {
 
 		t.Logf("Running test >%s<", testCase.Name)
@@ -369,6 +373,19 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 			if testCase.responseBody != nil {
 				expectResponseBody := testCase.responseBody(th.Data)
 				if responseBody != nil {
+					jsonData, err := json.Marshal(responseBody)
+					require.NoError(t, err, "Marshal returns without error")
+
+					err = v.Validate(coreschema.Config{
+						Key:      "dungeonaction.create.response",
+						Location: "dungeonaction",
+						Main:     "create.response.schema.json",
+						References: []string{
+							"data.schema.json",
+						},
+					}, jsonData)
+					require.NoError(t, err, "Validates against schema without error")
+
 					for idx, expectData := range expectResponseBody.Data {
 						// Response data
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
@@ -486,12 +503,6 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
 				if method == http.MethodPost {
 					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
-				}
-				if method == http.MethodPut {
-					require.False(t, data.UpdatedAt.IsZero(), "UpdatedAt is not zero")
-				}
-
-				if method == http.MethodPost {
 					t.Logf("Adding dungeon character action ID >%s< for teardown", data.ID)
 					th.AddDungeonCharacterActionTeardownID(data.ID)
 				}

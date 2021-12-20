@@ -94,7 +94,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target location
-	targetLocationData := &schema.LocationData{}
+	var targetLocationData *schema.LocationData
 	if dungeonActionRecordSet.TargetLocation != nil {
 		targetLocationData, err = rnr.dungeonActionLocationToResponseLocation(dungeonActionRecordSet.TargetLocation)
 		if err != nil {
@@ -107,7 +107,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Equipped object
-	equippedObjectData := &schema.ObjectData{}
+	var equippedObjectData *schema.ObjectData
 	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
 		equippedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.EquippedActionObjectRec)
 		if err != nil {
@@ -116,7 +116,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Stashed object
-	stashedObjectData := &schema.ObjectData{}
+	var stashedObjectData *schema.ObjectData
 	if dungeonActionRecordSet.StashedActionObjectRec != nil {
 		stashedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.StashedActionObjectRec)
 		if err != nil {
@@ -125,7 +125,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target object
-	targetObjectData := &schema.ObjectData{}
+	var targetObjectData *schema.ObjectData
 	if dungeonActionRecordSet.TargetActionObjectRec != nil {
 		targetObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.TargetActionObjectRec)
 		if err != nil {
@@ -134,7 +134,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target character
-	targetCharacterData := &schema.CharacterData{}
+	var targetCharacterData *schema.CharacterData
 	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
 		targetCharacterData, err = rnr.dungeonCharacterToResponseCharacter(dungeonActionRecordSet.TargetActionCharacterRec)
 		if err != nil {
@@ -143,7 +143,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target monster
-	targetMonsterData := &schema.MonsterData{}
+	var targetMonsterData *schema.MonsterData
 	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
 		targetMonsterData, err = rnr.dungeonMonsterToResponseMonster(dungeonActionRecordSet.TargetActionMonsterRec)
 		if err != nil {
@@ -164,7 +164,6 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 		TargetMonster:   targetMonsterData,
 		TargetLocation:  targetLocationData,
 		CreatedAt:       dungeonActionRec.CreatedAt,
-		UpdatedAt:       dungeonActionRec.UpdatedAt.Time,
 	}
 
 	return &data, nil
@@ -173,7 +172,6 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject) (*schema.ObjectData, error) {
 	return &schema.ObjectData{
 		Name: dungeonObjectRec.Name,
-		// Description: dungeonObjectRec.Description,
 	}, nil
 }
 
@@ -262,11 +260,10 @@ func (rnr *Runner) dungeonActionLocationToResponseLocation(recordSet *model.Dung
 	data := &schema.LocationData{
 		Name:        dungeonLocationRec.Name,
 		Description: dungeonLocationRec.Description,
-		//		Direction:
-		Directions: directions,
-		Characters: charactersData,
-		Monsters:   monstersData,
-		Objects:    objectsData,
+		Directions:  directions,
+		Characters:  charactersData,
+		Monsters:    monstersData,
+		Objects:     objectsData,
 	}
 
 	return data, nil

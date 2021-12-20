@@ -44,9 +44,9 @@ type LocationData struct {
 	Description string          `json:"description"`
 	Direction   string          `json:"direction,omitempty"`
 	Directions  []string        `json:"directions"`
-	Characters  []CharacterData `json:"characters"`
-	Monsters    []MonsterData   `json:"monsters"`
-	Objects     []ObjectData    `json:"objects"`
+	Characters  []CharacterData `json:"characters,omitempty"`
+	Monsters    []MonsterData   `json:"monsters,omitempty"`
+	Objects     []ObjectData    `json:"objects,omitempty"`
 }
 
 type CharacterData struct {
