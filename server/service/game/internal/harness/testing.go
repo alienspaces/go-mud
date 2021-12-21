@@ -673,7 +673,6 @@ DUNGEON_CHARACTER_RECS:
 		if len(t.teardownData.DungeonCharacterRecs) == 0 {
 			break DUNGEON_CHARACTER_RECS
 		}
-		// rec := &record.DungeonCharacter{}
 		var rec record.DungeonCharacter
 		rec, t.teardownData.DungeonCharacterRecs = t.teardownData.DungeonCharacterRecs[0], t.teardownData.DungeonCharacterRecs[1:]
 		if seen[rec.ID] {
@@ -693,7 +692,6 @@ DUNGEON_MONSTER_RECS:
 		if len(t.teardownData.DungeonMonsterRecs) == 0 {
 			break DUNGEON_MONSTER_RECS
 		}
-		// rec := &record.DungeonMonster{}
 		var rec record.DungeonMonster
 		rec, t.teardownData.DungeonMonsterRecs = t.teardownData.DungeonMonsterRecs[0], t.teardownData.DungeonMonsterRecs[1:]
 		if seen[rec.ID] {
@@ -713,7 +711,6 @@ DUNGEON_OBJECT_RECS:
 		if len(t.teardownData.DungeonObjectRecs) == 0 {
 			break DUNGEON_OBJECT_RECS
 		}
-		// rec := &record.DungeonObject{}
 		var rec record.DungeonObject
 		rec, t.teardownData.DungeonObjectRecs = t.teardownData.DungeonObjectRecs[0], t.teardownData.DungeonObjectRecs[1:]
 		if seen[rec.ID] {
@@ -733,7 +730,6 @@ DUNGEON_LOCATION_RECS:
 		if len(t.teardownData.DungeonLocationRecs) == 0 {
 			break DUNGEON_LOCATION_RECS
 		}
-		// rec := &record.DungeonLocation{}
 		var rec record.DungeonLocation
 		rec, t.teardownData.DungeonLocationRecs = t.teardownData.DungeonLocationRecs[0], t.teardownData.DungeonLocationRecs[1:]
 		if seen[rec.ID] {
@@ -753,7 +749,6 @@ DUNGEON_RECS:
 		if len(t.teardownData.DungeonRecs) == 0 {
 			break DUNGEON_RECS
 		}
-		// rec := &record.Dungeon{}
 		var rec record.Dungeon
 		rec, t.teardownData.DungeonRecs = t.teardownData.DungeonRecs[0], t.teardownData.DungeonRecs[1:]
 		if seen[rec.ID] {
@@ -767,6 +762,8 @@ DUNGEON_RECS:
 		}
 		seen[rec.ID] = true
 	}
+
+	t.Data = Data{}
 
 	return nil
 }

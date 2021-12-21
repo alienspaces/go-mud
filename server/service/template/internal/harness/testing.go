@@ -109,5 +109,7 @@ TEMPLATE_RECS:
 		}
 	}
 
+	t.Data = Data{}
+
 	return nil
 }

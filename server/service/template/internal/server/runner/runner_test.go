@@ -31,11 +31,6 @@ func NewTestHarness() (*harness.Testing, error) {
 		return nil, err
 	}
 
-	// h, err := harness.NewTesting(config)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	// harness commit data
 	h.CommitData = true
 

@@ -11,12 +11,15 @@ func (t *Testing) createTemplateRec(templateConfig TemplateConfig) (record.Templ
 
 	// NOTE: Add default values for required properties here
 
-	t.Log.Info("Creating testing record >%#v<", rec)
+	t.Log.Warn("Creating testing record >%#v<", rec)
 
 	err := t.Model.(*model.Model).CreateTemplateRec(&rec)
 	if err != nil {
 		t.Log.Warn("Failed creating testing template record >%v<", err)
 		return rec, err
 	}
+
+	t.Log.Warn("Created testing record ID >%s<", rec.ID)
+
 	return rec, nil
 }
