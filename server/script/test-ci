@@ -4,7 +4,7 @@
 cp .env.ci .env
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # start database
 source "${BASH_SOURCE%/*}"/db-start || exit $?

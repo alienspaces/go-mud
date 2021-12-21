@@ -17,7 +17,7 @@ if [ -n "$1" ]; then
 fi
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # Service directory list
 SERVICE_BASE_PATH=./service

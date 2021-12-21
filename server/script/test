@@ -4,7 +4,10 @@
 cp .env.development .env
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env-functions || exit $?
+clear_env || exit $?
+
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # go version
 if [ "$(command -v gvm)" ]; then

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # retry
 source "${BASH_SOURCE%/*}"/retry || exit $?
@@ -67,7 +67,7 @@ function start_service_databases {
             export APP_SERVER_DB_NAME=""
 
             # Load service specific environment
-            source "${BASH_SOURCE%/*}"/environment "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
+            source "${BASH_SOURCE%/*}"/env "$SERVICE_BASE_PATH/$SERVICE_NAME" || exit $?
 
             echo "=> (start_service_databases) - Creating database name $APP_SERVER_DB_NAME owner $APP_SERVER_DB_USER"
 

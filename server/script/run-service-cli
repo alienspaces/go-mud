@@ -23,7 +23,7 @@ done
 cp .env.development .env
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # reset APP_SERVER_PORT as each service should define
 # a unique server port in their local env
@@ -43,7 +43,7 @@ echo "Sourcing service .env"
 # the environment so $PWD is correct for APP_SERVER_HOME
 
 # load service specific environment
-source ../../"${BASH_SOURCE%/*}"/environment || exit $?
+source ../../"${BASH_SOURCE%/*}"/env || exit $?
 
 echo ""
 

@@ -6,7 +6,7 @@
 cp .env.development .env
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 source "${BASH_SOURCE%/*}"/db-start || exit $?
 

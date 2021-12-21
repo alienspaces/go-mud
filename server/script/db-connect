@@ -5,7 +5,7 @@
 # \c go-mud-template - connect to schema
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 export PGPASSWORD=$APP_SERVER_DB_PASSWORD
 psql --host="$APP_SERVER_DB_HOST" \

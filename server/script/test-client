@@ -12,7 +12,7 @@ if [ -n "$1" ]; then
 fi
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 dir="client"
 for f in "$dir"/*; do

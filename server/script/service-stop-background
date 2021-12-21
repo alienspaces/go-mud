@@ -21,7 +21,7 @@ echo
 cp .env.development .env
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # server
 SERVER_NAME="go-mud-${SERVICE_NAME}-server"

@@ -3,7 +3,7 @@
 # Local development run script
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # go version
 if [ "$(command -v gvm)" ]; then

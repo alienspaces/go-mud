@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # stop database
 echo "=> Stopping database";

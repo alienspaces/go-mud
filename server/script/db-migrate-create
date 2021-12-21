@@ -2,7 +2,7 @@
 
 # Environment
 if [ -z "$APP_SERVER_GO_VERSION" ]; then
-    source "${BASH_SOURCE%/*}"/environment || exit $?
+    source "${BASH_SOURCE%/*}"/env || exit $?
 fi
 
 # go version

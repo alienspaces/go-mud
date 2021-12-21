@@ -3,7 +3,7 @@
 # Local development run script
 
 # Environment
-source "${BASH_SOURCE%/*}"/environment || exit $?
+source "${BASH_SOURCE%/*}"/env || exit $?
 
 # go version
 if [ "$(command -v gvm)" ]; then
@@ -35,7 +35,7 @@ for service_name in "${service_names[@]}"; do
     if [ -d "$service_base_path/$service_name/migration" ]; then
 
         # load service specific environment
-        source "${BASH_SOURCE%/*}"/environment "$service_base_path/$service_name" || exit $?
+        source "${BASH_SOURCE%/*}"/env "$service_base_path/$service_name" || exit $?
 
         URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
 
