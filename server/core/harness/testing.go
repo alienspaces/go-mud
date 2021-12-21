@@ -1,6 +1,8 @@
 package harness
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/server/core/prepare"
@@ -40,12 +42,13 @@ type Testing struct {
 }
 
 // NewTesting -
-func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer) (t *Testing, err error) {
+func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) (t *Testing, err error) {
 
 	t = &Testing{
 		Config: c,
 		Log:    l,
 		Store:  s,
+		Model:  m,
 	}
 
 	return t, nil
@@ -54,6 +57,7 @@ func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer) (t *T
 // Init -
 func (t *Testing) Init() (err error) {
 
+	// Configurer
 	if t.Config == nil {
 		c, err := NewDefaultConfig()
 		if err != nil {
@@ -62,6 +66,7 @@ func (t *Testing) Init() (err error) {
 		t.Config = c
 	}
 
+	// Logger
 	if t.Log == nil {
 		l, err := NewDefaultLogger(t.Config)
 		if err != nil {
@@ -70,6 +75,7 @@ func (t *Testing) Init() (err error) {
 		t.Log = l
 	}
 
+	// Storer
 	if t.Store == nil {
 		s, err := NewDefaultStorer(t.Config, t.Log)
 		if err != nil {
@@ -78,35 +84,42 @@ func (t *Testing) Init() (err error) {
 		t.Store = s
 	}
 
-	// preparer
+	// Modeller
+	if t.Model == nil {
+		if t.ModellerFunc == nil {
+			msg := "failed Init, ModellerFunc is nil"
+			t.Log.Warn(msg)
+			return fmt.Errorf(msg)
+		}
+		t.Model, err = t.ModellerFunc()
+		if err != nil {
+			t.Log.Warn("failed new modeller >%v<", err)
+			return err
+		}
+	}
+
+	t.Log.Debug("Modeller ready")
+
+	// Preparer
 	t.Prepare, err = prepare.NewPrepare(t.Log)
 	if err != nil {
-		t.Log.Warn("Failed new preparer >%v<", err)
+		t.Log.Warn("failed new preparer >%v<", err)
 		return err
 	}
 
 	db, err := t.Store.GetDb()
 	if err != nil {
-		t.Log.Warn("Failed getting database handle >%v<", err)
+		t.Log.Warn("failed getting database handle >%v<", err)
 		return err
 	}
 
 	err = t.Prepare.Init(db)
 	if err != nil {
-		t.Log.Warn("Failed preparer init >%v<", err)
+		t.Log.Warn("failed preparer init >%v<", err)
 		return err
 	}
 
 	t.Log.Debug("Preparer ready")
-
-	// modeller
-	t.Model, err = t.ModellerFunc()
-	if err != nil {
-		t.Log.Warn("Failed new modeller >%v<", err)
-		return err
-	}
-
-	t.Log.Debug("Modeller ready")
 
 	return nil
 }
@@ -120,14 +133,14 @@ func (t *Testing) InitTx(tx *sqlx.Tx) (err error) {
 
 		tx, err = t.Store.GetTx()
 		if err != nil {
-			t.Log.Warn("Failed getting database tx >%v<", err)
+			t.Log.Warn("failed getting database tx >%v<", err)
 			return err
 		}
 	}
 
 	err = t.Model.Init(t.Prepare, tx)
 	if err != nil {
-		t.Log.Warn("Failed modeller init >%v<", err)
+		t.Log.Warn("failed modeller init >%v<", err)
 		return err
 	}
 
@@ -166,7 +179,7 @@ func (t *Testing) Setup() (err error) {
 	// init
 	err = t.InitTx(nil)
 	if err != nil {
-		t.Log.Warn("Failed init >%v<", err)
+		t.Log.Warn("failed init >%v<", err)
 		return err
 	}
 
@@ -175,7 +188,7 @@ func (t *Testing) Setup() (err error) {
 		t.Log.Debug("Creating test data")
 		err := t.CreateDataFunc()
 		if err != nil {
-			t.Log.Warn("Failed creating data >%v<", err)
+			t.Log.Warn("failed creating data >%v<", err)
 			return err
 		}
 	}
@@ -186,7 +199,7 @@ func (t *Testing) Setup() (err error) {
 		t.Log.Debug("Committing database tx")
 		err = t.CommitTx()
 		if err != nil {
-			t.Log.Warn("Failed comitting data >%v<", err)
+			t.Log.Warn("failed comitting data >%v<", err)
 			return err
 		}
 	}
@@ -200,7 +213,7 @@ func (t *Testing) Teardown() (err error) {
 	// init
 	err = t.InitTx(nil)
 	if err != nil {
-		t.Log.Warn("Failed init >%v<", err)
+		t.Log.Warn("failed init >%v<", err)
 		return err
 	}
 
@@ -209,7 +222,7 @@ func (t *Testing) Teardown() (err error) {
 		t.Log.Debug("Removing test data")
 		err := t.RemoveDataFunc()
 		if err != nil {
-			t.Log.Warn("Failed removing data >%v<", err)
+			t.Log.Warn("failed removing data >%v<", err)
 			return err
 		}
 	}
@@ -220,7 +233,7 @@ func (t *Testing) Teardown() (err error) {
 		t.Log.Debug("Committing database tx")
 		err = t.CommitTx()
 		if err != nil {
-			t.Log.Warn("Failed comitting data >%v<", err)
+			t.Log.Warn("failed comitting data >%v<", err)
 			return err
 		}
 	}

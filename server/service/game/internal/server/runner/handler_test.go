@@ -83,7 +83,7 @@ func (t *TestCase) TestResponseCode() int {
 func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc func(method string, body io.Reader)) {
 	rnr := NewRunner()
 
-	err := rnr.Init(th.Config, th.Log, th.Store)
+	err := rnr.Init(th.Config, th.Log, th.Store, th.Model)
 	require.NoError(t, err, "Runner init returns without error")
 
 	err = th.Setup()

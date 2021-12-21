@@ -177,13 +177,23 @@ func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.Dungeo
 
 func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *record.DungeonActionCharacter) (*schema.CharacterData, error) {
 	return &schema.CharacterData{
-		Name: dungeonCharacterRec.Name,
+		Name:         dungeonCharacterRec.Name,
+		Strength:     dungeonCharacterRec.Strength,
+		Dexterity:    dungeonCharacterRec.Dexterity,
+		Intelligence: dungeonCharacterRec.Intelligence,
+		Health:       dungeonCharacterRec.Health,
+		Fatigue:      dungeonCharacterRec.Fatigue,
 	}, nil
 }
 
 func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.DungeonActionMonster) (*schema.MonsterData, error) {
 	return &schema.MonsterData{
-		Name: dungeonMonsterRec.Name,
+		Name:         dungeonMonsterRec.Name,
+		Strength:     dungeonMonsterRec.Strength,
+		Dexterity:    dungeonMonsterRec.Dexterity,
+		Intelligence: dungeonMonsterRec.Intelligence,
+		Health:       dungeonMonsterRec.Health,
+		Fatigue:      dungeonMonsterRec.Fatigue,
 	}, nil
 }
 

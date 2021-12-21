@@ -88,6 +88,21 @@
       "properties": {
         "name": {
           "type": "string"
+        },
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "fatigue": {
+          "type": "integer"
         }
       }
     },
@@ -96,8 +111,23 @@
       "properties": {
         "name": {
           "type": "string"
+        },
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "fatigue": {
+          "type": "integer"
         }
-      }
+     }
     },
     "object": {
       "type": "object",

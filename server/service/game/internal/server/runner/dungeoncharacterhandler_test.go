@@ -222,7 +222,7 @@ func TestDungeonCharacterHandler(t *testing.T) {
 		func() {
 			rnr := NewRunner()
 
-			err = rnr.Init(th.Config, th.Log, th.Store)
+			err = rnr.Init(th.Config, th.Log, th.Store, th.Model)
 			require.NoError(t, err, "Runner init returns without error")
 
 			err = th.Setup()

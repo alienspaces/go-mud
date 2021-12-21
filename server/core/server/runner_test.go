@@ -11,43 +11,44 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 )
 
 // TestRunner - allow Init and Run functions to be defined by tests
 type TestRunner struct {
 	Runner
-	InitFunc func(c configurer.Configurer, l logger.Logger, s storer.Storer) error
+	InitFunc func(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error
 }
 
-func (rnr *TestRunner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer) error {
+func (rnr *TestRunner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
 	if rnr.InitFunc == nil {
-		return rnr.Runner.Init(c, l, s)
+		return rnr.Runner.Init(c, l, s, m)
 	}
-	return rnr.InitFunc(c, l, s)
+	return rnr.InitFunc(c, l, s, m)
 }
 
 func TestRunnerInit(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	tr := TestRunner{}
 
-	err = tr.Init(c, l, s)
+	err = tr.Init(c, l, s, m)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	// test init override with failure
-	tr.InitFunc = func(c configurer.Configurer, l logger.Logger, s storer.Storer) error {
+	tr.InitFunc = func(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
 		return errors.New("Init failed")
 	}
-	err = tr.Init(c, l, s)
+	err = tr.Init(c, l, s, m)
 	require.Error(t, err, "Runner Init returns with error")
 }
 
 func TestRunnerServerError(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	tr := TestRunner{}
@@ -55,7 +56,7 @@ func TestRunnerServerError(t *testing.T) {
 		return fmt.Errorf("Run server error")
 	}
 
-	err = tr.Init(c, l, s)
+	err = tr.Init(c, l, s, m)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	err = tr.Run(nil)
@@ -64,7 +65,7 @@ func TestRunnerServerError(t *testing.T) {
 
 func TestRunnerDaemonError(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	tr := TestRunner{}
@@ -72,7 +73,7 @@ func TestRunnerDaemonError(t *testing.T) {
 		return fmt.Errorf("Run daemon error")
 	}
 
-	err = tr.Init(c, l, s)
+	err = tr.Init(c, l, s, m)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	err = tr.Run(nil)
@@ -81,12 +82,12 @@ func TestRunnerDaemonError(t *testing.T) {
 
 func TestRunnerRouter(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	tr := TestRunner{}
 
-	err = tr.Init(c, l, s)
+	err = tr.Init(c, l, s, m)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	// test default routes
@@ -138,12 +139,12 @@ func TestRunnerRouter(t *testing.T) {
 
 func TestRunnerMiddleware(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	tr := TestRunner{}
 
-	err = tr.Init(c, l, s)
+	err = tr.Init(c, l, s, m)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	// test default middleware

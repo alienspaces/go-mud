@@ -50,13 +50,23 @@ type LocationData struct {
 }
 
 type CharacterData struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Strength     int    `json:"strength"`
+	Dexterity    int    `json:"dexterity"`
+	Intelligence int    `json:"intelligence"`
+	Health       int    `json:"health"`
+	Fatigue      int    `json:"fatigue"`
 }
 
 type MonsterData struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Strength     int    `json:"strength"`
+	Dexterity    int    `json:"dexterity"`
+	Intelligence int    `json:"intelligence"`
+	Health       int    `json:"health"`
+	Fatigue      int    `json:"fatigue"`
 }
 
 type ObjectData struct {

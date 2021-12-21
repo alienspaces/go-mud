@@ -5,7 +5,11 @@ import (
 	"fmt"
 
 	"gitlab.com/alienspaces/go-mud/server/core/harness"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
+
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
@@ -45,10 +49,16 @@ type teardownData struct {
 }
 
 // NewTesting -
-func NewTesting(config DataConfig) (t *Testing, err error) {
+func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller, config DataConfig) (t *Testing, err error) {
 
-	// harness
-	t = &Testing{}
+	t = &Testing{
+		Testing: harness.Testing{
+			Config: c,
+			Log:    l,
+			Store:  s,
+			Model:  m,
+		},
+	}
 
 	// modeller
 	t.ModellerFunc = t.Modeller
@@ -72,13 +82,7 @@ func NewTesting(config DataConfig) (t *Testing, err error) {
 // Modeller -
 func (t *Testing) Modeller() (modeller.Modeller, error) {
 
-	m, err := model.NewModel(t.Config, t.Log, t.Store)
-	if err != nil {
-		t.Log.Warn("Failed new model >%v<", err)
-		return nil, err
-	}
-
-	return m, nil
+	return t.Model, nil
 }
 
 // CreateData - Custom data

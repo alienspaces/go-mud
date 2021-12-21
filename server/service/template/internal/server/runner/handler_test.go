@@ -28,12 +28,12 @@ func TestTemplateHandler(t *testing.T) {
 	type TestCase struct {
 		name           string
 		config         func(rnr *Runner) server.HandlerConfig
-		requestHeaders func(data *harness.Data) map[string]string
-		requestParams  func(data *harness.Data) map[string]string
-		queryParams    func(data *harness.Data) map[string]string
-		requestData    func(data *harness.Data) *schema.TemplateRequest
+		requestHeaders func(data harness.Data) map[string]string
+		requestParams  func(data harness.Data) map[string]string
+		queryParams    func(data harness.Data) map[string]string
+		requestData    func(data harness.Data) *schema.TemplateRequest
 		responseCode   int
-		responseData   func(data *harness.Data) *schema.TemplateResponse
+		responseData   func(data harness.Data) *schema.TemplateResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -52,23 +52,23 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[1]
 			},
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
-			requestParams: func(data *harness.Data) map[string]string {
+			requestParams: func(data harness.Data) map[string]string {
 				params := map[string]string{
 					":template_id": data.TemplateRecs[0].ID,
 				}
 				return params
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				return nil
 			},
 			responseCode: http.StatusOK,
-			responseData: func(data *harness.Data) *schema.TemplateResponse {
+			responseData: func(data harness.Data) *schema.TemplateResponse {
 				res := schema.TemplateResponse{
 					Data: []schema.TemplateData{
 						{
@@ -84,19 +84,19 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[1]
 			},
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
-			requestParams: func(data *harness.Data) map[string]string {
+			requestParams: func(data harness.Data) map[string]string {
 				params := map[string]string{
 					":template_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
 				}
 				return params
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				return nil
 			},
 			responseCode: http.StatusNotFound,
@@ -106,13 +106,13 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[2]
 			},
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				req := schema.TemplateRequest{
 					Data: schema.TemplateData{},
 				}
@@ -125,26 +125,26 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[3]
 			},
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
-			requestParams: func(data *harness.Data) map[string]string {
+			requestParams: func(data harness.Data) map[string]string {
 				params := map[string]string{
 					":template_id": "e3a9e0f8-ce9c-477b-8b93-cf4da03af4c9",
 				}
 				return params
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				req := schema.TemplateRequest{
 					Data: schema.TemplateData{},
 				}
 				return &req
 			},
 			responseCode: http.StatusOK,
-			responseData: func(data *harness.Data) *schema.TemplateResponse {
+			responseData: func(data harness.Data) *schema.TemplateResponse {
 				res := schema.TemplateResponse{
 					Data: []schema.TemplateData{
 						{
@@ -160,19 +160,19 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[4]
 			},
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
-			requestParams: func(data *harness.Data) map[string]string {
+			requestParams: func(data harness.Data) map[string]string {
 				params := map[string]string{
 					":template_id": data.TemplateRecs[0].ID,
 				}
 				return params
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				req := schema.TemplateRequest{
 					Data: schema.TemplateData{
 						ID: data.TemplateRecs[0].ID,
@@ -181,7 +181,7 @@ func TestTemplateHandler(t *testing.T) {
 				return &req
 			},
 			responseCode: http.StatusOK,
-			responseData: func(data *harness.Data) *schema.TemplateResponse {
+			responseData: func(data harness.Data) *schema.TemplateResponse {
 				res := schema.TemplateResponse{
 					Data: []schema.TemplateData{
 						{
@@ -197,19 +197,19 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[4]
 			},
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
-			requestParams: func(data *harness.Data) map[string]string {
+			requestParams: func(data harness.Data) map[string]string {
 				params := map[string]string{
 					":template_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
 				}
 				return params
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				req := schema.TemplateRequest{
 					Data: schema.TemplateData{
 						ID: data.TemplateRecs[0].ID,
@@ -221,7 +221,7 @@ func TestTemplateHandler(t *testing.T) {
 		},
 		{
 			name: "PUT - Update missing data",
-			requestHeaders: func(data *harness.Data) map[string]string {
+			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
 					"Authorization": "Bearer " + validAuthToken(),
 				}
@@ -230,7 +230,7 @@ func TestTemplateHandler(t *testing.T) {
 			config: func(rnr *Runner) server.HandlerConfig {
 				return rnr.HandlerConfig[3]
 			},
-			requestData: func(data *harness.Data) *schema.TemplateRequest {
+			requestData: func(data harness.Data) *schema.TemplateRequest {
 				return nil
 			},
 			responseCode: http.StatusBadRequest,
@@ -244,7 +244,7 @@ func TestTemplateHandler(t *testing.T) {
 		func() {
 			rnr := NewRunner()
 
-			err = rnr.Init(th.Config, th.Log, th.Store)
+			err = rnr.Init(th.Config, th.Log, th.Store, th.Model)
 			require.NoError(t, err, "Runner init returns without error")
 
 			err = th.Setup()

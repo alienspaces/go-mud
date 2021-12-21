@@ -29,7 +29,7 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 	// default handler
 	router, err := rnr.DefaultRouter()
 	if err != nil {
-		rnr.Log.Warn("Failed default router >%v<", err)
+		rnr.Log.Warn("failed default router >%v<", err)
 		return err
 	}
 
@@ -62,7 +62,7 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 }
 
 // Router - default RouterFunc, override this function for custom routes
-func (rnr *Runner) Router(router *httprouter.Router) error {
+func (rnr *Runner) defaultRouterFunc(router *httprouter.Router) error {
 
 	rnr.Log.Info("** Router **")
 
@@ -70,7 +70,7 @@ func (rnr *Runner) Router(router *httprouter.Router) error {
 }
 
 // Middleware - default MiddlewareFunc, override this function for custom middleware
-func (rnr *Runner) Middleware(h HandlerFunc) (HandlerFunc, error) {
+func (rnr *Runner) defaultMiddlewareFunc(h HandlerFunc) (HandlerFunc, error) {
 
 	rnr.Log.Info("** Middleware **")
 
@@ -78,7 +78,7 @@ func (rnr *Runner) Middleware(h HandlerFunc) (HandlerFunc, error) {
 }
 
 // Handler - default HandlerFunc, override this function for custom handler
-func (rnr *Runner) Handler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) defaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
 
 	l.Info("** Handler **")
 
@@ -96,7 +96,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 	// default index/healthz handler
 	h, err := rnr.DefaultMiddleware(HandlerConfig{Path: "/"}, rnr.HandlerFunc)
 	if err != nil {
-		rnr.Log.Warn("Failed default middleware >%v<", err)
+		rnr.Log.Warn("failed default middleware >%v<", err)
 		return nil, err
 	}
 	r.GET("/healthz", h)
@@ -108,7 +108,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 
 		h, err := rnr.DefaultMiddleware(hc, hc.HandlerFunc)
 		if err != nil {
-			rnr.Log.Warn("Failed registering handler >%v<", err)
+			rnr.Log.Warn("failed registering handler >%v<", err)
 			return nil, err
 		}
 
@@ -129,14 +129,14 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 			r.HEAD(hc.Path, h)
 		default:
 			rnr.Log.Warn("Router HTTP method >%s< not supported", hc.Method)
-			return nil, fmt.Errorf("Router HTTP method >%s< not supported", hc.Method)
+			return nil, fmt.Errorf("router HTTP method >%s< not supported", hc.Method)
 		}
 	}
 
 	// server defined routes
 	err = rnr.RouterFunc(r)
 	if err != nil {
-		rnr.Log.Warn("Failed router >%v<", err)
+		rnr.Log.Warn("failed router >%v<", err)
 		return nil, err
 	}
 
@@ -151,49 +151,49 @@ func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h HandlerFunc) (httproute
 	// tx
 	h, err := rnr.Tx(hc, h)
 	if err != nil {
-		rnr.Log.Warn("Failed adding tx middleware >%v<", err)
+		rnr.Log.Warn("failed adding tx middleware >%v<", err)
 		return nil, err
 	}
 
 	// validate body data
 	h, err = rnr.Validate(hc, h)
 	if err != nil {
-		rnr.Log.Warn("Failed adding validate middleware >%v<", err)
+		rnr.Log.Warn("failed adding validate middleware >%v<", err)
 		return nil, err
 	}
 
 	// request body data
 	h, err = rnr.Data(hc, h)
 	if err != nil {
-		rnr.Log.Warn("Failed adding data middleware >%v<", err)
+		rnr.Log.Warn("failed adding data middleware >%v<", err)
 		return nil, err
 	}
 
 	// authz
 	h, err = rnr.Authz(hc, h)
 	if err != nil {
-		rnr.Log.Warn("Failed adding authz middleware >%v<", err)
+		rnr.Log.Warn("failed adding authz middleware >%v<", err)
 		return nil, err
 	}
 
 	// authen
 	h, err = rnr.Authen(hc, h)
 	if err != nil {
-		rnr.Log.Warn("Failed adding authen middleware >%v<", err)
+		rnr.Log.Warn("failed adding authen middleware >%v<", err)
 		return nil, err
 	}
 
 	// correlation
 	h, err = rnr.Correlation(h)
 	if err != nil {
-		rnr.Log.Warn("Failed adding correlation middleware >%v<", err)
+		rnr.Log.Warn("failed adding correlation middleware >%v<", err)
 		return nil, err
 	}
 
 	// server defined routes
 	h, err = rnr.MiddlewareFunc(h)
 	if err != nil {
-		rnr.Log.Warn("Failed middleware >%v<", err)
+		rnr.Log.Warn("failed middleware >%v<", err)
 		return nil, err
 	}
 

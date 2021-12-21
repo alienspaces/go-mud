@@ -1,12 +1,11 @@
 package harness
 
-// NOTE: repository tests are run is the public space so we are
-// able to use common setup and teardown tooling for all repositories
-
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
 )
 
 func TestSetupTeardown(t *testing.T) {
@@ -14,7 +13,10 @@ func TestSetupTeardown(t *testing.T) {
 	// harness
 	config := DefaultDataConfig
 
-	h, err := NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	h, err := NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

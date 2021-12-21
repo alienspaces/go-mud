@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
@@ -19,7 +20,10 @@ func TestCreateDungeonRec(t *testing.T) {
 	// harness
 	config := harness.DataConfig{}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -93,7 +97,10 @@ func TestGetDungeonRec(t *testing.T) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -163,7 +170,11 @@ func TestUpdateDungeonRec(t *testing.T) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
+	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
 	h.CommitData = true
@@ -237,7 +248,10 @@ func TestDeleteDungeonRec(t *testing.T) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

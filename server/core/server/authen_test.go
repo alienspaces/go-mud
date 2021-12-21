@@ -85,12 +85,12 @@ func TestAuthenMiddlewareConfig(t *testing.T) {
 
 		t.Logf("Running test >%s<", tc.name)
 
-		c, l, s, err := NewDefaultDependencies()
+		c, l, s, m, err := NewDefaultDependencies()
 		require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 		tr := tc.runner()
 
-		err = tr.Init(c, l, s)
+		err = tr.Init(c, l, s, m)
 		require.NoError(t, err, "Runner Init returns without error")
 
 		// Clear authentication cache
@@ -126,7 +126,7 @@ func TestAuthenMiddlewareConfig(t *testing.T) {
 
 func TestAuthenHandler(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	const (
@@ -176,7 +176,7 @@ func TestAuthenHandler(t *testing.T) {
 			name: "With authentication configured and valid token",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -226,7 +226,7 @@ func TestAuthenHandler(t *testing.T) {
 			name: "With authentication configured and no token",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,

@@ -3,6 +3,7 @@ package cli
 import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
@@ -13,17 +14,19 @@ type CLI struct {
 	Config  configurer.Configurer
 	Log     logger.Logger
 	Store   storer.Storer
+	Model   modeller.Modeller
 	Prepare preparer.Preparer
 	Runner  runnable.Runnable
 }
 
 // NewCLI -
-func NewCLI(c configurer.Configurer, l logger.Logger, s storer.Storer, r runnable.Runnable) (*CLI, error) {
+func NewCLI(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller, r runnable.Runnable) (*CLI, error) {
 
 	cli := CLI{
 		Config: c,
 		Log:    l,
 		Store:  s,
+		Model:  m,
 		Runner: r,
 	}
 
@@ -44,7 +47,7 @@ func (cli *CLI) Init() error {
 	}
 
 	// TODO: alerting, retries
-	return cli.Runner.Init(cli.Config, cli.Log, cli.Store)
+	return cli.Runner.Init(cli.Config, cli.Log, cli.Store, cli.Model)
 }
 
 // Run -

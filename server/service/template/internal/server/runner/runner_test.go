@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/harness"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
 )
@@ -20,10 +21,20 @@ func NewTestHarness() (*harness.Testing, error) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
 	if err != nil {
 		return nil, err
 	}
+
+	h, err := harness.NewTesting(c, l, s, m, config)
+	if err != nil {
+		return nil, err
+	}
+
+	// h, err := harness.NewTesting(config)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// harness commit data
 	h.CommitData = true
@@ -38,6 +49,6 @@ func TestNewRunner(t *testing.T) {
 	require.NoError(t, err, "New test data returns without error")
 
 	r := NewRunner()
-	err = r.Init(th.Config, th.Log, th.Store)
+	err = r.Init(th.Config, th.Log, th.Store, th.Model)
 	require.NoError(t, err, "Init returns without error")
 }

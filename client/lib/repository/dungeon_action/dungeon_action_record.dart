@@ -8,7 +8,8 @@ class CreateDungeonActionRecord extends Equatable {
     required this.sentence,
   });
 
-  CreateDungeonActionRecord.fromJson(Map<String, dynamic> json) : sentence = json['sentence'];
+  CreateDungeonActionRecord.fromJson(Map<String, dynamic> json)
+      : sentence = json['sentence'];
 
   Map<String, dynamic> toJson() => {
         'sentence': sentence,
@@ -57,19 +58,22 @@ class DungeonActionRecord extends Equatable {
     List<dynamic>? locationObjects = location['objects'];
     List<ObjectData>? locationObjectData;
     if (locationObjects != null) {
-      locationObjectData = locationObjects.map((e) => ObjectData.fromJson(e)).toList();
+      locationObjectData =
+          locationObjects.map((e) => ObjectData.fromJson(e)).toList();
     }
 
     List<dynamic>? locationCharacters = location['characters'];
     List<CharacterData>? locationCharacterData;
     if (locationCharacters != null) {
-      locationCharacterData = locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
+      locationCharacterData =
+          locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
     }
 
     List<dynamic>? locationMonsters = location['monsters'];
     List<MonsterData>? locationMonsterData;
     if (locationMonsters != null) {
-      locationMonsterData = locationMonsters.map((e) => MonsterData.fromJson(e)).toList();
+      locationMonsterData =
+          locationMonsters.map((e) => MonsterData.fromJson(e)).toList();
     }
 
     List<dynamic> directions = location['directions'];
@@ -144,19 +148,22 @@ class DungeonActionRecord extends Equatable {
       List<dynamic>? locationObjects = targetLocation['objects'];
       List<ObjectData>? locationObjectData;
       if (locationObjects != null) {
-        locationObjectData = locationObjects.map((e) => ObjectData.fromJson(e)).toList();
+        locationObjectData =
+            locationObjects.map((e) => ObjectData.fromJson(e)).toList();
       }
 
       List<dynamic>? locationCharacters = targetLocation['characters'];
       List<CharacterData>? locationCharacterData;
       if (locationCharacters != null) {
-        locationCharacterData = locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
+        locationCharacterData =
+            locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
       }
 
       List<dynamic>? locationMonsters = targetLocation['monsters'];
       List<MonsterData>? locationMonsterData;
       if (locationMonsters != null) {
-        locationMonsterData = locationMonsters.map((e) => MonsterData.fromJson(e)).toList();
+        locationMonsterData =
+            locationMonsters.map((e) => MonsterData.fromJson(e)).toList();
       }
 
       List<dynamic> directions = targetLocation['directions'];
@@ -235,18 +242,58 @@ class ObjectData {
 
 class CharacterData {
   final String name;
-  CharacterData({required this.name});
+  final int strength;
+  final int dexterity;
+  final int intelligence;
+  final int health;
+  final int fatigue;
+
+  CharacterData({
+    required this.name,
+    required this.strength,
+    required this.dexterity,
+    required this.intelligence,
+    required this.health,
+    required this.fatigue,
+  });
 
   factory CharacterData.fromJson(Map<String, dynamic> json) {
-    return CharacterData(name: json['name']);
+    return CharacterData(
+      name: json['name'],
+      strength: json['strength'],
+      dexterity: json['dexterity'],
+      intelligence: json['intelligence'],
+      health: json['health'],
+      fatigue: json['fatigue'],
+    );
   }
 }
 
 class MonsterData {
   final String name;
-  MonsterData({required this.name});
+  final int strength;
+  final int dexterity;
+  final int intelligence;
+  final int health;
+  final int fatigue;
+
+  MonsterData({
+    required this.name,
+    required this.strength,
+    required this.dexterity,
+    required this.intelligence,
+    required this.health,
+    required this.fatigue,
+  });
 
   factory MonsterData.fromJson(Map<String, dynamic> json) {
-    return MonsterData(name: json['name']);
+    return MonsterData(
+      name: json['name'],
+      strength: json['strength'],
+      dexterity: json['dexterity'],
+      intelligence: json['intelligence'],
+      health: json['health'],
+      fatigue: json['fatigue'],
+    );
   }
 }

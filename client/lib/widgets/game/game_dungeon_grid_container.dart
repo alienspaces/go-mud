@@ -11,10 +11,12 @@ class GameDungeonGridContainerWidget extends StatefulWidget {
   const GameDungeonGridContainerWidget({Key? key}) : super(key: key);
 
   @override
-  _GameDungeonGridContainerWidgetState createState() => _GameDungeonGridContainerWidgetState();
+  _GameDungeonGridContainerWidgetState createState() =>
+      _GameDungeonGridContainerWidgetState();
 }
 
-class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContainerWidget> {
+class _GameDungeonGridContainerWidgetState
+    extends State<GameDungeonGridContainerWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameDungeonGridContainerWidget');
@@ -42,7 +44,8 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               ),
             );
           } else {
-            log.info('DungeonActionStateCreating - Rendering loading container..');
+            log.info(
+                'DungeonActionStateCreating - Rendering loading container..');
             widgets.add(
               Container(
                 color: Colors.blueAccent,
@@ -55,7 +58,8 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
         else if (state is DungeonActionStateCreated) {
           var dungeonActionRecord = state.current;
 
-          log.info('DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
+          log.info(
+              'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
 
           widgets.add(
             GameDungeonMoveGridWidget(
@@ -65,13 +69,13 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
               locationData: dungeonActionRecord.location,
             ),
           );
-          // }
         }
         // Playing state is emitted only when there is at least one previous action
         else if (state is DungeonActionStatePlaying) {
           var dungeonActionRecord = state.current;
 
-          log.info('DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
+          log.info(
+              'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
 
           if (dungeonActionRecord.command == 'move') {
             widgets.add(
@@ -102,18 +106,43 @@ class _GameDungeonGridContainerWidgetState extends State<GameDungeonGridContaine
                 locationData: state.current.location,
               ),
             );
+            if (state.current.targetLocation != null) {
+              log.info('Rendering look target location');
+              widgets.add(
+                GameDungeonLookGridWidget(
+                  key: UniqueKey(),
+                  direction: state.direction,
+                  action: state.action,
+                  locationData: state.current.targetLocation!,
+                ),
+              );
+            } else if (state.current.targetCharacter != null) {
+              widgets.add(
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  child: const Text("Looking character"),
+                ),
+              );
+            }
+          } else if (state.current.targetMonster != null) {
             widgets.add(
-              GameDungeonLookGridWidget(
-                key: UniqueKey(),
-                direction: state.direction,
-                action: state.action,
-                locationData: state.current.targetLocation!,
+              Container(
+                padding: const EdgeInsets.all(5),
+                child: const Text("Looking monster"),
+              ),
+            );
+          } else if (state.current.targetObject != null) {
+            widgets.add(
+              Container(
+                padding: const EdgeInsets.all(5),
+                child: const Text("Looking object"),
               ),
             );
           }
         }
 
         log.info('Rendering ${widgets.length} dungeon grid panels');
+
         return Stack(
           clipBehavior: Clip.antiAlias,
           children: widgets,

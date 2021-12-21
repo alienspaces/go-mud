@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/harness"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
@@ -19,7 +20,10 @@ func TestCreateTemplateRec(t *testing.T) {
 	// harness
 	config := harness.DataConfig{}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "Default dependencies returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -93,7 +97,10 @@ func TestGetTemplateRec(t *testing.T) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "Default dependencies returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -163,7 +170,11 @@ func TestUpdateTemplateRec(t *testing.T) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "Default dependencies returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
+	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
 	h.CommitData = true
@@ -237,7 +248,10 @@ func TestDeleteTemplateRec(t *testing.T) {
 		},
 	}
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	require.NoError(t, err, "Default dependencies returns without error")
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

@@ -2,7 +2,10 @@ package harness
 
 import (
 	"gitlab.com/alienspaces/go-mud/server/core/harness"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
 )
@@ -10,8 +13,9 @@ import (
 // Testing -
 type Testing struct {
 	harness.Testing
-	Data       *Data
-	DataConfig DataConfig
+	Data         Data
+	DataConfig   DataConfig
+	teardownData teardownData
 }
 
 // DataConfig -
@@ -29,11 +33,22 @@ type Data struct {
 	TemplateRecs []record.Template
 }
 
-// NewTesting -
-func NewTesting(config DataConfig) (t *Testing, err error) {
+// teardownData -
+type teardownData struct {
+	TemplateRecs []record.Template
+}
 
-	// harness
-	t = &Testing{}
+// NewTesting -
+func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller, config DataConfig) (t *Testing, err error) {
+
+	t = &Testing{
+		Testing: harness.Testing{
+			Config: c,
+			Log:    l,
+			Store:  s,
+			Model:  m,
+		},
+	}
 
 	// modeller
 	t.ModellerFunc = t.Modeller
@@ -43,7 +58,8 @@ func NewTesting(config DataConfig) (t *Testing, err error) {
 	t.RemoveDataFunc = t.RemoveData
 
 	t.DataConfig = config
-	t.Data = &Data{}
+	t.Data = Data{}
+	t.teardownData = teardownData{}
 
 	err = t.Init()
 	if err != nil {
@@ -55,14 +71,7 @@ func NewTesting(config DataConfig) (t *Testing, err error) {
 
 // Modeller -
 func (t *Testing) Modeller() (modeller.Modeller, error) {
-
-	m, err := model.NewModel(t.Config, t.Log, t.Store)
-	if err != nil {
-		t.Log.Warn("Failed new model >%v<", err)
-		return nil, err
-	}
-
-	return m, nil
+	return t.Model, nil
 }
 
 // CreateData - Custom data
@@ -76,6 +85,7 @@ func (t *Testing) CreateData() error {
 			return err
 		}
 		t.Data.TemplateRecs = append(t.Data.TemplateRecs, templateRec)
+		t.teardownData.TemplateRecs = append(t.teardownData.TemplateRecs, templateRec)
 	}
 
 	return nil
@@ -86,11 +96,11 @@ func (t *Testing) RemoveData() error {
 
 TEMPLATE_RECS:
 	for {
-		if len(t.Data.TemplateRecs) == 0 {
+		if len(t.teardownData.TemplateRecs) == 0 {
 			break TEMPLATE_RECS
 		}
 		rec := record.Template{}
-		rec, t.Data.TemplateRecs = t.Data.TemplateRecs[0], t.Data.TemplateRecs[1:]
+		rec, t.teardownData.TemplateRecs = t.teardownData.TemplateRecs[0], t.teardownData.TemplateRecs[1:]
 
 		err := t.Model.(*model.Model).RemoveTemplateRec(rec.ID)
 		if err != nil {

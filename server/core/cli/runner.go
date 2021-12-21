@@ -34,11 +34,11 @@ type Runner struct {
 var _ runnable.Runnable = &Runner{}
 
 // Init - override to perform custom initialization
-func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer) error {
+func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
 
 	rnr.Log = l
 	if rnr.Log == nil {
-		msg := "Logger undefined, cannot init runner"
+		msg := "failed init, logger undefined, cannot init runner"
 		return fmt.Errorf(msg)
 	}
 
@@ -46,7 +46,7 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 
 	rnr.Config = c
 	if rnr.Config == nil {
-		msg := "Configurer undefined, cannot init runner"
+		msg := "failed init, configurer undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
@@ -54,7 +54,7 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 	// Storer
 	rnr.Store = s
 	if rnr.Store == nil {
-		msg := "Storer undefined, cannot init runner"
+		msg := "failed init, storer undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
@@ -62,8 +62,17 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 	// Initialise storer
 	err := rnr.Store.Init()
 	if err != nil {
-		rnr.Log.Warn("Failed store init >%v<", err)
+		rnr.Log.Warn("failed store init >%v<", err)
 		return err
+	}
+
+	// Modeller
+	rnr.Model = m
+	if rnr.Model == nil {
+		if rnr.ModellerFunc == nil {
+			rnr.Log.Warn("warning, CLI model and modellerfunc are nil, might be broken...")
+			rnr.ModellerFunc = rnr.defaultModellerFunc
+		}
 	}
 
 	// Preparer
@@ -94,11 +103,6 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 	if err != nil {
 		rnr.Log.Warn("Failed preparer init >%v<", err)
 		return err
-	}
-
-	// Modeller
-	if rnr.ModellerFunc == nil {
-		rnr.ModellerFunc = rnr.Modeller
 	}
 
 	return nil
@@ -165,7 +169,7 @@ func (rnr *Runner) Preparer() (preparer.Preparer, error) {
 }
 
 // Modeller - default ModellerFunc does not provide a modeller
-func (rnr *Runner) Modeller() (modeller.Modeller, error) {
+func (rnr *Runner) defaultModellerFunc() (modeller.Modeller, error) {
 
 	rnr.Log.Info("** Modeller **")
 

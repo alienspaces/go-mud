@@ -31,6 +31,7 @@ const (
 	AuthTypeJWT string = "jwt"
 )
 
+// ensure we comply with the Runnerer interface
 var _ runnable.Runnable = &Runner{}
 
 // HandlerFunc - custom service handle
@@ -42,6 +43,7 @@ type Runner struct {
 	Log     logger.Logger
 	Store   storer.Storer
 	Prepare preparer.Preparer
+	Model   modeller.Modeller
 
 	// configuration for routes, handlers and middleware
 	HandlerConfig []HandlerConfig
@@ -152,11 +154,8 @@ type ResponsePagination struct {
 	Count  int `json:"page_count"`
 }
 
-// ensure we comply with the Runnerer interface
-var _ runnable.Runnable = &Runner{}
-
 // Init - override to perform custom initialization
-func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer) error {
+func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
 
 	rnr.Log = l
 	if rnr.Log == nil {
@@ -187,9 +186,18 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 		return err
 	}
 
+	// Modeller
+	rnr.Model = m
+	if rnr.Model == nil {
+		if rnr.ModellerFunc == nil {
+			rnr.Log.Warn("warning, CLI model and modellerfunc are nil, might be broken...")
+			rnr.ModellerFunc = rnr.defaultModellerFunc
+		}
+	}
+
 	// Preparer
 	if rnr.PreparerFunc == nil {
-		rnr.PreparerFunc = rnr.Preparer
+		rnr.PreparerFunc = rnr.defaultPreparerFunc
 	}
 
 	p, err := rnr.PreparerFunc(l)
@@ -204,39 +212,34 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 		return err
 	}
 
-	// run server
+	// Run HTTP
 	if rnr.RunHTTPFunc == nil {
 		rnr.RunHTTPFunc = rnr.RunHTTP
 	}
 
-	// run daemon
+	// Run daemon
 	if rnr.RunDaemonFunc == nil {
 		rnr.RunDaemonFunc = rnr.RunDaemon
 	}
 
-	// prepare
-	if rnr.PreparerFunc == nil {
-		rnr.PreparerFunc = rnr.Preparer
-	}
-
-	// model
+	// Modelller
 	if rnr.ModellerFunc == nil {
-		rnr.ModellerFunc = rnr.Modeller
+		rnr.ModellerFunc = rnr.defaultModellerFunc
 	}
 
-	// http server - router
+	// HTTP router
 	if rnr.RouterFunc == nil {
-		rnr.RouterFunc = rnr.Router
+		rnr.RouterFunc = rnr.defaultRouterFunc
 	}
 
-	// http server - middleware
+	// HTTP middleware
 	if rnr.MiddlewareFunc == nil {
-		rnr.MiddlewareFunc = rnr.Middleware
+		rnr.MiddlewareFunc = rnr.defaultMiddlewareFunc
 	}
 
-	// http server - handler
+	// HTTP handler
 	if rnr.HandlerFunc == nil {
-		rnr.HandlerFunc = rnr.Handler
+		rnr.HandlerFunc = rnr.defaultHandlerFunc
 	}
 
 	return nil
@@ -340,7 +343,7 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 }
 
 // Preparer - default PreparerFunc, override this function for custom prepare
-func (rnr *Runner) Preparer(l logger.Logger) (preparer.Preparer, error) {
+func (rnr *Runner) defaultPreparerFunc(l logger.Logger) (preparer.Preparer, error) {
 
 	// NOTE: We have a good generic preparer so we'll provide that here
 
@@ -378,7 +381,7 @@ func (rnr *Runner) Preparer(l logger.Logger) (preparer.Preparer, error) {
 }
 
 // Modeller - default ModellerFunc, override this function for custom model
-func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
+func (rnr *Runner) defaultModellerFunc(l logger.Logger) (modeller.Modeller, error) {
 
 	// NOTE: A modeller is very service agnostic so there is no default generalised modeller we can provide here
 

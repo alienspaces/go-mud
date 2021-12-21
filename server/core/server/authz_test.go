@@ -128,12 +128,12 @@ func TestAuthzMiddlewareConfig(t *testing.T) {
 
 		t.Logf("Running test >%s<", tc.name)
 
-		c, l, s, err := NewDefaultDependencies()
+		c, l, s, m, err := NewDefaultDependencies()
 		require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 		tr := tc.runner()
 
-		err = tr.Init(c, l, s)
+		err = tr.Init(c, l, s, m)
 		require.NoError(t, err, "Runner Init returns without error")
 
 		// Clear auths caches
@@ -220,7 +220,7 @@ func TestAuthzMiddlewareConfig(t *testing.T) {
 
 func TestAuthzHandler(t *testing.T) {
 
-	c, l, s, err := NewDefaultDependencies()
+	c, l, s, m, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	// Test configuration
@@ -240,7 +240,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "Without authorization configured and no context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method:           http.MethodPost,
@@ -257,7 +257,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization any identity configured and valid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -284,7 +284,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization all identities configured and valid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -313,7 +313,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization any identity configured and invalid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -337,7 +337,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization all identities configured and invalid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -365,7 +365,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization any role configured and valid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -392,7 +392,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization all roles configured and valid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -421,7 +421,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization any role configured and invalid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,
@@ -445,7 +445,7 @@ func TestAuthzHandler(t *testing.T) {
 			name: "With authorization all roles configured and invalid context",
 			runner: func() TestRunner {
 				rnr := TestRunner{}
-				rnr.Init(c, l, s)
+				rnr.Init(c, l, s, m)
 				rnr.HandlerConfig = []HandlerConfig{
 					{
 						Method: http.MethodPost,

@@ -7,7 +7,8 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 
-void _showDialogue(BuildContext context, String content, void Function() continueFunc) {
+void _showDialogue(
+    BuildContext context, String content, void Function() continueFunc) {
   Widget cancelButton = ElevatedButton(
     child: const Text("Cancel"),
     onPressed: () {
@@ -68,13 +69,14 @@ void _navigateGame(BuildContext context, NavigationCallbacks callbacks) {
   callbacks.openGamePage();
 }
 
-Widget _buildLink(BuildContext context, String label, void Function() navigateFunc) {
+Widget _buildLink(
+    BuildContext context, String label, void Function() navigateFunc) {
   return Container(
     padding: const EdgeInsets.fromLTRB(1, 10, 1, 0),
     child: ElevatedButton(
       onPressed: navigateFunc,
       style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.secondaryVariant,
+        primary: Theme.of(context).colorScheme.secondary,
         onPrimary: Theme.of(context).colorScheme.onSecondary,
         onSurface: Theme.of(context).colorScheme.onSecondary,
       ),
@@ -103,11 +105,13 @@ AppBar header(BuildContext context, NavigationCallbacks callbacks) {
 
   if (characterCubit.characterRecord != null) {
     links.add(
-      _buildLink(context, 'Character', () => _navigateCharacter(context, callbacks)),
+      _buildLink(
+          context, 'Character', () => _navigateCharacter(context, callbacks)),
     );
   }
 
-  if (characterCubit.characterRecord != null && dungeonCubit.dungeonRecord != null) {
+  if (characterCubit.characterRecord != null &&
+      dungeonCubit.dungeonRecord != null) {
     links.add(
       _buildLink(context, 'Dungeon', () => _navigateGame(context, callbacks)),
     );

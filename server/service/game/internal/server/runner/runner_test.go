@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
@@ -13,7 +14,12 @@ func NewTestHarness() (*harness.Testing, error) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	h, err := harness.NewTesting(config)
+	c, l, s, m, err := dependencies.Default()
+	if err != nil {
+		return nil, err
+	}
+
+	h, err := harness.NewTesting(c, l, s, m, config)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +36,7 @@ func TestNewRunner(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
-	r := NewRunner()
-	err = r.Init(th.Config, th.Log, th.Store)
+	rnr := NewRunner()
+	err = rnr.Init(th.Config, th.Log, th.Store, th.Model)
 	require.NoError(t, err, "Init returns without error")
 }
