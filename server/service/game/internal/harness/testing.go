@@ -81,7 +81,6 @@ func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m mod
 
 // Modeller -
 func (t *Testing) Modeller() (modeller.Modeller, error) {
-
 	return t.Model, nil
 }
 
