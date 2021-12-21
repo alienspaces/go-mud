@@ -9,36 +9,36 @@
 #     ./script/test-service ./service/example/player
 
 echo
-echo "=> Test service"
+echo "=> (test-service) Testing services"
 echo
 
 # Environment
 if [ -z "$APP_SERVER_GO_VERSION" ]; then
+    echo "=> (test-service) Sourcing env"
     source "${BASH_SOURCE%/*}"/env || exit $?
 fi
 
 function test_service {
-
     if [ -f "go.mod" ]; then
-        echo "=> Test service directory"
+        echo "=> (test-service) Test service directory"
         APP_SERVER_HOME=$(pwd)
         export APP_SERVER_HOME
 
         if [ "$APP_SERVER_ENV" = "development" ]; then
             if [ -f ".env.development" ]; then
-                echo "=> Test service - sourcing service .env.development"
+                echo "=> (test-service) Test service - sourcing service .env.development"
                 source .env.development
             fi
         fi
 
         if [ "$APP_SERVER_ENV" = "ci" ]; then
             if [ -f ".env.ci" ]; then
-                echo "=> Test service - sourcing service .env.ci"
+                echo "=> (test-service) Test service - sourcing service .env.ci"
                 source .env.ci
             fi
         fi
 
-        echo "=> Test service - APP_SERVER_HOME - ${APP_SERVER_HOME}"
+        echo "=> (test-service) Test service - APP_SERVER_HOME - ${APP_SERVER_HOME}"
         go test -v -cover -count 1 ./... || exit $?
     fi
 }
@@ -49,13 +49,11 @@ function test_services {
     cd "$BASE_DIRECTORY" || exit
 
     for SERVICE_NAME in *; do
-
         # Ingoring template
         if [ "$SERVICE_NAME" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
-            echo "=> (start_services) - Skipping service $SERVICE_NAME"
+            echo "=> (test-service) - Skipping service $SERVICE_NAME"
             continue
         fi
-
         cd "$SERVICE_NAME" || exit
         test_service
         cd - || exit
@@ -81,7 +79,7 @@ else
 
     # Service example directory list
     if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
-        echo " => Starting example services"
+        echo "=> (test-service) Starting example services"
         
         BASE_DIRECTORY="service/example"
         test_services;
