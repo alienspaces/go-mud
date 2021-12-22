@@ -77,8 +77,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	}
 
 	// TODO: Debug dungeon action record here..
-	m.Log.Warn("(*******) Dungeon action record command >%s<", dungeonActionRec.ResolvedCommand)
-	m.Log.Warn("(*******) Dungeon action record location >%s<", dungeonActionRec.DungeonLocationID)
+	m.Log.Info("Dungeon action record command >%s<", dungeonActionRec.ResolvedCommand)
+	m.Log.Info("Dungeon action record location >%s<", dungeonActionRec.DungeonLocationID)
 
 	// Perform the submitted character action
 	dungeonActionRec, err = m.performDungeonCharacterAction(sourceCharacterRec, dungeonActionRec, dungeonLocationRecordSet)
@@ -87,8 +87,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
-	m.Log.Warn("(*******) Dungeon action record command >%s<", dungeonActionRec.ResolvedCommand)
-	m.Log.Warn("(*******) Dungeon action record location >%s<", dungeonActionRec.DungeonLocationID)
+	m.Log.Info("Dungeon action record command >%s<", dungeonActionRec.ResolvedCommand)
+	m.Log.Info("Dungeon action record location >%s<", dungeonActionRec.DungeonLocationID)
 
 	// Create the resulting dungeon action event record
 	err = m.CreateDungeonActionRec(dungeonActionRec)
@@ -138,10 +138,10 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
-	m.Log.Info("(******) Dungeon location record set location name >%s<", dungeonLocationRecordSet.LocationRec.Name)
-	m.Log.Info("(******) Dungeon location record set characters >%d<", len(dungeonLocationRecordSet.CharacterRecs))
-	m.Log.Info("(******) Dungeon location record set monsters >%d<", len(dungeonLocationRecordSet.MonsterRecs))
-	m.Log.Info("(******) Dungeon location record set objects >%d<", len(dungeonLocationRecordSet.ObjectRecs))
+	m.Log.Info("Dungeon location record set location name >%s<", dungeonLocationRecordSet.LocationRec.Name)
+	m.Log.Info("Dungeon location record set characters >%d<", len(dungeonLocationRecordSet.CharacterRecs))
+	m.Log.Info("Dungeon location record set monsters >%d<", len(dungeonLocationRecordSet.MonsterRecs))
+	m.Log.Info("Dungeon location record set objects >%d<", len(dungeonLocationRecordSet.ObjectRecs))
 
 	// Current location
 	dungeonLocationRec, err := m.GetDungeonLocationRec(dungeonActionRec.DungeonLocationID, false)

@@ -23,7 +23,7 @@ docker pull $IMAGE || exit $?
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
 
-IMAGE="cirrusci/flutter:stable"
+IMAGE="cirrusci/flutter:2.8.1"
 docker pull $IMAGE
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
