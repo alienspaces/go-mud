@@ -1,7 +1,6 @@
 package test
 
-// NOTE: model tests are run is the public space to avoid cyclicle dependencies and allow
-// use of common setup and teardown tooling for all models
+// NOTE: model tests are run is the public space to avoid cyclic dependencies
 
 import (
 	"testing"
