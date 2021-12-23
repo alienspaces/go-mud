@@ -18,7 +18,8 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   DungeonActionCubit({required this.config, required this.repositories})
       : super(const DungeonActionStateInitial());
 
-  Future<void> createAction(String dungeonID, String characterID, String command) async {
+  Future<void> createAction(
+      String dungeonID, String characterID, String command) async {
     final log = getLogger('DungeonActionCubit');
     log.info('(createAction) Creating dungeon action command >$command<');
 
@@ -27,12 +28,20 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       current: dungeonActionRecord,
     ));
 
-    DungeonActionRecord? createdDungeonActionRecord =
-        await repositories.dungeonActionRepository.create(dungeonID, characterID, command);
+    DungeonActionRecord? createdDungeonActionRecord = await repositories
+        .dungeonActionRepository
+        .create(dungeonID, characterID, command);
 
-    log.info('(createAction) location ${createdDungeonActionRecord?.location}');
     log.info(
-        '(createAction) targetLocation ${createdDungeonActionRecord?.targetLocation?.direction}');
+        '(createAction) location ${createdDungeonActionRecord?.location.name}');
+    log.info(
+        '(createAction) targetLocation ${createdDungeonActionRecord?.targetLocation?.name}');
+    log.info(
+        '(createAction) targetCharacter ${createdDungeonActionRecord?.targetCharacter?.name}');
+    log.info(
+        '(createAction) targetMonster ${createdDungeonActionRecord?.targetMonster?.name}');
+    log.info(
+        '(createAction) targetObject ${createdDungeonActionRecord?.targetObject?.name}');
 
     if (createdDungeonActionRecord != null) {
       dungeonActionRecord = createdDungeonActionRecord;
@@ -53,7 +62,8 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     final log = getLogger('DungeonActionCubit');
 
     if (dungeonActionRecords.length < 2) {
-      log.info('(playAction) Not enough dungeon action records, not playing action');
+      log.info(
+          '(playAction) Not enough dungeon action records, not playing action');
       return false;
     }
 
@@ -64,7 +74,25 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       direction = current.targetLocation?.direction;
     }
 
-    log.info('(playAction) Play action command >${current.command}< direction >$direction<');
+    if (current.targetLocation != null) {
+      log.info(
+          '(playAction) Play action command >${current.command}< direction >$direction<');
+    }
+
+    if (current.targetCharacter != null) {
+      log.info(
+          '(playAction) Play action command >${current.command}< character >${current.targetCharacter?.name}<');
+    }
+
+    if (current.targetMonster != null) {
+      log.info(
+          '(playAction) Play action command >${current.command}< monster >${current.targetMonster?.name}<');
+    }
+
+    if (current.targetObject != null) {
+      log.info(
+          '(playAction) Play action command >${current.command}< object >${current.targetObject?.name}<');
+    }
 
     emit(
       DungeonActionStatePlaying(

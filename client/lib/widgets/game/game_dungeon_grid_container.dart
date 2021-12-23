@@ -78,6 +78,9 @@ class _GameDungeonGridContainerWidgetState
               'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
 
           if (dungeonActionRecord.command == 'move') {
+            //
+            // Move
+            //
             widgets.add(
               GameDungeonMoveGridWidget(
                 key: UniqueKey(),
@@ -97,6 +100,18 @@ class _GameDungeonGridContainerWidgetState
               ),
             );
           } else if (dungeonActionRecord.command == 'look') {
+            //
+            // Look
+            //
+            log.info(
+                'DungeonActionStatePlaying - Look target location ${dungeonActionRecord.targetLocation?.name}');
+            log.info(
+                'DungeonActionStatePlaying - Look target character ${dungeonActionRecord.targetCharacter?.name}');
+            log.info(
+                'DungeonActionStatePlaying - Look target monster ${dungeonActionRecord.targetMonster?.name}');
+            log.info(
+                'DungeonActionStatePlaying - Look target object ${dungeonActionRecord.targetObject?.name}');
+
             widgets.add(
               GameDungeonMoveGridWidget(
                 key: UniqueKey(),
@@ -106,7 +121,7 @@ class _GameDungeonGridContainerWidgetState
                 locationData: state.current.location,
               ),
             );
-            if (state.current.targetLocation != null) {
+            if (dungeonActionRecord.targetLocation != null) {
               log.info('Rendering look target location');
               widgets.add(
                 GameDungeonLookGridWidget(
@@ -116,7 +131,9 @@ class _GameDungeonGridContainerWidgetState
                   locationData: state.current.targetLocation!,
                 ),
               );
-            } else if (state.current.targetCharacter != null) {
+            }
+            if (dungeonActionRecord.targetCharacter != null) {
+              log.info('Rendering look target character');
               widgets.add(
                 Container(
                   padding: const EdgeInsets.all(5),
@@ -124,20 +141,24 @@ class _GameDungeonGridContainerWidgetState
                 ),
               );
             }
-          } else if (state.current.targetMonster != null) {
-            widgets.add(
-              Container(
-                padding: const EdgeInsets.all(5),
-                child: const Text("Looking monster"),
-              ),
-            );
-          } else if (state.current.targetObject != null) {
-            widgets.add(
-              Container(
-                padding: const EdgeInsets.all(5),
-                child: const Text("Looking object"),
-              ),
-            );
+            if (dungeonActionRecord.targetMonster != null) {
+              log.info('Rendering look target monster');
+              widgets.add(
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  child: const Text("Looking monster"),
+                ),
+              );
+            }
+            if (dungeonActionRecord.targetObject != null) {
+              log.info('Rendering look target object');
+              widgets.add(
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  child: const Text("Looking object"),
+                ),
+              );
+            }
           }
         }
 
