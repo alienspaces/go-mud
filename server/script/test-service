@@ -8,17 +8,9 @@
 #   Test specific service
 #     ./script/test-service ./service/example/player
 
-echo
-echo "=> (test-service) Testing services"
-echo
-
-# Environment
-if [ -z "$APP_SERVER_GO_VERSION" ]; then
-    echo "=> (test-service) Sourcing env"
-    source "${BASH_SOURCE%/*}"/env || exit $?
-fi
-
 function test_service {
+    test_function_name=$1
+
     if [ -f "go.mod" ]; then
         echo "=> (test-service) Test service directory"
         APP_SERVER_HOME=$(pwd)
@@ -38,15 +30,21 @@ function test_service {
             fi
         fi
 
-        echo "=> (test-service) Test service - APP_SERVER_HOME - ${APP_SERVER_HOME}"
-        go test -v -cover -count 1 ./... || exit $?
+        if [ -n "$test_function_name" ]; then
+            echo "=> (test-service) Test service - ${APP_SERVER_HOME} - function >$test_function_name<"
+            go test -v -cover -count 1 -run "$test_function_name" ./... || exit $?
+        else
+            echo "=> (test-service) Test service - ${APP_SERVER_HOME}"
+            go test -cover -count 1 ./... || exit $?
+        fi
     fi
 }
 
 function test_services {
+    base_directory=$1
 
-    CURRENT_DIRECTORY=$PWD
-    cd "$BASE_DIRECTORY" || exit
+    current_directory=$PWD
+    cd "$base_directory" || exit
 
     for SERVICE_NAME in *; do
         # Ingoring template
@@ -59,30 +57,49 @@ function test_services {
         cd - || exit
     done
 
-    cd "$CURRENT_DIRECTORY" || exit
+    cd "$current_directory" || exit
 }
 
+# Environment
+if [ -z "$APP_SERVER_GO_VERSION" ]; then
+    echo "=> (test-service) Sourcing env"
+    source "${BASH_SOURCE%/*}"/env || exit $?
+fi
+
 # Specific service / All services
-TEST_SERVICE_NAME=""
+test_service_name=""
 if [ -n "$1" ]; then
-    TEST_SERVICE_NAME=$1
+    test_service_name=$1
+    shift
+    test_function_name=$1
     shift
 
-    cd "$TEST_SERVICE_NAME" || exit
-    test_service;
+    echo
+    echo "=> (test-service) Testing service ${test_service_name}"
+    echo
+
+    source "${BASH_SOURCE%/*}"/env-functions || exit $?
+    clear_env || exit $?
+
+    source "${BASH_SOURCE%/*}"/env || exit $?
+
+    cd "service/$test_service_name" || exit
+    test_service "${test_function_name}";
     cd - || exit
+
 else
 
+    echo
+    echo "=> (test-service) Testing all services"
+    echo
+
     # Service directory list
-    BASE_DIRECTORY="service"
-    test_services;
+    test_services "service";
 
     # Service example directory list
     if [[ "$APP_SERVER_ENABLE_EXAMPLES" == 1 ]]; then
         echo "=> (test-service) Starting example services"
-        
-        BASE_DIRECTORY="service/example"
-        test_services;
+       
+        test_services "service/example";
     fi
 fi
-
