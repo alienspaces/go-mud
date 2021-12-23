@@ -55,7 +55,7 @@ function start_services {
             rm -f "$SERVER_NAME"
             go build -o "$SERVER_NAME" ./cmd/server
 
-            echo "=> (start_services) - Running server $SERVER_NAME"
+            echo "=> (start_services) - Running server $SERVER_NAME - $APP_SERVER_HOST:$APP_SERVER_PORT"
             ./"$SERVER_NAME"&
             cd - || exit
         fi

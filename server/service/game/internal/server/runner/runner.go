@@ -121,6 +121,20 @@ func NewRunner() *Runner {
 			HandlerFunc:      r.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 		},
+		// Documentation - 8
+		{
+			Method:           http.MethodGet,
+			Path:             "/api",
+			HandlerFunc:      r.GetDocumentationHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+		},
+		// Documentation - 9
+		{
+			Method:           http.MethodGet,
+			Path:             "/api/v1",
+			HandlerFunc:      r.GetDocumentationHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+		},
 	}
 
 	return &r

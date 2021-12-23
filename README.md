@@ -21,6 +21,8 @@ cd server
 ./script/start
 ```
 
+API server will be available at [http://localhost:8082/](http://localhost:8082/)
+
 ### Start Client
 
 Generate client configuration code.
