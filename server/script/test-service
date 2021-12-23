@@ -60,12 +60,6 @@ function test_services {
     cd "$current_directory" || exit
 }
 
-# Environment
-if [ -z "$APP_SERVER_GO_VERSION" ]; then
-    echo "=> (test-service) Sourcing env"
-    source "${BASH_SOURCE%/*}"/env || exit $?
-fi
-
 # Specific service / All services
 test_service_name=""
 if [ -n "$1" ]; then
