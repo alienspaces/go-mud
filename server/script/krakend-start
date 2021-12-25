@@ -5,3 +5,5 @@ source "${BASH_SOURCE%/*}"/krakend-stop || exit $?
 
 # start krakend
 docker run --name go-mud-krakend -p 8082:8080 -v "${PWD}:/etc/krakend/" -d devopsfaith/krakend:1.2 run -d -c krakend.json
+
+echo "=> (krakend-start) - Krakend running - http://localhost:8082"

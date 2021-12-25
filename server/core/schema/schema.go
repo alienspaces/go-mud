@@ -30,16 +30,21 @@ func NewValidator(c configurer.Configurer, l logger.Logger) (*Validator, error) 
 	}, nil
 }
 
-// Validate -
-func (v *Validator) Validate(schemaConfig Config, data []byte) error {
+// ValidateBytes -
+func (v *Validator) ValidateBytes(schemaConfig Config, data []byte) error {
+	return v.Validate(schemaConfig, string(data))
+}
 
-	v.Log.Info("Validating data >%s<", string(data))
+// Validate -
+func (v *Validator) Validate(schemaConfig Config, data string) error {
+
+	v.Log.Warn("Validating key >%s< data >%s<", schemaConfig.Key, string(data))
 
 	var err error
 
 	s := schemaCache[schemaConfig.Key]
 	if s == nil {
-		s, err = v.loadSchema(schemaConfig)
+		s, err = v.LoadSchema(schemaConfig)
 		if err != nil {
 			v.Log.Warn("Failed validate >%v<", err)
 			return err
@@ -74,7 +79,18 @@ func (v *Validator) Validate(schemaConfig Config, data []byte) error {
 	return nil
 }
 
-func (v *Validator) loadSchema(schemaConfig Config) (*gojsonschema.Schema, error) {
+func (v *Validator) SchemaCached(key string) bool {
+
+	if _, ok := schemaCache[key]; ok {
+		return true
+	}
+
+	return false
+}
+
+func (v *Validator) LoadSchema(schemaConfig Config) (*gojsonschema.Schema, error) {
+
+	v.Log.Warn("Loading schema key >%s< location >%s<", schemaConfig.Key, schemaConfig.Location)
 
 	if schemaConfig.Location == "" {
 		return nil, fmt.Errorf("missing Location, invalid config")

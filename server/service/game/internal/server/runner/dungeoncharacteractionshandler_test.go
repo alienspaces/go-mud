@@ -442,7 +442,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 						References: []string{
 							"data.schema.json",
 						},
-					}, jsonData)
+					}, string(jsonData))
 					require.NoError(t, err, "Validates against schema without error")
 
 					for idx, expectData := range expectResponseBody.Data {

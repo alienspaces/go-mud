@@ -5,20 +5,22 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/xeipuuv/gojsonschema"
 
+	"gitlab.com/alienspaces/go-mud/server/core/schema"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
 // schemaCache - path, method, schema
-var schemaCache map[string]map[string]*gojsonschema.Schema
+// var schemaCache map[string]map[string]*gojsonschema.Schema
 
 // pathParamCache - path, method, []string
 var pathParamCache map[string]map[string]map[string]ValidatePathParam
 
 // queryParamCache - path, method, []string
 var queryParamCache map[string]map[string][]string
+
+var schemaValidator *schema.Validator
 
 // Validate -
 func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error) {
@@ -75,10 +77,13 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 			return
 		}
 
-		// schema for URI and method
-		s := schemaCache[hc.Path][r.Method]
-		if s == nil {
-			l.Debug("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
+		if schemaValidator == nil {
+			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("schema validator not available, cannot validate")))
+			return
+		}
+
+		if !schemaValidator.SchemaCached(r.Method + hc.Path) {
+			l.Warn("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
 
 			// delegate request
 			h(w, r, pp, qp, l, m)
@@ -89,43 +94,25 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 		data := r.Context().Value(ContextKeyData)
 
 		l.Debug("Data >%s<", data)
-
-		// load the data
-		var dataLoader gojsonschema.JSONLoader
 		switch data := data.(type) {
+		case string:
+			err = schemaValidator.Validate(
+				schema.Config{
+					Key: r.Method + hc.Path,
+				},
+				data,
+			)
+			if err != nil {
+				rnr.WriteResponse(l, w, rnr.ValidationError(err))
+				return
+			}
 		case nil:
 			l.Warn("Data is nil")
 			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("Data is nil")))
 			return
-		case string:
-			dataLoader = gojsonschema.NewStringLoader(data)
 		default:
-			dataLoader = gojsonschema.NewGoLoader(data)
-		}
-
-		// validate the data
-		result, err := s.Validate(dataLoader)
-		if err != nil {
-			l.Warn("Failed validate >%v<", err)
-			if err.Error() == "EOF" {
-				rnr.WriteResponse(l, w, rnr.ValidationError(fmt.Errorf("posted data is empty, check request content")))
-				return
-			}
-			rnr.WriteResponse(l, w, rnr.SystemError(err))
-			return
-		}
-
-		if !result.Valid() {
-			errStr := ""
-			for _, e := range result.Errors() {
-				l.Warn("Invalid data >%s<", e)
-				if errStr == "" {
-					errStr = e.String()
-					continue
-				}
-				errStr = fmt.Sprintf("%s, %s", errStr, e.String())
-			}
-			rnr.WriteResponse(l, w, rnr.ValidationError(fmt.Errorf("%s", errStr)))
+			l.Warn("Data type unsupported")
+			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("Data is nil")))
 			return
 		}
 
@@ -263,50 +250,33 @@ func (rnr *Runner) validateCacheQueryParams(hc HandlerConfig) error {
 // validateCacheSchemas - load validation JSON schemas
 func (rnr *Runner) validateCacheSchemas(hc HandlerConfig) error {
 
+	rnr.Log.Warn("Caching schemas >%#v<", hc.MiddlewareConfig)
+
 	if hc.MiddlewareConfig.ValidateSchemaLocation == "" || hc.MiddlewareConfig.ValidateSchemaMain == "" {
 		rnr.Log.Info("Handler method >%s< path >%s< not configured for validation", hc.Method, hc.Path)
 		return nil
 	}
 
-	schemaLoc := hc.MiddlewareConfig.ValidateSchemaLocation
-	schema := hc.MiddlewareConfig.ValidateSchemaMain
-	schemaReferences := hc.MiddlewareConfig.ValidateSchemaReferences
-
-	schemaPath := rnr.Config.Get("APP_SERVER_SCHEMA_PATH")
-	schemaLoc = fmt.Sprintf("file://%s/%s", schemaPath, schemaLoc)
-
-	rnr.Log.Info("Loading schema %s/%s", schemaLoc, schema)
-
-	// load and validate the schema
-	sl := gojsonschema.NewSchemaLoader()
-	sl.Validate = true
-
-	// first load any referenced schemas
-	for _, schemaName := range schemaReferences {
-		rnr.Log.Info("Adding schema reference %s/%s", schemaLoc, schemaName)
-		loader := gojsonschema.NewReferenceLoader(fmt.Sprintf("%s/%s", schemaLoc, schemaName))
-		err := sl.AddSchemas(loader)
+	if schemaValidator == nil {
+		rnr.Log.Warn("Schema validator is nil, creating new schema validator")
+		var err error
+		schemaValidator, err = schema.NewValidator(rnr.Config, rnr.Log)
 		if err != nil {
-			rnr.Log.Warn("Failed adding schema reference %v", err)
+			rnr.Log.Warn("Failed new schema validator >%v<", err)
 			return err
 		}
 	}
 
-	// then load and compile the main schema (which references the other schemas)
-	loader := gojsonschema.NewReferenceLoader(fmt.Sprintf("%s/%s", schemaLoc, schema))
-	s, err := sl.Compile(loader)
+	_, err := schemaValidator.LoadSchema(schema.Config{
+		Key:        hc.Method + hc.Path,
+		Location:   hc.MiddlewareConfig.ValidateSchemaLocation,
+		Main:       hc.MiddlewareConfig.ValidateSchemaMain,
+		References: hc.MiddlewareConfig.ValidateSchemaReferences,
+	})
 	if err != nil {
-		rnr.Log.Warn("Failed compiling schema's >%v<", err)
+		rnr.Log.Warn("Failed loading schema >%v<", err)
 		return err
 	}
-
-	if schemaCache == nil {
-		schemaCache = map[string]map[string]*gojsonschema.Schema{}
-	}
-	if schemaCache[hc.Path] == nil {
-		schemaCache[hc.Path] = make(map[string]*gojsonschema.Schema)
-	}
-	schemaCache[hc.Path][hc.Method] = s
 
 	return nil
 }
