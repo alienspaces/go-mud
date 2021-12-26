@@ -428,10 +428,11 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				return c == nil
 			}
 
-			// test data
 			if testCase.responseBody != nil {
 				expectResponseBody := testCase.responseBody(th.Data)
 				if responseBody != nil {
+
+					// Validate response body
 					jsonData, err := json.Marshal(responseBody)
 					require.NoError(t, err, "Marshal returns without error")
 
@@ -446,6 +447,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					require.NoError(t, err, "Validates against schema without error")
 
 					for idx, expectData := range expectResponseBody.Data {
+
 						// Response data
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 

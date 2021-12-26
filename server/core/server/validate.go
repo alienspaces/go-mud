@@ -11,9 +11,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
-// schemaCache - path, method, schema
-// var schemaCache map[string]map[string]*gojsonschema.Schema
-
 // pathParamCache - path, method, []string
 var pathParamCache map[string]map[string]map[string]ValidatePathParam
 
@@ -83,7 +80,7 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 		}
 
 		if !schemaValidator.SchemaCached(r.Method + hc.Path) {
-			l.Warn("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
+			l.Info("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
 
 			// delegate request
 			h(w, r, pp, qp, l, m)
@@ -250,7 +247,7 @@ func (rnr *Runner) validateCacheQueryParams(hc HandlerConfig) error {
 // validateCacheSchemas - load validation JSON schemas
 func (rnr *Runner) validateCacheSchemas(hc HandlerConfig) error {
 
-	rnr.Log.Warn("Caching schemas >%#v<", hc.MiddlewareConfig)
+	rnr.Log.Info("Caching schemas >%#v<", hc.MiddlewareConfig)
 
 	if hc.MiddlewareConfig.ValidateSchemaLocation == "" || hc.MiddlewareConfig.ValidateSchemaMain == "" {
 		rnr.Log.Info("Handler method >%s< path >%s< not configured for validation", hc.Method, hc.Path)
@@ -258,7 +255,7 @@ func (rnr *Runner) validateCacheSchemas(hc HandlerConfig) error {
 	}
 
 	if schemaValidator == nil {
-		rnr.Log.Warn("Schema validator is nil, creating new schema validator")
+		rnr.Log.Info("Schema validator is nil, creating new schema validator")
 		var err error
 		schemaValidator, err = schema.NewValidator(rnr.Config, rnr.Log)
 		if err != nil {
