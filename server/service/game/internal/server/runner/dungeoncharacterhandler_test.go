@@ -1,21 +1,17 @@
 package runner
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
+	"io"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"strings"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/alienspaces/go-mud/server/core/auth"
+	coreschema "gitlab.com/alienspaces/go-mud/server/core/schema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/schema"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
@@ -27,15 +23,9 @@ func TestDungeonCharacterHandler(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
-	type TestCase struct {
-		name           string
-		config         func(rnr *Runner) server.HandlerConfig
-		requestHeaders func(data harness.Data) map[string]string
-		requestParams  func(data harness.Data) map[string]string
-		queryParams    func(data harness.Data) map[string]string
-		requestData    func(data harness.Data) *schema.DungeonCharacterRequest
-		responseCode   int
-		responseData   func(data harness.Data) *schema.DungeonCharacterResponse
+	type testCase struct {
+		TestCase
+		responseBody func(data harness.Data) *schema.DungeonCharacterResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -48,29 +38,31 @@ func TestDungeonCharacterHandler(t *testing.T) {
 		return token
 	}
 
-	tests := []TestCase{
+	testCases := []testCase{
 		{
-			name: "GET - Get many",
-			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[2]
+			TestCase: TestCase{
+				Name: "GET - Get many",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[2]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id": data.DungeonRecs[0].ID,
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseCode: http.StatusOK,
 			},
-			requestHeaders: func(data harness.Data) map[string]string {
-				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
-				}
-				return headers
-			},
-			requestParams: func(data harness.Data) map[string]string {
-				params := map[string]string{
-					":dungeon_id": data.DungeonRecs[0].ID,
-				}
-				return params
-			},
-			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
-				return nil
-			},
-			responseCode: http.StatusOK,
-			responseData: func(data harness.Data) *schema.DungeonCharacterResponse {
+			responseBody: func(data harness.Data) *schema.DungeonCharacterResponse {
 				res := schema.DungeonCharacterResponse{
 					Data: []schema.DungeonCharacterData{
 						{
@@ -82,53 +74,57 @@ func TestDungeonCharacterHandler(t *testing.T) {
 			},
 		},
 		{
-			name: "GET - Get many with invalid dungeon ID",
-			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[2]
+			TestCase: TestCase{
+				Name: "GET - Get many with invalid dungeon ID",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[2]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id": "21954f35-76fb-4a4a-bc39-fba15432b28b",
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseCode: http.StatusNotFound,
 			},
-			requestHeaders: func(data harness.Data) map[string]string {
-				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
-				}
-				return headers
-			},
-			requestParams: func(data harness.Data) map[string]string {
-				params := map[string]string{
-					":dungeon_id": "21954f35-76fb-4a4a-bc39-fba15432b28b",
-				}
-				return params
-			},
-			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
-				return nil
-			},
-			responseCode: http.StatusNotFound,
-			responseData: func(data harness.Data) *schema.DungeonCharacterResponse {
+			responseBody: func(data harness.Data) *schema.DungeonCharacterResponse {
 				return nil
 			},
 		},
 		{
-			name: "GET - Get one",
-			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[3]
+			TestCase: TestCase{
+				Name: "GET - Get one",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[3]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id":   data.DungeonRecs[0].ID,
+						":character_id": data.DungeonCharacterRecs[0].ID,
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseCode: http.StatusOK,
 			},
-			requestHeaders: func(data harness.Data) map[string]string {
-				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
-				}
-				return headers
-			},
-			requestParams: func(data harness.Data) map[string]string {
-				params := map[string]string{
-					":dungeon_id":   data.DungeonRecs[0].ID,
-					":character_id": data.DungeonCharacterRecs[0].ID,
-				}
-				return params
-			},
-			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
-				return nil
-			},
-			responseCode: http.StatusOK,
-			responseData: func(data harness.Data) *schema.DungeonCharacterResponse {
+			responseBody: func(data harness.Data) *schema.DungeonCharacterResponse {
 				res := schema.DungeonCharacterResponse{
 					Data: []schema.DungeonCharacterData{
 						{
@@ -140,219 +136,136 @@ func TestDungeonCharacterHandler(t *testing.T) {
 			},
 		},
 		{
-			name: "GET - Get one with invalid dungeon ID",
-			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[3]
+			TestCase: TestCase{
+				Name: "GET - Get one with invalid dungeon ID",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[3]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseCode: http.StatusNotFound,
 			},
-			requestHeaders: func(data harness.Data) map[string]string {
-				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
-				}
-				return headers
-			},
-			requestParams: func(data harness.Data) map[string]string {
-				params := map[string]string{
-					":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
-				}
-				return params
-			},
-			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
-				return nil
-			},
-			responseCode: http.StatusNotFound,
 		},
 		{
-			name: "GET - Get one with invalid character ID",
-			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[3]
+			TestCase: TestCase{
+				Name: "GET - Get one with invalid character ID",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[3]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseCode: http.StatusNotFound,
 			},
-			requestHeaders: func(data harness.Data) map[string]string {
-				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
-				}
-				return headers
-			},
-			requestParams: func(data harness.Data) map[string]string {
-				params := map[string]string{
-					":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
-				}
-				return params
-			},
-			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
-				return nil
-			},
-			responseCode: http.StatusNotFound,
 		},
 		{
-			name: "POST - Create one with valid attributes",
-			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[4]
+			TestCase: TestCase{
+				Name: "POST - Create one with valid attributes",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[4]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id": data.DungeonRecs[0].ID,
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					res := schema.DungeonCharacterRequest{
+						Data: schema.DungeonCharacterData{
+							Name:         gofakeit.Name() + gofakeit.Name(),
+							Strength:     10,
+							Dexterity:    10,
+							Intelligence: 10,
+						},
+					}
+					return &res
+				},
+				ResponseCode: http.StatusOK,
 			},
-			requestHeaders: func(data harness.Data) map[string]string {
-				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
-				}
-				return headers
-			},
-			requestParams: func(data harness.Data) map[string]string {
-				params := map[string]string{
-					":dungeon_id": data.DungeonRecs[0].ID,
-				}
-				return params
-			},
-			requestData: func(data harness.Data) *schema.DungeonCharacterRequest {
-				res := schema.DungeonCharacterRequest{
-					Data: schema.DungeonCharacterData{
-						Name:         gofakeit.Name() + gofakeit.Name(),
-						Strength:     10,
-						Dexterity:    10,
-						Intelligence: 10,
-					},
-				}
-				return &res
-			},
-			responseCode: http.StatusOK,
 		},
 	}
 
-	for _, tc := range tests {
+	v, err := coreschema.NewValidator(th.Config, th.Log)
+	require.NoError(t, err, "Validator returns without error")
 
-		t.Logf("Running test >%s<", tc.name)
+	for _, testCase := range testCases {
 
-		func() {
-			rnr := NewRunner()
+		t.Logf("Running test >%s<", testCase.Name)
 
-			err = rnr.Init(th.Config, th.Log, th.Store, th.Model)
-			require.NoError(t, err, "Runner init returns without error")
+		testFunc := func(method string, body io.Reader) {
 
-			err = th.Setup()
-			require.NoError(t, err, "Test data setup returns without error")
-			defer func() {
-				err = th.Teardown()
-				require.NoError(t, err, "Test data teardown returns without error")
-			}()
-
-			// config
-			cfg := tc.config(rnr)
-
-			// handler
-			h, _ := rnr.DefaultMiddleware(cfg, cfg.HandlerFunc)
-
-			// router
-			rtr := httprouter.New()
-
-			switch cfg.Method {
-			case http.MethodGet:
-				rtr.GET(cfg.Path, h)
-			case http.MethodPost:
-				rtr.POST(cfg.Path, h)
-			case http.MethodPut:
-				rtr.PUT(cfg.Path, h)
-			case http.MethodDelete:
-				rtr.DELETE(cfg.Path, h)
-			default:
-				//
+			if testCase.TestResponseCode() != http.StatusOK {
+				return
 			}
 
-			// request params
-			requestParams := map[string]string{}
-			if tc.requestParams != nil {
-				requestParams = tc.requestParams(th.Data)
-			}
-
-			requestPath := cfg.Path
-			for paramKey, paramValue := range requestParams {
-				requestPath = strings.Replace(requestPath, paramKey, paramValue, 1)
-			}
-
-			// query params
-			queryParams := map[string]string{}
-			if tc.queryParams != nil {
-				queryParams = tc.queryParams(th.Data)
-			}
-
-			if len(queryParams) > 0 {
-				count := 0
-				for paramKey, paramValue := range queryParams {
-					if count == 0 {
-						requestPath = requestPath + `?`
-					} else {
-						requestPath = requestPath + `&`
-					}
-					t.Logf("Adding parameter key >%s< param >%s<", paramKey, paramValue)
-					requestPath = fmt.Sprintf("%s%s=%s", requestPath, paramKey, url.QueryEscape(paramValue))
-				}
-				t.Logf("Resulting requestPath >%s<", requestPath)
-			}
-
-			// request data
-			data := tc.requestData(th.Data)
-
-			var req *http.Request
-
-			if data != nil {
-				jsonData, err := json.Marshal(data)
-				require.NoError(t, err, "Marshal returns without error")
-
-				req, err = http.NewRequest(cfg.Method, requestPath, bytes.NewBuffer(jsonData))
-				require.NoError(t, err, "NewRequest returns without error")
-			} else {
-				req, err = http.NewRequest(cfg.Method, requestPath, nil)
-				require.NoError(t, err, "NewRequest returns without error")
-			}
-
-			// request headers
-			requestHeaders := map[string]string{}
-			if tc.requestHeaders != nil {
-				requestHeaders = tc.requestHeaders(th.Data)
-			}
-
-			for headerKey, headerVal := range requestHeaders {
-				req.Header.Add(headerKey, headerVal)
-			}
-
-			// recorder
-			rec := httptest.NewRecorder()
-
-			// serve
-			rtr.ServeHTTP(rec, req)
-
-			// test status
-			require.Equalf(t, tc.responseCode, rec.Code, "%s - Response code equals expected", tc.name)
-
-			res := schema.DungeonCharacterResponse{}
-			err = json.NewDecoder(rec.Body).Decode(&res)
+			var responseBody *schema.DungeonCharacterResponse
+			err = json.NewDecoder(body).Decode(&responseBody)
 			require.NoError(t, err, "Decode returns without error")
 
-			// response data
-			var resData *schema.DungeonCharacterResponse
-			if tc.responseData != nil {
-				resData = tc.responseData(th.Data)
+			if testCase.responseBody != nil {
+
+				// Validate response body
+				require.NotNil(t, responseBody, "Response body is not nil")
+
+				jsonData, err := json.Marshal(responseBody)
+				require.NoError(t, err, "Marshal returns without error")
+
+				err = v.Validate(coreschema.Config{
+					Key:      "dungeoncharacter.response",
+					Location: "dungeoncharacter",
+					Main:     "main.schema.json",
+					References: []string{
+						"data.schema.json",
+					},
+				}, string(jsonData))
+				require.NoError(t, err, "Validates against schema without error")
 			}
 
-			// test data
-			if tc.responseCode == http.StatusOK {
+			require.NotNil(t, responseBody, "Response body is not nil")
+			require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-				// response data
-				if resData != nil {
-					require.Equal(t, resData.Data[0].ID, res.Data[0].ID, "ID equals expected")
-				}
-
-				// record timestamps
-				require.False(t, res.Data[0].CreatedAt.IsZero(), "CreatedAt is not zero")
-				if cfg.Method == http.MethodPost {
-					require.True(t, res.Data[0].UpdatedAt.IsZero(), "UpdatedAt is zero")
-				}
-				if cfg.Method == http.MethodPut {
-					require.False(t, res.Data[0].UpdatedAt.IsZero(), "UpdatedAt is not zero")
-				}
-
-				if cfg.Method == http.MethodPost {
-					if len(res.Data) != 0 {
-						th.AddDungeonCharacterTeardownID(res.Data[0].ID)
-					}
+			for _, data := range responseBody.Data {
+				require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
+				if method == http.MethodPost {
+					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
+					t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
+					th.AddDungeonCharacterTeardownID(data.ID)
 				}
 			}
-		}()
+		}
+
+		RunTestCase(t, th, &testCase, testFunc)
 	}
 }

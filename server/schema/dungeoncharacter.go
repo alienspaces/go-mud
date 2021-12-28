@@ -28,8 +28,8 @@ type DungeonCharacterData struct {
 	Health            int       `json:"health"`
 	Fatigue           int       `json:"fatigue"`
 	Coins             int       `json:"coins,omitempty"`
-	ExperiencePoints  int       `json:"experience_points,omitempty"`
-	AttributePoints   int       `json:"attribute_points,omitempty"`
+	ExperiencePoints  int       `json:"experience_points"`
+	AttributePoints   int       `json:"attribute_points"`
 	CreatedAt         time.Time `json:"created_at,omitempty"`
 	UpdatedAt         time.Time `json:"updated_at,omitempty"`
 }

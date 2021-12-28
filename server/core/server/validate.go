@@ -74,9 +74,11 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 			return
 		}
 
-		if schemaValidator == nil {
-			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("schema validator not available, cannot validate")))
-			return
+		if hc.MiddlewareConfig.ValidateSchemaLocation != "" && hc.MiddlewareConfig.ValidateSchemaMain != "" {
+			if schemaValidator == nil {
+				rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("schema validator not available, cannot validate")))
+				return
+			}
 		}
 
 		if !schemaValidator.SchemaCached(r.Method + hc.Path) {
@@ -247,7 +249,7 @@ func (rnr *Runner) validateCacheQueryParams(hc HandlerConfig) error {
 // validateCacheSchemas - load validation JSON schemas
 func (rnr *Runner) validateCacheSchemas(hc HandlerConfig) error {
 
-	rnr.Log.Info("Caching schemas >%#v<", hc.MiddlewareConfig)
+	rnr.Log.Info("Caching schemas >%s< >%s<", hc.MiddlewareConfig.ValidateSchemaLocation, hc.MiddlewareConfig.ValidateSchemaMain)
 
 	if hc.MiddlewareConfig.ValidateSchemaLocation == "" || hc.MiddlewareConfig.ValidateSchemaMain == "" {
 		rnr.Log.Info("Handler method >%s< path >%s< not configured for validation", hc.Method, hc.Path)
