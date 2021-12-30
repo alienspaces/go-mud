@@ -85,4 +85,6 @@ type ObjectData struct {
 type ObjectDetailedData struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	IsStashed   bool   `json:"is_stashed"`
+	IsEquipped  bool   `json:"is_equipped"`
 }

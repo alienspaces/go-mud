@@ -8,6 +8,9 @@ INSERT INTO dungeon_action_object (
 	dungeon_location_id,
 	dungeon_object_id,
 	name,
+	description,
+	is_stashed,
+	is_equipped,
 	created_at
 ) VALUES (
 	:id,
@@ -16,6 +19,9 @@ INSERT INTO dungeon_action_object (
 	:dungeon_location_id,
 	:dungeon_object_id,
 	:name,
+	:description,
+	:is_stashed,
+	:is_equipped,
 	:created_at
 )
 RETURNING *
@@ -28,6 +34,9 @@ UPDATE dungeon_action_object SET
 	dungeon_location_id = :dungeon_location_id,
 	dungeon_object_id   = :dungeon_object_id,
 	name                = :name,
+	description         = :description,
+	is_stashed          = :is_stashed,
+	is_equipped         = :is_equipped,
 	updated_at 		    = :updated_at
 WHERE id = :id
 AND   deleted_at IS NULL

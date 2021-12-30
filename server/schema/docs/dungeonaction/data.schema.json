@@ -186,6 +186,15 @@
       "properties": {
         "name": {
           "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "is_stashed": {
+          "type": "boolean"
+        },
+        "is_equipped": {
+          "type": "boolean"
         }
       }
     }

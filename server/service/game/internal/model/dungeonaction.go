@@ -219,6 +219,9 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				DungeonLocationID: dungeonLocationRec.ID,
 				DungeonObjectID:   objectRec.ID,
 				Name:              objectRec.Name,
+				Description:       objectRec.Description,
+				IsStashed:         objectRec.IsStashed,
+				IsEquipped:        objectRec.IsEquipped,
 			}
 			err := m.CreateDungeonActionObjectRec(&dungeonActionObjectRec)
 			if err != nil {
@@ -318,6 +321,9 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 					DungeonLocationID: dungeonLocationRec.ID,
 					DungeonObjectID:   objectRec.ID,
 					Name:              objectRec.Name,
+					Description:       objectRec.Description,
+					IsStashed:         objectRec.IsStashed,
+					IsEquipped:        objectRec.IsEquipped,
 				}
 				err := m.CreateDungeonActionObjectRec(&dungeonActionObjectRec)
 				if err != nil {
@@ -405,6 +411,9 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 			DungeonLocationID: dungeonLocationRec.ID,
 			DungeonObjectID:   targetObjectRec.ID,
 			Name:              targetObjectRec.Name,
+			Description:       targetObjectRec.Description,
+			IsStashed:         targetObjectRec.IsStashed,
+			IsEquipped:        targetObjectRec.IsEquipped,
 		}
 
 		err = m.CreateDungeonActionObjectRec(rec)

@@ -9,7 +9,7 @@ INSERT INTO dungeon_object (
 	dungeon_monster_id,
 	name,
 	description,
-	description_long,
+	description_detailed,
 	is_stashed,
 	is_equipped,
 	created_at
@@ -21,7 +21,7 @@ INSERT INTO dungeon_object (
 	:dungeon_monster_id,
 	:name,
 	:description,
-	:description_long,
+	:description_detailed,
 	:is_stashed,
 	:is_equipped,
 	:created_at
@@ -37,7 +37,7 @@ UPDATE dungeon_object SET
 	dungeon_monster_id 	 = :dungeon_monster_id,
 	name 				 = :name,
 	description 		 = :description,
-	description_long 	 = :description_long,
+	description_detailed = :description_detailed,
 	is_stashed 			 = :is_stashed,
 	is_equipped 		 = :is_equipped,
 	updated_at 		     = :updated_at

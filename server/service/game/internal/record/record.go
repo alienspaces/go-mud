@@ -63,15 +63,15 @@ type DungeonMonster struct {
 }
 
 type DungeonObject struct {
-	DungeonID          string         `db:"dungeon_id"`
-	DungeonLocationID  sql.NullString `db:"dungeon_location_id"`
-	DungeonCharacterID sql.NullString `db:"dungeon_character_id"`
-	DungeonMonsterID   sql.NullString `db:"dungeon_monster_id"`
-	Name               string         `db:"name"`
-	Description        string         `db:"description"`
-	DescriptionLong    string         `db:"description_long"`
-	IsStashed          bool           `db:"is_stashed"`
-	IsEquipped         bool           `db:"is_equipped"`
+	DungeonID           string         `db:"dungeon_id"`
+	DungeonLocationID   sql.NullString `db:"dungeon_location_id"`
+	DungeonCharacterID  sql.NullString `db:"dungeon_character_id"`
+	DungeonMonsterID    sql.NullString `db:"dungeon_monster_id"`
+	Name                string         `db:"name"`
+	Description         string         `db:"description"`
+	DescriptionDetailed string         `db:"description_detailed"`
+	IsStashed           bool           `db:"is_stashed"`
+	IsEquipped          bool           `db:"is_equipped"`
 	repository.Record
 }
 
@@ -133,9 +133,14 @@ type DungeonActionMonster struct {
 }
 
 const (
+	// Equipped objects are being worn or held
 	DungeonActionObjectRecordTypeEquipped string = "equipped"
-	DungeonActionObjectRecordTypeStashed  string = "stashed"
-	DungeonActionObjectRecordTypeTarget   string = "target"
+	// Stashed objects are packed in a bag or backback
+	DungeonActionObjectRecordTypeStashed string = "stashed"
+	// Target objects are are being actively looked at, used,
+	// equipped or stashed
+	DungeonActionObjectRecordTypeTarget string = "target"
+	// Occupant objects are present at a location
 	DungeonActionObjectRecordTypeOccupant string = "occupant"
 )
 
@@ -145,5 +150,11 @@ type DungeonActionObject struct {
 	DungeonLocationID string `db:"dungeon_location_id"`
 	DungeonObjectID   string `db:"dungeon_object_id"`
 	Name              string `db:"name"`
+	// Description could be either the object `description` or
+	// `description_detailed` depending on the characters `look`
+	// action result
+	Description string `db:"description"`
+	IsStashed   bool   `db:"is_stashed"`
+	IsEquipped  bool   `db:"is_equipped"`
 	repository.Record
 }

@@ -53,7 +53,12 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name: data.DungeonCharacterRecs[0].Name,
+						Name:         data.DungeonCharacterRecs[0].Name,
+						Strength:     data.DungeonCharacterRecs[0].Strength,
+						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+						Health:       data.DungeonCharacterRecs[0].Health,
+						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetLocation: &model.DungeonActionLocationRecordSet{
 						LocationRec: &record.DungeonLocation{
@@ -81,7 +86,12 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name: data.DungeonCharacterRecs[0].Name,
+						Name:         data.DungeonCharacterRecs[0].Name,
+						Strength:     data.DungeonCharacterRecs[0].Strength,
+						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+						Health:       data.DungeonCharacterRecs[0].Health,
+						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetLocation: &model.DungeonActionLocationRecordSet{
 						LocationRec: &record.DungeonLocation{
@@ -109,10 +119,18 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name: data.DungeonCharacterRecs[0].Name,
+						Name:         data.DungeonCharacterRecs[0].Name,
+						Strength:     data.DungeonCharacterRecs[0].Strength,
+						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+						Health:       data.DungeonCharacterRecs[0].Health,
+						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetActionObjectRec: &record.DungeonActionObject{
-						Name: data.DungeonObjectRecs[0].Name,
+						Name:        data.DungeonObjectRecs[0].Name,
+						Description: data.DungeonObjectRecs[0].Description,
+						IsStashed:   data.DungeonObjectRecs[0].IsStashed,
+						IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
 					},
 				}
 			},
@@ -135,10 +153,20 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name: data.DungeonCharacterRecs[0].Name,
+						Name:         data.DungeonCharacterRecs[0].Name,
+						Strength:     data.DungeonCharacterRecs[0].Strength,
+						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+						Health:       data.DungeonCharacterRecs[0].Health,
+						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetActionMonsterRec: &record.DungeonActionMonster{
-						Name: data.DungeonMonsterRecs[0].Name,
+						Name:         data.DungeonMonsterRecs[0].Name,
+						Strength:     data.DungeonMonsterRecs[0].Strength,
+						Dexterity:    data.DungeonMonsterRecs[0].Dexterity,
+						Intelligence: data.DungeonMonsterRecs[0].Intelligence,
+						Health:       data.DungeonMonsterRecs[0].Health,
+						Fatigue:      data.DungeonMonsterRecs[0].Fatigue,
 					},
 				}
 			},
@@ -161,10 +189,20 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name: data.DungeonCharacterRecs[0].Name,
+						Name:         data.DungeonCharacterRecs[0].Name,
+						Strength:     data.DungeonCharacterRecs[0].Strength,
+						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+						Health:       data.DungeonCharacterRecs[0].Health,
+						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetActionCharacterRec: &record.DungeonActionCharacter{
-						Name: data.DungeonCharacterRecs[0].Name,
+						Name:         data.DungeonCharacterRecs[0].Name,
+						Strength:     data.DungeonCharacterRecs[0].Strength,
+						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+						Health:       data.DungeonCharacterRecs[0].Health,
+						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
 					},
 				}
 			},
@@ -218,30 +256,59 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			if xrslt.ActionCharacterRec != nil {
 				require.NotNil(t, rslt.ActionCharacterRec, "ActionCharacterRec is not nil")
 				require.Equal(t, xrslt.ActionCharacterRec.Name, rslt.ActionCharacterRec.Name, "ActionCharacterRec.Name equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.Strength, rslt.ActionCharacterRec.Strength, "ActionCharacterRec.Strength equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.Dexterity, rslt.ActionCharacterRec.Dexterity, "ActionCharacterRec.Dexterity equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.Intelligence, rslt.ActionCharacterRec.Intelligence, "ActionCharacterRec.Intelligence equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.Health, rslt.ActionCharacterRec.Health, "ActionCharacterRec.Health equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.Fatigue, rslt.ActionCharacterRec.Fatigue, "ActionCharacterRec.Fatigue equals expected")
 			}
 			if xrslt.ActionMonsterRec != nil {
 				require.NotNil(t, rslt.ActionMonsterRec, "ActionMonsterRec is not nil")
 				require.Equal(t, xrslt.ActionMonsterRec.Name, rslt.ActionMonsterRec.Name, "ActionMonsterRec.Name equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.Strength, rslt.ActionMonsterRec.Strength, "ActionMonsterRec.Strength equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.Dexterity, rslt.ActionMonsterRec.Dexterity, "ActionMonsterRec.Dexterity equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.Intelligence, rslt.ActionMonsterRec.Intelligence, "ActionMonsterRec.Intelligence equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.Health, rslt.ActionMonsterRec.Health, "ActionMonsterRec.Health equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.Fatigue, rslt.ActionMonsterRec.Fatigue, "ActionMonsterRec.Fatigue equals expected")
 			}
 			if xrslt.EquippedActionObjectRec != nil {
 				require.NotNil(t, rslt.EquippedActionObjectRec, "EquippedActionObjectRec is not nil")
 				require.Equal(t, xrslt.EquippedActionObjectRec.Name, rslt.EquippedActionObjectRec.Name, "EquippedActionObjectRec.Name equals expected")
+				require.Equal(t, xrslt.EquippedActionObjectRec.Description, rslt.EquippedActionObjectRec.Description, "EquippedActionObjectRec.Description equals expected")
+				require.Equal(t, xrslt.EquippedActionObjectRec.IsStashed, rslt.EquippedActionObjectRec.IsStashed, "EquippedActionObjectRec.IsStashed equals expected")
+				require.Equal(t, xrslt.EquippedActionObjectRec.IsEquipped, rslt.EquippedActionObjectRec.IsEquipped, "EquippedActionObjectRec.IsEquipped equals expected")
 			}
 			if xrslt.StashedActionObjectRec != nil {
 				require.NotNil(t, rslt.StashedActionObjectRec, "StashedActionObjectRec is not nil")
 				require.Equal(t, xrslt.StashedActionObjectRec.Name, rslt.StashedActionObjectRec.Name, "StashedActionObjectRec.Name equals expected")
+				require.Equal(t, xrslt.StashedActionObjectRec.Description, rslt.StashedActionObjectRec.Description, "StashedActionObjectRec.Description equals expected")
+				require.Equal(t, xrslt.StashedActionObjectRec.IsStashed, rslt.StashedActionObjectRec.IsStashed, "StashedActionObjectRec.IsStashed equals expected")
+				require.Equal(t, xrslt.StashedActionObjectRec.IsStashed, rslt.StashedActionObjectRec.IsStashed, "StashedActionObjectRec.IsEquipped equals expected")
 			}
 			if xrslt.TargetActionObjectRec != nil {
 				require.NotNil(t, rslt.TargetActionObjectRec, "TargetActionObjectRec is not nil")
 				require.Equal(t, xrslt.TargetActionObjectRec.Name, rslt.TargetActionObjectRec.Name, "TargetActionObjectRec.Name equals expected")
+				require.Equal(t, xrslt.TargetActionObjectRec.Description, rslt.TargetActionObjectRec.Description, "TargetActionObjectRec.Description equals expected")
+				require.Equal(t, xrslt.TargetActionObjectRec.IsStashed, rslt.TargetActionObjectRec.IsStashed, "TargetActionObjectRec.IsStashed equals expected")
+				require.Equal(t, xrslt.TargetActionObjectRec.IsEquipped, rslt.TargetActionObjectRec.IsEquipped, "TargetActionObjectRec.IsEquipped equals expected")
 			}
 			if xrslt.TargetActionCharacterRec != nil {
 				require.NotNil(t, rslt.TargetActionCharacterRec, "TargetActionCharacterRec is not nil")
 				require.Equal(t, xrslt.TargetActionCharacterRec.Name, rslt.TargetActionCharacterRec.Name, "TargetActionCharacterRec.Name equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.Strength, rslt.TargetActionCharacterRec.Strength, "TargetActionCharacterRec.Strength equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.Dexterity, rslt.TargetActionCharacterRec.Dexterity, "TargetActionCharacterRec.Dexterity equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.Intelligence, rslt.TargetActionCharacterRec.Intelligence, "TargetActionCharacterRec.Intelligence equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.Health, rslt.TargetActionCharacterRec.Health, "TargetActionCharacterRec.Health equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.Fatigue, rslt.TargetActionCharacterRec.Fatigue, "TargetActionCharacterRec.Fatigue equals expected")
 			}
 			if xrslt.TargetActionMonsterRec != nil {
 				require.NotNil(t, rslt.TargetActionMonsterRec, "TargetActionMonsterRec is not nil")
 				require.Equal(t, xrslt.TargetActionMonsterRec.Name, rslt.TargetActionMonsterRec.Name, "TargetActionMonsterRec.Name equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.Strength, rslt.TargetActionMonsterRec.Strength, "TargetActionMonsterRec.Strength equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.Dexterity, rslt.TargetActionMonsterRec.Dexterity, "TargetActionMonsterRec.Dexterity equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.Intelligence, rslt.TargetActionMonsterRec.Intelligence, "TargetActionMonsterRec.Intelligence equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.Health, rslt.TargetActionMonsterRec.Health, "TargetActionMonsterRec.Health equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.Fatigue, rslt.TargetActionMonsterRec.Fatigue, "TargetActionMonsterRec.Fatigue equals expected")
 			}
 			if xrslt.TargetLocation != nil {
 				require.NotNil(t, rslt.TargetLocation, "TargetLocation is not nil")
