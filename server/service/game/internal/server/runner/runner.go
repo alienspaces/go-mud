@@ -47,10 +47,16 @@ func NewRunner() *Runner {
 		},
 		// Dungeons - 1
 		{
-			Method:           http.MethodGet,
-			Path:             "/api/v1/dungeons/:dungeon_id",
-			HandlerFunc:      r.GetDungeonHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/api/v1/dungeons/:dungeon_id",
+			HandlerFunc: r.GetDungeonHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateSchemaLocation:     "dungeon",
+				ValidateSchemaResponseMain: "response.schema.json",
+				ValidateSchemaResponseReferences: []string{
+					"data.schema.json",
+				},
+			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Get a dungeon.",
@@ -58,10 +64,16 @@ func NewRunner() *Runner {
 		},
 		// Characters - 2 - Get many
 		{
-			Method:           http.MethodGet,
-			Path:             "/api/v1/dungeons/:dungeon_id/characters",
-			HandlerFunc:      r.GetDungeonCharactersHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/api/v1/dungeons/:dungeon_id/characters",
+			HandlerFunc: r.GetDungeonCharactersHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateSchemaLocation:     "dungeoncharacter",
+				ValidateSchemaResponseMain: "response.schema.json",
+				ValidateSchemaResponseReferences: []string{
+					"data.schema.json",
+				},
+			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Get characters.",
@@ -69,10 +81,16 @@ func NewRunner() *Runner {
 		},
 		// Characters - 3 - Get one
 		{
-			Method:           http.MethodGet,
-			Path:             "/api/v1/dungeons/:dungeon_id/characters/:character_id",
-			HandlerFunc:      r.GetDungeonCharacterHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id",
+			HandlerFunc: r.GetDungeonCharacterHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateSchemaLocation:     "dungeoncharacter",
+				ValidateSchemaResponseMain: "response.schema.json",
+				ValidateSchemaResponseReferences: []string{
+					"data.schema.json",
+				},
+			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Get a character.",
@@ -80,10 +98,17 @@ func NewRunner() *Runner {
 		},
 		// Characters - 4 - Create
 		{
-			Method:           http.MethodPost,
-			Path:             "/api/v1/dungeons/:dungeon_id/characters",
-			HandlerFunc:      r.PostDungeonCharactersHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodPost,
+			Path:        "/api/v1/dungeons/:dungeon_id/characters",
+			HandlerFunc: r.PostDungeonCharactersHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateSchemaLocation:     "dungeoncharacter",
+				ValidateSchemaRequestMain:  "create.request.schema.json",
+				ValidateSchemaResponseMain: "response.schema.json",
+				ValidateSchemaResponseReferences: []string{
+					"data.schema.json",
+				},
+			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Create a character.",
@@ -106,8 +131,12 @@ func NewRunner() *Runner {
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
 			HandlerFunc: r.PostDungeonCharacterActionsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation: "dungeonaction",
-				ValidateSchemaMain:     "create.request.schema.json",
+				ValidateSchemaLocation:     "dungeonaction",
+				ValidateSchemaRequestMain:  "create.request.schema.json",
+				ValidateSchemaResponseMain: "response.schema.json",
+				ValidateSchemaResponseReferences: []string{
+					"data.schema.json",
+				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,

@@ -33,18 +33,27 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 
 	rnr.Log.Info("** Validate ** cache schemas")
 
-	// load configured schemas
-	err = rnr.validateCacheSchemas(hc)
-	if err != nil {
-		rnr.Log.Warn("Failed loading schemas >%v<", err)
-		return nil, err
-	}
-
-	// cache path parameter validations
+	// Cache path parameter validations
 	err = rnr.validateCachePathParams(hc)
 	if err != nil {
 		rnr.Log.Warn("Failed caching path param list >%v<", err)
 		return nil, err
+	}
+
+	// Validation schema configuration
+	schemaConfig := schema.Config{
+		Location:   hc.MiddlewareConfig.ValidateSchemaLocation,
+		Main:       hc.MiddlewareConfig.ValidateSchemaRequestMain,
+		References: hc.MiddlewareConfig.ValidateSchemaRequestReferences,
+	}
+
+	// Load configured schemas
+	if hc.MiddlewareConfig.ValidateSchemaLocation != "" && hc.MiddlewareConfig.ValidateSchemaRequestMain != "" {
+		err = rnr.validateCacheSchemas(schemaConfig)
+		if err != nil {
+			rnr.Log.Warn("Failed loading schemas >%v<", err)
+			return nil, err
+		}
 	}
 
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, _ map[string]interface{}, l logger.Logger, m modeller.Modeller) {
@@ -74,14 +83,14 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 			return
 		}
 
-		if hc.MiddlewareConfig.ValidateSchemaLocation != "" && hc.MiddlewareConfig.ValidateSchemaMain != "" {
+		if hc.MiddlewareConfig.ValidateSchemaLocation != "" && hc.MiddlewareConfig.ValidateSchemaRequestMain != "" {
 			if schemaValidator == nil {
 				rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("schema validator not available, cannot validate")))
 				return
 			}
 		}
 
-		if !schemaValidator.SchemaCached(r.Method + hc.Path) {
+		if !schemaValidator.SchemaCached(schemaConfig) {
 			l.Info("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
 
 			// delegate request
@@ -96,9 +105,7 @@ func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error
 		switch data := data.(type) {
 		case string:
 			err = schemaValidator.Validate(
-				schema.Config{
-					Key: r.Method + hc.Path,
-				},
+				schemaConfig,
 				data,
 			)
 			if err != nil {
@@ -247,14 +254,7 @@ func (rnr *Runner) validateCacheQueryParams(hc HandlerConfig) error {
 }
 
 // validateCacheSchemas - load validation JSON schemas
-func (rnr *Runner) validateCacheSchemas(hc HandlerConfig) error {
-
-	rnr.Log.Info("Caching schemas >%s< >%s<", hc.MiddlewareConfig.ValidateSchemaLocation, hc.MiddlewareConfig.ValidateSchemaMain)
-
-	if hc.MiddlewareConfig.ValidateSchemaLocation == "" || hc.MiddlewareConfig.ValidateSchemaMain == "" {
-		rnr.Log.Info("Handler method >%s< path >%s< not configured for validation", hc.Method, hc.Path)
-		return nil
-	}
+func (rnr *Runner) validateCacheSchemas(schemaConfig schema.Config) error {
 
 	if schemaValidator == nil {
 		rnr.Log.Info("Schema validator is nil, creating new schema validator")
@@ -266,12 +266,7 @@ func (rnr *Runner) validateCacheSchemas(hc HandlerConfig) error {
 		}
 	}
 
-	_, err := schemaValidator.LoadSchema(schema.Config{
-		Key:        hc.Method + hc.Path,
-		Location:   hc.MiddlewareConfig.ValidateSchemaLocation,
-		Main:       hc.MiddlewareConfig.ValidateSchemaMain,
-		References: hc.MiddlewareConfig.ValidateSchemaReferences,
-	})
+	_, err := schemaValidator.LoadSchema(schemaConfig)
 	if err != nil {
 		rnr.Log.Warn("Failed loading schema >%v<", err)
 		return err

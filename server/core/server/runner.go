@@ -73,9 +73,9 @@ type Runner struct {
 //
 // ValidateSchemaLocation - Location of JSON schemas for this endpoint relative to `APP_SERVER_SCHEMA_PATH`.
 //
-// ValidateSchemaMain - The name of the main JSON schema document to load for this endpoint.
+// ValidateSchemaRequestMain - The name of the main JSON schema document to load for this endpoint.
 //
-// ValidateSchemaReferences - A list of additional JSON schema reference documents to load for this endpoint.
+// ValidateSchemaRequestReferences - A list of additional JSON schema reference documents to load for this endpoint.
 //
 // ValidatePathParams - Rules for validating path parameters
 //
@@ -95,9 +95,12 @@ type MiddlewareConfig struct {
 	AuthRequireAnyIdentity []string
 
 	// Validate Schema - JSON schema validation
-	ValidateSchemaLocation   string
-	ValidateSchemaMain       string
-	ValidateSchemaReferences []string
+	ValidateSchemaLocation           string
+	ValidateSchemaRequestMain        string
+	ValidateSchemaRequestReferences  []string
+	ValidateSchemaResponse           bool
+	ValidateSchemaResponseMain       string
+	ValidateSchemaResponseReferences []string
 
 	// ValidatePathParams - Rules for validating path parameters
 	ValidatePathParams map[string]ValidatePathParam

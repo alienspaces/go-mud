@@ -14,7 +14,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
-func TestDungeonHandler(t *testing.T) {
+func TestGetDungeonHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()
@@ -22,7 +22,7 @@ func TestDungeonHandler(t *testing.T) {
 
 	type testCase struct {
 		TestCase
-		responseBody func(data harness.Data) *schema.DungeonResponse
+		expectResponseBody func(data harness.Data) *schema.DungeonResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -46,6 +46,12 @@ func TestDungeonHandler(t *testing.T) {
 		return headers
 	}
 
+	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+		var responseBody *schema.DungeonResponse
+		err = json.NewDecoder(body).Decode(&responseBody)
+		return responseBody, err
+	}
+
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
@@ -61,83 +67,79 @@ func TestDungeonHandler(t *testing.T) {
 				RequestBody: func(data harness.Data) interface{} {
 					return nil
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			responseBody: func(data harness.Data) *schema.DungeonResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonResponse {
 				res := schema.DungeonResponse{
 					Data: []schema.DungeonData{
 						{
-							ID: data.DungeonRecs[0].ID,
+							ID:          data.DungeonRecs[0].ID,
+							Name:        data.DungeonRecs[0].Name,
+							Description: data.DungeonRecs[0].Description,
 						},
 					},
 				}
 				return &res
 			},
 		},
-		// {
-		// 	name: "GET - Get non-existant",
-		// 	config: func(rnr *Runner) server.HandlerConfig {
-		// 		return rnr.HandlerConfig[1]
-		// 	},
-		// 	requestHeaders: func(data harness.Data) map[string]string {
-		// 		headers := map[string]string{
-		// 			"Authorization": "Bearer " + validAuthToken(),
-		// 		}
-		// 		return headers
-		// 	},
-		// 	requestParams: func(data harness.Data) map[string]string {
-		// 		params := map[string]string{
-		// 			":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
-		// 		}
-		// 		return params
-		// 	},
-		// 	requestData: func(data harness.Data) *schema.DungeonRequest {
-		// 		return nil
-		// 	},
-		// 	responseCode: http.StatusNotFound,
-		// },
+		{
+			TestCase: TestCase{
+				Name: "GET - Get non-existant",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[1]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseCode: http.StatusNotFound,
+			},
+		},
 	}
-
-	// v, err := coreschema.NewValidator(th.Config, th.Log)
-	// require.NoError(t, err, "Validator returns without error")
 
 	for _, testCase := range testCases {
 
 		t.Logf("Running test >%s<", testCase.Name)
 
-		testFunc := func(method string, body io.Reader) {
-
-			var responseBody *schema.DungeonResponse
-			err = json.NewDecoder(body).Decode(&responseBody)
-			require.NoError(t, err, "Decode returns without error")
+		testFunc := func(method string, body interface{}) {
 
 			if testCase.TestResponseCode() != http.StatusOK {
 				return
 			}
 
-			if testCase.responseBody != nil {
-				expectResponseBody := testCase.responseBody(th.Data)
-				if responseBody != nil {
+			var responseBody *schema.DungeonResponse
+			if body != nil {
+				responseBody = body.(*schema.DungeonResponse)
+			}
 
-					// Validate response body
-					// jsonData, err := json.Marshal(responseBody)
-					// require.NoError(t, err, "Marshal returns without error")
+			// Validate response body
+			if testCase.expectResponseBody != nil {
+				require.NotNil(t, responseBody, "Response body is not nil")
+				require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-					// err = v.Validate(coreschema.Config{
-					// 	Key:      "dungeonaction.create.response",
-					// 	Location: "dungeonaction",
-					// 	Main:     "create.response.schema.json",
-					// 	References: []string{
-					// 		"data.schema.json",
-					// 	},
-					// }, string(jsonData))
-					// require.NoError(t, err, "Validates against schema without error")
+				expectResponseBody := testCase.expectResponseBody(th.Data)
 
-					for idx := range expectResponseBody.Data {
-						//
-						// Response data
-						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
-					}
+				// Validate response body data
+				for idx, expectData := range expectResponseBody.Data {
+					require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
+
+					// Validate dungeon
+					t.Logf("Checking dungeon name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
+					require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
+					t.Logf("Checking dungeon description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
+					require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
 				}
 			}
 		}

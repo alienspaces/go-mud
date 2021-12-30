@@ -152,7 +152,7 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 		schemaLoc := config.MiddlewareConfig.ValidateSchemaLocation
 		if schemaLoc != "" {
 
-			schemaMain := config.MiddlewareConfig.ValidateSchemaMain
+			schemaMain := config.MiddlewareConfig.ValidateSchemaRequestMain
 			filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaMain)
 
 			rnr.Log.Info("Schema main content filename >%s<", filename)
@@ -162,7 +162,7 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 				return nil, err
 			}
 
-			schemaReferences := config.MiddlewareConfig.ValidateSchemaReferences
+			schemaReferences := config.MiddlewareConfig.ValidateSchemaRequestReferences
 			for _, schemaReference := range schemaReferences {
 
 				filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaReference)

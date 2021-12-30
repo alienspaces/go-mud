@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/template/update.request.schema.json",
+  "title": "Update Template Request",
+  "type": "object",
+  "properties": {
+    "data": {
+      "$ref": "#/definitions/data"
+    }
+  },
+  "required": ["data"],
+  "definitions": {
+    "data": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    }
+  }
+}

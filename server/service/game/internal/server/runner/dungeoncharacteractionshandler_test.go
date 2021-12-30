@@ -10,7 +10,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"gitlab.com/alienspaces/go-mud/server/core/auth"
-	coreschema "gitlab.com/alienspaces/go-mud/server/core/schema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
@@ -23,7 +22,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 
 	type testCase struct {
 		TestCase
-		responseBody func(data harness.Data) *schema.DungeonActionResponse
+		expectResponseBody func(data harness.Data) *schema.DungeonActionResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -55,6 +54,12 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 		return params
 	}
 
+	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+		var responseBody *schema.DungeonActionResponse
+		err = json.NewDecoder(body).Decode(&responseBody)
+		return responseBody, err
+	}
+
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
@@ -70,9 +75,10 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					}
 					return &res
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
@@ -146,9 +152,10 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					}
 					return &res
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
@@ -213,9 +220,10 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					}
 					return &res
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
@@ -280,9 +288,10 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					}
 					return &res
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
@@ -340,9 +349,10 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					}
 					return &res
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			responseBody: func(data harness.Data) *schema.DungeonActionResponse {
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
@@ -399,57 +409,43 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 					}
 					return &res
 				},
+				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusBadRequest,
 			},
 		},
 	}
 
-	v, err := coreschema.NewValidator(th.Config, th.Log)
-	require.NoError(t, err, "Validator returns without error")
+	isCharacterNil := func(c *schema.CharacterData) bool {
+		return c == nil
+	}
+	isMonsterNil := func(c *schema.MonsterData) bool {
+		return c == nil
+	}
 
 	for _, testCase := range testCases {
 
 		t.Logf("Running test >%s<", testCase.Name)
 
-		testFunc := func(method string, body io.Reader) {
+		testFunc := func(method string, body interface{}) {
 
 			if testCase.TestResponseCode() != http.StatusOK {
 				return
 			}
 
 			var responseBody *schema.DungeonActionResponse
-			err = json.NewDecoder(body).Decode(&responseBody)
-			require.NoError(t, err, "Decode returns without error")
-
-			isCharacterNil := func(c *schema.CharacterData) bool {
-				return c == nil
-			}
-			isMonsterNil := func(c *schema.MonsterData) bool {
-				return c == nil
+			if body != nil {
+				responseBody = body.(*schema.DungeonActionResponse)
 			}
 
-			if testCase.responseBody != nil {
-
-				// Validate response body
+			// Validate response body
+			if testCase.expectResponseBody != nil {
 				require.NotNil(t, responseBody, "Response body is not nil")
+				require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-				jsonData, err := json.Marshal(responseBody)
-				require.NoError(t, err, "Marshal returns without error")
+				expectResponseBody := testCase.expectResponseBody(th.Data)
 
-				err = v.Validate(coreschema.Config{
-					Key:      "dungeonaction.create.response",
-					Location: "dungeonaction",
-					Main:     "create.response.schema.json",
-					References: []string{
-						"data.schema.json",
-					},
-				}, string(jsonData))
-				require.NoError(t, err, "Validates against schema without error")
-
-				expectResponseBody := testCase.responseBody(th.Data)
+				// Validate response body data
 				for idx, expectData := range expectResponseBody.Data {
-
-					// Response data
 					require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 					// Command
@@ -554,9 +550,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 				}
 			}
 
-			require.NotNil(t, responseBody, "Response body is not nil")
-			require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
-
+			// Check dates and add teardown ID's
 			for _, data := range responseBody.Data {
 				require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
 				if method == http.MethodPost {

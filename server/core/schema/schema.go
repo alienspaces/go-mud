@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
@@ -12,7 +13,6 @@ import (
 var schemaCache map[string]*gojsonschema.Schema
 
 type Config struct {
-	Key        string
 	Location   string
 	Main       string
 	References []string
@@ -38,11 +38,13 @@ func (v *Validator) ValidateBytes(schemaConfig Config, data []byte) error {
 // Validate -
 func (v *Validator) Validate(schemaConfig Config, data string) error {
 
-	v.Log.Warn("Validating key >%s< data >%s<", schemaConfig.Key, string(data))
-
 	var err error
 
-	s := schemaCache[schemaConfig.Key]
+	key := makeKey(schemaConfig)
+
+	v.Log.Info("Validate key >%s< data >%s<", key, string(data))
+
+	s := schemaCache[key]
 	if s == nil {
 		s, err = v.LoadSchema(schemaConfig)
 		if err != nil {
@@ -79,7 +81,11 @@ func (v *Validator) Validate(schemaConfig Config, data string) error {
 	return nil
 }
 
-func (v *Validator) SchemaCached(key string) bool {
+func (v *Validator) SchemaCached(schemaConfig Config) bool {
+
+	key := makeKey(schemaConfig)
+
+	v.Log.Info("Schema cached key >%s<", key)
 
 	if _, ok := schemaCache[key]; ok {
 		return true
@@ -90,7 +96,9 @@ func (v *Validator) SchemaCached(key string) bool {
 
 func (v *Validator) LoadSchema(schemaConfig Config) (*gojsonschema.Schema, error) {
 
-	v.Log.Warn("Loading schema key >%s< location >%s<", schemaConfig.Key, schemaConfig.Location)
+	key := makeKey(schemaConfig)
+
+	v.Log.Info("Load schema key >%s<", key)
 
 	if schemaConfig.Location == "" {
 		return nil, fmt.Errorf("missing Location, invalid config")
@@ -100,13 +108,13 @@ func (v *Validator) LoadSchema(schemaConfig Config) (*gojsonschema.Schema, error
 	}
 
 	schemaLoc := schemaConfig.Location
-	schema := schemaConfig.Main
+	schemaMain := schemaConfig.Main
 	schemaReferences := schemaConfig.References
 
 	schemaPath := v.Config.Get("APP_SERVER_SCHEMA_PATH")
 	schemaLoc = fmt.Sprintf("file://%s/%s", schemaPath, schemaLoc)
 
-	v.Log.Info("Loading schema %s/%s", schemaLoc, schema)
+	v.Log.Info("Loading schema main %s/%s", schemaLoc, schemaMain)
 
 	sl := gojsonschema.NewSchemaLoader()
 	sl.Validate = true
@@ -121,7 +129,7 @@ func (v *Validator) LoadSchema(schemaConfig Config) (*gojsonschema.Schema, error
 		}
 	}
 
-	loader := gojsonschema.NewReferenceLoader(fmt.Sprintf("%s/%s", schemaLoc, schema))
+	loader := gojsonschema.NewReferenceLoader(fmt.Sprintf("%s/%s", schemaLoc, schemaMain))
 	s, err := sl.Compile(loader)
 	if err != nil {
 		v.Log.Warn("Failed compiling schema's >%v<", err)
@@ -131,7 +139,11 @@ func (v *Validator) LoadSchema(schemaConfig Config) (*gojsonschema.Schema, error
 	if schemaCache == nil {
 		schemaCache = map[string]*gojsonschema.Schema{}
 	}
-	schemaCache[schemaConfig.Key] = s
+	schemaCache[key] = s
 
 	return s, nil
+}
+
+func makeKey(schemaConfig Config) string {
+	return fmt.Sprintf("%s-%s-%s", schemaConfig.Location, schemaConfig.Main, strings.Join(schemaConfig.References, "-"))
 }

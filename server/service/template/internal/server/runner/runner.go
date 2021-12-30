@@ -71,9 +71,9 @@ func NewRunner() *Runner {
 				AuthTypes: []string{
 					auth.AuthTypeJWT,
 				},
-				ValidateSchemaLocation: "template",
-				ValidateSchemaMain:     "main.schema.json",
-				ValidateSchemaReferences: []string{
+				ValidateSchemaLocation:    "template",
+				ValidateSchemaRequestMain: "create.request.schema.json",
+				ValidateSchemaRequestReferences: []string{
 					"data.schema.json",
 				},
 			},
@@ -90,9 +90,9 @@ func NewRunner() *Runner {
 				AuthTypes: []string{
 					auth.AuthTypeJWT,
 				},
-				ValidateSchemaLocation: "template",
-				ValidateSchemaMain:     "main.schema.json",
-				ValidateSchemaReferences: []string{
+				ValidateSchemaLocation:    "template",
+				ValidateSchemaRequestMain: "create.request.schema.json",
+				ValidateSchemaRequestReferences: []string{
 					"data.schema.json",
 				},
 			},
@@ -109,9 +109,9 @@ func NewRunner() *Runner {
 				AuthTypes: []string{
 					auth.AuthTypeJWT,
 				},
-				ValidateSchemaLocation: "template",
-				ValidateSchemaMain:     "main.schema.json",
-				ValidateSchemaReferences: []string{
+				ValidateSchemaLocation:    "template",
+				ValidateSchemaRequestMain: "update.request.schema.json",
+				ValidateSchemaRequestReferences: []string{
 					"data.schema.json",
 				},
 			},

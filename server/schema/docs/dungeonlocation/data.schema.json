@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/dungeonlocation/data.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeonlocation/data.schema.json",
   "title": "Dungeon Location Data",
   "description": "Dungeon location data",
   "type": "object",

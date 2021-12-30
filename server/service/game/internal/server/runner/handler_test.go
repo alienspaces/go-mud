@@ -13,6 +13,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
+	coreschema "gitlab.com/alienspaces/go-mud/server/core/schema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
@@ -24,6 +25,7 @@ type TestCaser interface {
 	TestRequestPathParams(data harness.Data) map[string]string
 	TestRequestQueryParams(data harness.Data) map[string]string
 	TestRequestBody(data harness.Data) interface{}
+	TestResponseBody(body io.Reader) (interface{}, error)
 	TestResponseCode() int
 }
 
@@ -34,11 +36,12 @@ type TestCase struct {
 	RequestPathParams  func(data harness.Data) map[string]string
 	RequestQueryParams func(data harness.Data) map[string]string
 	RequestBody        func(data harness.Data) interface{}
+	ResponseBody       func(body io.Reader) (interface{}, error)
 	ResponseCode       int
 }
 
 //lint:ignore U1000 - testing struct implements interface
-var _testCase TestCaser = &TestCase{}
+var _tc TestCaser = &TestCase{}
 
 func (t *TestCase) TestName() string {
 	return t.Name
@@ -76,11 +79,20 @@ func (t *TestCase) TestRequestBody(data harness.Data) interface{} {
 	return b
 }
 
+func (t *TestCase) TestResponseBody(body io.Reader) (interface{}, error) {
+	var b interface{}
+	var err error
+	if t.ResponseBody != nil {
+		b, err = t.ResponseBody(body)
+	}
+	return b, err
+}
+
 func (t *TestCase) TestResponseCode() int {
 	return t.ResponseCode
 }
 
-func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc func(method string, body io.Reader)) {
+func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method string, body interface{})) {
 	rnr := NewRunner()
 
 	err := rnr.Init(th.Config, th.Log, th.Store, th.Model)
@@ -94,7 +106,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc
 	}()
 
 	// config
-	cfg := testCase.TestHandlerConfig(rnr)
+	cfg := tc.TestHandlerConfig(rnr)
 
 	// handler
 	h, _ := rnr.DefaultMiddleware(cfg, cfg.HandlerFunc)
@@ -116,7 +128,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc
 	}
 
 	// request params
-	requestParams := testCase.TestRequestPathParams(th.Data)
+	requestParams := tc.TestRequestPathParams(th.Data)
 
 	requestPath := cfg.Path
 	for paramKey, paramValue := range requestParams {
@@ -124,7 +136,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc
 	}
 
 	// query params
-	queryParams := testCase.TestRequestQueryParams(th.Data)
+	queryParams := tc.TestRequestQueryParams(th.Data)
 
 	if len(queryParams) > 0 {
 		count := 0
@@ -141,7 +153,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc
 	}
 
 	// request data
-	data := testCase.TestRequestBody(th.Data)
+	data := tc.TestRequestBody(th.Data)
 
 	var req *http.Request
 
@@ -157,7 +169,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc
 	}
 
 	// request headers
-	requestHeaders := testCase.TestRequestHeaders(th.Data)
+	requestHeaders := tc.TestRequestHeaders(th.Data)
 
 	for headerKey, headerVal := range requestHeaders {
 		req.Header.Add(headerKey, headerVal)
@@ -170,7 +182,32 @@ func RunTestCase(t *testing.T, th *harness.Testing, testCase TestCaser, testFunc
 	rtr.ServeHTTP(rec, req)
 
 	// test status
-	require.Equalf(t, testCase.TestResponseCode(), rec.Code, "%s - Response code equals expected", testCase.TestName())
+	require.Equalf(t, tc.TestResponseCode(), rec.Code, "%s - Response code equals expected", tc.TestName())
 
-	testFunc(cfg.Method, rec.Body)
+	// body
+	responseBody, err := tc.TestResponseBody(rec.Body)
+	require.NoError(t, err, "Response body decodes without error")
+
+	// Validate response body
+	if rec.Code == 200 || rec.Code == 201 {
+		require.NotNil(t, responseBody, "Response body is not nil")
+
+		v, err := coreschema.NewValidator(th.Config, th.Log)
+		require.NoError(t, err, "Validator returns without error")
+
+		jsonData, err := json.Marshal(responseBody)
+		require.NoError(t, err, "Marshal returns without error")
+
+		err = v.Validate(coreschema.Config{
+			Location:   cfg.MiddlewareConfig.ValidateSchemaLocation,     // "dungeoncharacter",
+			Main:       cfg.MiddlewareConfig.ValidateSchemaResponseMain, //"main.schema.json",
+			References: cfg.MiddlewareConfig.ValidateSchemaResponseReferences,
+			// []string{
+			// 	"data.schema.json",
+			// },
+		}, string(jsonData))
+		require.NoError(t, err, "Validates against schema without error")
+	}
+
+	tf(cfg.Method, responseBody)
 }
