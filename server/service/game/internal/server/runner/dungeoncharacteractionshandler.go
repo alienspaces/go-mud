@@ -73,17 +73,20 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 
 	dungeonActionRec := dungeonActionRecordSet.ActionRec
 
-	var characterData *schema.CharacterData
+	var err error
+	var characterData *schema.CharacterDetailedData
 	if dungeonActionRecordSet.ActionCharacterRec != nil {
-		characterData = &schema.CharacterData{
-			Name: dungeonActionRecordSet.ActionCharacterRec.Name,
+		characterData, err = rnr.dungeonCharacterToResponseCharacter(dungeonActionRecordSet.ActionCharacterRec)
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	var monsterData *schema.MonsterData
+	var monsterData *schema.MonsterDetailedData
 	if dungeonActionRecordSet.ActionMonsterRec != nil {
-		monsterData = &schema.MonsterData{
-			Name: dungeonActionRecordSet.ActionMonsterRec.Name,
+		monsterData, err = rnr.dungeonMonsterToResponseMonster(dungeonActionRecordSet.ActionMonsterRec)
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -107,7 +110,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Equipped object
-	var equippedObjectData *schema.ObjectData
+	var equippedObjectData *schema.ObjectDetailedData
 	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
 		equippedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.EquippedActionObjectRec)
 		if err != nil {
@@ -116,7 +119,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Stashed object
-	var stashedObjectData *schema.ObjectData
+	var stashedObjectData *schema.ObjectDetailedData
 	if dungeonActionRecordSet.StashedActionObjectRec != nil {
 		stashedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.StashedActionObjectRec)
 		if err != nil {
@@ -125,7 +128,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target object
-	var targetObjectData *schema.ObjectData
+	var targetObjectData *schema.ObjectDetailedData
 	if dungeonActionRecordSet.TargetActionObjectRec != nil {
 		targetObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.TargetActionObjectRec)
 		if err != nil {
@@ -134,7 +137,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target character
-	var targetCharacterData *schema.CharacterData
+	var targetCharacterData *schema.CharacterDetailedData
 	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
 		targetCharacterData, err = rnr.dungeonCharacterToResponseCharacter(dungeonActionRecordSet.TargetActionCharacterRec)
 		if err != nil {
@@ -143,7 +146,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	}
 
 	// Target monster
-	var targetMonsterData *schema.MonsterData
+	var targetMonsterData *schema.MonsterDetailedData
 	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
 		targetMonsterData, err = rnr.dungeonMonsterToResponseMonster(dungeonActionRecordSet.TargetActionMonsterRec)
 		if err != nil {
@@ -169,14 +172,14 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	return &data, nil
 }
 
-func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject) (*schema.ObjectData, error) {
-	return &schema.ObjectData{
+func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject) (*schema.ObjectDetailedData, error) {
+	return &schema.ObjectDetailedData{
 		Name: dungeonObjectRec.Name,
 	}, nil
 }
 
-func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *record.DungeonActionCharacter) (*schema.CharacterData, error) {
-	return &schema.CharacterData{
+func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *record.DungeonActionCharacter) (*schema.CharacterDetailedData, error) {
+	return &schema.CharacterDetailedData{
 		Name:         dungeonCharacterRec.Name,
 		Strength:     dungeonCharacterRec.Strength,
 		Dexterity:    dungeonCharacterRec.Dexterity,
@@ -186,8 +189,8 @@ func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *reco
 	}, nil
 }
 
-func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.DungeonActionMonster) (*schema.MonsterData, error) {
-	return &schema.MonsterData{
+func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.DungeonActionMonster) (*schema.MonsterDetailedData, error) {
+	return &schema.MonsterDetailedData{
 		Name:         dungeonMonsterRec.Name,
 		Strength:     dungeonMonsterRec.Strength,
 		Dexterity:    dungeonMonsterRec.Dexterity,

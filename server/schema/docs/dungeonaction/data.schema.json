@@ -22,25 +22,25 @@
       "$ref": "#/$defs/location"
     },
     "character": {
-      "$ref": "#/$defs/character"
+      "$ref": "#/$defs/character_detailed"
     },
     "monster": {
-      "$ref": "#/$defs/monster"
+      "$ref": "#/$defs/monster_detailed"
     },
     "equipped_object": {
-      "$ref": "#/$defs/object"
+      "$ref": "#/$defs/object_detailed"
     },
     "stashed_object": {
-      "$ref": "#/$defs/object"
+      "$ref": "#/$defs/object_detailed"
     },
     "target_object": {
-      "$ref": "#/$defs/object"
+      "$ref": "#/$defs/object_detailed"
     },
     "target_character": {
-      "$ref": "#/$defs/character"
+      "$ref": "#/$defs/character_detailed"
     },
     "target_monster": {
-      "$ref": "#/$defs/monster"
+      "$ref": "#/$defs/monster_detailed"
     },
     "target_location": {
       "$ref": "#/$defs/location"
@@ -85,6 +85,25 @@
     },
     "character": {
       "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "character_detailed": {
+      "type": "object",
+      "required": [
+        "name", 
+        "strength", 
+        "dexterity",
+        "intelligence",
+        "health",
+        "fatigue"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -108,6 +127,25 @@
     },
     "monster": {
       "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+     }
+    },
+    "monster_detailed": {
+      "type": "object",
+      "required": [
+        "name", 
+        "strength", 
+        "dexterity",
+        "intelligence",
+        "health",
+        "fatigue"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -131,6 +169,20 @@
     },
     "object": {
       "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "object_detailed": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
       "properties": {
         "name": {
           "type": "string"

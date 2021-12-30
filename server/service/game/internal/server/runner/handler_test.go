@@ -198,13 +198,12 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		jsonData, err := json.Marshal(responseBody)
 		require.NoError(t, err, "Marshal returns without error")
 
+		t.Logf("Validating response against schema >%s/%s<", cfg.MiddlewareConfig.ValidateSchemaLocation, cfg.MiddlewareConfig.ValidateSchemaResponseMain)
+
 		err = v.Validate(coreschema.Config{
-			Location:   cfg.MiddlewareConfig.ValidateSchemaLocation,     // "dungeoncharacter",
-			Main:       cfg.MiddlewareConfig.ValidateSchemaResponseMain, //"main.schema.json",
+			Location:   cfg.MiddlewareConfig.ValidateSchemaLocation,
+			Main:       cfg.MiddlewareConfig.ValidateSchemaResponseMain,
 			References: cfg.MiddlewareConfig.ValidateSchemaResponseReferences,
-			// []string{
-			// 	"data.schema.json",
-			// },
 		}, string(jsonData))
 		require.NoError(t, err, "Validates against schema without error")
 	}

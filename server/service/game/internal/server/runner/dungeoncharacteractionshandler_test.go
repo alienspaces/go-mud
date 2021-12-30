@@ -14,7 +14,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
-func TestDungeonCharacterActionHandler(t *testing.T) {
+func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()
@@ -103,7 +103,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 									},
 								},
 							},
-							Character: &schema.CharacterData{
+							Character: &schema.CharacterDetailedData{
 								Name: data.DungeonCharacterRecs[0].Name,
 							},
 							Monster:         nil,
@@ -175,7 +175,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 									},
 								},
 							},
-							Character: &schema.CharacterData{
+							Character: &schema.CharacterDetailedData{
 								Name: data.DungeonCharacterRecs[0].Name,
 							},
 							Monster:         nil,
@@ -248,7 +248,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 									},
 								},
 							},
-							Character: &schema.CharacterData{
+							Character: &schema.CharacterDetailedData{
 								Name: data.DungeonCharacterRecs[0].Name,
 							},
 							Monster:         nil,
@@ -316,13 +316,13 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 									},
 								},
 							},
-							Character: &schema.CharacterData{
+							Character: &schema.CharacterDetailedData{
 								Name: data.DungeonCharacterRecs[0].Name,
 							},
 							Monster:        nil,
 							EquippedObject: nil,
 							StashedObject:  nil,
-							TargetObject: &schema.ObjectData{
+							TargetObject: &schema.ObjectDetailedData{
 								Name:        data.DungeonObjectRecs[0].Name,
 								Description: data.DungeonObjectRecs[0].Description,
 							},
@@ -377,7 +377,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 									},
 								},
 							},
-							Character: &schema.CharacterData{
+							Character: &schema.CharacterDetailedData{
 								Name: data.DungeonCharacterRecs[0].Name,
 							},
 							Monster:         nil,
@@ -385,7 +385,7 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 							StashedObject:   nil,
 							TargetObject:    nil,
 							TargetCharacter: nil,
-							TargetMonster: &schema.MonsterData{
+							TargetMonster: &schema.MonsterDetailedData{
 								Name: data.DungeonMonsterRecs[0].Name,
 							},
 							TargetLocation: nil,
@@ -415,10 +415,10 @@ func TestDungeonCharacterActionHandler(t *testing.T) {
 		},
 	}
 
-	isCharacterNil := func(c *schema.CharacterData) bool {
+	isCharacterNil := func(c *schema.CharacterDetailedData) bool {
 		return c == nil
 	}
-	isMonsterNil := func(c *schema.MonsterData) bool {
+	isMonsterNil := func(c *schema.MonsterDetailedData) bool {
 		return c == nil
 	}
 

@@ -12,20 +12,20 @@ type DungeonActionResponse struct {
 
 // DungeonActionResponseData -
 type DungeonActionResponseData struct {
-	ID              string         `json:"id,omitempty"`
-	Command         string         `json:"command"`
-	CommandResult   string         `json:"command_result"`
-	Location        LocationData   `json:"location"`
-	Character       *CharacterData `json:"character,omitempty"`
-	Monster         *MonsterData   `json:"monster,omitempty"`
-	EquippedObject  *ObjectData    `json:"equipped_object,omitempty"`
-	StashedObject   *ObjectData    `json:"stashed_object,omitempty"`
-	TargetObject    *ObjectData    `json:"target_object,omitempty"`
-	TargetCharacter *CharacterData `json:"target_character,omitempty"`
-	TargetMonster   *MonsterData   `json:"target_monster,omitempty"`
-	TargetLocation  *LocationData  `json:"target_location,omitempty"`
-	CreatedAt       time.Time      `json:"created_at,omitempty"`
-	UpdatedAt       time.Time      `json:"updated_at,omitempty"`
+	ID              string                 `json:"id,omitempty"`
+	Command         string                 `json:"command"`
+	CommandResult   string                 `json:"command_result"`
+	Location        LocationData           `json:"location"`
+	Character       *CharacterDetailedData `json:"character,omitempty"`
+	Monster         *MonsterDetailedData   `json:"monster,omitempty"`
+	EquippedObject  *ObjectDetailedData    `json:"equipped_object,omitempty"`
+	StashedObject   *ObjectDetailedData    `json:"stashed_object,omitempty"`
+	TargetObject    *ObjectDetailedData    `json:"target_object,omitempty"`
+	TargetCharacter *CharacterDetailedData `json:"target_character,omitempty"`
+	TargetMonster   *MonsterDetailedData   `json:"target_monster,omitempty"`
+	TargetLocation  *LocationData          `json:"target_location,omitempty"`
+	CreatedAt       time.Time              `json:"created_at,omitempty"`
+	UpdatedAt       time.Time              `json:"updated_at,omitempty"`
 }
 
 // DungeonActionRequest -
@@ -50,6 +50,10 @@ type LocationData struct {
 }
 
 type CharacterData struct {
+	Name string `json:"name"`
+}
+
+type CharacterDetailedData struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	Strength     int    `json:"strength"`
@@ -60,6 +64,10 @@ type CharacterData struct {
 }
 
 type MonsterData struct {
+	Name string `json:"name"`
+}
+
+type MonsterDetailedData struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	Strength     int    `json:"strength"`
@@ -70,6 +78,11 @@ type MonsterData struct {
 }
 
 type ObjectData struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type ObjectDetailedData struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
