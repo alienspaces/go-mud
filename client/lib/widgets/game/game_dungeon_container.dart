@@ -7,19 +7,19 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_move_grid.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_look_grid.dart';
 
-class GameDungeonGridContainerWidget extends StatefulWidget {
-  const GameDungeonGridContainerWidget({Key? key}) : super(key: key);
+class GameDungeonContainerWidget extends StatefulWidget {
+  const GameDungeonContainerWidget({Key? key}) : super(key: key);
 
   @override
-  _GameDungeonGridContainerWidgetState createState() =>
-      _GameDungeonGridContainerWidgetState();
+  _GameDungeonContainerWidgetState createState() =>
+      _GameDungeonContainerWidgetState();
 }
 
-class _GameDungeonGridContainerWidgetState
-    extends State<GameDungeonGridContainerWidget> {
+class _GameDungeonContainerWidgetState
+    extends State<GameDungeonContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonGridContainerWidget');
+    final log = getLogger('GameDungeonContainerWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

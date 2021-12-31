@@ -5,7 +5,7 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
 import 'package:go_mud_client/widgets/game/game_dungeon_description_container.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_grid_container.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_container.dart';
 
 class GameDungeonWidget extends StatefulWidget {
   const GameDungeonWidget({Key? key}) : super(key: key);
@@ -24,36 +24,26 @@ class _GameDungeonWidgetState extends State<GameDungeonWidget> {
       color: Colors.orange[100],
       child: Column(
         children: <Widget>[
-          // Location Description
+          // Location description
           const Expanded(
-            flex: 2,
+            flex: 3,
             child: GameDungeonDescriptionContainerWidget(),
           ),
+          // Location container
           Expanded(
-            flex: 7,
+            flex: 10,
             child: Container(
-              color: Colors.orange[100],
-              child: Column(
-                children: <Widget>[
-                  // Location Grid
-                  Expanded(
-                    flex: 10,
-                    child: Container(
-                      decoration: BoxDecoration(color: Colors.orange[100]),
-                      clipBehavior: Clip.antiAlias,
-                      child: const GameDungeonGridContainerWidget(),
-                    ),
-                  ),
-                  // Location Actions
-                  const Expanded(
-                    flex: 4,
-                    child: GameDungeonActionWidget(),
-                  ),
-                ],
-              ),
+              decoration: BoxDecoration(color: Colors.orange[100]),
+              clipBehavior: Clip.antiAlias,
+              child: const GameDungeonContainerWidget(),
             ),
           ),
-          // Location Command
+          // Location actions
+          const Expanded(
+            flex: 4,
+            child: GameDungeonActionWidget(),
+          ),
+          // Current command
           const Expanded(
             flex: 1,
             child: GameDungeonCommandWidget(),

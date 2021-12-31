@@ -8,22 +8,14 @@
 
 ## Now
 
-- Server: Look object
-- Server: Look monster
-- Server: Look character
 
 ## Next
 
-- Server: Validate API responses against JSON schemas in tests
+- Client: Show detailed information when looking
 
 ## Later
 
-- Server: Improve handler tests
-- Server: Improve model tests
 - Server: Improve API error responses
-- Client: Scroll rooms for look actions
-- Server: Expand model tests
-- Server: Expand handler tests
 - Server: Stash, equip and drop object
 - Client: Icons for room contents
 - Server: Implement 2 second turns
