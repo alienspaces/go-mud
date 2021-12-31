@@ -43,6 +43,7 @@ func TestCreateOne(t *testing.T) {
 					DungeonLocationID: data.DungeonLocationRecs[0].ID,
 					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
 					Name:              data.DungeonObjectRecs[0].Name,
+					Description:       data.DungeonObjectRecs[0].Description,
 				}
 			},
 			err: false,
@@ -56,6 +57,7 @@ func TestCreateOne(t *testing.T) {
 					DungeonLocationID: data.DungeonLocationRecs[0].ID,
 					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
 					Name:              data.DungeonObjectRecs[0].Name,
+					Description:       data.DungeonObjectRecs[0].Description,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

@@ -181,7 +181,10 @@
     "object_detailed": {
       "type": "object",
       "required": [
-        "name"
+        "name",
+        "description",
+        "is_stashed",
+        "is_equipped"
       ],
       "properties": {
         "name": {

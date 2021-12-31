@@ -112,7 +112,7 @@ func (t *Testing) createDungeonObjectRec(dungeonRec *record.Dungeon, dungeonObje
 
 	// NOTE: Add default values for required properties here
 
-	t.Log.Debug("(testing) Creating dungeon object record >%#v<", rec)
+	t.Log.Warn("(testing) Creating dungeon object record >%#v<", rec)
 
 	err := t.Model.(*model.Model).CreateDungeonObjectRec(&rec)
 	if err != nil {

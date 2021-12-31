@@ -168,7 +168,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[1].Name,
 								Description: data.DungeonLocationRecs[1].Description,
-								Directions:  []string{"north", "south"},
+								Directions:  []string{"north", "south", "northwest"},
 								Characters: []schema.CharacterData{
 									{
 										Name: data.DungeonCharacterRecs[0].Name,
@@ -198,7 +198,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Name:        data.DungeonLocationRecs[1].Name,
 								Description: data.DungeonLocationRecs[1].Description,
 								Direction:   "north",
-								Directions:  []string{"north", "south"},
+								Directions:  []string{"north", "south", "northwest"},
 								Characters: []schema.CharacterData{
 									{
 										Name: data.DungeonCharacterRecs[0].Name,
@@ -276,7 +276,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Name:        data.DungeonLocationRecs[1].Name,
 								Description: data.DungeonLocationRecs[1].Description,
 								Direction:   "north",
-								Directions:  []string{"north", "south"},
+								Directions:  []string{"north", "south", "northwest"},
 								Monsters: []schema.MonsterData{
 									{
 										Name: data.DungeonMonsterRecs[1].Name,

@@ -10,7 +10,8 @@ import 'package:go_mud_client/repository/repository.dart';
 part 'dungeon_action_record.dart';
 
 abstract class DungeonActionRepositoryInterface {
-  Future<DungeonActionRecord?> create(String dungeonID, String characterID, String sentence);
+  Future<DungeonActionRecord?> create(
+      String dungeonID, String characterID, String sentence);
 }
 
 class DungeonActionRepository implements DungeonActionRepositoryInterface {
@@ -20,7 +21,8 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
   DungeonActionRepository({required this.config, required this.api});
 
   @override
-  Future<DungeonActionRecord?> create(String dungeonID, String characterID, String sentence) async {
+  Future<DungeonActionRecord?> create(
+      String dungeonID, String characterID, String sentence) async {
     final log = getLogger('DungeonActionRepository');
 
     var response = await api.createDungeonAction(

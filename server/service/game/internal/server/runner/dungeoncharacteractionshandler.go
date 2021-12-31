@@ -174,7 +174,8 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 
 func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject) (*schema.ObjectDetailedData, error) {
 	return &schema.ObjectDetailedData{
-		Name: dungeonObjectRec.Name,
+		Name:        dungeonObjectRec.Name,
+		Description: dungeonObjectRec.Description,
 	}, nil
 }
 

@@ -78,8 +78,7 @@ type MonsterDetailedData struct {
 }
 
 type ObjectData struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name string `json:"name"`
 }
 
 type ObjectDetailedData struct {

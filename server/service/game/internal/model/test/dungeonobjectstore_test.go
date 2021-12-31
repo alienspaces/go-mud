@@ -40,9 +40,11 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.DungeonObject {
 				return &record.DungeonObject{
-					DungeonID:         data.DungeonRecs[0].ID,
-					DungeonLocationID: sql.NullString{String: data.DungeonLocationRecs[0].ID, Valid: true},
-					Name:              gofakeit.StreetName() + gofakeit.Name(),
+					DungeonID:           data.DungeonRecs[0].ID,
+					DungeonLocationID:   sql.NullString{String: data.DungeonLocationRecs[0].ID, Valid: true},
+					Name:                gofakeit.StreetName() + gofakeit.Name(),
+					Description:         gofakeit.StreetName() + gofakeit.Name(),
+					DescriptionDetailed: gofakeit.StreetName() + gofakeit.Name(),
 				}
 			},
 			err: false,
@@ -51,9 +53,11 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.DungeonObject {
 				rec := &record.DungeonObject{
-					DungeonID:         data.DungeonRecs[0].ID,
-					DungeonLocationID: sql.NullString{String: data.DungeonLocationRecs[0].ID, Valid: true},
-					Name:              gofakeit.StreetName() + gofakeit.Name(),
+					DungeonID:           data.DungeonRecs[0].ID,
+					DungeonLocationID:   sql.NullString{String: data.DungeonLocationRecs[0].ID, Valid: true},
+					Name:                gofakeit.StreetName() + gofakeit.Name(),
+					Description:         gofakeit.StreetName() + gofakeit.Name(),
+					DescriptionDetailed: gofakeit.StreetName() + gofakeit.Name(),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

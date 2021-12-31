@@ -107,6 +107,15 @@ CREATE TABLE "dungeon_object" (
   CONSTRAINT "dungeon_object_dungeon_id_name_uq" UNIQUE (dungeon_id, "name"),
   CONSTRAINT "dungeon_object_location_character_monster_ck" CHECK (
     num_nonnulls(dungeon_location_id, dungeon_character_id, dungeon_monster_id) = 1
+  ),
+  CONSTRAINT "dungeon_object_name_ck" CHECK (
+    char_length("name") > 0
+  ),
+  CONSTRAINT "dungeon_object_description_ck" CHECK (
+    char_length("description") > 0
+  ),
+  CONSTRAINT "dungeon_object_description_detailed_ck" CHECK (
+    char_length("description_detailed") > 0
   )
 );
 
