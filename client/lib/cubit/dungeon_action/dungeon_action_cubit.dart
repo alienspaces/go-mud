@@ -57,6 +57,12 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     }
   }
 
+  // Clear all dungeon actions
+  void clearActions() {
+    dungeonActionRecord = null;
+    dungeonActionRecords = [];
+  }
+
   /// Returns true when there are more actions to play
   bool playAction() {
     final log = getLogger('DungeonActionCubit');

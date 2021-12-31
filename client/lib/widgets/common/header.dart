@@ -51,7 +51,7 @@ void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
     dungeonCubit.clearDungeon();
 
     log.info('Navigating to home page...');
-    callbacks.openHomePage();
+    callbacks.openHomePage(context);
   });
 }
 
@@ -59,14 +59,14 @@ void _navigateCharacter(BuildContext context, NavigationCallbacks callbacks) {
   final log = getLogger('Header');
 
   log.info('Navigating to character page...');
-  callbacks.openCharacterPage();
+  callbacks.openCharacterPage(context);
 }
 
 void _navigateGame(BuildContext context, NavigationCallbacks callbacks) {
   final log = getLogger('Header');
 
   log.info('Navigating to game page...');
-  callbacks.openGamePage();
+  callbacks.openGamePage(context);
 }
 
 Widget _buildLink(

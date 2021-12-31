@@ -10,24 +10,27 @@ import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 class HomeDungeonWidget extends StatelessWidget {
   final NavigationCallbacks callbacks;
   final DungeonRecord dungeonRecord;
-  const HomeDungeonWidget({Key? key, required this.callbacks, required this.dungeonRecord})
+  const HomeDungeonWidget(
+      {Key? key, required this.callbacks, required this.dungeonRecord})
       : super(key: key);
 
   /// Sets the current dungeon state to the provided dungeon
   void _selectDungeon(BuildContext context, DungeonRecord dungeonRecord) {
     final log = getLogger('HomeGameWidget');
-    log.info('Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
+    log.info(
+        'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     dungeonCubit.selectDungeon(dungeonRecord);
 
-    callbacks.openCharacterPage();
+    callbacks.openCharacterPage(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('HomeDungeonWidget');
-    log.info('Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
+    log.info(
+        'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
@@ -45,7 +48,8 @@ class HomeDungeonWidget extends StatelessWidget {
             children: [
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(dungeonRecord.name, style: Theme.of(context).textTheme.headline3),
+                child: Text(dungeonRecord.name,
+                    style: Theme.of(context).textTheme.headline3),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),

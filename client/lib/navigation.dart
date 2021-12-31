@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
 // Application page packages
 import 'package:go_mud_client/pages/home.dart';
@@ -17,7 +19,7 @@ class Navigation extends StatefulWidget {
   _NavigationState createState() => _NavigationState();
 }
 
-typedef NavigationCallback = void Function();
+typedef NavigationCallback = void Function(BuildContext context);
 
 // Navigation callbacks are passed down through the widget
 // tree to any widgets that need to perform navigation.
@@ -39,25 +41,32 @@ class _NavigationState extends State<Navigation> {
   List<String> _pageList = [HomePage.pageName];
 
   // Callback functions set the desired page stack
-  void openHomePage() {
+  void openHomePage(BuildContext context) {
     final log = getLogger('Navigation');
-    log.info('Opening home page..');
+    log.info('(openHomePage) Opening home page..');
     setState(() {
       _pageList = [HomePage.pageName];
     });
   }
 
-  void openCharacterPage() {
+  void openCharacterPage(BuildContext context) {
     final log = getLogger('Navigation');
-    log.info('Opening character page..');
+    log.info('(openCharacterPage) Opening character page..');
     setState(() {
       _pageList = [CharacterPage.pageName];
     });
   }
 
-  void openGamePage() {
+  void openGamePage(BuildContext context) {
     final log = getLogger('Navigation');
-    log.info('Opening game page..');
+    log.info('(openGamePage) Opening game page..');
+
+    // Clear all dungeon actions
+    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
+    log.info(
+        '(openGamePage) Dungeon action record count ${dungeonActionCubit.dungeonActionRecords.length}');
+    dungeonActionCubit.clearActions();
+
     setState(() {
       _pageList = [GamePage.pageName];
     });

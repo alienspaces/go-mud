@@ -42,7 +42,9 @@ class _CharacterPlayWidgetState extends State<CharacterPlayWidget> {
                 // ignore: avoid_unnecessary_containers
                 Container(
                   child: ElevatedButton(
-                    onPressed: widget.callbacks.openGamePage,
+                    onPressed: () {
+                      widget.callbacks.openGamePage(context);
+                    },
                     child: const Text(
                       'Play',
                     ),
