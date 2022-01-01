@@ -57,13 +57,13 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     }
   }
 
-  // Clear all dungeon actions
+  /// Clear dungeon action history, typically called when returning to the dungeon page
   void clearActions() {
     dungeonActionRecord = null;
     dungeonActionRecords = [];
   }
 
-  /// Returns true when there are more actions to play
+  /// Returns true when there are more actions in history to play
   bool playAction() {
     final log = getLogger('DungeonActionCubit');
 

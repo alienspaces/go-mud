@@ -1,5 +1,3 @@
-import 'package:go_mud_client/widgets/game/game_character.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,6 +7,13 @@ import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/widgets/game/game_character.dart';
+
+// import 'package:go_mud_client/widgets/game/game_dungeon.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_description_container.dart';
+import 'package:go_mud_client/widgets/game/game_dungeon_container.dart';
 
 class GameContainerWidget extends StatefulWidget {
   const GameContainerWidget({Key? key}) : super(key: key);
@@ -34,13 +39,15 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
-      log.warning('Dungeon cubit missing dungeon record, cannot initialise action');
+      log.warning(
+          'Dungeon cubit missing dungeon record, cannot initialise action');
       return;
     }
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     if (characterCubit.characterRecord == null) {
-      log.warning('Character cubit missing character record, cannot initialise action');
+      log.warning(
+          'Character cubit missing character record, cannot initialise action');
       return;
     }
 
@@ -68,14 +75,35 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
     return Container(
       color: Colors.yellow[100],
       child: Column(
-        children: const <Widget>[
-          Expanded(
-            flex: 2,
+        children: <Widget>[
+          // Character
+          const Expanded(
+            flex: 5,
             child: GameCharacterWidget(),
           ),
+          // Location description container
+          const Expanded(
+            flex: 3,
+            child: GameDungeonDescriptionContainerWidget(),
+          ),
+          // Location container
           Expanded(
-            flex: 6,
-            child: GameDungeonWidget(),
+            flex: 10,
+            child: Container(
+              decoration: BoxDecoration(color: Colors.orange[100]),
+              clipBehavior: Clip.antiAlias,
+              child: const GameDungeonContainerWidget(),
+            ),
+          ),
+          // Location actions
+          const Expanded(
+            flex: 4,
+            child: GameDungeonActionWidget(),
+          ),
+          // Current command
+          const Expanded(
+            flex: 1,
+            child: GameDungeonCommandWidget(),
           ),
         ],
       ),
