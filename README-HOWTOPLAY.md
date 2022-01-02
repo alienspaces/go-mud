@@ -41,7 +41,7 @@ Possible directions:
 
 ### Look Actions
 
-📝 _Unimplemented_
+📝 _Partly Implemented / Implementing_
 
 A character can simply `look` to get a description of their current location, look in a specific direction, at an object, at another character or at a monster that is in the current location.
 
