@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/character/character_container.dart';
+import 'package:go_mud_client/widgets/character/character.dart';
 
 class CharacterPage extends Page {
   static const String pageName = 'CharacterPage';

@@ -32,11 +32,11 @@ ThemeData getTheme(BuildContext context) {
   log.info("Screen width >$safeWidth<");
   log.info("Screen height >$safeHeight<");
 
-  if (safeWidth < 500) {
+  if (safeWidth < 370) {
     sizeFactor = 0.85;
-  } else if (safeWidth < 700) {
+  } else if (safeWidth < 390) {
     sizeFactor = 0.9;
-  } else if (safeWidth < 900) {
+  } else if (safeWidth < 410) {
     sizeFactor = 0.95;
   }
 

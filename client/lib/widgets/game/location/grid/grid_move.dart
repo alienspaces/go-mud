@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_grid.dart';
+import 'package:go_mud_client/widgets/game/location/grid/grid.dart';
 
 enum Slide { slideIn, slideOut, slideNone }
 
-class GameDungeonMoveGridWidget extends StatefulWidget {
+class GameLocationGridMoveWidget extends StatefulWidget {
   final Slide slide;
   final LocationData locationData;
   final String? action;
   final String? direction;
 
-  const GameDungeonMoveGridWidget({
+  const GameLocationGridMoveWidget({
     Key? key,
     required this.slide,
     required this.locationData,
@@ -22,7 +22,8 @@ class GameDungeonMoveGridWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameDungeonMoveGridWidgetState createState() => _GameDungeonMoveGridWidgetState();
+  _GameLocationGridMoveWidgetState createState() =>
+      _GameLocationGridMoveWidgetState();
 }
 
 Map<String, Offset> slideInBeginOffset = {
@@ -51,7 +52,7 @@ Map<String, Offset> slideOutEndOffset = {
   'down': const Offset(-.1, -1),
 };
 
-class _GameDungeonMoveGridWidgetState extends State<GameDungeonMoveGridWidget>
+class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
     with SingleTickerProviderStateMixin {
   // Animation controller
   late final AnimationController _controller = AnimationController(
@@ -62,30 +63,15 @@ class _GameDungeonMoveGridWidgetState extends State<GameDungeonMoveGridWidget>
   // Animation
   late final Animation<Offset> _offsetAnimation;
 
-  double gridMemberWidth = 0;
-  double gridMemberHeight = 0;
-
-  Map<String, String> directionLabelMap = {
-    'north': 'N',
-    'northeast': 'NE',
-    'east': 'E',
-    'southeast': 'SE',
-    'south': 'S',
-    'southwest': 'SW',
-    'west': 'W',
-    'northwest': 'NW',
-    'up': 'U',
-    'down': 'D',
-  };
-
   @override
   void initState() {
-    final log = getLogger('GameDungeonMoveGridWidget');
+    final log = getLogger('GameLocationGridMoveWidget');
 
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
 
-    log.info('(initState) Target dungeon location direction ${widget.direction}');
+    log.info(
+        '(initState) Target dungeon location direction ${widget.direction}');
     log.info('(initState) Target dungeon location slide ${widget.slide}');
 
     if (widget.direction != null) {
@@ -107,7 +93,8 @@ class _GameDungeonMoveGridWidgetState extends State<GameDungeonMoveGridWidget>
     ));
 
     if (widget.slide != Slide.slideNone) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) => _controller.forward());
+      WidgetsBinding.instance
+          ?.addPostFrameCallback((_) => _controller.forward());
     }
 
     super.initState();
@@ -121,12 +108,12 @@ class _GameDungeonMoveGridWidgetState extends State<GameDungeonMoveGridWidget>
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonMoveGridWidget');
+    final log = getLogger('GameLocationGridMoveWidget');
     log.info('Building ${widget.key} - ${widget.slide}..');
 
     return AnimatedBuilder(
       animation: _controller,
-      child: GameDungeonGridWidget(
+      child: GameLocationGridWidget(
         locationData: widget.locationData,
         action: widget.action,
       ),

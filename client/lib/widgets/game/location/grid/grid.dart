@@ -9,13 +9,13 @@ import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
-class GameDungeonGridWidget extends StatefulWidget {
+class GameLocationGridWidget extends StatefulWidget {
   final LocationData locationData;
   final String? action;
   final String? direction;
   final bool readonly;
 
-  const GameDungeonGridWidget({
+  const GameLocationGridWidget({
     Key? key,
     required this.locationData,
     required this.action,
@@ -24,12 +24,13 @@ class GameDungeonGridWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameDungeonGridWidgetState createState() => _GameDungeonGridWidgetState();
+  _GameLocationGridWidgetState createState() => _GameLocationGridWidgetState();
 }
 
-typedef DungeonGridMemberFunction = Widget Function(DungeonActionRecord record, String key);
+typedef DungeonGridMemberFunction = Widget Function(
+    DungeonActionRecord record, String key);
 
-class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
+class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   double gridMemberWidth = 0;
   double gridMemberHeight = 0;
 
@@ -97,7 +98,8 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   // Direction widget
-  Widget _directionWidget(BuildContext context, LocationData locationData, String direction) {
+  Widget _directionWidget(
+      BuildContext context, LocationData locationData, String direction) {
     if (!locationData.directions.contains(direction)) {
       return _emptyWidget('${directionLabelMap[direction]}');
     }
@@ -114,7 +116,8 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   // Room widget
-  Widget _roomWidget(BuildContext context, Map<int, LocationContent> locationContents, int idx) {
+  Widget _roomWidget(BuildContext context,
+      Map<int, LocationContent> locationContents, int idx) {
     if (locationContents[idx] == null) {
       return _emptyWidget('E$idx');
     }
@@ -150,7 +153,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameDungeonGridWidget');
+          final log = getLogger('GameLocationGridWidget');
           log.info('Selecting character >$characterName<');
           _selectTarget(context, characterName);
         },
@@ -168,7 +171,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameDungeonGridWidget');
+          final log = getLogger('GameLocationGridWidget');
           log.info('Selecting monster >$monsterName<');
           _selectTarget(context, monsterName);
         },
@@ -186,7 +189,7 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameDungeonGridWidget');
+          final log = getLogger('GameLocationGridWidget');
           log.info('Selecting object >$objectName<');
           _selectTarget(context, objectName);
         },
@@ -217,18 +220,20 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
   }
 
   void _selectTarget(BuildContext context, String target) {
-    final log = getLogger('GameDungeonGridWidget');
+    final log = getLogger('GameLocationGridWidget');
     log.info('Submitting move action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
-      log.warning('Dungeon cubit missing dungeon record, cannot initialise action');
+      log.warning(
+          'Dungeon cubit missing dungeon record, cannot initialise action');
       return;
     }
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     if (characterCubit.characterRecord == null) {
-      log.warning('Character cubit missing character record, cannot initialise action');
+      log.warning(
+          'Character cubit missing character record, cannot initialise action');
       return;
     }
 
@@ -245,11 +250,12 @@ class _GameDungeonGridWidgetState extends State<GameDungeonGridWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonGridWidget');
+    final log = getLogger('GameLocationGridWidget');
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.info('Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
+        log.info(
+            'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
 
         // Set grid member dimensions
         gridMemberWidth = (constraints.maxWidth / 5) - 2;

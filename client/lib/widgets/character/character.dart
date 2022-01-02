@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/widgets/character/character_create.dart';
-import 'package:go_mud_client/widgets/character/character_play.dart';
+import 'package:go_mud_client/widgets/character/create/create.dart';
+import 'package:go_mud_client/widgets/character/train/train.dart';
 
 class CharacterContainerWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
@@ -17,7 +17,8 @@ class CharacterContainerWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterContainerWidgetState createState() => _CharacterContainerWidgetState();
+  _CharacterContainerWidgetState createState() =>
+      _CharacterContainerWidgetState();
 }
 
 class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
@@ -42,7 +43,7 @@ class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
         } else if (characterState is CharacterStateSelected) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            child: CharacterPlayWidget(
+            child: CharacterTrainWidget(
               callbacks: widget.callbacks,
             ),
           );

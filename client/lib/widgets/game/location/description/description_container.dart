@@ -4,21 +4,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_description.dart';
+import 'package:go_mud_client/widgets/game/location/description/description.dart';
 
-class GameDungeonDescriptionContainerWidget extends StatefulWidget {
-  const GameDungeonDescriptionContainerWidget({Key? key}) : super(key: key);
+class GameLocationDescriptionContainerWidget extends StatefulWidget {
+  const GameLocationDescriptionContainerWidget({Key? key}) : super(key: key);
 
   @override
-  _GameDungeonDescriptionContainerWidgetState createState() =>
-      _GameDungeonDescriptionContainerWidgetState();
+  _GameLocationDescriptionContainerWidgetState createState() =>
+      _GameLocationDescriptionContainerWidgetState();
 }
 
-class _GameDungeonDescriptionContainerWidgetState
-    extends State<GameDungeonDescriptionContainerWidget> {
+class _GameLocationDescriptionContainerWidgetState
+    extends State<GameLocationDescriptionContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonDescriptionContainerWidget');
+    final log = getLogger('GameLocationDescriptionContainerWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
@@ -29,7 +29,7 @@ class _GameDungeonDescriptionContainerWidgetState
         if (state is DungeonActionStateCreated) {
           log.info('dungeon state is created');
           List<Widget> widgets = [];
-          widgets.add(GameDungeonDescriptionWidget(
+          widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
             dungeonActionRecord: state.current,
           ));
@@ -39,11 +39,11 @@ class _GameDungeonDescriptionContainerWidgetState
         } else if (state is DungeonActionStatePlaying) {
           log.info('dungeon state is playing');
           List<Widget> widgets = [];
-          widgets.add(GameDungeonDescriptionWidget(
+          widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeOut,
             dungeonActionRecord: state.previous,
           ));
-          widgets.add(GameDungeonDescriptionWidget(
+          widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
             dungeonActionRecord: state.current,
           ));

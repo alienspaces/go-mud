@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/game/game_container.dart';
+import 'package:go_mud_client/widgets/game/game.dart';
 
 class GamePage extends Page {
   static const String pageName = 'GamePage';
@@ -64,7 +64,7 @@ class _GameScreenState extends State<GameScreen> {
       resizeToAvoidBottomInset: false,
       body: Container(
         alignment: Alignment.center,
-        child: const GameContainerWidget(),
+        child: const GameWidget(),
       ),
     );
   }

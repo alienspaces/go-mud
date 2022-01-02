@@ -4,22 +4,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_move_grid.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_look_grid.dart';
+import 'package:go_mud_client/widgets/game/location/grid/grid_move.dart';
+import 'package:go_mud_client/widgets/game/location/grid/grid_look.dart';
 
-class GameDungeonContainerWidget extends StatefulWidget {
-  const GameDungeonContainerWidget({Key? key}) : super(key: key);
+class GameLocationWidget extends StatefulWidget {
+  const GameLocationWidget({Key? key}) : super(key: key);
 
   @override
-  _GameDungeonContainerWidgetState createState() =>
-      _GameDungeonContainerWidgetState();
+  _GameLocationWidgetState createState() => _GameLocationWidgetState();
 }
 
-class _GameDungeonContainerWidgetState
-    extends State<GameDungeonContainerWidget> {
+class _GameLocationWidgetState extends State<GameLocationWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonContainerWidget');
+    final log = getLogger('GameLocationWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
@@ -37,7 +35,7 @@ class _GameDungeonContainerWidgetState
             log.info(
                 'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.command}');
             widgets.add(
-              GameDungeonMoveGridWidget(
+              GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideNone,
                 locationData: dungeonActionRecord.location,
@@ -62,7 +60,7 @@ class _GameDungeonContainerWidgetState
               'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
 
           widgets.add(
-            GameDungeonMoveGridWidget(
+            GameLocationGridMoveWidget(
               key: UniqueKey(),
               slide: Slide.slideNone,
               action: state.action,
@@ -82,7 +80,7 @@ class _GameDungeonContainerWidgetState
             // Move
             //
             widgets.add(
-              GameDungeonMoveGridWidget(
+              GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideOut,
                 direction: state.direction,
@@ -91,7 +89,7 @@ class _GameDungeonContainerWidgetState
               ),
             );
             widgets.add(
-              GameDungeonMoveGridWidget(
+              GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideIn,
                 direction: state.direction,
@@ -113,7 +111,7 @@ class _GameDungeonContainerWidgetState
                 'DungeonActionStatePlaying - Look target object ${dungeonActionRecord.targetObject?.name}');
 
             widgets.add(
-              GameDungeonMoveGridWidget(
+              GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideNone,
                 direction: state.direction,
@@ -124,7 +122,7 @@ class _GameDungeonContainerWidgetState
             if (dungeonActionRecord.targetLocation != null) {
               log.info('Rendering look target location');
               widgets.add(
-                GameDungeonLookGridWidget(
+                GameLocationGridLookWidget(
                   key: UniqueKey(),
                   direction: state.direction,
                   action: state.action,

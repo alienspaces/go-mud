@@ -9,22 +9,22 @@ import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 const int maxAttributes = 36;
 
-class CharacterPlayWidget extends StatefulWidget {
+class CharacterTrainWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
 
-  const CharacterPlayWidget({
+  const CharacterTrainWidget({
     Key? key,
     required this.callbacks,
   }) : super(key: key);
 
   @override
-  _CharacterPlayWidgetState createState() => _CharacterPlayWidgetState();
+  _CharacterTrainWidgetState createState() => _CharacterTrainWidgetState();
 }
 
-class _CharacterPlayWidgetState extends State<CharacterPlayWidget> {
+class _CharacterTrainWidgetState extends State<CharacterTrainWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterPlayWidget');
+    final log = getLogger('CharacterTrainWidget');
     log.info('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(

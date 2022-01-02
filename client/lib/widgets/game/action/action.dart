@@ -8,17 +8,17 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
-class GameDungeonActionWidget extends StatefulWidget {
-  const GameDungeonActionWidget({Key? key}) : super(key: key);
+class GameActionWidget extends StatefulWidget {
+  const GameActionWidget({Key? key}) : super(key: key);
 
   @override
-  _GameDungeonActionWidgetState createState() => _GameDungeonActionWidgetState();
+  _GameActionWidgetState createState() => _GameActionWidgetState();
 }
 
 double gridMemberWidth = 0;
 double gridMemberHeight = 0;
 
-class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
+class _GameActionWidgetState extends State<GameActionWidget> {
   List<Widget> _generateActions(BuildContext context) {
     return [
       _actionWidget(context, 'Move', 'move'),
@@ -37,7 +37,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
       height: gridMemberHeight,
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameDungeonActionWidget');
+          final log = getLogger('GameActionWidget');
           log.info('Selecting action >$action<');
           _selectAction(context, action);
         },
@@ -60,7 +60,7 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
       margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameDungeonActionWidget');
+          final log = getLogger('GameActionWidget');
           log.info('Submitting action');
           _submitAction(context);
         },
@@ -73,18 +73,20 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
   }
 
   void _selectAction(BuildContext context, String action) {
-    final log = getLogger('GameDungeonActionWidget');
+    final log = getLogger('GameActionWidget');
     log.info('Selecting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
-      log.warning('Dungeon cubit missing dungeon record, cannot initialise action');
+      log.warning(
+          'Dungeon cubit missing dungeon record, cannot initialise action');
       return;
     }
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     if (characterCubit.characterRecord == null) {
-      log.warning('Character cubit missing character record, cannot initialise action');
+      log.warning(
+          'Character cubit missing character record, cannot initialise action');
       return;
     }
 
@@ -100,18 +102,20 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
   }
 
   void _submitAction(BuildContext context) async {
-    final log = getLogger('GameDungeonActionWidget');
+    final log = getLogger('GameActionWidget');
     log.info('Submitting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
-      log.warning('Dungeon cubit missing dungeon record, cannot initialise action');
+      log.warning(
+          'Dungeon cubit missing dungeon record, cannot initialise action');
       return;
     }
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     if (characterCubit.characterRecord == null) {
-      log.warning('Character cubit missing character record, cannot initialise action');
+      log.warning(
+          'Character cubit missing character record, cannot initialise action');
       return;
     }
 
@@ -133,12 +137,13 @@ class _GameDungeonActionWidgetState extends State<GameDungeonActionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonActionWidget');
+    final log = getLogger('GameActionWidget');
     log.info('Building..');
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.info('Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
+        log.info(
+            'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
 
         // Set grid member dimensions
         gridMemberWidth = (constraints.maxWidth / 5) - 2;

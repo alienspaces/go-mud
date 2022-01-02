@@ -8,22 +8,24 @@ import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repositor
 
 enum DescriptionOpacity { fadeIn, fadeOut }
 
-class GameDungeonDescriptionWidget extends StatefulWidget {
+class GameLocationDescriptionWidget extends StatefulWidget {
   final DescriptionOpacity fade;
   final DungeonActionRecord dungeonActionRecord;
 
-  const GameDungeonDescriptionWidget(
+  const GameLocationDescriptionWidget(
       {Key? key, required this.fade, required this.dungeonActionRecord})
       : super(key: key);
 
   @override
-  _GameDungeonDescriptionWidgetState createState() => _GameDungeonDescriptionWidgetState();
+  _GameLocationDescriptionWidgetState createState() =>
+      _GameLocationDescriptionWidgetState();
 }
 
-typedef DungeonDescriptionMemberFunction = Widget Function(DungeonActionRecord record, String key);
+typedef DungeonDescriptionMemberFunction = Widget Function(
+    DungeonActionRecord record, String key);
 
-class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWidget>
-    with TickerProviderStateMixin {
+class _GameLocationDescriptionWidgetState
+    extends State<GameLocationDescriptionWidget> with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     vsync: this,
@@ -43,7 +45,7 @@ class _GameDungeonDescriptionWidgetState extends State<GameDungeonDescriptionWid
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonDescriptionWidget');
+    final log = getLogger('GameLocationDescriptionWidget');
     log.info('Building.. ${widget.fade}');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

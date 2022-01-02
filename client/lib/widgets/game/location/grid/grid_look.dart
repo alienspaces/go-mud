@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_grid.dart';
+import 'package:go_mud_client/widgets/game/location/grid/grid.dart';
 
-class GameDungeonLookGridWidget extends StatefulWidget {
+class GameLocationGridLookWidget extends StatefulWidget {
   final LocationData locationData;
   final String? action;
   final String? direction;
 
-  const GameDungeonLookGridWidget({
+  const GameLocationGridLookWidget({
     Key? key,
     required this.locationData,
     this.action,
@@ -18,7 +18,8 @@ class GameDungeonLookGridWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameDungeonLookGridWidgetState createState() => _GameDungeonLookGridWidgetState();
+  _GameLocationGridLookWidgetState createState() =>
+      _GameLocationGridLookWidgetState();
 }
 
 Map<String, Offset> slideInBeginOffset = {
@@ -34,7 +35,7 @@ Map<String, Offset> slideInBeginOffset = {
   'down': const Offset(.1, 1),
 };
 
-class _GameDungeonLookGridWidgetState extends State<GameDungeonLookGridWidget>
+class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
     with SingleTickerProviderStateMixin {
   // Animation controller
   late final AnimationController _controller = AnimationController(
@@ -66,12 +67,13 @@ class _GameDungeonLookGridWidgetState extends State<GameDungeonLookGridWidget>
 
   @override
   void initState() {
-    final log = getLogger('GameDungeonLookGridWidget');
+    final log = getLogger('GameLocationGridLookWidget');
 
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
 
-    log.info('(initState) Target dungeon location direction ${widget.direction}');
+    log.info(
+        '(initState) Target dungeon location direction ${widget.direction}');
 
     if (widget.direction != null) {
       beginOffset = slideInBeginOffset[widget.direction]!;
@@ -116,7 +118,7 @@ class _GameDungeonLookGridWidgetState extends State<GameDungeonLookGridWidget>
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonLookGridWidget');
+    final log = getLogger('GameLocationGridLookWidget');
     log.info('Building ${widget.key}');
 
     return AnimatedBuilder(
@@ -124,7 +126,7 @@ class _GameDungeonLookGridWidgetState extends State<GameDungeonLookGridWidget>
       child: AnimatedOpacity(
         opacity: _opacity,
         duration: Duration(milliseconds: _milliseconds),
-        child: GameDungeonGridWidget(
+        child: GameLocationGridWidget(
           locationData: widget.locationData,
           action: widget.action,
           readonly: true,

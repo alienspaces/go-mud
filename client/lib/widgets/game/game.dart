@@ -7,22 +7,22 @@ import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/widgets/game/game_character.dart';
+import 'package:go_mud_client/widgets/game/character/character.dart';
 
 // import 'package:go_mud_client/widgets/game/game_dungeon.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_action.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_command.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_description_container.dart';
-import 'package:go_mud_client/widgets/game/game_dungeon_container.dart';
+import 'package:go_mud_client/widgets/game/action/action.dart';
+import 'package:go_mud_client/widgets/game/command/command.dart';
+import 'package:go_mud_client/widgets/game/location/description/description_container.dart';
+import 'package:go_mud_client/widgets/game/location/location.dart';
 
-class GameContainerWidget extends StatefulWidget {
-  const GameContainerWidget({Key? key}) : super(key: key);
+class GameWidget extends StatefulWidget {
+  const GameWidget({Key? key}) : super(key: key);
 
   @override
-  _GameContainerWidgetState createState() => _GameContainerWidgetState();
+  _GameWidgetState createState() => _GameWidgetState();
 }
 
-class _GameContainerWidgetState extends State<GameContainerWidget> {
+class _GameWidgetState extends State<GameWidget> {
   @override
   void initState() {
     final log = getLogger('HomeContainerWidget');
@@ -34,7 +34,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
   }
 
   void _initAction(BuildContext context) {
-    final log = getLogger('GameContainerWidget');
+    final log = getLogger('GameWidget');
     log.info('Initialising action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -68,7 +68,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameContainer');
+    final log = getLogger('Game');
     log.info('Building..');
 
     // ignore: avoid_unnecessary_containers
@@ -84,7 +84,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
           // Location description container
           const Expanded(
             flex: 3,
-            child: GameDungeonDescriptionContainerWidget(),
+            child: GameLocationDescriptionContainerWidget(),
           ),
           // Location container
           Expanded(
@@ -92,18 +92,18 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
             child: Container(
               decoration: BoxDecoration(color: Colors.orange[100]),
               clipBehavior: Clip.antiAlias,
-              child: const GameDungeonContainerWidget(),
+              child: const GameLocationWidget(),
             ),
           ),
-          // Location actions
+          // Current actions
           const Expanded(
             flex: 4,
-            child: GameDungeonActionWidget(),
+            child: GameActionWidget(),
           ),
-          // Current command
+          // Most recent command
           const Expanded(
             flex: 1,
-            child: GameDungeonCommandWidget(),
+            child: GameCommandWidget(),
           ),
         ],
       ),

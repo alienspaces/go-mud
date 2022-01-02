@@ -37,7 +37,7 @@ class CharacterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterPlayWidget');
+    final log = getLogger('CharacterTrainWidget');
     log.info('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(
@@ -59,19 +59,24 @@ class CharacterWidget extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  child: _buildAttribute('Strength', state.characterRecord.strength),
+                  child: _buildAttribute(
+                      'Strength', state.characterRecord.strength),
                 ),
                 Container(
-                  child: _buildAttribute('Dexterity', state.characterRecord.dexterity),
+                  child: _buildAttribute(
+                      'Dexterity', state.characterRecord.dexterity),
                 ),
                 Container(
-                  child: _buildAttribute('Intelligence', state.characterRecord.intelligence),
+                  child: _buildAttribute(
+                      'Intelligence', state.characterRecord.intelligence),
                 ),
                 Container(
-                  child: _buildAttribute('Health', state.characterRecord.health),
+                  child:
+                      _buildAttribute('Health', state.characterRecord.health),
                 ),
                 Container(
-                  child: _buildAttribute('Fatigue', state.characterRecord.fatigue),
+                  child:
+                      _buildAttribute('Fatigue', state.characterRecord.fatigue),
                 ),
               ],
             ),

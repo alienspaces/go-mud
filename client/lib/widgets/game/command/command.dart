@@ -5,17 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
-class GameDungeonCommandWidget extends StatefulWidget {
-  const GameDungeonCommandWidget({Key? key}) : super(key: key);
+class GameCommandWidget extends StatefulWidget {
+  const GameCommandWidget({Key? key}) : super(key: key);
 
   @override
-  _GameDungeonCommandWidgetState createState() => _GameDungeonCommandWidgetState();
+  _GameCommandWidgetState createState() => _GameCommandWidgetState();
 }
 
-class _GameDungeonCommandWidgetState extends State<GameDungeonCommandWidget> {
+class _GameCommandWidgetState extends State<GameCommandWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameDungeonGridWidget');
+    final log = getLogger('GameLocationGridWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonCommandCubit, DungeonCommandState>(
@@ -28,7 +28,8 @@ class _GameDungeonCommandWidgetState extends State<GameDungeonCommandWidget> {
           return Container(
             color: Colors.brown[200],
             alignment: Alignment.center,
-            child: Text('${state.action ?? ''} ${state.target ?? ''}'.trimRight()),
+            child:
+                Text('${state.action ?? ''} ${state.target ?? ''}'.trimRight()),
           );
         }
         return Container();
