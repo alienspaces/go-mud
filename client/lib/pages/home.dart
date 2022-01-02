@@ -1,10 +1,10 @@
-import 'package:go_mud_client/widgets/home/home_container.dart';
 import 'package:flutter/material.dart';
 
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
+import 'package:go_mud_client/widgets/home/home_container.dart';
 
 class HomePage extends Page {
   static const String pageName = 'HomePage';
