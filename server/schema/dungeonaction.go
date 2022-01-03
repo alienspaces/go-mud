@@ -54,13 +54,16 @@ type CharacterData struct {
 }
 
 type CharacterDetailedData struct {
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	Strength     int    `json:"strength"`
-	Dexterity    int    `json:"dexterity"`
-	Intelligence int    `json:"intelligence"`
-	Health       int    `json:"health"`
-	Fatigue      int    `json:"fatigue"`
+	Name                string `json:"name"`
+	Description         string `json:"description"`
+	Strength            int    `json:"strength"`
+	Dexterity           int    `json:"dexterity"`
+	Intelligence        int    `json:"intelligence"`
+	CurrentStrength     int    `json:"current_strength"`
+	CurrentDexterity    int    `json:"current_dexterity"`
+	CurrentIntelligence int    `json:"current_intelligence"`
+	Health              int    `json:"health"`
+	Fatigue             int    `json:"fatigue"`
 }
 
 type MonsterData struct {
@@ -68,13 +71,16 @@ type MonsterData struct {
 }
 
 type MonsterDetailedData struct {
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	Strength     int    `json:"strength"`
-	Dexterity    int    `json:"dexterity"`
-	Intelligence int    `json:"intelligence"`
-	Health       int    `json:"health"`
-	Fatigue      int    `json:"fatigue"`
+	Name                string `json:"name"`
+	Description         string `json:"description"`
+	Strength            int    `json:"strength"`
+	Dexterity           int    `json:"dexterity"`
+	Intelligence        int    `json:"intelligence"`
+	CurrentStrength     int    `json:"current_strength"`
+	CurrentDexterity    int    `json:"current_dexterity"`
+	CurrentIntelligence int    `json:"current_intelligence"`
+	Health              int    `json:"health"`
+	Fatigue             int    `json:"fatigue"`
 }
 
 type ObjectData struct {

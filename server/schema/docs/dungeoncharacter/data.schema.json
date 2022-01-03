@@ -12,6 +12,9 @@
     "strength",
     "dexterity",
     "intelligence",
+    "current_strength",
+    "current_dexterity",
+    "current_intelligence",
     "health",
     "fatigue",
     "coins",
@@ -42,6 +45,15 @@
       "type": "number"
     },
     "intelligence": {
+      "type": "number"
+    },
+    "current_strength": {
+      "type": "number"
+    },
+    "current_dexterity": {
+      "type": "number"
+    },
+    "current_intelligence": {
       "type": "number"
     },
     "health": {

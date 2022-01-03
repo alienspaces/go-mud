@@ -45,6 +45,9 @@ func (m *Model) CreateDungeonMonsterRec(rec *record.DungeonMonster) error {
 
 	r := m.DungeonMonsterRepository()
 
+	rec.CurrentStrength = rec.Strength
+	rec.CurrentDexterity = rec.Dexterity
+	rec.CurrentIntelligence = rec.Intelligence
 	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
 	rec.ExperiencePoints = defaultExperiencePoints
 	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)

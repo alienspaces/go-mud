@@ -53,12 +53,15 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name:         data.DungeonCharacterRecs[0].Name,
-						Strength:     data.DungeonCharacterRecs[0].Strength,
-						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
-						Health:       data.DungeonCharacterRecs[0].Health,
-						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetLocation: &model.DungeonActionLocationRecordSet{
 						LocationRec: &record.DungeonLocation{
@@ -86,12 +89,15 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name:         data.DungeonCharacterRecs[0].Name,
-						Strength:     data.DungeonCharacterRecs[0].Strength,
-						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
-						Health:       data.DungeonCharacterRecs[0].Health,
-						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetLocation: &model.DungeonActionLocationRecordSet{
 						LocationRec: &record.DungeonLocation{
@@ -119,12 +125,15 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name:         data.DungeonCharacterRecs[0].Name,
-						Strength:     data.DungeonCharacterRecs[0].Strength,
-						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
-						Health:       data.DungeonCharacterRecs[0].Health,
-						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetActionObjectRec: &record.DungeonActionObject{
 						Name:        data.DungeonObjectRecs[0].Name,
@@ -153,20 +162,26 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name:         data.DungeonCharacterRecs[0].Name,
-						Strength:     data.DungeonCharacterRecs[0].Strength,
-						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
-						Health:       data.DungeonCharacterRecs[0].Health,
-						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetActionMonsterRec: &record.DungeonActionMonster{
-						Name:         data.DungeonMonsterRecs[0].Name,
-						Strength:     data.DungeonMonsterRecs[0].Strength,
-						Dexterity:    data.DungeonMonsterRecs[0].Dexterity,
-						Intelligence: data.DungeonMonsterRecs[0].Intelligence,
-						Health:       data.DungeonMonsterRecs[0].Health,
-						Fatigue:      data.DungeonMonsterRecs[0].Fatigue,
+						Name:                data.DungeonMonsterRecs[0].Name,
+						Strength:            data.DungeonMonsterRecs[0].Strength,
+						Dexterity:           data.DungeonMonsterRecs[0].Dexterity,
+						Intelligence:        data.DungeonMonsterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonMonsterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonMonsterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonMonsterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonMonsterRecs[0].Health,
+						Fatigue:             data.DungeonMonsterRecs[0].Fatigue,
 					},
 				}
 			},
@@ -189,20 +204,26 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
 					},
 					ActionCharacterRec: &record.DungeonActionCharacter{
-						Name:         data.DungeonCharacterRecs[0].Name,
-						Strength:     data.DungeonCharacterRecs[0].Strength,
-						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
-						Health:       data.DungeonCharacterRecs[0].Health,
-						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
 					TargetActionCharacterRec: &record.DungeonActionCharacter{
-						Name:         data.DungeonCharacterRecs[0].Name,
-						Strength:     data.DungeonCharacterRecs[0].Strength,
-						Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-						Intelligence: data.DungeonCharacterRecs[0].Intelligence,
-						Health:       data.DungeonCharacterRecs[0].Health,
-						Fatigue:      data.DungeonCharacterRecs[0].Fatigue,
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
 				}
 			},
@@ -259,6 +280,11 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 				require.Equal(t, xrslt.ActionCharacterRec.Strength, rslt.ActionCharacterRec.Strength, "ActionCharacterRec.Strength equals expected")
 				require.Equal(t, xrslt.ActionCharacterRec.Dexterity, rslt.ActionCharacterRec.Dexterity, "ActionCharacterRec.Dexterity equals expected")
 				require.Equal(t, xrslt.ActionCharacterRec.Intelligence, rslt.ActionCharacterRec.Intelligence, "ActionCharacterRec.Intelligence equals expected")
+
+				require.Equal(t, xrslt.ActionCharacterRec.CurrentStrength, rslt.ActionCharacterRec.CurrentStrength, "ActionCharacterRec.CurrentStrength equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.CurrentDexterity, rslt.ActionCharacterRec.CurrentDexterity, "ActionCharacterRec.CurrentDexterity equals expected")
+				require.Equal(t, xrslt.ActionCharacterRec.CurrentIntelligence, rslt.ActionCharacterRec.CurrentIntelligence, "ActionCharacterRec.CurrentIntelligence equals expected")
+
 				require.Equal(t, xrslt.ActionCharacterRec.Health, rslt.ActionCharacterRec.Health, "ActionCharacterRec.Health equals expected")
 				require.Equal(t, xrslt.ActionCharacterRec.Fatigue, rslt.ActionCharacterRec.Fatigue, "ActionCharacterRec.Fatigue equals expected")
 			}
@@ -268,6 +294,11 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 				require.Equal(t, xrslt.ActionMonsterRec.Strength, rslt.ActionMonsterRec.Strength, "ActionMonsterRec.Strength equals expected")
 				require.Equal(t, xrslt.ActionMonsterRec.Dexterity, rslt.ActionMonsterRec.Dexterity, "ActionMonsterRec.Dexterity equals expected")
 				require.Equal(t, xrslt.ActionMonsterRec.Intelligence, rslt.ActionMonsterRec.Intelligence, "ActionMonsterRec.Intelligence equals expected")
+
+				require.Equal(t, xrslt.ActionMonsterRec.CurrentStrength, rslt.ActionMonsterRec.CurrentStrength, "ActionMonsterRec.CurrentStrength equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.CurrentDexterity, rslt.ActionMonsterRec.CurrentDexterity, "ActionMonsterRec.CurrentDexterity equals expected")
+				require.Equal(t, xrslt.ActionMonsterRec.CurrentIntelligence, rslt.ActionMonsterRec.CurrentIntelligence, "ActionMonsterRec.CurrentIntelligence equals expected")
+
 				require.Equal(t, xrslt.ActionMonsterRec.Health, rslt.ActionMonsterRec.Health, "ActionMonsterRec.Health equals expected")
 				require.Equal(t, xrslt.ActionMonsterRec.Fatigue, rslt.ActionMonsterRec.Fatigue, "ActionMonsterRec.Fatigue equals expected")
 			}
@@ -298,6 +329,11 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 				require.Equal(t, xrslt.TargetActionCharacterRec.Strength, rslt.TargetActionCharacterRec.Strength, "TargetActionCharacterRec.Strength equals expected")
 				require.Equal(t, xrslt.TargetActionCharacterRec.Dexterity, rslt.TargetActionCharacterRec.Dexterity, "TargetActionCharacterRec.Dexterity equals expected")
 				require.Equal(t, xrslt.TargetActionCharacterRec.Intelligence, rslt.TargetActionCharacterRec.Intelligence, "TargetActionCharacterRec.Intelligence equals expected")
+
+				require.Equal(t, xrslt.TargetActionCharacterRec.CurrentStrength, rslt.TargetActionCharacterRec.CurrentStrength, "TargetActionCharacterRec.CurrentStrength equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.CurrentDexterity, rslt.TargetActionCharacterRec.CurrentDexterity, "TargetActionCharacterRec.CurrentDexterity equals expected")
+				require.Equal(t, xrslt.TargetActionCharacterRec.CurrentIntelligence, rslt.TargetActionCharacterRec.CurrentIntelligence, "TargetActionCharacterRec.CurrentIntelligence equals expected")
+
 				require.Equal(t, xrslt.TargetActionCharacterRec.Health, rslt.TargetActionCharacterRec.Health, "TargetActionCharacterRec.Health equals expected")
 				require.Equal(t, xrslt.TargetActionCharacterRec.Fatigue, rslt.TargetActionCharacterRec.Fatigue, "TargetActionCharacterRec.Fatigue equals expected")
 			}
@@ -307,6 +343,11 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 				require.Equal(t, xrslt.TargetActionMonsterRec.Strength, rslt.TargetActionMonsterRec.Strength, "TargetActionMonsterRec.Strength equals expected")
 				require.Equal(t, xrslt.TargetActionMonsterRec.Dexterity, rslt.TargetActionMonsterRec.Dexterity, "TargetActionMonsterRec.Dexterity equals expected")
 				require.Equal(t, xrslt.TargetActionMonsterRec.Intelligence, rslt.TargetActionMonsterRec.Intelligence, "TargetActionMonsterRec.Intelligence equals expected")
+
+				require.Equal(t, xrslt.TargetActionMonsterRec.CurrentStrength, rslt.TargetActionMonsterRec.CurrentStrength, "TargetActionMonsterRec.CurrentStrength equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.CurrentDexterity, rslt.TargetActionMonsterRec.CurrentDexterity, "TargetActionMonsterRec.CurrentDexterity equals expected")
+				require.Equal(t, xrslt.TargetActionMonsterRec.CurrentIntelligence, rslt.TargetActionMonsterRec.CurrentIntelligence, "TargetActionMonsterRec.CurrentIntelligence equals expected")
+
 				require.Equal(t, xrslt.TargetActionMonsterRec.Health, rslt.TargetActionMonsterRec.Health, "TargetActionMonsterRec.Health equals expected")
 				require.Equal(t, xrslt.TargetActionMonsterRec.Fatigue, rslt.TargetActionMonsterRec.Fatigue, "TargetActionMonsterRec.Fatigue equals expected")
 			}

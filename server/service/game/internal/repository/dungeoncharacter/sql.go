@@ -9,6 +9,9 @@ INSERT INTO dungeon_character (
 	strength,
 	dexterity,
 	intelligence,
+	current_strength,
+	current_dexterity,
+	current_intelligence,
 	health,
 	fatigue,
 	coins,
@@ -23,6 +26,9 @@ INSERT INTO dungeon_character (
 	:strength,
 	:dexterity,
 	:intelligence,
+	:current_strength,
+	:current_dexterity,
+	:current_intelligence,
 	:health,
 	:fatigue,
 	:coins,
@@ -35,18 +41,21 @@ RETURNING *
 
 var updateOneSQL = `
 UPDATE dungeon_character SET
-	dungeon_id 			= :dungeon_id,
-	dungeon_location_id = :dungeon_location_id,
-	name 				= :name,
-	strength 			= :strength,
-	dexterity 			= :dexterity,
-	intelligence 		= :intelligence,
-	health 				= :health,
-	fatigue 			= :fatigue,
-	coins 				= :coins,
-	experience_points 	= :experience_points,
-	attribute_points 	= :attribute_points,
-    updated_at          = :updated_at
+	dungeon_id 			 = :dungeon_id,
+	dungeon_location_id  = :dungeon_location_id,
+	name 				 = :name,
+	strength 			 = :strength,
+	dexterity 			 = :dexterity,
+	intelligence 		 = :intelligence,
+	current_strength     = :current_strength,
+	current_dexterity    = :current_dexterity,
+	current_intelligence = :current_intelligence,
+	health 				 = :health,
+	fatigue 			 = :fatigue,
+	coins 				 = :coins,
+	experience_points 	 = :experience_points,
+	attribute_points 	 = :attribute_points,
+    updated_at           = :updated_at
 WHERE id = :id
 AND   deleted_at IS NULL
 RETURNING *

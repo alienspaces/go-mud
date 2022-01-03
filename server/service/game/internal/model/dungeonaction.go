@@ -108,16 +108,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 
 	// Create source dungeon action character
 	dungeonActionCharacterRec := record.DungeonActionCharacter{
-		RecordType:         record.DungeonActionCharacterRecordTypeSource,
-		DungeonActionID:    dungeonActionRec.ID,
-		DungeonLocationID:  dungeonActionRec.DungeonLocationID,
-		DungeonCharacterID: sourceCharacterRec.ID,
-		Name:               sourceCharacterRec.Name,
-		Strength:           sourceCharacterRec.Strength,
-		Dexterity:          sourceCharacterRec.Dexterity,
-		Intelligence:       sourceCharacterRec.Intelligence,
-		Health:             sourceCharacterRec.Health,
-		Fatigue:            sourceCharacterRec.Fatigue,
+		RecordType:          record.DungeonActionCharacterRecordTypeSource,
+		DungeonActionID:     dungeonActionRec.ID,
+		DungeonLocationID:   dungeonActionRec.DungeonLocationID,
+		DungeonCharacterID:  sourceCharacterRec.ID,
+		Name:                sourceCharacterRec.Name,
+		Strength:            sourceCharacterRec.Strength,
+		Dexterity:           sourceCharacterRec.Dexterity,
+		Intelligence:        sourceCharacterRec.Intelligence,
+		CurrentStrength:     sourceCharacterRec.CurrentStrength,
+		CurrentDexterity:    sourceCharacterRec.CurrentDexterity,
+		CurrentIntelligence: sourceCharacterRec.CurrentIntelligence,
+		Health:              sourceCharacterRec.Health,
+		Fatigue:             sourceCharacterRec.Fatigue,
 	}
 
 	err = m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
@@ -161,16 +164,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	if len(dungeonLocationRecordSet.CharacterRecs) > 0 {
 		for _, characterRec := range dungeonLocationRecordSet.CharacterRecs {
 			dungeonActionCharacterRec := record.DungeonActionCharacter{
-				RecordType:         record.DungeonActionCharacterRecordTypeOccupant,
-				DungeonActionID:    dungeonActionRec.ID,
-				DungeonLocationID:  dungeonLocationRec.ID,
-				DungeonCharacterID: characterRec.ID,
-				Name:               characterRec.Name,
-				Strength:           characterRec.Strength,
-				Dexterity:          characterRec.Dexterity,
-				Intelligence:       characterRec.Intelligence,
-				Health:             characterRec.Health,
-				Fatigue:            characterRec.Fatigue,
+				RecordType:          record.DungeonActionCharacterRecordTypeOccupant,
+				DungeonActionID:     dungeonActionRec.ID,
+				DungeonLocationID:   dungeonLocationRec.ID,
+				DungeonCharacterID:  characterRec.ID,
+				Name:                characterRec.Name,
+				Strength:            characterRec.Strength,
+				Dexterity:           characterRec.Dexterity,
+				Intelligence:        characterRec.Intelligence,
+				CurrentStrength:     characterRec.CurrentStrength,
+				CurrentDexterity:    characterRec.CurrentDexterity,
+				CurrentIntelligence: characterRec.CurrentIntelligence,
+				Health:              characterRec.Health,
+				Fatigue:             characterRec.Fatigue,
 			}
 
 			err := m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
@@ -188,16 +194,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	if len(dungeonLocationRecordSet.MonsterRecs) > 0 {
 		for _, monsterRec := range dungeonLocationRecordSet.MonsterRecs {
 			dungeonActionMonsterRec := record.DungeonActionMonster{
-				RecordType:        record.DungeonActionMonsterRecordTypeOccupant,
-				DungeonActionID:   dungeonActionRec.ID,
-				DungeonLocationID: dungeonLocationRec.ID,
-				DungeonMonsterID:  monsterRec.ID,
-				Name:              monsterRec.Name,
-				Strength:          monsterRec.Strength,
-				Dexterity:         monsterRec.Dexterity,
-				Intelligence:      monsterRec.Intelligence,
-				Health:            monsterRec.Health,
-				Fatigue:           monsterRec.Fatigue,
+				RecordType:          record.DungeonActionMonsterRecordTypeOccupant,
+				DungeonActionID:     dungeonActionRec.ID,
+				DungeonLocationID:   dungeonLocationRec.ID,
+				DungeonMonsterID:    monsterRec.ID,
+				Name:                monsterRec.Name,
+				Strength:            monsterRec.Strength,
+				Dexterity:           monsterRec.Dexterity,
+				Intelligence:        monsterRec.Intelligence,
+				CurrentStrength:     monsterRec.CurrentStrength,
+				CurrentDexterity:    monsterRec.CurrentDexterity,
+				CurrentIntelligence: monsterRec.CurrentIntelligence,
+				Health:              monsterRec.Health,
+				Fatigue:             monsterRec.Fatigue,
 			}
 			err := m.CreateDungeonActionMonsterRec(&dungeonActionMonsterRec)
 			if err != nil {
@@ -263,16 +272,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		if len(dungeonLocationRecordSet.CharacterRecs) > 0 {
 			for _, characterRec := range dungeonLocationRecordSet.CharacterRecs {
 				dungeonActionCharacterRec := record.DungeonActionCharacter{
-					RecordType:         record.DungeonActionCharacterRecordTypeOccupant,
-					DungeonActionID:    dungeonActionRec.ID,
-					DungeonLocationID:  dungeonLocationRec.ID,
-					DungeonCharacterID: characterRec.ID,
-					Name:               characterRec.Name,
-					Strength:           characterRec.Strength,
-					Dexterity:          characterRec.Dexterity,
-					Intelligence:       characterRec.Intelligence,
-					Health:             characterRec.Health,
-					Fatigue:            characterRec.Fatigue,
+					RecordType:          record.DungeonActionCharacterRecordTypeOccupant,
+					DungeonActionID:     dungeonActionRec.ID,
+					DungeonLocationID:   dungeonLocationRec.ID,
+					DungeonCharacterID:  characterRec.ID,
+					Name:                characterRec.Name,
+					Strength:            characterRec.Strength,
+					Dexterity:           characterRec.Dexterity,
+					Intelligence:        characterRec.Intelligence,
+					CurrentStrength:     characterRec.CurrentStrength,
+					CurrentDexterity:    characterRec.CurrentDexterity,
+					CurrentIntelligence: characterRec.CurrentIntelligence,
+					Health:              characterRec.Health,
+					Fatigue:             characterRec.Fatigue,
 				}
 
 				err := m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
@@ -290,16 +302,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		if len(dungeonLocationRecordSet.MonsterRecs) > 0 {
 			for _, monsterRec := range dungeonLocationRecordSet.MonsterRecs {
 				dungeonActionMonsterRec := record.DungeonActionMonster{
-					RecordType:        record.DungeonActionMonsterRecordTypeOccupant,
-					DungeonActionID:   dungeonActionRec.ID,
-					DungeonLocationID: dungeonLocationRec.ID,
-					DungeonMonsterID:  monsterRec.ID,
-					Name:              monsterRec.Name,
-					Strength:          monsterRec.Strength,
-					Dexterity:         monsterRec.Dexterity,
-					Intelligence:      monsterRec.Intelligence,
-					Health:            monsterRec.Health,
-					Fatigue:           monsterRec.Fatigue,
+					RecordType:          record.DungeonActionMonsterRecordTypeOccupant,
+					DungeonActionID:     dungeonActionRec.ID,
+					DungeonLocationID:   dungeonLocationRec.ID,
+					DungeonMonsterID:    monsterRec.ID,
+					Name:                monsterRec.Name,
+					Strength:            monsterRec.Strength,
+					Dexterity:           monsterRec.Dexterity,
+					Intelligence:        monsterRec.Intelligence,
+					CurrentStrength:     monsterRec.CurrentStrength,
+					CurrentDexterity:    monsterRec.CurrentDexterity,
+					CurrentIntelligence: monsterRec.CurrentIntelligence,
+					Health:              monsterRec.Health,
+					Fatigue:             monsterRec.Fatigue,
 				}
 				err := m.CreateDungeonActionMonsterRec(&dungeonActionMonsterRec)
 				if err != nil {
@@ -348,16 +363,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		}
 
 		rec := &record.DungeonActionCharacter{
-			RecordType:         record.DungeonActionCharacterRecordTypeTarget,
-			DungeonActionID:    dungeonActionRec.ID,
-			DungeonLocationID:  dungeonLocationRec.ID,
-			DungeonCharacterID: targetCharacterRec.ID,
-			Name:               targetCharacterRec.Name,
-			Strength:           targetCharacterRec.Strength,
-			Dexterity:          targetCharacterRec.Dexterity,
-			Intelligence:       targetCharacterRec.Intelligence,
-			Health:             targetCharacterRec.Health,
-			Fatigue:            targetCharacterRec.Fatigue,
+			RecordType:          record.DungeonActionCharacterRecordTypeTarget,
+			DungeonActionID:     dungeonActionRec.ID,
+			DungeonLocationID:   dungeonLocationRec.ID,
+			DungeonCharacterID:  targetCharacterRec.ID,
+			Name:                targetCharacterRec.Name,
+			Strength:            targetCharacterRec.Strength,
+			Dexterity:           targetCharacterRec.Dexterity,
+			Intelligence:        targetCharacterRec.Intelligence,
+			CurrentStrength:     targetCharacterRec.CurrentStrength,
+			CurrentDexterity:    targetCharacterRec.CurrentDexterity,
+			CurrentIntelligence: targetCharacterRec.CurrentIntelligence,
+			Health:              targetCharacterRec.Health,
+			Fatigue:             targetCharacterRec.Fatigue,
 		}
 
 		err = m.CreateDungeonActionCharacterRec(rec)
@@ -377,16 +395,19 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		}
 
 		rec := &record.DungeonActionMonster{
-			RecordType:        record.DungeonActionMonsterRecordTypeTarget,
-			DungeonActionID:   dungeonActionRec.ID,
-			DungeonLocationID: dungeonLocationRec.ID,
-			DungeonMonsterID:  targetMonsterRec.ID,
-			Name:              targetMonsterRec.Name,
-			Strength:          targetMonsterRec.Strength,
-			Dexterity:         targetMonsterRec.Dexterity,
-			Intelligence:      targetMonsterRec.Intelligence,
-			Health:            targetMonsterRec.Health,
-			Fatigue:           targetMonsterRec.Fatigue,
+			RecordType:          record.DungeonActionMonsterRecordTypeTarget,
+			DungeonActionID:     dungeonActionRec.ID,
+			DungeonLocationID:   dungeonLocationRec.ID,
+			DungeonMonsterID:    targetMonsterRec.ID,
+			Name:                targetMonsterRec.Name,
+			Strength:            targetMonsterRec.Strength,
+			Dexterity:           targetMonsterRec.Dexterity,
+			Intelligence:        targetMonsterRec.Intelligence,
+			CurrentStrength:     targetMonsterRec.CurrentStrength,
+			CurrentDexterity:    targetMonsterRec.CurrentDexterity,
+			CurrentIntelligence: targetMonsterRec.CurrentIntelligence,
+			Health:              targetMonsterRec.Health,
+			Fatigue:             targetMonsterRec.Fatigue,
 		}
 
 		err = m.CreateDungeonActionMonsterRec(rec)

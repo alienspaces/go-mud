@@ -312,20 +312,23 @@ func (rnr *Runner) DungeonCharacterRequestDataToRecord(data schema.DungeonCharac
 func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec record.DungeonCharacter) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
-		ID:                dungeonCharacterRec.ID,
-		DungeonID:         dungeonCharacterRec.DungeonID,
-		DungeonLocationID: dungeonCharacterRec.DungeonLocationID,
-		Name:              dungeonCharacterRec.Name,
-		Strength:          dungeonCharacterRec.Strength,
-		Dexterity:         dungeonCharacterRec.Dexterity,
-		Intelligence:      dungeonCharacterRec.Intelligence,
-		Health:            dungeonCharacterRec.Health,
-		Fatigue:           dungeonCharacterRec.Fatigue,
-		Coins:             dungeonCharacterRec.Coins,
-		AttributePoints:   dungeonCharacterRec.AttributePoints,
-		ExperiencePoints:  dungeonCharacterRec.ExperiencePoints,
-		CreatedAt:         dungeonCharacterRec.CreatedAt,
-		UpdatedAt:         dungeonCharacterRec.UpdatedAt.Time,
+		ID:                  dungeonCharacterRec.ID,
+		DungeonID:           dungeonCharacterRec.DungeonID,
+		DungeonLocationID:   dungeonCharacterRec.DungeonLocationID,
+		Name:                dungeonCharacterRec.Name,
+		Strength:            dungeonCharacterRec.Strength,
+		Dexterity:           dungeonCharacterRec.Dexterity,
+		Intelligence:        dungeonCharacterRec.Intelligence,
+		CurrentStrength:     dungeonCharacterRec.CurrentStrength,
+		CurrentDexterity:    dungeonCharacterRec.CurrentDexterity,
+		CurrentIntelligence: dungeonCharacterRec.CurrentIntelligence,
+		Health:              dungeonCharacterRec.Health,
+		Fatigue:             dungeonCharacterRec.Fatigue,
+		Coins:               dungeonCharacterRec.Coins,
+		AttributePoints:     dungeonCharacterRec.AttributePoints,
+		ExperiencePoints:    dungeonCharacterRec.ExperiencePoints,
+		CreatedAt:           dungeonCharacterRec.CreatedAt,
+		UpdatedAt:           dungeonCharacterRec.UpdatedAt.Time,
 	}
 
 	return data, nil

@@ -11,6 +11,9 @@ INSERT INTO dungeon_action_character (
 	strength,
 	dexterity,
 	intelligence,
+	current_strength,
+	current_dexterity,
+	current_intelligence,
 	health,
 	fatigue,
 	created_at
@@ -24,6 +27,9 @@ INSERT INTO dungeon_action_character (
 	:strength,
 	:dexterity,
 	:intelligence,
+	:current_strength,
+	:current_dexterity,
+	:current_intelligence,
 	:health,
 	:fatigue,
 	:created_at
@@ -41,6 +47,9 @@ UPDATE dungeon_action_character SET
 	strength 			 = :strength,
 	dexterity 			 = :dexterity,
 	intelligence 		 = :intelligence,
+	current_strength 	 = :current_strength,
+	current_dexterity 	 = :current_dexterity,
+	current_intelligence = :current_intelligence,
 	health 				 = :health,
 	fatigue 			 = :fatigue,
 	updated_at 		     = :updated_at

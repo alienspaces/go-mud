@@ -101,6 +101,9 @@
         "strength", 
         "dexterity",
         "intelligence",
+        "current_strength", 
+        "current_dexterity",
+        "current_intelligence",
         "health",
         "fatigue"
       ],
@@ -115,6 +118,15 @@
           "type": "integer"
         },
         "intelligence": {
+          "type": "integer"
+        },
+        "current_strength": {
+          "type": "integer"
+        },
+        "current_dexterity": {
+          "type": "integer"
+        },
+        "current_intelligence": {
           "type": "integer"
         },
         "health": {
@@ -143,6 +155,9 @@
         "strength", 
         "dexterity",
         "intelligence",
+        "current_strength", 
+        "current_dexterity",
+        "current_intelligence",
         "health",
         "fatigue"
       ],
@@ -157,6 +172,15 @@
           "type": "integer"
         },
         "intelligence": {
+          "type": "integer"
+        },
+        "current_strength": {
+          "type": "integer"
+        },
+        "current_dexterity": {
+          "type": "integer"
+        },
+        "current_intelligence": {
           "type": "integer"
         },
         "health": {

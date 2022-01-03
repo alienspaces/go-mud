@@ -66,6 +66,9 @@ func (m *Model) CreateDungeonCharacterRec(rec *record.DungeonCharacter) error {
 		return fmt.Errorf(msg)
 	}
 
+	rec.CurrentStrength = rec.Strength
+	rec.CurrentDexterity = rec.Dexterity
+	rec.CurrentIntelligence = rec.Intelligence
 	rec.DungeonLocationID = locationRecs[0].ID
 	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
 	rec.ExperiencePoints = defaultExperiencePoints

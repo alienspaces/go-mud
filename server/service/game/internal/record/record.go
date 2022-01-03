@@ -33,32 +33,38 @@ type DungeonLocation struct {
 }
 
 type DungeonCharacter struct {
-	DungeonID         string `db:"dungeon_id"`
-	DungeonLocationID string `db:"dungeon_location_id"`
-	Name              string `db:"name"`
-	Strength          int    `db:"strength"`
-	Dexterity         int    `db:"dexterity"`
-	Intelligence      int    `db:"intelligence"`
-	Health            int    `db:"health"`
-	Fatigue           int    `db:"fatigue"`
-	Coins             int    `db:"coins"`
-	ExperiencePoints  int    `db:"experience_points"`
-	AttributePoints   int    `db:"attribute_points"`
+	DungeonID           string `db:"dungeon_id"`
+	DungeonLocationID   string `db:"dungeon_location_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
+	Coins               int    `db:"coins"`
+	ExperiencePoints    int    `db:"experience_points"`
+	AttributePoints     int    `db:"attribute_points"`
 	repository.Record
 }
 
 type DungeonMonster struct {
-	DungeonID         string `db:"dungeon_id"`
-	DungeonLocationID string `db:"dungeon_location_id"`
-	Name              string `db:"name"`
-	Strength          int    `db:"strength"`
-	Dexterity         int    `db:"dexterity"`
-	Intelligence      int    `db:"intelligence"`
-	Health            int    `db:"health"`
-	Fatigue           int    `db:"fatigue"`
-	Coins             int    `db:"coins"`
-	ExperiencePoints  int    `db:"experience_points"`
-	AttributePoints   int    `db:"attribute_points"`
+	DungeonID           string `db:"dungeon_id"`
+	DungeonLocationID   string `db:"dungeon_location_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
+	Coins               int    `db:"coins"`
+	ExperiencePoints    int    `db:"experience_points"`
+	AttributePoints     int    `db:"attribute_points"`
 	repository.Record
 }
 
@@ -99,16 +105,19 @@ const (
 )
 
 type DungeonActionCharacter struct {
-	RecordType         string `db:"record_type"`
-	DungeonActionID    string `db:"dungeon_action_id"`
-	DungeonLocationID  string `db:"dungeon_location_id"`
-	DungeonCharacterID string `db:"dungeon_character_id"`
-	Name               string `db:"name"`
-	Strength           int    `db:"strength"`
-	Dexterity          int    `db:"dexterity"`
-	Intelligence       int    `db:"intelligence"`
-	Health             int    `db:"health"`
-	Fatigue            int    `db:"fatigue"`
+	RecordType          string `db:"record_type"`
+	DungeonActionID     string `db:"dungeon_action_id"`
+	DungeonLocationID   string `db:"dungeon_location_id"`
+	DungeonCharacterID  string `db:"dungeon_character_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
 	repository.Record
 }
 
@@ -119,16 +128,19 @@ const (
 )
 
 type DungeonActionMonster struct {
-	RecordType        string `db:"record_type"`
-	DungeonActionID   string `db:"dungeon_action_id"`
-	DungeonLocationID string `db:"dungeon_location_id"`
-	DungeonMonsterID  string `db:"dungeon_monster_id"`
-	Name              string `db:"name"`
-	Strength          int    `db:"strength"`
-	Dexterity         int    `db:"dexterity"`
-	Intelligence      int    `db:"intelligence"`
-	Health            int    `db:"health"`
-	Fatigue           int    `db:"fatigue"`
+	RecordType          string `db:"record_type"`
+	DungeonActionID     string `db:"dungeon_action_id"`
+	DungeonLocationID   string `db:"dungeon_location_id"`
+	DungeonMonsterID    string `db:"dungeon_monster_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
 	repository.Record
 }
 

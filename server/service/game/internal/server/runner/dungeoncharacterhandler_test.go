@@ -170,11 +170,16 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				res := schema.DungeonCharacterResponse{
 					Data: []schema.DungeonCharacterData{
 						{
-							ID:           data.DungeonCharacterRecs[0].ID,
-							Name:         data.DungeonCharacterRecs[0].Name,
-							Strength:     data.DungeonCharacterRecs[0].Strength,
-							Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-							Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+							ID:                  data.DungeonCharacterRecs[0].ID,
+							Name:                data.DungeonCharacterRecs[0].Name,
+							Strength:            data.DungeonCharacterRecs[0].Strength,
+							Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+							Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+							CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+							CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+							CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+							Health:              data.DungeonCharacterRecs[0].Health,
+							Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 						},
 					},
 				}
@@ -238,11 +243,16 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				res := schema.DungeonCharacterResponse{
 					Data: []schema.DungeonCharacterData{
 						{
-							ID:           data.DungeonCharacterRecs[0].ID,
-							Name:         data.DungeonCharacterRecs[0].Name,
-							Strength:     data.DungeonCharacterRecs[0].Strength,
-							Dexterity:    data.DungeonCharacterRecs[0].Dexterity,
-							Intelligence: data.DungeonCharacterRecs[0].Intelligence,
+							ID:                  data.DungeonCharacterRecs[0].ID,
+							Name:                data.DungeonCharacterRecs[0].Name,
+							Strength:            data.DungeonCharacterRecs[0].Strength,
+							Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+							Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+							CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+							CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+							CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+							Health:              data.DungeonCharacterRecs[0].Health,
+							Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 						},
 					},
 				}
@@ -336,6 +346,18 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 					require.Equal(t, expectData.Dexterity, responseBody.Data[idx].Dexterity)
 					t.Logf("Checking character intelligence >%d< >%d<", expectData.Intelligence, responseBody.Data[idx].Intelligence)
 					require.Equal(t, expectData.Intelligence, responseBody.Data[idx].Intelligence)
+
+					t.Logf("Checking character current strength >%d< >%d<", expectData.CurrentStrength, responseBody.Data[idx].CurrentStrength)
+					require.Equal(t, expectData.CurrentStrength, responseBody.Data[idx].CurrentStrength)
+					t.Logf("Checking character current dexterity >%d< >%d<", expectData.CurrentDexterity, responseBody.Data[idx].CurrentDexterity)
+					require.Equal(t, expectData.CurrentDexterity, responseBody.Data[idx].CurrentDexterity)
+					t.Logf("Checking character current intelligence >%d< >%d<", expectData.CurrentIntelligence, responseBody.Data[idx].CurrentIntelligence)
+					require.Equal(t, expectData.CurrentIntelligence, responseBody.Data[idx].CurrentIntelligence)
+
+					t.Logf("Checking character health >%d< >%d<", expectData.Health, responseBody.Data[idx].Health)
+					require.Equal(t, expectData.Health, responseBody.Data[idx].Health)
+					t.Logf("Checking character fatigue >%d< >%d<", expectData.Fatigue, responseBody.Data[idx].Fatigue)
+					require.Equal(t, expectData.Fatigue, responseBody.Data[idx].Fatigue)
 				}
 			}
 
