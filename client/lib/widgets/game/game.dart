@@ -7,11 +7,11 @@ import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/widgets/game/character/character.dart';
+import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/action.dart';
 import 'package:go_mud_client/widgets/game/command/command.dart';
 import 'package:go_mud_client/widgets/game/location/description/description_container.dart';
-import 'package:go_mud_client/widgets/game/location/location.dart';
+// import 'package:go_mud_client/widgets/game/location/location.dart';
 
 class GameWidget extends StatefulWidget {
   const GameWidget({Key? key}) : super(key: key);
@@ -73,33 +73,24 @@ class _GameWidgetState extends State<GameWidget> {
     return Container(
       color: Colors.yellow[100],
       child: Column(
-        children: <Widget>[
-          // Character
-          const Expanded(
-            flex: 5,
-            child: GameCharacterWidget(),
-          ),
-          // Location description container
-          const Expanded(
+        children: const <Widget>[
+          // Location description
+          Expanded(
             flex: 3,
             child: GameLocationDescriptionContainerWidget(),
           ),
-          // Location container
+          // Game board
           Expanded(
             flex: 10,
-            child: Container(
-              decoration: BoxDecoration(color: Colors.orange[100]),
-              clipBehavior: Clip.antiAlias,
-              child: const GameLocationWidget(),
-            ),
+            child: GameBoardWidget(),
           ),
           // Current actions
-          const Expanded(
+          Expanded(
             flex: 4,
             child: GameActionWidget(),
           ),
-          // Most recent command
-          const Expanded(
+          // Current command
+          Expanded(
             flex: 1,
             child: GameCommandWidget(),
           ),
