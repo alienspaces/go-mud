@@ -104,7 +104,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 	// register configured routes
 	for _, hc := range rnr.HandlerConfig {
 
-		rnr.Log.Warn("** Router ** method >%s< path >%s<", hc.Method, hc.Path)
+		rnr.Log.Info("** Router ** method >%s< path >%s<", hc.Method, hc.Path)
 
 		h, err := rnr.DefaultMiddleware(hc, hc.HandlerFunc)
 		if err != nil {
@@ -199,6 +199,8 @@ func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h HandlerFunc) (httproute
 
 	// wrap everything in a httprouter Handler
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
+		// log
+		rnr.Log.Info("RequestURI %s", r.RequestURI)
 		// delegate
 		h(w, r, pp, nil, rnr.Log, nil)
 	}

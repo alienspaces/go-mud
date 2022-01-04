@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 // Application
 import 'package:go_mud_client/logger.dart';
@@ -35,8 +36,15 @@ class DungeonRepository implements DungeonRepositoryInterface {
     String? responseBody = response.body;
     if (responseBody != null && responseBody.isNotEmpty) {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
-      log.warning('Decoded response $decoded');
-      record = DungeonRecord.fromJson(decoded);
+      if (decoded['data'] != null) {
+        List<dynamic> data = decoded['data'];
+        log.info('Decoded response $data');
+        if (data.length > 1) {
+          log.warning('Unexpected number of records returned');
+          throw RecordCountException('Unexpected number of records returned');
+        }
+        record = DungeonRecord.fromJson(data[0]);
+      }
     }
 
     return record;

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Local development run script
+# Stops services
 
 echo
 echo "=> Stopping services"

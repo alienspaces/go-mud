@@ -5,6 +5,9 @@ import 'package:go_mud_client/api/api.dart';
 import 'package:go_mud_client/api/response.dart';
 import 'package:go_mud_client/repository/repository.dart';
 
+// Identifiers
+const String testDungeonID = "55087d68-dc17-41ed-bb53-12dc636ac196";
+
 Map<String, String> getConfig() {
   Map<String, String> envVars = Platform.environment;
 
@@ -13,22 +16,27 @@ Map<String, String> getConfig() {
   String? serverPort = envVars['APP_CLIENT_API_PORT'];
 
   if (serverScheme == null) {
-    throw Exception('Test setup failure, environment missing APP_CLIENT_API_SCHEME');
+    throw Exception(
+        'Test setup failure, environment missing APP_CLIENT_API_SCHEME');
   }
 
   if (serverHost == null) {
-    throw Exception('Test setup failure, environment missing APP_CLIENT_API_HOST');
+    throw Exception(
+        'Test setup failure, environment missing APP_CLIENT_API_HOST');
   }
 
   if (serverPort == null) {
-    throw Exception('Test setup failure, environment missing APP_CLIENT_API_PORT');
+    throw Exception(
+        'Test setup failure, environment missing APP_CLIENT_API_PORT');
   }
 
-  return {
+  Map<String, String> config = {
     "serverScheme": envVars["APP_CLIENT_API_SCHEME"] ?? '',
     "serverHost": envVars['APP_CLIENT_API_HOST'] ?? '',
     "serverPort": envVars['APP_CLIENT_API_PORT'] ?? '',
   };
+
+  return config;
 }
 
 class MockAPI implements API {
@@ -66,7 +74,12 @@ class MockAPI implements API {
   }
 
   @override
-  Future<APIResponse> loadCharacter(String dungeonID, String characterID) async {
+  Future<APIResponse> getCharacter(String dungeonID, String characterID) async {
+    return Future.value(APIResponse(body: ''));
+  }
+
+  @override
+  Future<APIResponse> getCharacters(String dungeonID) async {
     return Future.value(APIResponse(body: ''));
   }
 

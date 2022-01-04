@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart';
 
@@ -31,8 +30,8 @@ class API {
         host: _hostname,
         port: int.parse(_port),
       );
-      response =
-          await client.get(uri, headers: {'Content-Type': 'application/json; charset=utf-8'});
+      response = await client.get(uri,
+          headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
       return APIResponse(error: err.toString());
@@ -41,7 +40,8 @@ class API {
     }
 
     String responseBody = response.body;
-    log.warning('Response: $responseBody');
+
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -58,9 +58,11 @@ class API {
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID',
       );
-      log.warning('URI $uri');
-      response =
-          await client.get(uri, headers: {'Content-Type': 'application/json; charset=utf-8'});
+
+      log.info('URI $uri');
+
+      response = await client.get(uri,
+          headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
       return APIResponse(error: err.toString());
@@ -69,7 +71,8 @@ class API {
     }
 
     String responseBody = response.body;
-    log.warning('Response: $responseBody');
+
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -85,9 +88,11 @@ class API {
         port: int.parse(_port),
         path: '/api/v1/dungeons',
       );
-      log.warning('URI $uri');
-      response =
-          await client.get(uri, headers: {'Content-Type': 'application/json; charset=utf-8'});
+
+      log.info('URI $uri');
+
+      response = await client.get(uri,
+          headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
       return APIResponse(error: err.toString());
@@ -96,7 +101,8 @@ class API {
     }
 
     String responseBody = response.body;
-    log.warning('Response: $responseBody');
+
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -119,7 +125,8 @@ class API {
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID/characters',
       );
-      log.warning('URI $uri');
+
+      log.info('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
@@ -152,12 +159,12 @@ class API {
       return APIResponse(error: responseBody);
     }
 
-    log.warning('Response: $responseBody');
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> loadCharacter(String dungeonID, String characterID) async {
+  Future<APIResponse> getCharacter(String dungeonID, String characterID) async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
 
@@ -169,7 +176,8 @@ class API {
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
       );
-      log.warning('URI $uri');
+
+      log.info('URI $uri');
 
       response = await client.get(
         uri,
@@ -185,7 +193,38 @@ class API {
     }
 
     String responseBody = response.body;
-    log.warning('Response: $responseBody');
+
+    log.info('Response: $responseBody');
+
+    return APIResponse(body: responseBody);
+  }
+
+  Future<APIResponse> getCharacters(String dungeonID) async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/dungeons/$dungeonID/characters',
+      );
+
+      log.info('URI $uri');
+
+      response = await client.get(uri,
+          headers: {'Content-Type': 'application/json; charset=utf-8'});
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -206,7 +245,8 @@ class API {
         port: int.parse(_port),
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/actions',
       );
-      log.warning('URI $uri');
+
+      log.info('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
@@ -230,7 +270,8 @@ class API {
     }
 
     String responseBody = response.body;
-    log.warning('Response: $responseBody');
+
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }

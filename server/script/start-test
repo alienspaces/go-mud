@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Starts the database, runs database migrations, loads "seed" data and starts services
+# Starts the database, runs database migrations, loads "test" data and starts services
 
 # copy development env
 cp .env.development .env
@@ -17,8 +17,8 @@ source "${BASH_SOURCE%/*}"/db-start "$1" || exit $?
 # migrate database
 source "${BASH_SOURCE%/*}"/db-migrate-up || exit $?
 
-# load "seed" data
-source "${BASH_SOURCE%/*}"/db-load-seed-data || exit $?
+# load "test" data
+source "${BASH_SOURCE%/*}"/db-load-test-data || exit $?
 
 # start services
 source "${BASH_SOURCE%/*}"/services-start "$1" || exit $?

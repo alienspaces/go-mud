@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Local development run script
+# Starts services
 
 # Environment
 if [ -z "$APP_SERVER_GO_VERSION" ]; then

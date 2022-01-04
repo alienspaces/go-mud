@@ -9,6 +9,13 @@ import '../../utility.dart';
 void main() {
   test('CharacterRepository should ', () async {
     final repository = CharacterRepository(config: getConfig(), api: getAPI());
-    expect(repository, isNotNull);
+    expect(repository, isNotNull, reason: "CharacterRepository is not null");
+
+    final characters = await repository.getMany(testDungeonID);
+    expect(
+      characters,
+      isNotEmpty,
+      reason: "CharacterRepository getMany response is not empty",
+    );
   });
 }

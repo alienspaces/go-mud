@@ -10,7 +10,17 @@ import 'package:go_mud_client/repository/repository.dart';
 part 'character_record.dart';
 
 abstract class CharacterRepositoryInterface {
-  Future<CharacterRecord?> create(String dungeonID, CreateCharacterRecord record);
+  Future<CharacterRecord?> createOne(
+    String dungeonID,
+    CreateCharacterRecord record,
+  );
+  Future<CharacterRecord?> getOne(
+    String dungeonID,
+    String characterID,
+  );
+  Future<List<CharacterRecord>> getMany(
+    String dungeonID,
+  );
 }
 
 class CharacterRepository implements CharacterRepositoryInterface {
@@ -20,7 +30,8 @@ class CharacterRepository implements CharacterRepositoryInterface {
   CharacterRepository({required this.config, required this.api});
 
   @override
-  Future<CharacterRecord?> create(String dungeonID, CreateCharacterRecord createRecord) async {
+  Future<CharacterRecord?> createOne(
+      String dungeonID, CreateCharacterRecord createRecord) async {
     final log = getLogger('CharacterRepository');
     log.warning('Creating character ${createRecord.name}');
 
@@ -58,10 +69,11 @@ class CharacterRepository implements CharacterRepositoryInterface {
     return record;
   }
 
-  Future<CharacterRecord?> load(String dungeonID, String characterID) async {
+  @override
+  Future<CharacterRecord?> getOne(String dungeonID, String characterID) async {
     final log = getLogger('CharacterRepository');
 
-    var response = await api.loadCharacter(
+    var response = await api.getCharacter(
       dungeonID,
       characterID,
     );
@@ -87,5 +99,32 @@ class CharacterRepository implements CharacterRepositoryInterface {
     }
 
     return record;
+  }
+
+  @override
+  Future<List<CharacterRecord>> getMany(String dungeonID) async {
+    final log = getLogger('CharacterRepository');
+
+    var response = await api.getCharacters(dungeonID);
+    if (response.error != null) {
+      log.warning('API responded with error ${response.error}');
+      RepositoryException exception = resolveApiException(response.error!);
+      throw exception;
+    }
+
+    List<CharacterRecord> records = [];
+    String? responseBody = response.body;
+    if (responseBody != null && responseBody.isNotEmpty) {
+      Map<String, dynamic> decoded = jsonDecode(responseBody);
+      if (decoded['data'] != null) {
+        List<dynamic> data = decoded['data'];
+        log.info('Decoded response $data');
+        for (var element in data) {
+          records.add(CharacterRecord.fromJson(element));
+        }
+      }
+    }
+
+    return records;
   }
 }

@@ -9,9 +9,20 @@ import '../../utility.dart';
 void main() {
   test('DungeonRepository should ', () async {
     final repository = DungeonRepository(config: getConfig(), api: getAPI());
-    expect(repository, isNotNull);
+    expect(repository, isNotNull, reason: "DungeonRepository is not null");
 
     final dungeons = await repository.getMany();
-    expect(dungeons, isNotEmpty);
+    expect(
+      dungeons,
+      isNotEmpty,
+      reason: "DungeonRepository getMany response is not empty",
+    );
+
+    final dungeon = await repository.getOne(testDungeonID);
+    expect(
+      dungeon,
+      isNotNull,
+      reason: "DungeonRepository getOne response is not null",
+    );
   });
 }
