@@ -52,17 +52,30 @@ void main() {
     expect(
       character.currentStrength,
       isNotNull,
-      reason: "CharacterRepository getOne character.strength is not null",
+      reason:
+          "CharacterRepository getOne character.currentStrength is not null",
     );
     expect(
       character.currentDexterity,
       isNotNull,
-      reason: "CharacterRepository getOne character.dexterity is not null",
+      reason:
+          "CharacterRepository getOne character.currentDexterity is not null",
     );
     expect(
       character.currentIntelligence,
       isNotNull,
-      reason: "CharacterRepository getOne character.intelligence is not null",
+      reason:
+          "CharacterRepository getOne character.currentIntelligence is not null",
+    );
+    expect(
+      character.health,
+      isNotNull,
+      reason: "CharacterRepository getOne character.health is not null",
+    );
+    expect(
+      character.fatigue,
+      isNotNull,
+      reason: "CharacterRepository getOne character.fatigue is not null",
     );
   });
 }
