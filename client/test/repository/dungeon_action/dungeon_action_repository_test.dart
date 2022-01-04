@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
 // Local Test Utilities
-import '../utility.dart';
+import '../../utility.dart';
 
 void main() {
   test('DungeonActionRepository should', () async {

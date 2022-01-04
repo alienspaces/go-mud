@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 
 // Local Test Utilities
-import '../utility.dart';
+import '../../utility.dart';
 
 void main() {
   test('CharacterRepository', () async {
