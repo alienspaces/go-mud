@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
 // Application
 import 'package:go_mud_client/logger.dart';

@@ -6,8 +6,6 @@ import 'package:go_mud_client/main.dart';
 // Local Test Utilities
 import './utility.dart';
 
-// TODO: Mock API for repositories
-//
 // Warning: At least one test in this suite creates an HttpClient. When
 // running a test suite that uses TestWidgetsFlutterBinding, all HTTP
 // requests will return status code 400, and no network request will
