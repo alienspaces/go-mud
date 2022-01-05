@@ -13,24 +13,13 @@ class GameBoardWidget extends StatefulWidget {
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
-enum ShowPanel { location, stashed, equipped }
-
 class _GameBoardWidgetState extends State<GameBoardWidget> {
-  ShowPanel showPanel = ShowPanel.location;
+  int panelIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameBoardWidget');
     log.info('Building..');
-
-    late Widget panelWidget;
-    if (showPanel == ShowPanel.location) {
-      panelWidget = const GameLocationWidget();
-    } else if (showPanel == ShowPanel.equipped) {
-      panelWidget = const GameInventoryEquippedWidget();
-    } else if (showPanel == ShowPanel.stashed) {
-      panelWidget = const GameInventoryStashedWidget();
-    }
 
     return Row(
       children: <Widget>[
@@ -46,7 +35,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      showPanel = ShowPanel.location;
+                      panelIndex = 0;
                     });
                   },
                   child: const Text('Location'),
@@ -58,7 +47,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      showPanel = ShowPanel.equipped;
+                      panelIndex = 1;
                     });
                   },
                   child: const Text('Equipped'),
@@ -70,7 +59,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      showPanel = ShowPanel.stashed;
+                      panelIndex = 2;
                     });
                   },
                   child: const Text('Stashed'),
@@ -85,7 +74,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           child: Container(
             decoration: BoxDecoration(color: Colors.orange[100]),
             clipBehavior: Clip.antiAlias,
-            child: panelWidget,
+            child: IndexedStack(
+              index: panelIndex,
+              children: const <Widget>[
+                GameLocationWidget(),
+                GameInventoryEquippedWidget(),
+                GameInventoryStashedWidget(),
+              ],
+            ),
           ),
         ),
       ],
