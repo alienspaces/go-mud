@@ -4,9 +4,14 @@ import 'dart:ui';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 
-/// Returns the application theme data
-ThemeData getTheme(BuildContext context) {
-  final log = getLogger('Theme');
+class FontScale {
+  double sizeFactor;
+  double sizeDelta;
+  FontScale({required this.sizeFactor, required this.sizeDelta});
+}
+
+FontScale getFontScale() {
+  final log = getLogger('getFontScale');
 
   // Font scaling
   double sizeFactor = 1;
@@ -29,8 +34,7 @@ ThemeData getTheme(BuildContext context) {
   var safeWidth = logicalWidth - paddingLeft - paddingRight;
   var safeHeight = logicalHeight - paddingTop - paddingBottom;
 
-  log.info("Screen width >$safeWidth<");
-  log.info("Screen height >$safeHeight<");
+  log.info("Screen width >$safeWidth< height >$safeHeight<");
 
   if (safeWidth < 370) {
     sizeFactor = 0.85;
@@ -40,59 +44,68 @@ ThemeData getTheme(BuildContext context) {
     sizeFactor = 0.95;
   }
 
+  log.info("Font sizeDelta >$sizeDelta< sizeFactor >$sizeFactor<");
+
+  return FontScale(sizeDelta: sizeDelta, sizeFactor: sizeFactor);
+}
+
+/// Returns the application theme data
+ThemeData getTheme(BuildContext context) {
+  FontScale fontScale = getFontScale();
+
   return ThemeData(
     textTheme: TextTheme(
       headline1: Theme.of(context).textTheme.headline1!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       headline2: Theme.of(context).textTheme.headline2!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       headline3: Theme.of(context).textTheme.headline3!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       headline4: Theme.of(context).textTheme.headline4!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       headline5: Theme.of(context).textTheme.headline5!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       headline6: Theme.of(context).textTheme.headline6!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       subtitle1: Theme.of(context).textTheme.subtitle1!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       subtitle2: Theme.of(context).textTheme.subtitle2!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       bodyText1: Theme.of(context).textTheme.bodyText1!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       bodyText2: Theme.of(context).textTheme.bodyText2!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       caption: Theme.of(context).textTheme.caption!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       button: Theme.of(context).textTheme.button!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
       overline: Theme.of(context).textTheme.overline!.apply(
-            fontSizeFactor: sizeFactor,
-            fontSizeDelta: sizeDelta,
+            fontSizeFactor: fontScale.sizeFactor,
+            fontSizeDelta: fontScale.sizeDelta,
           ),
     ),
     // NOTE: Setting the primaryColor provides some consistency

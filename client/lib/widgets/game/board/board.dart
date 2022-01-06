@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/widgets/game/inventory/equipped/equipped.dart';
 import 'package:go_mud_client/widgets/game/inventory/stashed/stashed.dart';
 import 'package:go_mud_client/widgets/game/location/location.dart';
@@ -40,7 +41,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         log.info(
-            'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
+          'Building width ${constraints.maxWidth} height ${constraints.maxHeight}',
+        );
 
         // Set grid member dimensions
         gridMemberWidth = constraints.maxWidth - 2;
@@ -52,17 +54,21 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           gridMemberWidth = gridMemberHeight;
         }
 
+        log.info(
+          '(A-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
+        );
+
         return Container(
-          color: Colors.blue,
           width: gridMemberWidth,
           height: gridMemberHeight,
-          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+          margin: gameButtonMargin,
           child: ElevatedButton(
             onPressed: () {
               setState(() {
                 panelIndex = boardButtonIndexes[boardButtonType]!;
               });
             },
+            style: gameButtonStyle,
             child: Text(boardButtonLabels[boardButtonType]!),
           ),
         );
@@ -80,20 +86,28 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         // Panel buttons
         Expanded(
           flex: 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              buildBoardButton(context, BoardButtonType.location),
-              buildBoardButton(context, BoardButtonType.equipped),
-              buildBoardButton(context, BoardButtonType.stashed),
-            ],
+          child: Container(
+            padding: const EdgeInsets.all(1),
+            margin: const EdgeInsets.all(1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                buildBoardButton(context, BoardButtonType.location),
+                buildBoardButton(context, BoardButtonType.equipped),
+                buildBoardButton(context, BoardButtonType.stashed),
+              ],
+            ),
           ),
         ),
         // Panel
         Expanded(
           flex: 5,
           child: Container(
-            decoration: BoxDecoration(color: Colors.orange[100]),
+            decoration: const BoxDecoration(
+              color: null,
+              border: null,
+              borderRadius: BorderRadius.all(Radius.zero),
+            ),
             clipBehavior: Clip.antiAlias,
             child: IndexedStack(
               index: panelIndex,

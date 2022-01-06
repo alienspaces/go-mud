@@ -267,6 +267,10 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
           gridMemberWidth = gridMemberHeight;
         }
 
+        log.info(
+          '(B-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
+        );
+
         double gridWidth = gridMemberWidth * 5;
         double gridHeight = gridMemberHeight * 5;
 
@@ -281,7 +285,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
               borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
             padding: const EdgeInsets.all(1),
-            margin: const EdgeInsets.all(5),
+            margin: const EdgeInsets.all(1),
             width: gridWidth,
             height: gridHeight,
             child: GridView.count(
