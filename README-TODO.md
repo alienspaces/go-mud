@@ -16,10 +16,9 @@
 
 ## Later
 
-- Server: Improve API error responses
+- Server: Provide narration in action responses
 - Client: Icons for room contents
 - Server: Implement 2 second turns
 - Client: Implement 2 second progress bar and retries
 - Server: Implement monster movement
-- Smoother room scrolling without redrawing previous location
 - All: Docker Compose
