@@ -17,6 +17,7 @@
 ## Later
 
 - Server: Provide narration in action responses
+- Client: Display narration from action responses
 - Client: Icons for room contents
 - Server: Implement 2 second turns
 - Client: Implement 2 second progress bar and retries
