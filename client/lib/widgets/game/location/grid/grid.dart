@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
+import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
@@ -110,6 +111,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
         onPressed: () {
           _selectTarget(context, direction);
         },
+        style: gameButtonStyle,
         child: Text('${directionLabelMap[direction]}'),
       ),
     );
@@ -150,16 +152,14 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Character widget
   Widget _characterWidget(BuildContext context, String characterName) {
     return Container(
-      margin: const EdgeInsets.all(2),
+      margin: gameButtonMargin,
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameLocationGridWidget');
           log.info('Selecting character >$characterName<');
           _selectTarget(context, characterName);
         },
-        style: ElevatedButton.styleFrom(
-          primary: Colors.green,
-        ),
+        style: gameButtonStyle,
         child: Text(characterName),
       ),
     );
@@ -168,16 +168,14 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Monster widget
   Widget _monsterWidget(BuildContext context, String monsterName) {
     return Container(
-      margin: const EdgeInsets.all(2),
+      margin: gameButtonMargin,
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameLocationGridWidget');
           log.info('Selecting monster >$monsterName<');
           _selectTarget(context, monsterName);
         },
-        style: ElevatedButton.styleFrom(
-          primary: Colors.orange,
-        ),
+        style: gameButtonStyle,
         child: Text(monsterName),
       ),
     );
@@ -186,16 +184,14 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Object widget
   Widget _objectWidget(BuildContext context, String objectName) {
     return Container(
-      margin: const EdgeInsets.all(2),
+      margin: gameButtonMargin,
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameLocationGridWidget');
           log.info('Selecting object >$objectName<');
           _selectTarget(context, objectName);
         },
-        style: ElevatedButton.styleFrom(
-          primary: Colors.brown,
-        ),
+        style: gameButtonStyle,
         child: Text(objectName),
       ),
     );
@@ -207,7 +203,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
       width: gridMemberWidth,
       height: gridMemberHeight,
       alignment: Alignment.center,
-      margin: const EdgeInsets.all(2),
+      margin: gameButtonMargin,
       decoration: BoxDecoration(
         color: const Color(0xFFD4D4D4),
         border: Border.all(
@@ -271,12 +267,10 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
           '(B-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
         );
 
-        double gridWidth = gridMemberWidth * 5;
-        double gridHeight = gridMemberHeight * 5;
-
         return IgnorePointer(
           ignoring: widget.readonly ? true : false,
           child: Container(
+            margin: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             decoration: BoxDecoration(
               color: widget.readonly ? Colors.black : const Color(0xFFDEDEDE),
               border: Border.all(
@@ -284,10 +278,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
               ),
               borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            padding: const EdgeInsets.all(1),
-            margin: const EdgeInsets.all(1),
-            width: gridWidth,
-            height: gridHeight,
             child: GridView.count(
               crossAxisCount: 5,
               children: _generateGrid(context),

@@ -7,6 +7,7 @@ import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/style.dart';
 
 class GameActionWidget extends StatefulWidget {
   const GameActionWidget({Key? key}) : super(key: key);
@@ -32,7 +33,7 @@ class _GameActionWidgetState extends State<GameActionWidget> {
 
   Widget _actionWidget(BuildContext context, String label, String action) {
     return Container(
-      margin: const EdgeInsets.all(2),
+      margin: gameButtonMargin,
       width: gridMemberWidth,
       height: gridMemberHeight,
       child: ElevatedButton(
@@ -41,13 +42,9 @@ class _GameActionWidgetState extends State<GameActionWidget> {
           log.info('Selecting action >$action<');
           _selectAction(context, action);
         },
-        style: ElevatedButton.styleFrom(
-          primary: Colors.green,
-        ),
+        style: gameButtonStyle,
         child: Text(
           label,
-          textDirection: TextDirection.ltr,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 6),
         ),
       ),
     );

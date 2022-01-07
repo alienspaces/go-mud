@@ -87,8 +87,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         Expanded(
           flex: 1,
           child: Container(
+            color: Colors.purple[100],
             padding: const EdgeInsets.all(1),
-            margin: const EdgeInsets.all(1),
+            margin: const EdgeInsets.fromLTRB(3, 0, 0, 0),
+            alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -104,12 +106,13 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           flex: 5,
           child: Container(
             decoration: const BoxDecoration(
-              color: null,
+              color: Colors.purple,
               border: null,
               borderRadius: BorderRadius.all(Radius.zero),
             ),
             clipBehavior: Clip.antiAlias,
             child: IndexedStack(
+              alignment: Alignment.center,
               index: panelIndex,
               children: const <Widget>[
                 GameLocationWidget(),
