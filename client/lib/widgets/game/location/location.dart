@@ -4,8 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/widgets/game/location/character/character.dart';
 import 'package:go_mud_client/widgets/game/location/grid/grid_move.dart';
 import 'package:go_mud_client/widgets/game/location/grid/grid_look.dart';
+import 'package:go_mud_client/widgets/game/location/monster/monster.dart';
+import 'package:go_mud_client/widgets/game/location/object/object.dart';
 
 class GameLocationWidget extends StatefulWidget {
   const GameLocationWidget({Key? key}) : super(key: key);
@@ -130,31 +133,23 @@ class _GameLocationWidgetState extends State<GameLocationWidget> {
                 ),
               );
             }
+            // TODO: Move all this malarky to the game board widget
             if (dungeonActionRecord.targetCharacter != null) {
               log.info('Rendering look target character');
               widgets.add(
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: const Text("Looking character"),
-                ),
+                const GameBoardCharacterWidget(),
               );
             }
             if (dungeonActionRecord.targetMonster != null) {
               log.info('Rendering look target monster');
               widgets.add(
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: const Text("Looking monster"),
-                ),
+                const GameBoardMonsterWidget(),
               );
             }
             if (dungeonActionRecord.targetObject != null) {
               log.info('Rendering look target object');
               widgets.add(
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: const Text("Looking object"),
-                ),
+                const GameBoardObjectWidget(),
               );
             }
           }
