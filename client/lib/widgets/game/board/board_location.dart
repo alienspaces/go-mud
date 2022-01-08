@@ -7,6 +7,7 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/character/character.dart';
 import 'package:go_mud_client/widgets/game/board/monster/monster.dart';
 import 'package:go_mud_client/widgets/game/board/object/object.dart';
+import 'package:go_mud_client/widgets/game/board/location/grid/grid.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_move.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_look.dart';
 
@@ -33,9 +34,9 @@ class BoardLocationWidget extends StatelessWidget {
             log.info(
                 'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.command}');
             widgets.add(
-              GameLocationGridMoveWidget(
+              GameLocationGridWidget(
                 key: UniqueKey(),
-                slide: Slide.slideNone,
+                action: null,
                 locationData: dungeonActionRecord.location,
               ),
             );
@@ -58,9 +59,8 @@ class BoardLocationWidget extends StatelessWidget {
               'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
 
           widgets.add(
-            GameLocationGridMoveWidget(
+            GameLocationGridWidget(
               key: UniqueKey(),
-              slide: Slide.slideNone,
               action: state.action,
               locationData: dungeonActionRecord.location,
             ),
@@ -99,20 +99,18 @@ class BoardLocationWidget extends StatelessWidget {
             //
             // Look
             //
-            log.info(
-                'DungeonActionStatePlaying - Look target location ${dungeonActionRecord.targetLocation?.name}');
-            log.info(
-                'DungeonActionStatePlaying - Look target character ${dungeonActionRecord.targetCharacter?.name}');
-            log.info(
-                'DungeonActionStatePlaying - Look target monster ${dungeonActionRecord.targetMonster?.name}');
-            log.info(
-                'DungeonActionStatePlaying - Look target object ${dungeonActionRecord.targetObject?.name}');
-
             widgets.add(
-              GameLocationGridMoveWidget(
+              // GameLocationGridMoveWidget(
+              //   key: UniqueKey(),
+              //   slide: Slide.slideNone,
+              //   direction: state.direction,
+              //   action: state.action,
+              //   locationData: state.current.location,
+              // ),
+              GameLocationGridWidget(
                 key: UniqueKey(),
-                slide: Slide.slideNone,
-                direction: state.direction,
+                // slide: Slide.slideNone,
+                // direction: state.direction,
                 action: state.action,
                 locationData: state.current.location,
               ),
