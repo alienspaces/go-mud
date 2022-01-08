@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/style.dart';
-import 'package:go_mud_client/widgets/game/inventory/equipped/equipped.dart';
-import 'package:go_mud_client/widgets/game/inventory/stashed/stashed.dart';
-import 'package:go_mud_client/widgets/game/location/location.dart';
+import 'package:go_mud_client/widgets/game/board/board_equipped.dart';
+import 'package:go_mud_client/widgets/game/board/board_stashed.dart';
+import 'package:go_mud_client/widgets/game/board/board_location.dart';
 
 enum BoardButtonType { location, equipped, stashed }
 Map<BoardButtonType, String> boardButtonLabels = {
@@ -87,9 +87,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         Expanded(
           flex: 1,
           child: Container(
-            color: Colors.purple[100],
-            padding: const EdgeInsets.all(1),
-            margin: const EdgeInsets.fromLTRB(3, 0, 0, 0),
+            padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
+            decoration: BoxDecoration(
+              color: Colors.purple[100],
+              border: null,
+              borderRadius: const BorderRadius.all(Radius.zero),
+            ),
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,19 +108,20 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         Expanded(
           flex: 5,
           child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.purple,
+            padding: const EdgeInsets.fromLTRB(4, 9, 4, 9),
+            decoration: BoxDecoration(
+              color: Colors.purple[200],
               border: null,
-              borderRadius: BorderRadius.all(Radius.zero),
+              borderRadius: const BorderRadius.all(Radius.zero),
             ),
             clipBehavior: Clip.antiAlias,
             child: IndexedStack(
               alignment: Alignment.center,
               index: panelIndex,
               children: const <Widget>[
-                GameLocationWidget(),
-                GameInventoryEquippedWidget(),
-                GameInventoryStashedWidget(),
+                BoardLocationWidget(),
+                BoardEquippedWidget(),
+                BoardStashedWidget(),
               ],
             ),
           ),

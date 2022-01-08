@@ -4,20 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/location/character/character.dart';
-import 'package:go_mud_client/widgets/game/location/grid/grid_move.dart';
-import 'package:go_mud_client/widgets/game/location/grid/grid_look.dart';
-import 'package:go_mud_client/widgets/game/location/monster/monster.dart';
-import 'package:go_mud_client/widgets/game/location/object/object.dart';
+import 'package:go_mud_client/widgets/game/board/character/character.dart';
+import 'package:go_mud_client/widgets/game/board/monster/monster.dart';
+import 'package:go_mud_client/widgets/game/board/object/object.dart';
+import 'package:go_mud_client/widgets/game/board/location/grid/grid_move.dart';
+import 'package:go_mud_client/widgets/game/board/location/grid/grid_look.dart';
 
-class GameLocationWidget extends StatefulWidget {
-  const GameLocationWidget({Key? key}) : super(key: key);
+class BoardLocationWidget extends StatelessWidget {
+  const BoardLocationWidget({Key? key}) : super(key: key);
 
-  @override
-  _GameLocationWidgetState createState() => _GameLocationWidgetState();
-}
-
-class _GameLocationWidgetState extends State<GameLocationWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameLocationWidget');
@@ -133,7 +128,6 @@ class _GameLocationWidgetState extends State<GameLocationWidget> {
                 ),
               );
             }
-            // TODO: Move all this malarky to the game board widget
             if (dungeonActionRecord.targetCharacter != null) {
               log.info('Rendering look target character');
               widgets.add(

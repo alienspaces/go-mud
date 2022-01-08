@@ -5,19 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
-class GameInventoryStashedWidget extends StatefulWidget {
-  const GameInventoryStashedWidget({Key? key}) : super(key: key);
+class GameEquippedWidget extends StatefulWidget {
+  const GameEquippedWidget({Key? key}) : super(key: key);
 
   @override
-  _GameInventoryStashedWidgetState createState() =>
-      _GameInventoryStashedWidgetState();
+  _GameEquippedWidgetState createState() => _GameEquippedWidgetState();
 }
 
-class _GameInventoryStashedWidgetState
-    extends State<GameInventoryStashedWidget> {
+class _GameEquippedWidgetState extends State<GameEquippedWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameInventoryStashedWidget');
+    final log = getLogger('GameEquippedWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
@@ -25,9 +23,9 @@ class _GameInventoryStashedWidgetState
         log.info('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
-        log.info('Rendering stashed inventory');
+        log.info('Rendering equipped inventory');
 
-        return const Text('Stashed');
+        return const Text('Equipped');
       },
     );
   }

@@ -270,7 +270,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
         return IgnorePointer(
           ignoring: widget.readonly ? true : false,
           child: Container(
-            margin: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             decoration: BoxDecoration(
               color: widget.readonly ? Colors.black : const Color(0xFFDEDEDE),
               border: Border.all(
@@ -278,6 +277,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
               ),
               borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
+            // TODO: Convert this to 5 rows of 5
             child: GridView.count(
               crossAxisCount: 5,
               children: _generateGrid(context),

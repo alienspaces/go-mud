@@ -10,7 +10,7 @@ import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/action.dart';
 import 'package:go_mud_client/widgets/game/command/command.dart';
-import 'package:go_mud_client/widgets/game/location/description/description_container.dart';
+import 'package:go_mud_client/widgets/game/board/location/description/description_container.dart';
 // import 'package:go_mud_client/widgets/game/location/location.dart';
 
 class GameWidget extends StatefulWidget {

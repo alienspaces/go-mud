@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/location/description/description.dart';
+import 'package:go_mud_client/widgets/game/board/location/description/description.dart';
 
 class GameLocationDescriptionContainerWidget extends StatefulWidget {
   const GameLocationDescriptionContainerWidget({Key? key}) : super(key: key);
