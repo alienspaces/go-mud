@@ -1,43 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/repository/repository.dart';
 
-class GameBoardObjectWidget extends StatefulWidget {
-  const GameBoardObjectWidget({Key? key}) : super(key: key);
+void displayLookObjectDialog(
+    BuildContext context, DungeonActionRecord dungeonActionRecord) {
+  final log = getLogger('displayLookObjectDialog');
 
-  @override
-  _GameBoardObjectWidgetState createState() => _GameBoardObjectWidgetState();
-}
+  log.info('Rendering look target object');
+  Widget content = Container(
+    alignment: Alignment.center,
+    color: Theme.of(context).colorScheme.background,
+    padding: const EdgeInsets.all(5),
+    child: Column(
+      children: <Widget>[
+        // Expanded(
+        //   flex: 1,
+        //   child: Text(dungeonActionRecord.targetObject!.name),
+        // ),
+        const Expanded(
+          flex: 1,
+          child: Text('IMAGE PLACEHOLDER'),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(dungeonActionRecord.targetObject!.description),
+        ),
+      ],
+    ),
+  );
 
-class _GameBoardObjectWidgetState extends State<GameBoardObjectWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final log = getLogger('GameBoardObjectWidget');
-    log.info('Building..');
-
-    return BlocConsumer<DungeonActionCubit, DungeonActionState>(
-        listener: (BuildContext context, DungeonActionState state) {
-      log.info('listener...');
-    }, builder: (BuildContext context, DungeonActionState state) {
-      if (state is DungeonActionStatePlaying) {
-        var dungeonActionRecord = state.current;
-
-        log.info(
-            'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
-
-        if (dungeonActionRecord.targetObject != null) {
-          log.info('Rendering look target object');
-          return Container(
-            padding: const EdgeInsets.all(5),
-            child: const Text("Looking object"),
-          );
-        }
-      }
-
-      return Container();
-    });
-  }
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(dungeonActionRecord.targetObject!.name),
+        content: content,
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Close'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

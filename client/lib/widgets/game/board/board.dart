@@ -54,10 +54,6 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           gridMemberWidth = gridMemberHeight;
         }
 
-        log.info(
-          '(A-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
-        );
-
         return Container(
           width: gridMemberWidth,
           height: gridMemberHeight,

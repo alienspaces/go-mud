@@ -74,9 +74,6 @@ class BoardLocationWidget extends StatelessWidget {
               'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
 
           if (dungeonActionRecord.command == 'move') {
-            //
-            // Move
-            //
             widgets.add(
               GameLocationGridMoveWidget(
                 key: UniqueKey(),
@@ -96,21 +93,9 @@ class BoardLocationWidget extends StatelessWidget {
               ),
             );
           } else if (dungeonActionRecord.command == 'look') {
-            //
-            // Look
-            //
             widgets.add(
-              // GameLocationGridMoveWidget(
-              //   key: UniqueKey(),
-              //   slide: Slide.slideNone,
-              //   direction: state.direction,
-              //   action: state.action,
-              //   locationData: state.current.location,
-              // ),
               GameLocationGridWidget(
                 key: UniqueKey(),
-                // slide: Slide.slideNone,
-                // direction: state.direction,
                 action: state.action,
                 locationData: state.current.location,
               ),
@@ -126,23 +111,25 @@ class BoardLocationWidget extends StatelessWidget {
                 ),
               );
             }
-            if (dungeonActionRecord.targetCharacter != null) {
-              log.info('Rendering look target character');
-              widgets.add(
-                const GameBoardCharacterWidget(),
-              );
-            }
-            if (dungeonActionRecord.targetMonster != null) {
-              log.info('Rendering look target monster');
-              widgets.add(
-                const GameBoardMonsterWidget(),
-              );
-            }
+            // if (dungeonActionRecord.targetCharacter != null) {
+            //   log.info('Rendering look target character');
+            //   widgets.add(
+            //     const GameBoardCharacterWidget(),
+            //   );
+            // }
+            // if (dungeonActionRecord.targetMonster != null) {
+            //   log.info('Rendering look target monster');
+            //   widgets.add(
+            //     const GameBoardMonsterWidget(),
+            //   );
+            // }
+
+            // TODO: Move this outside of "location/grid" stuff
             if (dungeonActionRecord.targetObject != null) {
               log.info('Rendering look target object');
-              widgets.add(
-                const GameBoardObjectWidget(),
-              );
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                displayLookObjectDialog(context, dungeonActionRecord);
+              });
             }
           }
         }
