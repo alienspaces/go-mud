@@ -4,9 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/widgets/game/board/character/character.dart';
-import 'package:go_mud_client/widgets/game/board/monster/monster.dart';
-import 'package:go_mud_client/widgets/game/board/object/object.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_move.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_look.dart';
@@ -125,12 +122,12 @@ class BoardLocationWidget extends StatelessWidget {
             // }
 
             // TODO: Move this outside of "location/grid" stuff
-            if (dungeonActionRecord.targetObject != null) {
-              log.info('Rendering look target object');
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                displayLookObjectDialog(context, dungeonActionRecord);
-              });
-            }
+            // if (dungeonActionRecord.targetObject != null) {
+            //   log.info('Rendering look target object');
+            //   WidgetsBinding.instance?.addPostFrameCallback((_) {
+            //     displayLookObjectDialog(context, dungeonActionRecord);
+            //   });
+            // }
           }
         }
 

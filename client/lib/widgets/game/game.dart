@@ -11,7 +11,7 @@ import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/action.dart';
 import 'package:go_mud_client/widgets/game/command/command.dart';
 import 'package:go_mud_client/widgets/game/board/location/description/description_container.dart';
-// import 'package:go_mud_client/widgets/game/location/location.dart';
+import 'package:go_mud_client/widgets/game/look/look.dart';
 
 class GameWidget extends StatefulWidget {
   const GameWidget({Key? key}) : super(key: key);
@@ -72,28 +72,40 @@ class _GameWidgetState extends State<GameWidget> {
     // ignore: avoid_unnecessary_containers
     return Container(
       color: Colors.yellow[100],
-      child: Column(
-        children: const <Widget>[
-          // Location description
-          Expanded(
-            flex: 3,
-            child: GameLocationDescriptionContainerWidget(),
+      // Top level game widget stack
+      child: Stack(
+        children: <Widget>[
+          // ignore: avoid_unnecessary_containers
+          Container(
+            child: Column(
+              children: const <Widget>[
+                // Location description
+                Expanded(
+                  flex: 3,
+                  child: GameLocationDescriptionContainerWidget(),
+                ),
+                // Game board
+                Expanded(
+                  flex: 10,
+                  child: GameBoardWidget(),
+                ),
+                // Current actions
+                Expanded(
+                  flex: 4,
+                  child: GameActionWidget(),
+                ),
+                // Current command
+                Expanded(
+                  flex: 1,
+                  child: GameCommandWidget(),
+                ),
+              ],
+            ),
           ),
-          // Game board
-          Expanded(
-            flex: 10,
-            child: GameBoardWidget(),
-          ),
-          // Current actions
-          Expanded(
-            flex: 4,
-            child: GameActionWidget(),
-          ),
-          // Current command
-          Expanded(
-            flex: 1,
-            child: GameCommandWidget(),
-          ),
+          // ignore: avoid_unnecessary_containers
+          Container(
+            child: const GameLookWidget(),
+          )
         ],
       ),
     );
