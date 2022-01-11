@@ -12,7 +12,7 @@
 
 ## Next
 
-- Server: Stash, equip and drop object
+- Server: Stash, equip and drop object actions
 
 ## Later
 

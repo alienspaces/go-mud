@@ -283,6 +283,9 @@ class CharacterDetailedData {
   final int strength;
   final int dexterity;
   final int intelligence;
+  final int currentStrength;
+  final int currentDexterity;
+  final int currentIntelligence;
   final int health;
   final int fatigue;
 
@@ -291,6 +294,9 @@ class CharacterDetailedData {
     required this.strength,
     required this.dexterity,
     required this.intelligence,
+    required this.currentStrength,
+    required this.currentDexterity,
+    required this.currentIntelligence,
     required this.health,
     required this.fatigue,
   });
@@ -301,6 +307,9 @@ class CharacterDetailedData {
       strength: json['strength'],
       dexterity: json['dexterity'],
       intelligence: json['intelligence'],
+      currentStrength: json['current_strength'],
+      currentDexterity: json['current_dexterity'],
+      currentIntelligence: json['current_intelligence'],
       health: json['health'],
       fatigue: json['fatigue'],
     );
@@ -326,6 +335,9 @@ class MonsterDetailedData {
   final int strength;
   final int dexterity;
   final int intelligence;
+  final int currentStrength;
+  final int currentDexterity;
+  final int currentIntelligence;
   final int health;
   final int fatigue;
 
@@ -334,6 +346,9 @@ class MonsterDetailedData {
     required this.strength,
     required this.dexterity,
     required this.intelligence,
+    required this.currentStrength,
+    required this.currentDexterity,
+    required this.currentIntelligence,
     required this.health,
     required this.fatigue,
   });
@@ -344,6 +359,9 @@ class MonsterDetailedData {
       strength: json['strength'],
       dexterity: json['dexterity'],
       intelligence: json['intelligence'],
+      currentStrength: json['current_strength'],
+      currentDexterity: json['current_dexterity'],
+      currentIntelligence: json['current_intelligence'],
       health: json['health'],
       fatigue: json['fatigue'],
     );

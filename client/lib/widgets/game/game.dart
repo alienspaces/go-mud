@@ -71,7 +71,7 @@ class _GameWidgetState extends State<GameWidget> {
 
     // ignore: avoid_unnecessary_containers
     return Container(
-      color: Colors.yellow[100],
+      color: Colors.purple[50],
       // Top level game widget stack
       child: Stack(
         children: <Widget>[

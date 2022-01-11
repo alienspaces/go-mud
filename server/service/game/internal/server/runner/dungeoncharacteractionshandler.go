@@ -181,23 +181,29 @@ func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.Dungeo
 
 func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *record.DungeonActionCharacter) (*schema.CharacterDetailedData, error) {
 	return &schema.CharacterDetailedData{
-		Name:         dungeonCharacterRec.Name,
-		Strength:     dungeonCharacterRec.Strength,
-		Dexterity:    dungeonCharacterRec.Dexterity,
-		Intelligence: dungeonCharacterRec.Intelligence,
-		Health:       dungeonCharacterRec.Health,
-		Fatigue:      dungeonCharacterRec.Fatigue,
+		Name:                dungeonCharacterRec.Name,
+		Strength:            dungeonCharacterRec.Strength,
+		Dexterity:           dungeonCharacterRec.Dexterity,
+		Intelligence:        dungeonCharacterRec.Intelligence,
+		CurrentStrength:     dungeonCharacterRec.CurrentStrength,
+		CurrentDexterity:    dungeonCharacterRec.CurrentDexterity,
+		CurrentIntelligence: dungeonCharacterRec.CurrentIntelligence,
+		Health:              dungeonCharacterRec.Health,
+		Fatigue:             dungeonCharacterRec.Fatigue,
 	}, nil
 }
 
 func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.DungeonActionMonster) (*schema.MonsterDetailedData, error) {
 	return &schema.MonsterDetailedData{
-		Name:         dungeonMonsterRec.Name,
-		Strength:     dungeonMonsterRec.Strength,
-		Dexterity:    dungeonMonsterRec.Dexterity,
-		Intelligence: dungeonMonsterRec.Intelligence,
-		Health:       dungeonMonsterRec.Health,
-		Fatigue:      dungeonMonsterRec.Fatigue,
+		Name:                dungeonMonsterRec.Name,
+		Strength:            dungeonMonsterRec.Strength,
+		Dexterity:           dungeonMonsterRec.Dexterity,
+		Intelligence:        dungeonMonsterRec.Intelligence,
+		CurrentStrength:     dungeonMonsterRec.CurrentStrength,
+		CurrentDexterity:    dungeonMonsterRec.CurrentDexterity,
+		CurrentIntelligence: dungeonMonsterRec.CurrentIntelligence,
+		Health:              dungeonMonsterRec.Health,
+		Fatigue:             dungeonMonsterRec.Fatigue,
 	}, nil
 }
 

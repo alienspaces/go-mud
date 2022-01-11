@@ -108,26 +108,6 @@ class BoardLocationWidget extends StatelessWidget {
                 ),
               );
             }
-            // if (dungeonActionRecord.targetCharacter != null) {
-            //   log.info('Rendering look target character');
-            //   widgets.add(
-            //     const GameBoardCharacterWidget(),
-            //   );
-            // }
-            // if (dungeonActionRecord.targetMonster != null) {
-            //   log.info('Rendering look target monster');
-            //   widgets.add(
-            //     const GameBoardMonsterWidget(),
-            //   );
-            // }
-
-            // TODO: Move this outside of "location/grid" stuff
-            // if (dungeonActionRecord.targetObject != null) {
-            //   log.info('Rendering look target object');
-            //   WidgetsBinding.instance?.addPostFrameCallback((_) {
-            //     displayLookObjectDialog(context, dungeonActionRecord);
-            //   });
-            // }
           }
         }
 
