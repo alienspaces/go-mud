@@ -180,6 +180,8 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 							CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 							Health:              data.DungeonCharacterRecs[0].Health,
 							Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+							CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+							CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 						},
 					},
 				}
@@ -253,6 +255,8 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 							CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 							Health:              data.DungeonCharacterRecs[0].Health,
 							Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+							CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+							CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 						},
 					},
 				}
@@ -358,6 +362,11 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 					require.Equal(t, expectData.Health, responseBody.Data[idx].Health)
 					t.Logf("Checking character fatigue >%d< >%d<", expectData.Fatigue, responseBody.Data[idx].Fatigue)
 					require.Equal(t, expectData.Fatigue, responseBody.Data[idx].Fatigue)
+
+					t.Logf("Checking character current health >%d< >%d<", expectData.CurrentHealth, responseBody.Data[idx].CurrentHealth)
+					require.Equal(t, expectData.CurrentHealth, responseBody.Data[idx].CurrentHealth)
+					t.Logf("Checking character current fatigue >%d< >%d<", expectData.CurrentFatigue, responseBody.Data[idx].CurrentFatigue)
+					require.Equal(t, expectData.CurrentFatigue, responseBody.Data[idx].CurrentFatigue)
 				}
 			}
 

@@ -288,6 +288,8 @@ class CharacterDetailedData {
   final int currentIntelligence;
   final int health;
   final int fatigue;
+  final int currentHealth;
+  final int currentFatigue;
 
   CharacterDetailedData({
     required this.name,
@@ -299,6 +301,8 @@ class CharacterDetailedData {
     required this.currentIntelligence,
     required this.health,
     required this.fatigue,
+    required this.currentHealth,
+    required this.currentFatigue,
   });
 
   factory CharacterDetailedData.fromJson(Map<String, dynamic> json) {
@@ -312,6 +316,8 @@ class CharacterDetailedData {
       currentIntelligence: json['current_intelligence'],
       health: json['health'],
       fatigue: json['fatigue'],
+      currentHealth: json['current_health'],
+      currentFatigue: json['current_fatigue'],
     );
   }
 }
@@ -340,6 +346,8 @@ class MonsterDetailedData {
   final int currentIntelligence;
   final int health;
   final int fatigue;
+  final int currentHealth;
+  final int currentFatigue;
 
   MonsterDetailedData({
     required this.name,
@@ -351,6 +359,8 @@ class MonsterDetailedData {
     required this.currentIntelligence,
     required this.health,
     required this.fatigue,
+    required this.currentHealth,
+    required this.currentFatigue,
   });
 
   factory MonsterDetailedData.fromJson(Map<String, dynamic> json) {
@@ -364,6 +374,8 @@ class MonsterDetailedData {
       currentIntelligence: json['current_intelligence'],
       health: json['health'],
       fatigue: json['fatigue'],
+      currentHealth: json['current_health'],
+      currentFatigue: json['current_fatigue'],
     );
   }
 }

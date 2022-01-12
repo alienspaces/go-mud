@@ -16,6 +16,8 @@ INSERT INTO dungeon_action_monster (
 	current_intelligence,
 	health,
 	fatigue,
+	current_health,
+	current_fatigue,
 	created_at
 ) VALUES (
 	:id,
@@ -32,6 +34,8 @@ INSERT INTO dungeon_action_monster (
 	:current_intelligence,
 	:health,
 	:fatigue,
+	:current_health,
+	:current_fatigue,	
 	:created_at
 )
 RETURNING *
@@ -52,6 +56,8 @@ UPDATE dungeon_action_monster SET
 	current_intelligence = :current_intelligence,
 	health 				 = :health,
 	fatigue 			 = :fatigue,
+	current_health       = :current_health,
+	current_fatigue      = :current_fatigue,
 	updated_at 		     = :updated_at
 WHERE id = :id
 AND   deleted_at IS NULL

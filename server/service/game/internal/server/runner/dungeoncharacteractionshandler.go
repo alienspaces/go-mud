@@ -190,6 +190,8 @@ func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *reco
 		CurrentIntelligence: dungeonCharacterRec.CurrentIntelligence,
 		Health:              dungeonCharacterRec.Health,
 		Fatigue:             dungeonCharacterRec.Fatigue,
+		CurrentHealth:       dungeonCharacterRec.CurrentHealth,
+		CurrentFatigue:      dungeonCharacterRec.CurrentFatigue,
 	}, nil
 }
 
@@ -204,6 +206,8 @@ func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.Dun
 		CurrentIntelligence: dungeonMonsterRec.CurrentIntelligence,
 		Health:              dungeonMonsterRec.Health,
 		Fatigue:             dungeonMonsterRec.Fatigue,
+		CurrentHealth:       dungeonMonsterRec.CurrentHealth,
+		CurrentFatigue:      dungeonMonsterRec.CurrentFatigue,
 	}, nil
 }
 

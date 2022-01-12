@@ -177,6 +177,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				CurrentIntelligence: characterRec.CurrentIntelligence,
 				Health:              characterRec.Health,
 				Fatigue:             characterRec.Fatigue,
+				CurrentHealth:       characterRec.CurrentHealth,
+				CurrentFatigue:      characterRec.CurrentFatigue,
 			}
 
 			err := m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
@@ -207,6 +209,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 				CurrentIntelligence: monsterRec.CurrentIntelligence,
 				Health:              monsterRec.Health,
 				Fatigue:             monsterRec.Fatigue,
+				CurrentHealth:       monsterRec.CurrentHealth,
+				CurrentFatigue:      monsterRec.CurrentFatigue,
 			}
 			err := m.CreateDungeonActionMonsterRec(&dungeonActionMonsterRec)
 			if err != nil {
@@ -285,6 +289,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 					CurrentIntelligence: characterRec.CurrentIntelligence,
 					Health:              characterRec.Health,
 					Fatigue:             characterRec.Fatigue,
+					CurrentHealth:       characterRec.CurrentHealth,
+					CurrentFatigue:      characterRec.CurrentFatigue,
 				}
 
 				err := m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
@@ -315,6 +321,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 					CurrentIntelligence: monsterRec.CurrentIntelligence,
 					Health:              monsterRec.Health,
 					Fatigue:             monsterRec.Fatigue,
+					CurrentHealth:       monsterRec.CurrentHealth,
+					CurrentFatigue:      monsterRec.CurrentFatigue,
 				}
 				err := m.CreateDungeonActionMonsterRec(&dungeonActionMonsterRec)
 				if err != nil {
@@ -376,6 +384,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 			CurrentIntelligence: targetCharacterRec.CurrentIntelligence,
 			Health:              targetCharacterRec.Health,
 			Fatigue:             targetCharacterRec.Fatigue,
+			CurrentHealth:       targetCharacterRec.CurrentHealth,
+			CurrentFatigue:      targetCharacterRec.CurrentFatigue,
 		}
 
 		err = m.CreateDungeonActionCharacterRec(rec)
@@ -408,6 +418,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 			CurrentIntelligence: targetMonsterRec.CurrentIntelligence,
 			Health:              targetMonsterRec.Health,
 			Fatigue:             targetMonsterRec.Fatigue,
+			CurrentHealth:       targetMonsterRec.CurrentHealth,
+			CurrentFatigue:      targetMonsterRec.CurrentFatigue,
 		}
 
 		err = m.CreateDungeonActionMonsterRec(rec)

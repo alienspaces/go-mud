@@ -113,6 +113,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 								Health:              data.DungeonCharacterRecs[0].Health,
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -193,6 +195,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 								Health:              data.DungeonCharacterRecs[0].Health,
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -274,6 +278,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 								Health:              data.DungeonCharacterRecs[0].Health,
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -350,6 +356,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 								Health:              data.DungeonCharacterRecs[0].Health,
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 							},
 							Monster:        nil,
 							EquippedObject: nil,
@@ -421,6 +429,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 								Health:              data.DungeonCharacterRecs[0].Health,
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -437,6 +447,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								CurrentIntelligence: data.DungeonMonsterRecs[0].CurrentIntelligence,
 								Health:              data.DungeonMonsterRecs[0].Health,
 								Fatigue:             data.DungeonMonsterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonMonsterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonMonsterRecs[0].CurrentFatigue,
 							},
 							TargetLocation: nil,
 						},
@@ -597,6 +609,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.Character.Dexterity, responseBody.Data[idx].Character.Dexterity, "Response character dexterity equals expected")
 						t.Logf("Checking action character intelligence >%d< >%d<", expectData.Character.Intelligence, responseBody.Data[idx].Character.Intelligence)
 						require.Equal(t, expectData.Character.Intelligence, responseBody.Data[idx].Character.Intelligence, "Response character intelligence equals expected")
+
 						t.Logf("Checking action character health >%d< >%d<", expectData.Character.Health, responseBody.Data[idx].Character.Health)
 						require.Equal(t, expectData.Character.Health, responseBody.Data[idx].Character.Health, "Response character health equals expected")
 						t.Logf("Checking action character fatigue >%d< >%d<", expectData.Character.Fatigue, responseBody.Data[idx].Character.Fatigue)
@@ -615,6 +628,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.TargetCharacter.Dexterity, responseBody.Data[idx].TargetCharacter.Dexterity, "Response target character dexterity equals expected")
 						t.Logf("Checking action target character intelligence >%d< >%d<", expectData.TargetCharacter.Intelligence, responseBody.Data[idx].TargetCharacter.Intelligence)
 						require.Equal(t, expectData.TargetCharacter.Intelligence, responseBody.Data[idx].TargetCharacter.Intelligence, "Response target character intelligence equals expected")
+
 						t.Logf("Checking action target character health >%d< >%d<", expectData.TargetCharacter.Health, responseBody.Data[idx].TargetCharacter.Health)
 						require.Equal(t, expectData.TargetCharacter.Health, responseBody.Data[idx].TargetCharacter.Health, "Response target character health equals expected")
 						t.Logf("Checking action target character fatigue >%d< >%d<", expectData.TargetCharacter.Fatigue, responseBody.Data[idx].TargetCharacter.Fatigue)
@@ -633,6 +647,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.Monster.Dexterity, responseBody.Data[idx].Monster.Dexterity, "Response monster dexterity equals expected")
 						t.Logf("Checking action monster intelligence >%d< >%d<", expectData.Monster.Intelligence, responseBody.Data[idx].Monster.Intelligence)
 						require.Equal(t, expectData.Monster.Intelligence, responseBody.Data[idx].Monster.Intelligence, "Response monster intelligence equals expected")
+
 						t.Logf("Checking action monster health >%d< >%d<", expectData.Monster.Health, responseBody.Data[idx].Monster.Health)
 						require.Equal(t, expectData.Monster.Health, responseBody.Data[idx].Monster.Health, "Response monster health equals expected")
 						t.Logf("Checking action monster fatigue >%d< >%d<", expectData.Monster.Fatigue, responseBody.Data[idx].Monster.Fatigue)
@@ -651,6 +666,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.TargetMonster.Dexterity, responseBody.Data[idx].TargetMonster.Dexterity, "Response target monster dexterity equals expected")
 						t.Logf("Checking action target monster intelligence >%d< >%d<", expectData.TargetMonster.Intelligence, responseBody.Data[idx].TargetMonster.Intelligence)
 						require.Equal(t, expectData.TargetMonster.Intelligence, responseBody.Data[idx].TargetMonster.Intelligence, "Response target monster intelligence equals expected")
+
 						t.Logf("Checking action target monster health >%d< >%d<", expectData.TargetMonster.Health, responseBody.Data[idx].TargetMonster.Health)
 						require.Equal(t, expectData.TargetMonster.Health, responseBody.Data[idx].TargetMonster.Health, "Response target monster health equals expected")
 						t.Logf("Checking action target monster fatigue >%d< >%d<", expectData.TargetMonster.Fatigue, responseBody.Data[idx].TargetMonster.Fatigue)

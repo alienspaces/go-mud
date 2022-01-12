@@ -324,6 +324,8 @@ func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec reco
 		CurrentIntelligence: dungeonCharacterRec.CurrentIntelligence,
 		Health:              dungeonCharacterRec.Health,
 		Fatigue:             dungeonCharacterRec.Fatigue,
+		CurrentHealth:       dungeonCharacterRec.CurrentHealth,
+		CurrentFatigue:      dungeonCharacterRec.CurrentFatigue,
 		Coins:               dungeonCharacterRec.Coins,
 		AttributePoints:     dungeonCharacterRec.AttributePoints,
 		ExperiencePoints:    dungeonCharacterRec.ExperiencePoints,

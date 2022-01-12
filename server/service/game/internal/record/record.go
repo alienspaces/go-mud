@@ -44,6 +44,8 @@ type DungeonCharacter struct {
 	CurrentIntelligence int    `db:"current_intelligence"`
 	Health              int    `db:"health"`
 	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
 	Coins               int    `db:"coins"`
 	ExperiencePoints    int    `db:"experience_points"`
 	AttributePoints     int    `db:"attribute_points"`
@@ -62,6 +64,8 @@ type DungeonMonster struct {
 	CurrentIntelligence int    `db:"current_intelligence"`
 	Health              int    `db:"health"`
 	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
 	Coins               int    `db:"coins"`
 	ExperiencePoints    int    `db:"experience_points"`
 	AttributePoints     int    `db:"attribute_points"`
@@ -118,6 +122,8 @@ type DungeonActionCharacter struct {
 	CurrentIntelligence int    `db:"current_intelligence"`
 	Health              int    `db:"health"`
 	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
 	repository.Record
 }
 
@@ -141,6 +147,8 @@ type DungeonActionMonster struct {
 	CurrentIntelligence int    `db:"current_intelligence"`
 	Health              int    `db:"health"`
 	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
 	repository.Record
 }
 
@@ -149,8 +157,7 @@ const (
 	DungeonActionObjectRecordTypeEquipped string = "equipped"
 	// Stashed objects are packed in a bag or backback
 	DungeonActionObjectRecordTypeStashed string = "stashed"
-	// Target objects are are being actively looked at, used,
-	// equipped or stashed
+	// Target objects are are being actively looked at, used, equipped or stashed
 	DungeonActionObjectRecordTypeTarget string = "target"
 	// Occupant objects are present at a location
 	DungeonActionObjectRecordTypeOccupant string = "occupant"
@@ -162,9 +169,8 @@ type DungeonActionObject struct {
 	DungeonLocationID string `db:"dungeon_location_id"`
 	DungeonObjectID   string `db:"dungeon_object_id"`
 	Name              string `db:"name"`
-	// Description could be either the object `description` or
-	// `description_detailed` depending on the characters `look`
-	// action result
+	// Description could be either the object `description` or `description_detailed`
+	// depending on the characters `look` action result.
 	Description string `db:"description"`
 	IsStashed   bool   `db:"is_stashed"`
 	IsEquipped  bool   `db:"is_equipped"`

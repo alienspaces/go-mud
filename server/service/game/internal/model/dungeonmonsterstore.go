@@ -52,6 +52,8 @@ func (m *Model) CreateDungeonMonsterRec(rec *record.DungeonMonster) error {
 	rec.ExperiencePoints = defaultExperiencePoints
 	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)
 	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
+	rec.CurrentHealth = rec.Health
+	rec.CurrentFatigue = rec.Fatigue
 	rec.Coins = defaultCoins
 
 	err := m.ValidateDungeonMonsterRec(rec)

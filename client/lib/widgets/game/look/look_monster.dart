@@ -50,6 +50,26 @@ void displayLookMonsterDialog(
             null,
           ),
         ),
+        Expanded(
+          flex: 1,
+          child: bar(
+            "Health",
+            dungeonActionRecord.targetMonster!.health,
+            dungeonActionRecord.targetMonster!.currentHealth,
+            null,
+            null,
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: bar(
+            "Fatigue",
+            dungeonActionRecord.targetMonster!.fatigue,
+            dungeonActionRecord.targetMonster!.currentFatigue,
+            null,
+            null,
+          ),
+        ),
         const Expanded(
           flex: 10,
           child: Text('Description'),

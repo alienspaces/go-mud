@@ -64,6 +64,8 @@ type CharacterDetailedData struct {
 	CurrentIntelligence int    `json:"current_intelligence"`
 	Health              int    `json:"health"`
 	Fatigue             int    `json:"fatigue"`
+	CurrentHealth       int    `json:"current_health"`
+	CurrentFatigue      int    `json:"current_fatigue"`
 }
 
 type MonsterData struct {
@@ -81,6 +83,8 @@ type MonsterDetailedData struct {
 	CurrentIntelligence int    `json:"current_intelligence"`
 	Health              int    `json:"health"`
 	Fatigue             int    `json:"fatigue"`
+	CurrentHealth       int    `json:"current_health"`
+	CurrentFatigue      int    `json:"current_fatigue"`
 }
 
 type ObjectData struct {

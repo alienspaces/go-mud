@@ -11,7 +11,7 @@ func (rnr *Runner) LoadTestData(c *cli.Context) error {
 
 	rnr.Log.Info("** Load Test Data **")
 
-	config := harness.DefaultDataConfig
+	config := testDataConfig
 
 	h, err := harness.NewTesting(rnr.Config, rnr.Log, rnr.Store, rnr.Model, config)
 	if err != nil {
