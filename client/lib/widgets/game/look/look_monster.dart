@@ -17,7 +17,7 @@ void displayLookMonsterDialog(
     child: Column(
       children: <Widget>[
         const Expanded(
-          flex: 10,
+          flex: 7,
           child: Text('IMAGE PLACEHOLDER'),
         ),
         Expanded(
@@ -71,7 +71,7 @@ void displayLookMonsterDialog(
           ),
         ),
         const Expanded(
-          flex: 10,
+          flex: 7,
           child: Text('Description'),
         ),
       ],
@@ -82,17 +82,20 @@ void displayLookMonsterDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(dungeonActionRecord.targetMonster!.name),
-        content: content,
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
+      return FractionallySizedBox(
+        heightFactor: .8,
+        child: AlertDialog(
+          title: Text(dungeonActionRecord.targetMonster!.name),
+          content: content,
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       );
     },
   );

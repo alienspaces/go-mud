@@ -35,17 +35,20 @@ void displayLookCharacterDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(dungeonActionRecord.targetCharacter!.name),
-        content: content,
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
+      return FractionallySizedBox(
+        heightFactor: .8,
+        child: AlertDialog(
+          title: Text(dungeonActionRecord.targetCharacter!.name),
+          content: content,
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       );
     },
   );
