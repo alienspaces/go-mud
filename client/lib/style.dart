@@ -8,3 +8,6 @@ EdgeInsetsGeometry gameButtonMargin = const EdgeInsets.all(2);
 ButtonStyle gameButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.brown,
 );
+
+// Game panels
+EdgeInsetsGeometry gamePanelMargin = const EdgeInsets.all(2);

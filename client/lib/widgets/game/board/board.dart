@@ -28,8 +28,11 @@ class GameBoardWidget extends StatefulWidget {
 
 class _GameBoardWidgetState extends State<GameBoardWidget> {
   int panelIndex = 0;
-  double gridMemberWidth = 0;
-  double gridMemberHeight = 0;
+  double buttonWidth = 0;
+  double buttonHeight = 0;
+
+  double panelWidth = 0;
+  double panelHeight = 0;
 
   Widget buildBoardButton(
     BuildContext context,
@@ -44,19 +47,19 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           'Building width ${constraints.maxWidth} height ${constraints.maxHeight}',
         );
 
-        // Set grid member dimensions
-        gridMemberWidth = constraints.maxWidth - 2;
-        gridMemberHeight = constraints.maxHeight - 2;
-        if (gridMemberHeight > gridMemberWidth) {
-          gridMemberHeight = gridMemberWidth;
+        // Set button dimensions
+        buttonWidth = constraints.maxWidth - 2;
+        buttonHeight = constraints.maxHeight - 2;
+        if (buttonHeight > buttonWidth) {
+          buttonHeight = buttonWidth;
         }
-        if (gridMemberWidth > gridMemberHeight) {
-          gridMemberWidth = gridMemberHeight;
+        if (buttonWidth > buttonHeight) {
+          buttonWidth = buttonHeight;
         }
 
         return Container(
-          width: gridMemberWidth,
-          height: gridMemberHeight,
+          width: buttonWidth,
+          height: buttonHeight,
           margin: gameButtonMargin,
           child: ElevatedButton(
             onPressed: () {
@@ -72,6 +75,42 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     );
   }
 
+  Widget buildBoardPanel(BuildContext context, {required Widget panel}) {
+    final log = getLogger('buildBoardPanel');
+    log.info('Building..');
+
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        log.info(
+          'Building width ${constraints.maxWidth} height ${constraints.maxHeight}',
+        );
+
+        // Set panel dimensions
+        panelWidth = constraints.maxWidth - 2;
+        panelHeight = constraints.maxHeight - 2;
+        if (panelHeight > panelWidth) {
+          panelHeight = panelWidth;
+        }
+        if (panelWidth > panelHeight) {
+          panelWidth = panelHeight;
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.purple[200],
+            border: null,
+            borderRadius: const BorderRadius.all(Radius.zero),
+          ),
+          clipBehavior: Clip.antiAlias,
+          width: panelWidth,
+          height: panelHeight,
+          margin: gamePanelMargin,
+          child: panel,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameBoardWidget');
@@ -79,7 +118,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
     return Row(
       children: <Widget>[
-        // Panel buttons
+        // Board buttons
         Expanded(
           flex: 1,
           child: Container(
@@ -100,24 +139,18 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             ),
           ),
         ),
-        // Panel
+        // Board panels
         Expanded(
           flex: 5,
           child: Container(
-            padding: const EdgeInsets.fromLTRB(4, 9, 4, 9),
-            decoration: BoxDecoration(
-              color: Colors.purple[200],
-              border: null,
-              borderRadius: const BorderRadius.all(Radius.zero),
-            ),
-            clipBehavior: Clip.antiAlias,
+            padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
             child: IndexedStack(
               alignment: Alignment.center,
               index: panelIndex,
-              children: const <Widget>[
-                BoardLocationWidget(),
-                BoardEquippedWidget(),
-                BoardStashedWidget(),
+              children: <Widget>[
+                buildBoardPanel(context, panel: const BoardLocationWidget()),
+                buildBoardPanel(context, panel: const BoardEquippedWidget()),
+                buildBoardPanel(context, panel: const BoardStashedWidget()),
               ],
             ),
           ),
