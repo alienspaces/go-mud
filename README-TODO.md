@@ -8,16 +8,15 @@
 
 ## Now
 
-- Client: Show detailed information when looking
+- Server: Stash, equip and drop object actions
 
 ## Next
 
-- Server: Stash, equip and drop object actions
+- Server: Provide narration in action responses
+- Client: Display narration from action responses
 
 ## Later
 
-- Server: Provide narration in action responses
-- Client: Display narration from action responses
 - Client: Icons for room contents
 - Server: Implement 2 second turns
 - Client: Implement 2 second progress bar and retries
