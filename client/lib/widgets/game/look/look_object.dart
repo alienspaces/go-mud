@@ -23,10 +23,6 @@ void displayLookObjectDialog(
           flex: 1,
           child: Text(dungeonActionRecord.targetObject!.description),
         ),
-        Expanded(
-          flex: 1,
-          child: Text("${dungeonActionRecord.targetObject!.isEquipped}"),
-        ),
       ],
     ),
   );

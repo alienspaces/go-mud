@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/repository.dart';
+import 'package:go_mud_client/widgets/common/bar.dart';
 
 void displayLookCharacterDialog(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
@@ -16,16 +17,62 @@ void displayLookCharacterDialog(
     child: Column(
       children: <Widget>[
         const Expanded(
-          flex: 1,
+          flex: 7,
           child: Text('IMAGE PLACEHOLDER'),
         ),
         Expanded(
           flex: 1,
-          child: Text("${dungeonActionRecord.targetCharacter!.health}"),
+          child: bar(
+            "Strength",
+            dungeonActionRecord.targetCharacter!.strength,
+            dungeonActionRecord.targetCharacter!.currentStrength,
+            null,
+            null,
+          ),
         ),
         Expanded(
           flex: 1,
-          child: Text("${dungeonActionRecord.targetCharacter!.fatigue}"),
+          child: bar(
+            "Dexterity",
+            dungeonActionRecord.targetCharacter!.dexterity,
+            dungeonActionRecord.targetCharacter!.currentDexterity,
+            null,
+            null,
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: bar(
+            "Intelligence",
+            dungeonActionRecord.targetCharacter!.intelligence,
+            dungeonActionRecord.targetCharacter!.currentIntelligence,
+            null,
+            null,
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: bar(
+            "Health",
+            dungeonActionRecord.targetCharacter!.health,
+            dungeonActionRecord.targetCharacter!.currentHealth,
+            null,
+            null,
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: bar(
+            "Fatigue",
+            dungeonActionRecord.targetCharacter!.fatigue,
+            dungeonActionRecord.targetCharacter!.currentFatigue,
+            null,
+            null,
+          ),
+        ),
+        const Expanded(
+          flex: 7,
+          child: Text('Description'),
         ),
       ],
     ),
