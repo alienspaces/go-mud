@@ -98,6 +98,14 @@ var DefaultDataConfig = DataConfig{
 					},
 					LocationName: "Cave Room",
 				},
+				{
+					Record: record.DungeonObject{
+						Name:                "Bronze Ring",
+						Description:         "A bronze ring.",
+						DescriptionDetailed: "A dull bronze ring.",
+					},
+					CharacterName: "Barricade",
+				},
 			},
 			DungeonActionConfig: []DungeonActionConfig{
 				{

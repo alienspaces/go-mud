@@ -51,6 +51,8 @@ type DungeonMonsterConfig struct {
 }
 
 type DungeonObjectConfig struct {
-	Record       record.DungeonObject
-	LocationName string
+	Record        record.DungeonObject
+	LocationName  string
+	CharacterName string
+	MonsterName   string
 }

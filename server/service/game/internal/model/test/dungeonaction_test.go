@@ -37,7 +37,7 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 		expectError                  bool
 	}{
 		{
-			name: "Command",
+			name: "Look current location",
 			dungeonID: func(data harness.Data) string {
 				return data.DungeonRecs[0].ID
 			},
@@ -73,7 +73,7 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name: "Command",
+			name: "Look valid direction",
 			dungeonID: func(data harness.Data) string {
 				return data.DungeonRecs[0].ID
 			},
@@ -109,7 +109,7 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name: "Command",
+			name: "Look valid item",
 			dungeonID: func(data harness.Data) string {
 				return data.DungeonRecs[0].ID
 			},
@@ -146,7 +146,7 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name: "Command",
+			name: "Look valid monster",
 			dungeonID: func(data harness.Data) string {
 				return data.DungeonRecs[0].ID
 			},
@@ -188,7 +188,7 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name: "Command",
+			name: "Look valid character",
 			dungeonID: func(data harness.Data) string {
 				return data.DungeonRecs[0].ID
 			},
@@ -229,6 +229,80 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			},
 			expectError: false,
 		},
+		// {
+		// 	name: "Stash valid location item",
+		// 	dungeonID: func(data harness.Data) string {
+		// 		return data.DungeonRecs[0].ID
+		// 	},
+		// 	dungeonCharacterID: func(data harness.Data) string {
+		// 		return data.DungeonCharacterRecs[0].ID
+		// 	},
+		// 	sentence: "stash rusted sword",
+		// 	expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+		// 		return &model.DungeonActionRecordSet{
+		// 			ActionRec: &record.DungeonAction{
+		// 				DungeonID:          data.DungeonRecs[0].ID,
+		// 				DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+		// 				DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+		// 			},
+		// 			ActionCharacterRec: &record.DungeonActionCharacter{
+		// 				Name:                data.DungeonCharacterRecs[0].Name,
+		// 				Strength:            data.DungeonCharacterRecs[0].Strength,
+		// 				Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+		// 				Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+		// 				CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+		// 				CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+		// 				CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+		// 				Health:              data.DungeonCharacterRecs[0].Health,
+		// 				Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+		// 			},
+		// 			TargetActionObjectRec: &record.DungeonActionObject{
+		// 				Name:        data.DungeonObjectRecs[0].Name,
+		// 				Description: data.DungeonObjectRecs[0].Description,
+		// 				IsStashed:   data.DungeonObjectRecs[0].IsStashed,
+		// 				IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
+		// 			},
+		// 		}
+		// 	},
+		// 	expectError: false,
+		// },
+		// {
+		// 	name: "Equip valid location item",
+		// 	dungeonID: func(data harness.Data) string {
+		// 		return data.DungeonRecs[0].ID
+		// 	},
+		// 	dungeonCharacterID: func(data harness.Data) string {
+		// 		return data.DungeonCharacterRecs[0].ID
+		// 	},
+		// 	sentence: "equip rusted sword",
+		// 	expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+		// 		return &model.DungeonActionRecordSet{
+		// 			ActionRec: &record.DungeonAction{
+		// 				DungeonID:          data.DungeonRecs[0].ID,
+		// 				DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+		// 				DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+		// 			},
+		// 			ActionCharacterRec: &record.DungeonActionCharacter{
+		// 				Name:                data.DungeonCharacterRecs[0].Name,
+		// 				Strength:            data.DungeonCharacterRecs[0].Strength,
+		// 				Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+		// 				Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+		// 				CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+		// 				CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+		// 				CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+		// 				Health:              data.DungeonCharacterRecs[0].Health,
+		// 				Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+		// 			},
+		// 			TargetActionObjectRec: &record.DungeonActionObject{
+		// 				Name:        data.DungeonObjectRecs[0].Name,
+		// 				Description: data.DungeonObjectRecs[0].Description,
+		// 				IsStashed:   data.DungeonObjectRecs[0].IsStashed,
+		// 				IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
+		// 			},
+		// 		}
+		// 	},
+		// 	expectError: false,
+		// },
 	}
 
 	for _, tc := range tests {

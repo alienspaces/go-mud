@@ -116,9 +116,8 @@ func (t *Testing) CreateData() error {
 			teardownData.DungeonLocationRecs = append(teardownData.DungeonLocationRecs, *dungeonLocationRec)
 		}
 
-		// Resolve all location identifiers on entities where entity
-		// configuration references a location by name
-		data, err = t.resolveDataLocationIdentifiers(data, dungeonConfig)
+		// Resolve all location direction identifiers on all dungeon locations
+		data, err = t.resolveDataLocationDirectionIdentifiers(data, dungeonConfig)
 		if err != nil {
 			t.Log.Warn("Failed resolving config location identifiers >%v<", err)
 			return err
@@ -160,6 +159,20 @@ func (t *Testing) CreateData() error {
 			}
 			data.DungeonMonsterRecs = append(data.DungeonMonsterRecs, dungeonMonsterRec)
 			teardownData.DungeonMonsterRecs = append(teardownData.DungeonMonsterRecs, *dungeonMonsterRec)
+		}
+
+		// Resolve object config character identifiers
+		dungeonConfig, err = t.resolveConfigObjectCharacterIdentifiers(data, dungeonConfig)
+		if err != nil {
+			t.Log.Warn("Failed resolving config object character identifiers >%v<", err)
+			return err
+		}
+
+		// Resolve object config monster identifiers
+		dungeonConfig, err = t.resolveConfigObjectMonsterIdentifiers(data, dungeonConfig)
+		if err != nil {
+			t.Log.Warn("Failed resolving config object monster identifiers >%v<", err)
+			return err
 		}
 
 		// Create object records
@@ -265,7 +278,7 @@ func (t *Testing) CreateData() error {
 	return nil
 }
 
-func (t *Testing) resolveDataLocationIdentifiers(data Data, dungeonConfig DungeonConfig) (Data, error) {
+func (t *Testing) resolveDataLocationDirectionIdentifiers(data Data, dungeonConfig DungeonConfig) (Data, error) {
 
 	findDungeonLocationRec := func(locationName string) *record.DungeonLocation {
 		for _, dungeonLocationRec := range data.DungeonLocationRecs {
@@ -430,6 +443,66 @@ func (t *Testing) resolveDataLocationIdentifiers(data Data, dungeonConfig Dungeo
 	return data, nil
 }
 
+func (t *Testing) resolveConfigObjectCharacterIdentifiers(data Data, dungeonConfig DungeonConfig) (DungeonConfig, error) {
+
+	findDungeonCharacterRec := func(characterName string) *record.DungeonCharacter {
+		for _, dungeonCharacterRec := range data.DungeonCharacterRecs {
+			if dungeonCharacterRec.Name == characterName {
+				return dungeonCharacterRec
+			}
+		}
+		return nil
+	}
+
+	for idx := range dungeonConfig.DungeonObjectConfig {
+		if dungeonConfig.DungeonObjectConfig[idx].CharacterName == "" {
+			continue
+		}
+		dungeonCharacterRec := findDungeonCharacterRec(dungeonConfig.DungeonObjectConfig[idx].CharacterName)
+		if dungeonCharacterRec == nil {
+			msg := fmt.Sprintf("Failed to find object dungeon character record name >%s<", dungeonConfig.DungeonCharacterConfig[idx].LocationName)
+			t.Log.Error(msg)
+			return dungeonConfig, fmt.Errorf(msg)
+		}
+		dungeonConfig.DungeonObjectConfig[idx].Record.DungeonCharacterID = sql.NullString{
+			String: dungeonCharacterRec.ID,
+			Valid:  true,
+		}
+	}
+
+	return dungeonConfig, nil
+}
+
+func (t *Testing) resolveConfigObjectMonsterIdentifiers(data Data, dungeonConfig DungeonConfig) (DungeonConfig, error) {
+
+	findDungeonMonsterRec := func(monsterName string) *record.DungeonMonster {
+		for _, dungeonMonsterRec := range data.DungeonMonsterRecs {
+			if dungeonMonsterRec.Name == monsterName {
+				return dungeonMonsterRec
+			}
+		}
+		return nil
+	}
+
+	for idx := range dungeonConfig.DungeonObjectConfig {
+		if dungeonConfig.DungeonObjectConfig[idx].MonsterName == "" {
+			continue
+		}
+		dungeonMonsterRec := findDungeonMonsterRec(dungeonConfig.DungeonObjectConfig[idx].MonsterName)
+		if dungeonMonsterRec == nil {
+			msg := fmt.Sprintf("Failed to find object dungeon character record name >%s<", dungeonConfig.DungeonMonsterConfig[idx].LocationName)
+			t.Log.Error(msg)
+			return dungeonConfig, fmt.Errorf(msg)
+		}
+		dungeonConfig.DungeonObjectConfig[idx].Record.DungeonMonsterID = sql.NullString{
+			String: dungeonMonsterRec.ID,
+			Valid:  true,
+		}
+	}
+
+	return dungeonConfig, nil
+}
+
 func (t *Testing) resolveConfigDungeonLocationIdentifiers(data Data, dungeonConfig DungeonConfig) (DungeonConfig, error) {
 
 	findDungeonLocationRec := func(locationName string) *record.DungeonLocation {
@@ -462,6 +535,9 @@ func (t *Testing) resolveConfigDungeonLocationIdentifiers(data Data, dungeonConf
 	}
 
 	for idx := range dungeonConfig.DungeonObjectConfig {
+		if dungeonConfig.DungeonObjectConfig[idx].LocationName == "" {
+			continue
+		}
 		dungeonLocationRec := findDungeonLocationRec(dungeonConfig.DungeonObjectConfig[idx].LocationName)
 		if dungeonLocationRec == nil {
 			msg := fmt.Sprintf("Failed to find object dungeon location record name >%s<", dungeonConfig.DungeonObjectConfig[idx].LocationName)
@@ -668,6 +744,25 @@ DUNGEON_ACTION_RECS:
 		seen[rec.ID] = true
 	}
 
+DUNGEON_OBJECT_RECS:
+	for {
+		if len(t.teardownData.DungeonObjectRecs) == 0 {
+			break DUNGEON_OBJECT_RECS
+		}
+		var rec record.DungeonObject
+		rec, t.teardownData.DungeonObjectRecs = t.teardownData.DungeonObjectRecs[0], t.teardownData.DungeonObjectRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveDungeonObjectRec(rec.ID)
+		if err != nil {
+			t.Log.Warn("Failed removing dungeon object record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
 DUNGEON_CHARACTER_RECS:
 	for {
 		if len(t.teardownData.DungeonCharacterRecs) == 0 {
@@ -701,25 +796,6 @@ DUNGEON_MONSTER_RECS:
 		err := t.Model.(*model.Model).RemoveDungeonMonsterRec(rec.ID)
 		if err != nil {
 			t.Log.Warn("Failed removing dungeon monster record >%v<", err)
-			return err
-		}
-		seen[rec.ID] = true
-	}
-
-DUNGEON_OBJECT_RECS:
-	for {
-		if len(t.teardownData.DungeonObjectRecs) == 0 {
-			break DUNGEON_OBJECT_RECS
-		}
-		var rec record.DungeonObject
-		rec, t.teardownData.DungeonObjectRecs = t.teardownData.DungeonObjectRecs[0], t.teardownData.DungeonObjectRecs[1:]
-		if seen[rec.ID] {
-			continue
-		}
-
-		err := t.Model.(*model.Model).RemoveDungeonObjectRec(rec.ID)
-		if err != nil {
-			t.Log.Warn("Failed removing dungeon object record >%v<", err)
 			return err
 		}
 		seen[rec.ID] = true

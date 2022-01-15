@@ -13,8 +13,10 @@ func (m *Model) ValidateDungeonObjectRec(rec *record.DungeonObject) error {
 		if rec.DungeonID == "" {
 			return fmt.Errorf("failed validation, DungeonID is empty")
 		}
-		if !rec.DungeonLocationID.Valid {
-			return fmt.Errorf("failed validation, DungeonLocationID is empty")
+		if !rec.DungeonLocationID.Valid &&
+			!rec.DungeonCharacterID.Valid &&
+			!rec.DungeonMonsterID.Valid {
+			return fmt.Errorf("failed validation, all of DungeonLocationID, DungeonCharacterID and DungeonMonsterID are empty")
 		}
 		if rec.Name == "" {
 			return fmt.Errorf("failed validation, Name is empty")
