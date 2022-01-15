@@ -144,34 +144,69 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 			continue
 		}
 
-		var schemaMainContent []byte
-		var schemaDataContent []byte
+		rnr.Log.Info("Processing handler documentation path >%s: %s<", config.Method, config.Path)
+
+		var requestSchemaMainContent []byte
+		var requestSchemaDataContent []byte
+		var responseSchemaMainContent []byte
+		var responseSchemaDataContent []byte
 		var err error
 
 		schemaPath := rnr.Config.Get("APP_SERVER_SCHEMA_PATH")
 		schemaLoc := config.MiddlewareConfig.ValidateSchemaLocation
 		if schemaLoc != "" {
 
-			schemaMain := config.MiddlewareConfig.ValidateSchemaRequestMain
-			filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaMain)
+			// Request schema
+			requestSchemaMain := config.MiddlewareConfig.ValidateSchemaRequestMain
+			if requestSchemaMain != "" {
 
-			rnr.Log.Info("Schema main content filename >%s<", filename)
+				filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, requestSchemaMain)
 
-			schemaMainContent, err = ioutil.ReadFile(filename)
-			if err != nil {
-				return nil, err
-			}
+				rnr.Log.Info("Request schema main content filename >%s<", filename)
 
-			schemaReferences := config.MiddlewareConfig.ValidateSchemaRequestReferences
-			for _, schemaReference := range schemaReferences {
-
-				filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaReference)
-
-				rnr.Log.Info("Schema reference content filename >%s<", filename)
-
-				schemaDataContent, err = ioutil.ReadFile(filename)
+				requestSchemaMainContent, err = ioutil.ReadFile(filename)
 				if err != nil {
 					return nil, err
+				}
+
+				schemaReferences := config.MiddlewareConfig.ValidateSchemaRequestReferences
+				for _, schemaReference := range schemaReferences {
+
+					filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaReference)
+
+					rnr.Log.Info("Request schema reference content filename >%s<", filename)
+
+					requestSchemaDataContent, err = ioutil.ReadFile(filename)
+					if err != nil {
+						return nil, err
+					}
+				}
+			}
+
+			// Response schema
+			responseSchemaMain := config.MiddlewareConfig.ValidateSchemaResponseMain
+			if responseSchemaMain != "" {
+
+				filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, responseSchemaMain)
+
+				rnr.Log.Info("Response schema main content filename >%s<", filename)
+
+				responseSchemaMainContent, err = ioutil.ReadFile(filename)
+				if err != nil {
+					return nil, err
+				}
+
+				schemaReferences := config.MiddlewareConfig.ValidateSchemaResponseReferences
+				for _, schemaReference := range schemaReferences {
+
+					filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaReference)
+
+					rnr.Log.Info("Response schema reference content filename >%s<", filename)
+
+					responseSchemaDataContent, err = ioutil.ReadFile(filename)
+					if err != nil {
+						return nil, err
+					}
 				}
 			}
 		}
@@ -196,21 +231,38 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 			fmt.Fprintf(&b, "</div>\n")
 		}
 
-		// Schema
-		if schemaMainContent != nil || schemaDataContent != nil {
+		// Request schema
+		if requestSchemaMainContent != nil || requestSchemaDataContent != nil {
 			fmt.Fprintf(&b, "<div class='schema'>\n")
-			fmt.Fprintf(&b, "<div class='schema-label'>Schema -</div>\n")
-			fmt.Fprintf(&b, "<div class='schema-toggle'><a href='#schema-%d' class='toggle'>show / hide</a></div>", count)
+			fmt.Fprintf(&b, "<div class='schema-label'>Request schema -</div>\n")
+			fmt.Fprintf(&b, "<div class='schema-toggle'><a href='#request-schema-%d' class='toggle'>show / hide</a></div>", count)
 			fmt.Fprintf(&b, "</span>\n</div>\n")
-			fmt.Fprintf(&b, "<div id='schema-%d' style='display: none'>\n", count)
-			if schemaMainContent != nil {
-				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(schemaMainContent))
+			fmt.Fprintf(&b, "<div id='request-schema-%d' style='display: none'>\n", count)
+			if requestSchemaMainContent != nil {
+				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(requestSchemaMainContent))
 			}
-			if schemaDataContent != nil {
-				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(schemaDataContent))
+			if requestSchemaDataContent != nil {
+				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(requestSchemaDataContent))
 			}
 			fmt.Fprintf(&b, "</div>\n")
 		}
+
+		// Response schema
+		if responseSchemaMainContent != nil || responseSchemaDataContent != nil {
+			fmt.Fprintf(&b, "<div class='schema'>\n")
+			fmt.Fprintf(&b, "<div class='schema-label'>Response schema -</div>\n")
+			fmt.Fprintf(&b, "<div class='schema-toggle'><a href='#response-schema-%d' class='toggle'>show / hide</a></div>", count)
+			fmt.Fprintf(&b, "</span>\n</div>\n")
+			fmt.Fprintf(&b, "<div id='response-schema-%d' style='display: none'>\n", count)
+			if responseSchemaMainContent != nil {
+				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(responseSchemaMainContent))
+			}
+			if responseSchemaDataContent != nil {
+				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(responseSchemaDataContent))
+			}
+			fmt.Fprintf(&b, "</div>\n")
+		}
+
 	}
 
 	fmt.Fprintf(&b, "<div class='footer'></div>")

@@ -36,10 +36,16 @@ func NewRunner() *Runner {
 	r.HandlerConfig = []server.HandlerConfig{
 		// Dungeons - 0
 		{
-			Method:           http.MethodGet,
-			Path:             "/api/v1/dungeons",
-			HandlerFunc:      r.GetDungeonsHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/api/v1/dungeons",
+			HandlerFunc: r.GetDungeonsHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateSchemaLocation:     "dungeon",
+				ValidateSchemaResponseMain: "response.schema.json",
+				ValidateSchemaResponseReferences: []string{
+					"data.schema.json",
+				},
+			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Query dungeons.",

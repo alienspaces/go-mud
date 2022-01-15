@@ -136,6 +136,18 @@ var testDataConfig = harness.DataConfig{
 					},
 					LocationName: "Cave Room",
 				},
+
+				{
+					Record: record.DungeonObject{
+						Record: repository.Record{
+							ID: "792477df-f63d-4cba-b7a4-695a1f896c67",
+						},
+						Name:                "Bronze Ring",
+						Description:         "A bronze ring.",
+						DescriptionDetailed: "A dull bronze ring.",
+					},
+					CharacterName: "Barricade",
+				},
 			},
 			DungeonActionConfig: []harness.DungeonActionConfig{
 				{
