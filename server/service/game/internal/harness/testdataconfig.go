@@ -100,9 +100,19 @@ var DefaultDataConfig = DataConfig{
 				},
 				{
 					Record: record.DungeonObject{
-						Name:                "Bronze Ring",
-						Description:         "A bronze ring.",
+						Name:                "Dull Bronze Ring",
+						Description:         "A dull bronze ring.",
 						DescriptionDetailed: "A dull bronze ring.",
+						IsEquipped:          true,
+					},
+					CharacterName: "Barricade",
+				},
+				{
+					Record: record.DungeonObject{
+						Name:                "Blood Stained Pouch",
+						Description:         "A blood stained pouch.",
+						DescriptionDetailed: "A blood stained pouch.",
+						IsStashed:           true,
 					},
 					CharacterName: "Barricade",
 				},

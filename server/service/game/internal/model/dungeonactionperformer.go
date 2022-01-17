@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"fmt"
 
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
@@ -13,8 +14,9 @@ func (m *Model) performDungeonCharacterAction(
 ) (*record.DungeonAction, error) {
 
 	actionFuncs := map[string]func(dungeonCharacterRec *record.DungeonCharacter, dungeonActionRec *record.DungeonAction, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error){
-		"move": m.performDungeonActionMove,
-		"look": m.performDungeonActionLook,
+		"move":  m.performDungeonActionMove,
+		"look":  m.performDungeonActionLook,
+		"stash": m.performDungeonActionStash,
 	}
 
 	actionFunc, ok := actionFuncs[dungeonActionRec.ResolvedCommand]
@@ -83,6 +85,45 @@ func (m *Model) performDungeonActionLook(
 
 	} else if dungeonActionRec.ResolvedTargetDungeonCharacterID.Valid {
 		m.Log.Info("Looking at character ID >%s<", dungeonActionRec.ResolvedTargetDungeonCharacterID.String)
+	}
+
+	return dungeonActionRec, nil
+}
+
+func (m *Model) performDungeonActionStash(
+	dungeonCharacterRec *record.DungeonCharacter,
+	dungeonActionRec *record.DungeonAction,
+	dungeonLocationRecordSet *DungeonLocationRecordSet,
+) (*record.DungeonAction, error) {
+
+	if dungeonActionRec.DungeonCharacterID.Valid {
+		// Character stash object
+		dungeonObjectID := dungeonActionRec.ResolvedStashedDungeonObjectID.String
+		if dungeonObjectID == "" {
+			msg := "resolved stashed dungeon object ID is empty, cannot stash object"
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+
+		dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonObjectID, true)
+		if err != nil {
+			m.Log.Warn("Failed getting dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		dungeonObjectRec.DungeonLocationID = sql.NullString{}
+		dungeonObjectRec.DungeonCharacterID = dungeonActionRec.DungeonCharacterID
+		dungeonObjectRec.IsStashed = true
+
+		err = m.UpdateDungeonObjectRec(dungeonObjectRec)
+		if err != nil {
+			m.Log.Warn("Failed updating dungeon object record >%v<", err)
+			return nil, err
+		}
+
+	} else if dungeonActionRec.DungeonMonsterID.Valid {
+		// Monster stash object
+		return nil, fmt.Errorf("monsters stashing objects is currently not supported")
 	}
 
 	return dungeonActionRec, nil

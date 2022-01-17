@@ -13,7 +13,7 @@ type ResolverSentence struct {
 	Sentence string
 }
 
-func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
 	resolved, err := m.resolveCommand(sentence)
 	if err != nil {
@@ -21,11 +21,11 @@ func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.Dunge
 		return nil, err
 	}
 
-	resolveFuncs := map[string]func(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error){
-		"move": m.resolveMoveAction,
-		"look": m.resolveLookAction,
+	resolveFuncs := map[string]func(sentence string, dungeonCharacterRec *record.DungeonCharacter, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error){
+		"move":  m.resolveMoveAction,
+		"look":  m.resolveLookAction,
+		"stash": m.resolveStashAction,
 		// "equip": m.resolveEquipAction,
-		// "stash": m.resolveStashAction,
 		// "drop":  m.resolveDropAction,
 	}
 
@@ -36,7 +36,7 @@ func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.Dunge
 		return nil, fmt.Errorf(msg)
 	}
 
-	dungeonActionRec, err := resolveFunc(resolved.Sentence, dungeonCharacterRec, records)
+	dungeonActionRec, err := resolveFunc(resolved.Sentence, dungeonCharacterRec, dungeonLocationRecordSet)
 	if err != nil {
 		m.Log.Warn("Failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
@@ -77,7 +77,6 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 
 func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
-	// Resolve move direction
 	var err error
 	var targetDungeonLocationID string
 	var targetDungeonLocationDirection string
@@ -108,9 +107,8 @@ func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.D
 	return &dungeonActionRecord, nil
 }
 
-func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, records *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, locationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error) {
 
-	// Resolve look direction
 	var err error
 	var targetDungeonLocationID string
 	var targetDungeonLocationDirection string
@@ -119,14 +117,14 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 	var targetDungeonCharacterID string
 
 	if sentence != "" {
-		targetDungeonLocationID, targetDungeonLocationDirection, err = m.resolveSentenceLocationDirection(sentence, records.LocationRec)
+		targetDungeonLocationID, targetDungeonLocationDirection, err = m.resolveSentenceLocationDirection(sentence, locationRecordSet.LocationRec)
 		if err != nil {
 			m.Log.Warn("Failed to resolve sentence location direction >%v<", err)
 			return nil, err
 		}
 
 		if targetDungeonLocationID == "" {
-			dungeonObjectRec, err := m.resolveSentenceObject(sentence, records.ObjectRecs)
+			dungeonObjectRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectRecs)
 			if err != nil {
 				m.Log.Warn("Failed to resolve sentence object >%v<", err)
 				return nil, err
@@ -137,7 +135,7 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 		}
 
 		if targetDungeonLocationID == "" && targetDungeonObjectID == "" {
-			dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, records.MonsterRecs)
+			dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, locationRecordSet.MonsterRecs)
 			if err != nil {
 				m.Log.Warn("Failed to resolve sentence monster >%v<", err)
 				return nil, err
@@ -148,7 +146,7 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 		}
 
 		if targetDungeonLocationID == "" && targetDungeonObjectID == "" && targetDungeonMonsterID == "" {
-			dungeonCharacterRec, err := m.resolveSentenceCharacter(sentence, records.CharacterRecs)
+			dungeonCharacterRec, err := m.resolveSentenceCharacter(sentence, locationRecordSet.CharacterRecs)
 			if err != nil {
 				m.Log.Warn("Failed to resolve sentence character >%v<", err)
 				return nil, err
@@ -159,9 +157,9 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 		}
 	}
 
-	// TODO: When nothing has been identified, assume we are just looking in the current room.
+	// When nothing has been identified, assume we are just looking in the current room.
 	if targetDungeonLocationID == "" && targetDungeonObjectID == "" && targetDungeonMonsterID == "" && targetDungeonCharacterID == "" {
-		targetDungeonLocationID = records.LocationRec.ID
+		targetDungeonLocationID = locationRecordSet.LocationRec.ID
 		targetDungeonLocationDirection = ""
 	}
 
@@ -175,6 +173,47 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 		ResolvedTargetDungeonCharacterID:       store.NullString(targetDungeonCharacterID),
 		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
 		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
+	}
+
+	return &dungeonActionRecord, nil
+}
+
+func (m *Model) resolveStashAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, locationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+
+	var stashedDungeonObjectID string
+
+	if sentence != "" {
+		// Find object in room
+		dungeonObjectRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectRecs)
+		if err != nil {
+			m.Log.Warn("Failed to get location object from sentence >%v<", err)
+			return nil, err
+		}
+		if dungeonObjectRec == nil {
+			// Find object equipped on character
+			dungeonObjectRecs, err := m.GetCharacterEquippedDungeonObjectRecs(dungeonCharacterRec.ID)
+			if err != nil {
+				m.Log.Warn("Failed to resolve sentence object >%v<", err)
+				return nil, err
+			}
+			dungeonObjectRec, err = m.getObjectFromSentence(sentence, dungeonObjectRecs)
+			if err != nil {
+				m.Log.Warn("Failed to get character object from sentence >%v<", err)
+				return nil, err
+			}
+		}
+		if dungeonObjectRec != nil {
+			stashedDungeonObjectID = dungeonObjectRec.ID
+		}
+	}
+
+	dungeonActionRecord := record.DungeonAction{
+		DungeonID:                      dungeonCharacterRec.DungeonID,
+		DungeonLocationID:              dungeonCharacterRec.DungeonLocationID,
+		DungeonCharacterID:             store.NullString(dungeonCharacterRec.ID),
+		ResolvedCommand:                "stash",
+		ResolvedTargetDungeonObjectID:  store.NullString(stashedDungeonObjectID),
+		ResolvedStashedDungeonObjectID: store.NullString(stashedDungeonObjectID),
 	}
 
 	return &dungeonActionRecord, nil
@@ -220,8 +259,7 @@ func (m *Model) resolveSentenceLocationDirection(sentence string, dungeonLocatio
 	return dungeonLocationID, dungeonLocationDirection, nil
 }
 
-func (m *Model) resolveSentenceObject(sentence string, dungeonObjectRecs []*record.DungeonObject) (*record.DungeonObject, error) {
-
+func (m *Model) getObjectFromSentence(sentence string, dungeonObjectRecs []*record.DungeonObject) (*record.DungeonObject, error) {
 	for _, dungeonObjectRec := range dungeonObjectRecs {
 		if strings.Contains(sentence, strings.ToLower(dungeonObjectRec.Name)) {
 			return dungeonObjectRec, nil
@@ -247,30 +285,3 @@ func (m *Model) resolveSentenceCharacter(sentence string, dungeonCharacterRecs [
 	}
 	return nil, nil
 }
-
-// func (m *Model) resolveEquipAction(sentence: string, records: DungeonLocationRecordSet): DungeonActionRepositoryRecord {
-// 	let dungeonActionRecord: Partial<DungeonActionRepositoryRecord> = {
-// 		dungeon_id: records.character.dungeon_id,
-// 		dungeon_location_id: records.character.dungeon_location_id,
-// 		dungeon_character_id: records.character.id,
-// 	};
-// 	return null;
-// }
-
-// func (m *Model) resolveStashAction(sentence: string, records: DungeonLocationRecordSet): DungeonActionRepositoryRecord {
-// 	let dungeonActionRecord: Partial<DungeonActionRepositoryRecord> = {
-// 		dungeon_id: records.character.dungeon_id,
-// 		dungeon_location_id: records.character.dungeon_location_id,
-// 		dungeon_character_id: records.character.id,
-// 	};
-// 	return null;
-// }
-
-// func (m *Model) resolveDropAction(sentence: string, records: DungeonLocationRecordSet): DungeonActionRepositoryRecord {
-// 	let dungeonActionRecord: Partial<DungeonActionRepositoryRecord> = {
-// 		dungeon_id: records.character.dungeon_id,
-// 		dungeon_location_id: records.character.dungeon_location_id,
-// 		dungeon_character_id: records.character.id,
-// 	};
-// 	return null;
-// }

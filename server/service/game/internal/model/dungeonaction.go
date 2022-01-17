@@ -457,6 +457,33 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		dungeonActionRecordSet.TargetActionObjectRec = rec
 	}
 
+	// Create the stashed dungeon object action record
+	if dungeonActionRec.ResolvedStashedDungeonObjectID.Valid {
+		targetObjectRec, err := m.GetDungeonObjectRec(dungeonActionRec.ResolvedStashedDungeonObjectID.String, false)
+		if err != nil {
+			m.Log.Warn("failed getting stashed dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		rec := &record.DungeonActionObject{
+			RecordType:        record.DungeonActionObjectRecordTypeStashed,
+			DungeonActionID:   dungeonActionRec.ID,
+			DungeonLocationID: dungeonLocationRec.ID,
+			DungeonObjectID:   targetObjectRec.ID,
+			Name:              targetObjectRec.Name,
+			Description:       targetObjectRec.Description,
+			IsStashed:         targetObjectRec.IsStashed,
+			IsEquipped:        targetObjectRec.IsEquipped,
+		}
+
+		err = m.CreateDungeonActionObjectRec(rec)
+		if err != nil {
+			m.Log.Warn("failed creating stashed dungeon action object record >%v<", err)
+			return nil, err
+		}
+		dungeonActionRecordSet.StashedActionObjectRec = rec
+	}
+
 	// TODO:
 	// EquippedObjectRec   *record.DungeonObject
 	// StashedObjectRec    *record.DungeonObject
