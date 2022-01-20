@@ -30,6 +30,7 @@ type TestCaser interface {
 }
 
 type TestCase struct {
+	Skip               bool
 	Name               string
 	HandlerConfig      func(rnr *Runner) server.HandlerConfig
 	RequestHeaders     func(data harness.Data) map[string]string

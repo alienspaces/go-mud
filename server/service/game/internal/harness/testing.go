@@ -613,9 +613,11 @@ func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
 
 	// Source
 	if dungeonActionRecordSet.ActionCharacterRec != nil {
+		t.Log.Info("Adding action character record ID >%s<", dungeonActionRecordSet.ActionCharacterRec.ID)
 		t.teardownData.DungeonActionCharacterRecs = append(t.teardownData.DungeonActionCharacterRecs, dungeonActionRecordSet.ActionCharacterRec)
 	}
 	if dungeonActionRecordSet.ActionMonsterRec != nil {
+		t.Log.Info("Adding action monster record ID >%s<", dungeonActionRecordSet.ActionMonsterRec.ID)
 		t.teardownData.DungeonActionMonsterRecs = append(t.teardownData.DungeonActionMonsterRecs, dungeonActionRecordSet.ActionMonsterRec)
 	}
 
@@ -637,19 +639,24 @@ func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
 
 	// Targets
 	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
+		t.Log.Info("Adding target action character record character ID >%s<", dungeonActionRecordSet.TargetActionCharacterRec.DungeonCharacterID)
 		t.teardownData.DungeonActionCharacterRecs = append(t.teardownData.DungeonActionCharacterRecs, dungeonActionRecordSet.TargetActionCharacterRec)
 	}
 	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
+		t.Log.Info("Adding target action monster record monster ID >%s<", dungeonActionRecordSet.TargetActionMonsterRec.DungeonMonsterID)
 		t.teardownData.DungeonActionMonsterRecs = append(t.teardownData.DungeonActionMonsterRecs, dungeonActionRecordSet.TargetActionMonsterRec)
 	}
-	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
-		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.EquippedActionObjectRec)
+	if dungeonActionRecordSet.TargetActionObjectRec != nil {
+		t.Log.Info("Adding target action object record object ID >%s<", dungeonActionRecordSet.TargetActionObjectRec.DungeonObjectID)
+		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.TargetActionObjectRec)
 	}
 	if dungeonActionRecordSet.StashedActionObjectRec != nil {
+		t.Log.Info("Adding stashed action object record object ID >%s<", dungeonActionRecordSet.TargetActionObjectRec.DungeonObjectID)
 		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.StashedActionObjectRec)
 	}
-	if dungeonActionRecordSet.TargetActionObjectRec != nil {
-		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.TargetActionObjectRec)
+	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
+		t.Log.Info("Adding equipped action object record object ID >%s<", dungeonActionRecordSet.TargetActionObjectRec.DungeonObjectID)
+		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.EquippedActionObjectRec)
 	}
 
 	if t.CommitData {

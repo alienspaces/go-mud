@@ -207,7 +207,7 @@ func (m *Model) resolveStashAction(sentence string, dungeonCharacterRec *record.
 		}
 	}
 
-	dungeonActionRecord := record.DungeonAction{
+	dungeonActionRec := record.DungeonAction{
 		DungeonID:                      dungeonCharacterRec.DungeonID,
 		DungeonLocationID:              dungeonCharacterRec.DungeonLocationID,
 		DungeonCharacterID:             store.NullString(dungeonCharacterRec.ID),
@@ -216,7 +216,7 @@ func (m *Model) resolveStashAction(sentence string, dungeonCharacterRec *record.
 		ResolvedStashedDungeonObjectID: store.NullString(stashedDungeonObjectID),
 	}
 
-	return &dungeonActionRecord, nil
+	return &dungeonActionRec, nil
 }
 
 func (m *Model) resolveSentenceLocationDirection(sentence string, dungeonLocationRec *record.DungeonLocation) (string, string, error) {

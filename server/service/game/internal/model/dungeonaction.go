@@ -734,6 +734,46 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 		dungeonActionRecordSet.TargetActionObjectRec = dungeonActionObjectRecs[0]
 	}
 
+	// Get the stashed dungeon object action record
+	if dungeonActionRec.ResolvedStashedDungeonObjectID.Valid {
+		dungeonActionObjectRecs, err := m.GetDungeonActionObjectRecs(
+			map[string]interface{}{
+				"record_type":       record.DungeonActionObjectRecordTypeStashed,
+				"dungeon_action_id": dungeonActionID,
+				"dungeon_object_id": dungeonActionRec.ResolvedStashedDungeonObjectID.String,
+			}, nil, false)
+		if err != nil {
+			m.Log.Warn("failed getting stashed dungeon action object record >%v<", err)
+			return nil, err
+		}
+		if len(dungeonActionObjectRecs) != 1 {
+			msg := fmt.Sprintf("Unexpected number of dungeon action object records returned >%d<", len(dungeonActionObjectRecs))
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+		dungeonActionRecordSet.StashedActionObjectRec = dungeonActionObjectRecs[0]
+	}
+
+	// Get the equipped dungeon object action record
+	if dungeonActionRec.ResolvedEquippedDungeonObjectID.Valid {
+		dungeonActionObjectRecs, err := m.GetDungeonActionObjectRecs(
+			map[string]interface{}{
+				"record_type":       record.DungeonActionObjectRecordTypeEquipped,
+				"dungeon_action_id": dungeonActionID,
+				"dungeon_object_id": dungeonActionRec.ResolvedEquippedDungeonObjectID.String,
+			}, nil, false)
+		if err != nil {
+			m.Log.Warn("failed getting equipped dungeon action object record >%v<", err)
+			return nil, err
+		}
+		if len(dungeonActionObjectRecs) != 1 {
+			msg := fmt.Sprintf("Unexpected number of dungeon action object records returned >%d<", len(dungeonActionObjectRecs))
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+		dungeonActionRecordSet.EquippedActionObjectRec = dungeonActionObjectRecs[0]
+	}
+
 	return &dungeonActionRecordSet, nil
 }
 
