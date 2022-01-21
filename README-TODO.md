@@ -8,7 +8,7 @@
 
 ## Now
 
-- Server: Stash, equip and drop object actions
+- Client: Stash, equip and drop object action support
 
 ## Next
 
