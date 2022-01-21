@@ -127,6 +127,15 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 		}
 	}
 
+	// Dropped object
+	var droppedObjectData *schema.ObjectDetailedData
+	if dungeonActionRecordSet.DroppedActionObjectRec != nil {
+		droppedObjectData, err = rnr.dungeonObjectToResponseObject(dungeonActionRecordSet.DroppedActionObjectRec)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// Target object
 	var targetObjectData *schema.ObjectDetailedData
 	if dungeonActionRecordSet.TargetActionObjectRec != nil {
@@ -162,6 +171,7 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 		Monster:         monsterData,
 		EquippedObject:  equippedObjectData,
 		StashedObject:   stashedObjectData,
+		DroppedObject:   droppedObjectData,
 		TargetObject:    targetObjectData,
 		TargetCharacter: targetCharacterData,
 		TargetMonster:   targetMonsterData,

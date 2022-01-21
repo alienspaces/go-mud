@@ -20,6 +20,7 @@ type DungeonActionResponseData struct {
 	Monster         *MonsterDetailedData   `json:"monster,omitempty"`
 	EquippedObject  *ObjectDetailedData    `json:"equipped_object,omitempty"`
 	StashedObject   *ObjectDetailedData    `json:"stashed_object,omitempty"`
+	DroppedObject   *ObjectDetailedData    `json:"dropped_object,omitempty"`
 	TargetObject    *ObjectDetailedData    `json:"target_object,omitempty"`
 	TargetCharacter *CharacterDetailedData `json:"target_character,omitempty"`
 	TargetMonster   *MonsterDetailedData   `json:"target_monster,omitempty"`

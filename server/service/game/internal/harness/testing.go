@@ -651,12 +651,16 @@ func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
 		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.TargetActionObjectRec)
 	}
 	if dungeonActionRecordSet.StashedActionObjectRec != nil {
-		t.Log.Info("Adding stashed action object record object ID >%s<", dungeonActionRecordSet.TargetActionObjectRec.DungeonObjectID)
+		t.Log.Info("Adding stashed action object record object ID >%s<", dungeonActionRecordSet.StashedActionObjectRec.DungeonObjectID)
 		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.StashedActionObjectRec)
 	}
 	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
-		t.Log.Info("Adding equipped action object record object ID >%s<", dungeonActionRecordSet.TargetActionObjectRec.DungeonObjectID)
+		t.Log.Info("Adding equipped action object record object ID >%s<", dungeonActionRecordSet.EquippedActionObjectRec.DungeonObjectID)
 		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.EquippedActionObjectRec)
+	}
+	if dungeonActionRecordSet.DroppedActionObjectRec != nil {
+		t.Log.Info("Adding dropped action object record object ID >%s<", dungeonActionRecordSet.DroppedActionObjectRec.DungeonObjectID)
+		t.teardownData.DungeonActionObjectRecs = append(t.teardownData.DungeonActionObjectRecs, dungeonActionRecordSet.DroppedActionObjectRec)
 	}
 
 	if t.CommitData {

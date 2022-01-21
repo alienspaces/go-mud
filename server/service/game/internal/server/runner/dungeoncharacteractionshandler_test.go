@@ -64,7 +64,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Look at the current room
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Look at the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
@@ -153,7 +153,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Move north from the current room
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Move north from the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
@@ -233,7 +233,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Look north from the current room
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Look north from the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
@@ -313,7 +313,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Look at an item in the current room
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Look at an item in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
@@ -388,7 +388,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Look at a monster in the current room
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Look at a monster in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
@@ -470,7 +470,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Look at a character in the current room
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Look at a character in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
@@ -610,11 +610,173 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								IsEquipped:  false,
 								IsStashed:   true,
 							},
+							DroppedObject: nil,
 							TargetObject: &schema.ObjectDetailedData{
 								Name:        data.DungeonObjectRecs[0].Name,
 								Description: data.DungeonObjectRecs[0].Description,
 								IsEquipped:  false,
 								IsStashed:   true,
+							},
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
+						},
+					},
+				}
+				return &res
+			},
+		},
+		{
+			// Equip object that is in the current room
+			TestCase: TestCase{
+				Skip:              false,
+				Name:              "Equip object that is in the current room",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
+				RequestBody: func(data harness.Data) interface{} {
+					res := schema.DungeonActionRequest{
+						Data: schema.DungeonActionRequestData{
+							Sentence: "equip rusted sword",
+						},
+					}
+					return &res
+				},
+				ResponseBody: testCaseResponseBody,
+				ResponseCode: http.StatusOK,
+			},
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
+				res := schema.DungeonActionResponse{
+					Data: []schema.DungeonActionResponseData{
+						{
+							Command: "equip",
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[0].Name,
+								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[0].Name,
+									},
+								},
+								Objects: []schema.ObjectData{},
+							},
+							Character: &schema.CharacterDetailedData{
+								Name:                data.DungeonCharacterRecs[0].Name,
+								Strength:            data.DungeonCharacterRecs[0].Strength,
+								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+								Health:              data.DungeonCharacterRecs[0].Health,
+								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+							},
+							Monster: nil,
+							EquippedObject: &schema.ObjectDetailedData{
+								Name:        data.DungeonObjectRecs[0].Name,
+								Description: data.DungeonObjectRecs[0].Description,
+								IsEquipped:  true,
+								IsStashed:   false,
+							},
+							StashedObject: nil,
+							DroppedObject: nil,
+							TargetObject: &schema.ObjectDetailedData{
+								Name:        data.DungeonObjectRecs[0].Name,
+								Description: data.DungeonObjectRecs[0].Description,
+								IsEquipped:  true,
+								IsStashed:   false,
+							},
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
+						},
+					},
+				}
+				return &res
+			},
+		},
+		{
+			// Drop object that is equipped
+			TestCase: TestCase{
+				Skip:              false,
+				Name:              "Drop object that is equipped",
+				HandlerConfig:     testCaseHandlerConfig,
+				RequestHeaders:    testCaseRequestHeaders,
+				RequestPathParams: testCaseRequestPathParams,
+				RequestBody: func(data harness.Data) interface{} {
+					res := schema.DungeonActionRequest{
+						Data: schema.DungeonActionRequestData{
+							Sentence: "drop Dull Bronze Ring",
+						},
+					}
+					return &res
+				},
+				ResponseBody: testCaseResponseBody,
+				ResponseCode: http.StatusOK,
+			},
+			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
+				res := schema.DungeonActionResponse{
+					Data: []schema.DungeonActionResponseData{
+						{
+							Command: "drop",
+							Location: schema.LocationData{
+								Name:        data.DungeonLocationRecs[0].Name,
+								Description: data.DungeonLocationRecs[0].Description,
+								Directions:  []string{"north"},
+								Characters: []schema.CharacterData{
+									{
+										Name: data.DungeonCharacterRecs[0].Name,
+									},
+								},
+								Monsters: []schema.MonsterData{
+									{
+										Name: data.DungeonMonsterRecs[0].Name,
+									},
+								},
+								Objects: []schema.ObjectData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+							},
+							Character: &schema.CharacterDetailedData{
+								Name:                data.DungeonCharacterRecs[0].Name,
+								Strength:            data.DungeonCharacterRecs[0].Strength,
+								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+								Health:              data.DungeonCharacterRecs[0].Health,
+								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
+								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+							},
+							Monster:        nil,
+							EquippedObject: nil,
+							StashedObject:  nil,
+							DroppedObject: &schema.ObjectDetailedData{
+								Name:        data.DungeonObjectRecs[2].Name,
+								Description: data.DungeonObjectRecs[2].Description,
+								IsEquipped:  false,
+								IsStashed:   false,
+							},
+							TargetObject: &schema.ObjectDetailedData{
+								Name:        data.DungeonObjectRecs[2].Name,
+								Description: data.DungeonObjectRecs[2].Description,
+								IsEquipped:  false,
+								IsStashed:   false,
 							},
 							TargetCharacter: nil,
 							TargetMonster:   nil,
@@ -934,6 +1096,21 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.EquippedObject.IsEquipped, responseBody.Data[idx].EquippedObject.IsEquipped, "Response equipped object is_equipped equals expected")
 						t.Logf("Checking equipped object is_stashed >%t< >%t<", expectData.EquippedObject.IsStashed, responseBody.Data[idx].EquippedObject.IsStashed)
 						require.Equal(t, expectData.EquippedObject.IsStashed, responseBody.Data[idx].EquippedObject.IsStashed, "Response equipped object is_stashed equals expected")
+					}
+
+					// Response dropped object
+					t.Logf("Checking dropped object nil >%t< >%t<", isObjectNil(expectData.DroppedObject), isObjectNil(responseBody.Data[idx].DroppedObject))
+					require.Equal(t, isObjectNil(expectData.DroppedObject), isObjectNil(responseBody.Data[idx].DroppedObject), "Response dropped object is nil or not nil as expected")
+					if !isObjectNil(expectData.DroppedObject) {
+						t.Logf("Checking dropped object name >%s< >%s<", expectData.DroppedObject.Name, responseBody.Data[idx].DroppedObject.Name)
+						require.Equal(t, expectData.DroppedObject.Name, responseBody.Data[idx].DroppedObject.Name, "Response dropped object name equals expected")
+						t.Logf("Checking dropped object description >%s< >%s<", expectData.DroppedObject.Description, responseBody.Data[idx].DroppedObject.Description)
+						require.Equal(t, expectData.DroppedObject.Description, responseBody.Data[idx].DroppedObject.Description, "Response dropped object description equals expected")
+
+						t.Logf("Checking dropped object is_dropped >%t< >%t<", expectData.DroppedObject.IsEquipped, responseBody.Data[idx].DroppedObject.IsEquipped)
+						require.Equal(t, expectData.DroppedObject.IsEquipped, responseBody.Data[idx].DroppedObject.IsEquipped, "Response dropped object is_dropped equals expected")
+						t.Logf("Checking dropped object is_stashed >%t< >%t<", expectData.DroppedObject.IsStashed, responseBody.Data[idx].DroppedObject.IsStashed)
+						require.Equal(t, expectData.DroppedObject.IsStashed, responseBody.Data[idx].DroppedObject.IsStashed, "Response dropped object is_stashed equals expected")
 					}
 				}
 			}
