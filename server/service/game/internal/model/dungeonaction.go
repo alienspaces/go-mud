@@ -13,6 +13,7 @@ type DungeonActionRecordSet struct {
 	CurrentLocation          *DungeonActionLocationRecordSet
 	EquippedActionObjectRec  *record.DungeonActionObject
 	StashedActionObjectRec   *record.DungeonActionObject
+	DroppedActionObjectRec   *record.DungeonActionObject
 	TargetActionObjectRec    *record.DungeonActionObject
 	TargetActionCharacterRec *record.DungeonActionCharacter
 	TargetActionMonsterRec   *record.DungeonActionMonster
@@ -76,7 +77,6 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
-	// TODO: Debug dungeon action record here..
 	m.Log.Info("Dungeon action record command >%s<", dungeonActionRec.ResolvedCommand)
 	m.Log.Info("Dungeon action record location >%s<", dungeonActionRec.DungeonLocationID)
 
@@ -484,9 +484,62 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		dungeonActionRecordSet.StashedActionObjectRec = rec
 	}
 
-	// TODO:
-	// EquippedObjectRec   *record.DungeonObject
-	// StashedObjectRec    *record.DungeonObject
+	// Create the equipped dungeon object action record
+	if dungeonActionRec.ResolvedEquippedDungeonObjectID.Valid {
+		targetObjectRec, err := m.GetDungeonObjectRec(dungeonActionRec.ResolvedEquippedDungeonObjectID.String, false)
+		if err != nil {
+			m.Log.Warn("failed getting equipped dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		rec := &record.DungeonActionObject{
+			RecordType:        record.DungeonActionObjectRecordTypeEquipped,
+			DungeonActionID:   dungeonActionRec.ID,
+			DungeonLocationID: dungeonLocationRec.ID,
+			DungeonObjectID:   targetObjectRec.ID,
+			Name:              targetObjectRec.Name,
+			Description:       targetObjectRec.Description,
+			IsStashed:         targetObjectRec.IsStashed,
+			IsEquipped:        targetObjectRec.IsEquipped,
+		}
+
+		err = m.CreateDungeonActionObjectRec(rec)
+		if err != nil {
+			m.Log.Warn("failed creating equipped dungeon action object record >%v<", err)
+			return nil, err
+		}
+		dungeonActionRecordSet.EquippedActionObjectRec = rec
+	}
+
+	// Create the dropped dungeon object action record
+	if dungeonActionRec.ResolvedDroppedDungeonObjectID.Valid {
+		targetObjectRec, err := m.GetDungeonObjectRec(dungeonActionRec.ResolvedDroppedDungeonObjectID.String, false)
+		if err != nil {
+			m.Log.Warn("failed getting dropped dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		rec := &record.DungeonActionObject{
+			RecordType:        record.DungeonActionObjectRecordTypeDropped,
+			DungeonActionID:   dungeonActionRec.ID,
+			DungeonLocationID: dungeonLocationRec.ID,
+			DungeonObjectID:   targetObjectRec.ID,
+			Name:              targetObjectRec.Name,
+			Description:       targetObjectRec.Description,
+			IsStashed:         targetObjectRec.IsStashed,
+			IsEquipped:        targetObjectRec.IsEquipped,
+		}
+
+		err = m.CreateDungeonActionObjectRec(rec)
+		if err != nil {
+			m.Log.Warn("failed creating dropped dungeon action object record >%v<", err)
+			return nil, err
+		}
+
+		m.Log.Warn("Assigning dropped object >%v< to action record set", rec)
+
+		dungeonActionRecordSet.DroppedActionObjectRec = rec
+	}
 
 	return &dungeonActionRecordSet, nil
 }
@@ -772,6 +825,26 @@ func (m *Model) GetDungeonActionRecordSet(dungeonActionID string) (*DungeonActio
 			return nil, fmt.Errorf(msg)
 		}
 		dungeonActionRecordSet.EquippedActionObjectRec = dungeonActionObjectRecs[0]
+	}
+
+	// Get the dropped dungeon object action record
+	if dungeonActionRec.ResolvedDroppedDungeonObjectID.Valid {
+		dungeonActionObjectRecs, err := m.GetDungeonActionObjectRecs(
+			map[string]interface{}{
+				"record_type":       record.DungeonActionObjectRecordTypeDropped,
+				"dungeon_action_id": dungeonActionID,
+				"dungeon_object_id": dungeonActionRec.ResolvedDroppedDungeonObjectID.String,
+			}, nil, false)
+		if err != nil {
+			m.Log.Warn("failed getting dropped dungeon action object record >%v<", err)
+			return nil, err
+		}
+		if len(dungeonActionObjectRecs) != 1 {
+			msg := fmt.Sprintf("Unexpected number of dungeon action object records returned >%d<", len(dungeonActionObjectRecs))
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+		dungeonActionRecordSet.DroppedActionObjectRec = dungeonActionObjectRecs[0]
 	}
 
 	return &dungeonActionRecordSet, nil

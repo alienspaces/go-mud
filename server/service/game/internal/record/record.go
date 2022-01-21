@@ -94,6 +94,7 @@ type DungeonAction struct {
 	ResolvedCommand                        string         `db:"resolved_command"`
 	ResolvedEquippedDungeonObjectID        sql.NullString `db:"resolved_equipped_dungeon_object_id"`
 	ResolvedStashedDungeonObjectID         sql.NullString `db:"resolved_stashed_dungeon_object_id"`
+	ResolvedDroppedDungeonObjectID         sql.NullString `db:"resolved_dropped_dungeon_object_id"`
 	ResolvedTargetDungeonObjectID          sql.NullString `db:"resolved_target_dungeon_object_id"`
 	ResolvedTargetDungeonCharacterID       sql.NullString `db:"resolved_target_dungeon_character_id"`
 	ResolvedTargetDungeonMonsterID         sql.NullString `db:"resolved_target_dungeon_monster_id"`
@@ -157,6 +158,8 @@ const (
 	DungeonActionObjectRecordTypeEquipped string = "equipped"
 	// Stashed objects are packed in a bag or backback
 	DungeonActionObjectRecordTypeStashed string = "stashed"
+	// Dropped objects are present at a location
+	DungeonActionObjectRecordTypeDropped string = "dropped"
 	// Target objects are are being actively looked at, used, equipped or stashed
 	DungeonActionObjectRecordTypeTarget string = "target"
 	// Occupant objects are present at a location

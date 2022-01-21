@@ -140,6 +140,7 @@ CREATE TABLE "dungeon_action" (
   "resolved_command"                           text NOT NULL,
   "resolved_equipped_dungeon_object_id"        uuid,
   "resolved_stashed_dungeon_object_id"         uuid,
+  "resolved_dropped_dungeon_object_id"         uuid,
   "resolved_target_dungeon_object_id"          uuid,
   "resolved_target_dungeon_character_id"       uuid,
   "resolved_target_dungeon_monster_id"         uuid,
@@ -153,6 +154,7 @@ CREATE TABLE "dungeon_action" (
   CONSTRAINT "dungeon_action_dungeon_character_id_fk" FOREIGN KEY (dungeon_character_id) REFERENCES dungeon_character(id),
   CONSTRAINT "dungeon_action_resolved_equipped_dungeon_object_id_fk" FOREIGN KEY (resolved_equipped_dungeon_object_id) REFERENCES dungeon_object(id),
   CONSTRAINT "dungeon_action_resolved_stashed_dungeon_object_id_fk" FOREIGN KEY (resolved_stashed_dungeon_object_id) REFERENCES dungeon_object(id),
+  CONSTRAINT "dungeon_action_resolved_dropped_dungeon_object_id_fk" FOREIGN KEY (resolved_dropped_dungeon_object_id) REFERENCES dungeon_object(id),
   CONSTRAINT "dungeon_action_resolved_target_dungeon_object_id_fk" FOREIGN KEY (resolved_target_dungeon_object_id) REFERENCES dungeon_object(id),
   CONSTRAINT "dungeon_action_resolved_target_dungeon_character_id_fk" FOREIGN KEY (resolved_target_dungeon_character_id) REFERENCES dungeon_character(id),
   CONSTRAINT "dungeon_action_resolved_target_dungeon_monster_id_fk" FOREIGN KEY (resolved_target_dungeon_monster_id) REFERENCES dungeon_monster(id),
@@ -239,5 +241,11 @@ CREATE TABLE "dungeon_action_object" (
   CONSTRAINT "dungeon_action_object_dungeon_action_id_fk" FOREIGN KEY (dungeon_action_id) REFERENCES dungeon_action(id),
   CONSTRAINT "dungeon_action_object_dungeon_location_id_fk" FOREIGN KEY (dungeon_location_id) REFERENCES dungeon_location(id),
   CONSTRAINT "dungeon_action_object_dungeon_object_id_fk" FOREIGN KEY (dungeon_object_id) REFERENCES dungeon_object(id),
-  CONSTRAINT "dungeon_action_object_record_type_ck" CHECK (record_type = 'equipped' OR record_type = 'stashed' OR record_type = 'target' OR record_type = 'occupant')
+  CONSTRAINT "dungeon_action_object_record_type_ck" CHECK (
+    record_type = 'equipped' OR 
+    record_type = 'stashed' OR 
+    record_type = 'dropped' OR 
+    record_type = 'target' OR 
+    record_type = 'occupant'
+  )
 );

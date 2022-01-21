@@ -256,6 +256,12 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						Health:              data.DungeonCharacterRecs[0].Health,
 						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
+					TargetActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[0].Name,
+						Description: data.DungeonObjectRecs[0].Description,
+						IsStashed:   true,
+						IsEquipped:  false,
+					},
 					StashedActionObjectRec: &record.DungeonActionObject{
 						Name:        data.DungeonObjectRecs[0].Name,
 						Description: data.DungeonObjectRecs[0].Description,
@@ -266,43 +272,221 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			},
 			expectError: false,
 		},
-		// {
-		// 	name: "Equip valid location item",
-		// 	dungeonID: func(data harness.Data) string {
-		// 		return data.DungeonRecs[0].ID
-		// 	},
-		// 	dungeonCharacterID: func(data harness.Data) string {
-		// 		return data.DungeonCharacterRecs[0].ID
-		// 	},
-		// 	sentence: "equip rusted sword",
-		// 	expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
-		// 		return &model.DungeonActionRecordSet{
-		// 			ActionRec: &record.DungeonAction{
-		// 				DungeonID:          data.DungeonRecs[0].ID,
-		// 				DungeonLocationID:  data.DungeonLocationRecs[0].ID,
-		// 				DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
-		// 			},
-		// 			ActionCharacterRec: &record.DungeonActionCharacter{
-		// 				Name:                data.DungeonCharacterRecs[0].Name,
-		// 				Strength:            data.DungeonCharacterRecs[0].Strength,
-		// 				Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-		// 				Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-		// 				CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-		// 				CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-		// 				CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-		// 				Health:              data.DungeonCharacterRecs[0].Health,
-		// 				Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-		// 			},
-		// 			TargetActionObjectRec: &record.DungeonActionObject{
-		// 				Name:        data.DungeonObjectRecs[0].Name,
-		// 				Description: data.DungeonObjectRecs[0].Description,
-		// 				IsStashed:   data.DungeonObjectRecs[0].IsStashed,
-		// 				IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
-		// 			},
-		// 		}
-		// 	},
-		// 	expectError: false,
-		// },
+		{
+			name: "Stash valid equipped item",
+			dungeonID: func(data harness.Data) string {
+				return data.DungeonRecs[0].ID
+			},
+			dungeonCharacterID: func(data harness.Data) string {
+				return data.DungeonCharacterRecs[0].ID
+			},
+			sentence: "stash dull bronze ring",
+			expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+				return &model.DungeonActionRecordSet{
+					ActionRec: &record.DungeonAction{
+						DungeonID:          data.DungeonRecs[0].ID,
+						DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+					},
+					ActionCharacterRec: &record.DungeonActionCharacter{
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+					},
+					TargetActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[2].Name,
+						Description: data.DungeonObjectRecs[2].Description,
+						IsStashed:   true,
+						IsEquipped:  false,
+					},
+					StashedActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[2].Name,
+						Description: data.DungeonObjectRecs[2].Description,
+						IsStashed:   true,
+						IsEquipped:  false,
+					},
+				}
+			},
+			expectError: false,
+		},
+		{
+			name: "Equip valid location item",
+			dungeonID: func(data harness.Data) string {
+				return data.DungeonRecs[0].ID
+			},
+			dungeonCharacterID: func(data harness.Data) string {
+				return data.DungeonCharacterRecs[0].ID
+			},
+			sentence: "equip rusted sword",
+			expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+				return &model.DungeonActionRecordSet{
+					ActionRec: &record.DungeonAction{
+						DungeonID:          data.DungeonRecs[0].ID,
+						DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+					},
+					ActionCharacterRec: &record.DungeonActionCharacter{
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+					},
+					TargetActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[0].Name,
+						Description: data.DungeonObjectRecs[0].Description,
+						IsStashed:   false,
+						IsEquipped:  true,
+					},
+					EquippedActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[0].Name,
+						Description: data.DungeonObjectRecs[0].Description,
+						IsStashed:   false,
+						IsEquipped:  true,
+					},
+				}
+			},
+			expectError: false,
+		},
+		{
+			name: "Equip valid stashed item",
+			dungeonID: func(data harness.Data) string {
+				return data.DungeonRecs[0].ID
+			},
+			dungeonCharacterID: func(data harness.Data) string {
+				return data.DungeonCharacterRecs[0].ID
+			},
+			sentence: "equip blood stained pouch",
+			expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+				return &model.DungeonActionRecordSet{
+					ActionRec: &record.DungeonAction{
+						DungeonID:          data.DungeonRecs[0].ID,
+						DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+					},
+					ActionCharacterRec: &record.DungeonActionCharacter{
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+					},
+					TargetActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[3].Name,
+						Description: data.DungeonObjectRecs[3].Description,
+						IsStashed:   false,
+						IsEquipped:  true,
+					},
+					EquippedActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[3].Name,
+						Description: data.DungeonObjectRecs[3].Description,
+						IsStashed:   false,
+						IsEquipped:  true,
+					},
+				}
+			},
+			expectError: false,
+		},
+		{
+			name: "Drop valid equipped item",
+			dungeonID: func(data harness.Data) string {
+				return data.DungeonRecs[0].ID
+			},
+			dungeonCharacterID: func(data harness.Data) string {
+				return data.DungeonCharacterRecs[0].ID
+			},
+			sentence: "drop dull bronze ring",
+			expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+				return &model.DungeonActionRecordSet{
+					ActionRec: &record.DungeonAction{
+						DungeonID:          data.DungeonRecs[0].ID,
+						DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+					},
+					ActionCharacterRec: &record.DungeonActionCharacter{
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+					},
+					TargetActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[2].Name,
+						Description: data.DungeonObjectRecs[2].Description,
+						IsStashed:   false,
+						IsEquipped:  false,
+					},
+					DroppedActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[2].Name,
+						Description: data.DungeonObjectRecs[2].Description,
+						IsStashed:   false,
+						IsEquipped:  false,
+					},
+				}
+			},
+			expectError: false,
+		},
+		{
+			name: "Drop valid stashed item",
+			dungeonID: func(data harness.Data) string {
+				return data.DungeonRecs[0].ID
+			},
+			dungeonCharacterID: func(data harness.Data) string {
+				return data.DungeonCharacterRecs[0].ID
+			},
+			sentence: "drop blood stained pouch",
+			expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
+				return &model.DungeonActionRecordSet{
+					ActionRec: &record.DungeonAction{
+						DungeonID:          data.DungeonRecs[0].ID,
+						DungeonLocationID:  data.DungeonLocationRecs[0].ID,
+						DungeonCharacterID: sql.NullString{String: data.DungeonCharacterRecs[0].ID, Valid: true},
+					},
+					ActionCharacterRec: &record.DungeonActionCharacter{
+						Name:                data.DungeonCharacterRecs[0].Name,
+						Strength:            data.DungeonCharacterRecs[0].Strength,
+						Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
+						Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
+						CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
+						CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
+						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
+						Health:              data.DungeonCharacterRecs[0].Health,
+						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+					},
+					TargetActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[3].Name,
+						Description: data.DungeonObjectRecs[3].Description,
+						IsStashed:   false,
+						IsEquipped:  false,
+					},
+					DroppedActionObjectRec: &record.DungeonActionObject{
+						Name:        data.DungeonObjectRecs[3].Name,
+						Description: data.DungeonObjectRecs[3].Description,
+						IsStashed:   false,
+						IsEquipped:  false,
+					},
+				}
+			},
+			expectError: false,
+		},
 	}
 
 	for _, tc := range tests {
@@ -347,7 +531,10 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 				require.Equal(t, xrslt.ActionRec.DungeonCharacterID, rslt.ActionRec.DungeonCharacterID, "ActionRec.DungeonCharacterID equals expected")
 				require.Equal(t, xrslt.ActionRec.DungeonMonsterID, rslt.ActionRec.DungeonMonsterID, "ActionRec.DungeonMonsterID equals expected")
 				require.Equal(t, xrslt.ActionRec.DungeonLocationID, rslt.ActionRec.DungeonLocationID, "ActionRec.DungeonLocationID equals expected")
+			} else {
+				require.Nil(t, rslt.ActionRec, "ActionRec is nil")
 			}
+
 			if xrslt.ActionCharacterRec != nil {
 				require.NotNil(t, rslt.ActionCharacterRec, "ActionCharacterRec is not nil")
 				require.Equal(t, xrslt.ActionCharacterRec.Name, rslt.ActionCharacterRec.Name, "ActionCharacterRec.Name equals expected")
@@ -361,7 +548,10 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 
 				require.Equal(t, xrslt.ActionCharacterRec.Health, rslt.ActionCharacterRec.Health, "ActionCharacterRec.Health equals expected")
 				require.Equal(t, xrslt.ActionCharacterRec.Fatigue, rslt.ActionCharacterRec.Fatigue, "ActionCharacterRec.Fatigue equals expected")
+			} else {
+				require.Nil(t, rslt.ActionCharacterRec, "ActionCharacterRec is nil")
 			}
+
 			if xrslt.ActionMonsterRec != nil {
 				require.NotNil(t, rslt.ActionMonsterRec, "ActionMonsterRec is not nil")
 				require.Equal(t, xrslt.ActionMonsterRec.Name, rslt.ActionMonsterRec.Name, "ActionMonsterRec.Name equals expected")
@@ -375,28 +565,50 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 
 				require.Equal(t, xrslt.ActionMonsterRec.Health, rslt.ActionMonsterRec.Health, "ActionMonsterRec.Health equals expected")
 				require.Equal(t, xrslt.ActionMonsterRec.Fatigue, rslt.ActionMonsterRec.Fatigue, "ActionMonsterRec.Fatigue equals expected")
+			} else {
+				require.Nil(t, rslt.ActionMonsterRec, "ActionMonsterRec is nil")
 			}
+
 			if xrslt.EquippedActionObjectRec != nil {
 				require.NotNil(t, rslt.EquippedActionObjectRec, "EquippedActionObjectRec is not nil")
 				require.Equal(t, xrslt.EquippedActionObjectRec.Name, rslt.EquippedActionObjectRec.Name, "EquippedActionObjectRec.Name equals expected")
 				require.Equal(t, xrslt.EquippedActionObjectRec.Description, rslt.EquippedActionObjectRec.Description, "EquippedActionObjectRec.Description equals expected")
 				require.Equal(t, xrslt.EquippedActionObjectRec.IsStashed, rslt.EquippedActionObjectRec.IsStashed, "EquippedActionObjectRec.IsStashed equals expected")
 				require.Equal(t, xrslt.EquippedActionObjectRec.IsEquipped, rslt.EquippedActionObjectRec.IsEquipped, "EquippedActionObjectRec.IsEquipped equals expected")
+			} else {
+				require.Nil(t, rslt.EquippedActionObjectRec, "EquippedActionObjectRec is nil")
 			}
+
 			if xrslt.StashedActionObjectRec != nil {
 				require.NotNil(t, rslt.StashedActionObjectRec, "StashedActionObjectRec is not nil")
 				require.Equal(t, xrslt.StashedActionObjectRec.Name, rslt.StashedActionObjectRec.Name, "StashedActionObjectRec.Name equals expected")
 				require.Equal(t, xrslt.StashedActionObjectRec.Description, rslt.StashedActionObjectRec.Description, "StashedActionObjectRec.Description equals expected")
 				require.Equal(t, xrslt.StashedActionObjectRec.IsStashed, rslt.StashedActionObjectRec.IsStashed, "StashedActionObjectRec.IsStashed equals expected")
-				require.Equal(t, xrslt.StashedActionObjectRec.IsStashed, rslt.StashedActionObjectRec.IsStashed, "StashedActionObjectRec.IsEquipped equals expected")
+				require.Equal(t, xrslt.StashedActionObjectRec.IsEquipped, rslt.StashedActionObjectRec.IsEquipped, "StashedActionObjectRec.IsEquipped equals expected")
+			} else {
+				require.Nil(t, rslt.StashedActionObjectRec, "StashedActionObjectRec is nil")
 			}
+
+			if xrslt.DroppedActionObjectRec != nil {
+				require.NotNil(t, rslt.DroppedActionObjectRec, "DroppedActionObjectRec is not nil")
+				require.Equal(t, xrslt.DroppedActionObjectRec.Name, rslt.DroppedActionObjectRec.Name, "DroppedActionObjectRec.Name equals expected")
+				require.Equal(t, xrslt.DroppedActionObjectRec.Description, rslt.DroppedActionObjectRec.Description, "DroppedActionObjectRec.Description equals expected")
+				require.Equal(t, xrslt.DroppedActionObjectRec.IsStashed, rslt.DroppedActionObjectRec.IsStashed, "DroppedActionObjectRec.IsStashed equals expected")
+				require.Equal(t, xrslt.DroppedActionObjectRec.IsEquipped, rslt.DroppedActionObjectRec.IsEquipped, "DroppedActionObjectRec.IsEquipped equals expected")
+			} else {
+				require.Nil(t, rslt.DroppedActionObjectRec, "DroppedActionObjectRec is nil")
+			}
+
 			if xrslt.TargetActionObjectRec != nil {
 				require.NotNil(t, rslt.TargetActionObjectRec, "TargetActionObjectRec is not nil")
 				require.Equal(t, xrslt.TargetActionObjectRec.Name, rslt.TargetActionObjectRec.Name, "TargetActionObjectRec.Name equals expected")
 				require.Equal(t, xrslt.TargetActionObjectRec.Description, rslt.TargetActionObjectRec.Description, "TargetActionObjectRec.Description equals expected")
 				require.Equal(t, xrslt.TargetActionObjectRec.IsStashed, rslt.TargetActionObjectRec.IsStashed, "TargetActionObjectRec.IsStashed equals expected")
 				require.Equal(t, xrslt.TargetActionObjectRec.IsEquipped, rslt.TargetActionObjectRec.IsEquipped, "TargetActionObjectRec.IsEquipped equals expected")
+			} else {
+				require.Nil(t, rslt.TargetActionObjectRec, "TargetActionObjectRec is nil")
 			}
+
 			if xrslt.TargetActionCharacterRec != nil {
 				require.NotNil(t, rslt.TargetActionCharacterRec, "TargetActionCharacterRec is not nil")
 				require.Equal(t, xrslt.TargetActionCharacterRec.Name, rslt.TargetActionCharacterRec.Name, "TargetActionCharacterRec.Name equals expected")
@@ -410,7 +622,10 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 
 				require.Equal(t, xrslt.TargetActionCharacterRec.Health, rslt.TargetActionCharacterRec.Health, "TargetActionCharacterRec.Health equals expected")
 				require.Equal(t, xrslt.TargetActionCharacterRec.Fatigue, rslt.TargetActionCharacterRec.Fatigue, "TargetActionCharacterRec.Fatigue equals expected")
+			} else {
+				require.Nil(t, rslt.TargetActionCharacterRec, "TargetActionCharacterRec is nil")
 			}
+
 			if xrslt.TargetActionMonsterRec != nil {
 				require.NotNil(t, rslt.TargetActionMonsterRec, "TargetActionMonsterRec is not nil")
 				require.Equal(t, xrslt.TargetActionMonsterRec.Name, rslt.TargetActionMonsterRec.Name, "TargetActionMonsterRec.Name equals expected")
@@ -424,13 +639,18 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 
 				require.Equal(t, xrslt.TargetActionMonsterRec.Health, rslt.TargetActionMonsterRec.Health, "TargetActionMonsterRec.Health equals expected")
 				require.Equal(t, xrslt.TargetActionMonsterRec.Fatigue, rslt.TargetActionMonsterRec.Fatigue, "TargetActionMonsterRec.Fatigue equals expected")
+			} else {
+				require.Nil(t, rslt.TargetActionMonsterRec, "TargetActionMonsterRec is nil")
 			}
+
 			if xrslt.TargetLocation != nil {
 				require.NotNil(t, rslt.TargetLocation, "TargetLocation is not nil")
 				if xrslt.TargetLocation.LocationRec != nil {
 					require.NotNil(t, rslt.TargetLocation.LocationRec, "TargetLocation.LocationRec is not nil")
 					require.Equal(t, xrslt.TargetLocation.LocationRec.Name, rslt.TargetLocation.LocationRec.Name, "TargetLocation.LocationRec equals expected")
 				}
+			} else {
+				require.Nil(t, rslt.TargetLocation, "TargetLocation is nil")
 			}
 		}()
 	}

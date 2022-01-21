@@ -25,8 +25,8 @@ func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.Dunge
 		"move":  m.resolveMoveAction,
 		"look":  m.resolveLookAction,
 		"stash": m.resolveStashAction,
-		// "equip": m.resolveEquipAction,
-		// "drop":  m.resolveDropAction,
+		"equip": m.resolveEquipAction,
+		"drop":  m.resolveDropAction,
 	}
 
 	resolveFunc, ok := resolveFuncs[resolved.Command]
@@ -193,7 +193,7 @@ func (m *Model) resolveStashAction(sentence string, dungeonCharacterRec *record.
 			// Find object equipped on character
 			dungeonObjectRecs, err := m.GetCharacterEquippedDungeonObjectRecs(dungeonCharacterRec.ID)
 			if err != nil {
-				m.Log.Warn("Failed to resolve sentence object >%v<", err)
+				m.Log.Warn("Failed to get character equipped objects >%v<", err)
 				return nil, err
 			}
 			dungeonObjectRec, err = m.getObjectFromSentence(sentence, dungeonObjectRecs)
@@ -214,6 +214,97 @@ func (m *Model) resolveStashAction(sentence string, dungeonCharacterRec *record.
 		ResolvedCommand:                "stash",
 		ResolvedTargetDungeonObjectID:  store.NullString(stashedDungeonObjectID),
 		ResolvedStashedDungeonObjectID: store.NullString(stashedDungeonObjectID),
+	}
+
+	return &dungeonActionRec, nil
+}
+
+func (m *Model) resolveEquipAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, locationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+
+	var equippedDungeonObjectID string
+
+	if sentence != "" {
+		// Find object in room
+		dungeonObjectRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectRecs)
+		if err != nil {
+			m.Log.Warn("Failed to get location object from sentence >%v<", err)
+			return nil, err
+		}
+		if dungeonObjectRec == nil {
+			// Find object stashed on character
+			dungeonObjectRecs, err := m.GetCharacterStashedDungeonObjectRecs(dungeonCharacterRec.ID)
+			if err != nil {
+				m.Log.Warn("Failed to get character stashed objects >%v<", err)
+				return nil, err
+			}
+			dungeonObjectRec, err = m.getObjectFromSentence(sentence, dungeonObjectRecs)
+			if err != nil {
+				m.Log.Warn("Failed to get character object from sentence >%v<", err)
+				return nil, err
+			}
+		}
+		if dungeonObjectRec != nil {
+			equippedDungeonObjectID = dungeonObjectRec.ID
+		}
+	}
+
+	dungeonActionRec := record.DungeonAction{
+		DungeonID:                       dungeonCharacterRec.DungeonID,
+		DungeonLocationID:               dungeonCharacterRec.DungeonLocationID,
+		DungeonCharacterID:              store.NullString(dungeonCharacterRec.ID),
+		ResolvedCommand:                 "equip",
+		ResolvedTargetDungeonObjectID:   store.NullString(equippedDungeonObjectID),
+		ResolvedEquippedDungeonObjectID: store.NullString(equippedDungeonObjectID),
+	}
+
+	return &dungeonActionRec, nil
+}
+
+func (m *Model) resolveDropAction(sentence string, dungeonCharacterRec *record.DungeonCharacter, locationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error) {
+
+	var droppedDungeonObjectID string
+
+	if sentence != "" {
+		// Find object stashed on character
+		m.Log.Debug("Finding object stashed on character")
+		dungeonObjectRecs, err := m.GetCharacterStashedDungeonObjectRecs(dungeonCharacterRec.ID)
+		if err != nil {
+			m.Log.Warn("Failed to get character stashed objects >%v<", err)
+			return nil, err
+		}
+		dungeonObjectRec, err := m.getObjectFromSentence(sentence, dungeonObjectRecs)
+		if err != nil {
+			m.Log.Warn("Failed to get character object from sentence >%v<", err)
+			return nil, err
+		}
+		m.Log.Debug("Found object >%v< stashed on character", dungeonObjectRec)
+		if dungeonObjectRec == nil {
+			// Find object equipped on character
+			m.Log.Debug("Finding object equipped on character")
+			dungeonObjectRecs, err := m.GetCharacterEquippedDungeonObjectRecs(dungeonCharacterRec.ID)
+			if err != nil {
+				m.Log.Warn("Failed to get character equipped objects >%v<", err)
+				return nil, err
+			}
+			dungeonObjectRec, err = m.getObjectFromSentence(sentence, dungeonObjectRecs)
+			if err != nil {
+				m.Log.Warn("Failed to get character object from sentence >%v<", err)
+				return nil, err
+			}
+			m.Log.Debug("Found object >%v< equipped on character", dungeonObjectRec)
+		}
+		if dungeonObjectRec != nil {
+			droppedDungeonObjectID = dungeonObjectRec.ID
+		}
+	}
+
+	dungeonActionRec := record.DungeonAction{
+		DungeonID:                      dungeonCharacterRec.DungeonID,
+		DungeonLocationID:              dungeonCharacterRec.DungeonLocationID,
+		DungeonCharacterID:             store.NullString(dungeonCharacterRec.ID),
+		ResolvedCommand:                "drop",
+		ResolvedTargetDungeonObjectID:  store.NullString(droppedDungeonObjectID),
+		ResolvedDroppedDungeonObjectID: store.NullString(droppedDungeonObjectID),
 	}
 
 	return &dungeonActionRec, nil

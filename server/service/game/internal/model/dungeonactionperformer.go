@@ -17,6 +17,8 @@ func (m *Model) performDungeonCharacterAction(
 		"move":  m.performDungeonActionMove,
 		"look":  m.performDungeonActionLook,
 		"stash": m.performDungeonActionStash,
+		"equip": m.performDungeonActionEquip,
+		"drop":  m.performDungeonActionDrop,
 	}
 
 	actionFunc, ok := actionFuncs[dungeonActionRec.ResolvedCommand]
@@ -114,6 +116,7 @@ func (m *Model) performDungeonActionStash(
 		dungeonObjectRec.DungeonLocationID = sql.NullString{}
 		dungeonObjectRec.DungeonCharacterID = dungeonActionRec.DungeonCharacterID
 		dungeonObjectRec.IsStashed = true
+		dungeonObjectRec.IsEquipped = false
 
 		err = m.UpdateDungeonObjectRec(dungeonObjectRec)
 		if err != nil {
@@ -124,6 +127,88 @@ func (m *Model) performDungeonActionStash(
 	} else if dungeonActionRec.DungeonMonsterID.Valid {
 		// Monster stash object
 		return nil, fmt.Errorf("monsters stashing objects is currently not supported")
+	}
+
+	return dungeonActionRec, nil
+}
+
+func (m *Model) performDungeonActionEquip(
+	dungeonCharacterRec *record.DungeonCharacter,
+	dungeonActionRec *record.DungeonAction,
+	dungeonLocationRecordSet *DungeonLocationRecordSet,
+) (*record.DungeonAction, error) {
+
+	if dungeonActionRec.DungeonCharacterID.Valid {
+		// Character equipe object
+		dungeonObjectID := dungeonActionRec.ResolvedEquippedDungeonObjectID.String
+		if dungeonObjectID == "" {
+			msg := "resolved equipped dungeon object ID is empty, cannot equipe object"
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+
+		dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonObjectID, true)
+		if err != nil {
+			m.Log.Warn("Failed getting dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		dungeonObjectRec.DungeonLocationID = sql.NullString{}
+		dungeonObjectRec.DungeonCharacterID = dungeonActionRec.DungeonCharacterID
+		dungeonObjectRec.IsEquipped = true
+		dungeonObjectRec.IsStashed = false
+
+		err = m.UpdateDungeonObjectRec(dungeonObjectRec)
+		if err != nil {
+			m.Log.Warn("Failed updating dungeon object record >%v<", err)
+			return nil, err
+		}
+
+	} else if dungeonActionRec.DungeonMonsterID.Valid {
+		// Monster equipe object
+		return nil, fmt.Errorf("monsters equipped objects is currently not supported")
+	}
+
+	return dungeonActionRec, nil
+}
+
+func (m *Model) performDungeonActionDrop(
+	dungeonCharacterRec *record.DungeonCharacter,
+	dungeonActionRec *record.DungeonAction,
+	dungeonLocationRecordSet *DungeonLocationRecordSet,
+) (*record.DungeonAction, error) {
+
+	if dungeonActionRec.DungeonCharacterID.Valid {
+		// Character drop object
+		dungeonObjectID := dungeonActionRec.ResolvedDroppedDungeonObjectID.String
+		if dungeonObjectID == "" {
+			msg := "resolved dropped dungeon object ID is empty, cannot drop object"
+			m.Log.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+
+		dungeonObjectRec, err := m.GetDungeonObjectRec(dungeonObjectID, true)
+		if err != nil {
+			m.Log.Warn("Failed getting dungeon object record >%v<", err)
+			return nil, err
+		}
+
+		dungeonObjectRec.DungeonLocationID = sql.NullString{String: dungeonActionRec.DungeonLocationID, Valid: true}
+		dungeonObjectRec.DungeonCharacterID = sql.NullString{}
+		dungeonObjectRec.IsStashed = false
+		dungeonObjectRec.IsEquipped = false
+
+		m.Log.Debug("Updating dropped object >%#v<", dungeonObjectRec)
+
+		err = m.UpdateDungeonObjectRec(dungeonObjectRec)
+		if err != nil {
+			m.Log.Warn("Failed updating dungeon object record >%v<", err)
+			return nil, err
+		}
+
+	} else if dungeonActionRec.DungeonMonsterID.Valid {
+		// Monster drop object
+		return nil, fmt.Errorf("monsters dropped objects is currently not supported")
 	}
 
 	return dungeonActionRec, nil
