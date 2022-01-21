@@ -607,14 +607,14 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							StashedObject: &schema.ObjectDetailedData{
 								Name:        data.DungeonObjectRecs[0].Name,
 								Description: data.DungeonObjectRecs[0].Description,
-								IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
-								IsStashed:   data.DungeonObjectRecs[0].IsStashed,
+								IsEquipped:  false,
+								IsStashed:   true,
 							},
 							TargetObject: &schema.ObjectDetailedData{
 								Name:        data.DungeonObjectRecs[0].Name,
 								Description: data.DungeonObjectRecs[0].Description,
-								IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
-								IsStashed:   data.DungeonObjectRecs[0].IsStashed,
+								IsEquipped:  false,
+								IsStashed:   true,
 							},
 							TargetCharacter: nil,
 							TargetMonster:   nil,
@@ -914,6 +914,11 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.StashedObject.Name, responseBody.Data[idx].StashedObject.Name, "Response stashed object name equals expected")
 						t.Logf("Checking stashed object description >%s< >%s<", expectData.StashedObject.Description, responseBody.Data[idx].StashedObject.Description)
 						require.Equal(t, expectData.StashedObject.Description, responseBody.Data[idx].StashedObject.Description, "Response stashed object description equals expected")
+
+						t.Logf("Checking stashed object is_equipped >%t< >%t<", expectData.StashedObject.IsEquipped, responseBody.Data[idx].StashedObject.IsEquipped)
+						require.Equal(t, expectData.StashedObject.IsEquipped, responseBody.Data[idx].StashedObject.IsEquipped, "Response stashed object is_equipped equals expected")
+						t.Logf("Checking stashed object is_stashed >%t< >%t<", expectData.StashedObject.IsStashed, responseBody.Data[idx].StashedObject.IsStashed)
+						require.Equal(t, expectData.StashedObject.IsStashed, responseBody.Data[idx].StashedObject.IsStashed, "Response stashed object is_stashed equals expected")
 					}
 
 					// Response equipped object
@@ -924,6 +929,11 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.EquippedObject.Name, responseBody.Data[idx].EquippedObject.Name, "Response equipped object name equals expected")
 						t.Logf("Checking equipped object description >%s< >%s<", expectData.EquippedObject.Description, responseBody.Data[idx].EquippedObject.Description)
 						require.Equal(t, expectData.EquippedObject.Description, responseBody.Data[idx].EquippedObject.Description, "Response equipped object description equals expected")
+
+						t.Logf("Checking equipped object is_equipped >%t< >%t<", expectData.EquippedObject.IsEquipped, responseBody.Data[idx].EquippedObject.IsEquipped)
+						require.Equal(t, expectData.EquippedObject.IsEquipped, responseBody.Data[idx].EquippedObject.IsEquipped, "Response equipped object is_equipped equals expected")
+						t.Logf("Checking equipped object is_stashed >%t< >%t<", expectData.EquippedObject.IsStashed, responseBody.Data[idx].EquippedObject.IsStashed)
+						require.Equal(t, expectData.EquippedObject.IsStashed, responseBody.Data[idx].EquippedObject.IsStashed, "Response equipped object is_stashed equals expected")
 					}
 				}
 			}

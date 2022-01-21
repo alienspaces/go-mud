@@ -176,6 +176,8 @@ func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.Dungeo
 	return &schema.ObjectDetailedData{
 		Name:        dungeonObjectRec.Name,
 		Description: dungeonObjectRec.Description,
+		IsEquipped:  dungeonObjectRec.IsEquipped,
+		IsStashed:   dungeonObjectRec.IsStashed,
 	}, nil
 }
 

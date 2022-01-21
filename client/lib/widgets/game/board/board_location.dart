@@ -108,6 +108,15 @@ class BoardLocationWidget extends StatelessWidget {
                 ),
               );
             }
+          } else if (['stash', 'equip', 'drop']
+              .contains(dungeonActionRecord.command)) {
+            widgets.add(
+              GameLocationGridWidget(
+                key: UniqueKey(),
+                action: state.action,
+                locationData: state.current.location,
+              ),
+            );
           }
         }
 
