@@ -28,6 +28,7 @@ class DungeonActionRecord extends Equatable {
   final MonsterDetailedData? monster;
   final ObjectDetailedData? equippedObject;
   final ObjectDetailedData? stashedObject;
+  final ObjectDetailedData? droppedObject;
   final ObjectDetailedData? targetObject;
   final CharacterDetailedData? targetCharacter;
   final MonsterDetailedData? targetMonster;
@@ -42,6 +43,7 @@ class DungeonActionRecord extends Equatable {
     required this.monster,
     required this.equippedObject,
     required this.stashedObject,
+    required this.droppedObject,
     required this.targetObject,
     required this.targetCharacter,
     required this.targetMonster,
@@ -71,7 +73,7 @@ class DungeonActionRecord extends Equatable {
           locationCharacters.map((e) => CharacterData.fromJson(e)).toList();
     }
 
-// Location monsters
+    // Location monsters
     List<dynamic>? locationMonsters = location['monsters'];
     List<MonsterData>? locationMonsterData;
     if (locationMonsters != null) {
@@ -120,6 +122,13 @@ class DungeonActionRecord extends Equatable {
     ObjectDetailedData? stashedObjectData;
     if (stashedObject != null) {
       stashedObjectData = ObjectDetailedData.fromJson(stashedObject);
+    }
+
+    // Dropped object
+    Map<String, dynamic>? droppedObject = json['stashed_object'];
+    ObjectDetailedData? droppedObjectData;
+    if (droppedObject != null) {
+      droppedObjectData = ObjectDetailedData.fromJson(droppedObject);
     }
 
     // Target object
@@ -191,6 +200,7 @@ class DungeonActionRecord extends Equatable {
       monster: monsterData,
       equippedObject: equippedObjectData,
       stashedObject: stashedObjectData,
+      droppedObject: droppedObjectData,
       targetObject: targetObjectData,
       targetCharacter: targetCharacterData,
       targetMonster: targetMonsterData,

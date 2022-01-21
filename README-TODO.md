@@ -8,7 +8,8 @@
 
 ## Now
 
-- Client: Stash, equip and drop object action support
+- Client: Display equipped items
+- Client: Display stashed items
 
 ## Next
 
