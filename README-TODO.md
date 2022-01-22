@@ -24,4 +24,6 @@
 - Server: Implement 2 second turns
 - Client: Implement 2 second progress bar and retries
 - Server: Implement monster movement
+- Server: Object effects
+- Server: Spells and spell effects
 - All: Docker Compose
