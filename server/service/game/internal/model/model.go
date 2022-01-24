@@ -13,7 +13,9 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonaction"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactioncharacter"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactioncharacterobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionmonster"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionmonsterobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoncharacter"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonlocation"
@@ -197,6 +199,18 @@ func (m *Model) DungeonActionCharacterRepository() *dungeonactioncharacter.Repos
 	return r.(*dungeonactioncharacter.Repository)
 }
 
+// DungeonActionCharacterObjectRepository -
+func (m *Model) DungeonActionCharacterObjectRepository() *dungeonactioncharacterobject.Repository {
+
+	r := m.Repositories[dungeonactioncharacterobject.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", dungeonactioncharacterobject.TableName)
+		return nil
+	}
+
+	return r.(*dungeonactioncharacterobject.Repository)
+}
+
 // DungeonActionMonsterRepository -
 func (m *Model) DungeonActionMonsterRepository() *dungeonactionmonster.Repository {
 
@@ -207,6 +221,18 @@ func (m *Model) DungeonActionMonsterRepository() *dungeonactionmonster.Repositor
 	}
 
 	return r.(*dungeonactionmonster.Repository)
+}
+
+// DungeonActionMonsterObjectRepository -
+func (m *Model) DungeonActionMonsterObjectRepository() *dungeonactionmonsterobject.Repository {
+
+	r := m.Repositories[dungeonactionmonsterobject.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", dungeonactionmonsterobject.TableName)
+		return nil
+	}
+
+	return r.(*dungeonactionmonsterobject.Repository)
 }
 
 // DungeonActionObjectRepository -

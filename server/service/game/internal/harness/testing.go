@@ -24,15 +24,17 @@ type Testing struct {
 
 // Data -
 type Data struct {
-	DungeonRecs                []*record.Dungeon
-	DungeonLocationRecs        []*record.DungeonLocation
-	DungeonCharacterRecs       []*record.DungeonCharacter
-	DungeonMonsterRecs         []*record.DungeonMonster
-	DungeonObjectRecs          []*record.DungeonObject
-	DungeonActionRecs          []*record.DungeonAction
-	DungeonActionCharacterRecs []*record.DungeonActionCharacter
-	DungeonActionMonsterRecs   []*record.DungeonActionMonster
-	DungeonActionObjectRecs    []*record.DungeonActionObject
+	DungeonRecs                      []*record.Dungeon
+	DungeonLocationRecs              []*record.DungeonLocation
+	DungeonCharacterRecs             []*record.DungeonCharacter
+	DungeonMonsterRecs               []*record.DungeonMonster
+	DungeonObjectRecs                []*record.DungeonObject
+	DungeonActionRecs                []*record.DungeonAction
+	DungeonActionCharacterRecs       []*record.DungeonActionCharacter
+	DungeonActionCharacterObjectRecs []*record.DungeonActionCharacterObject
+	DungeonActionMonsterRecs         []*record.DungeonActionMonster
+	DungeonActionMonsterObjectRecs   []*record.DungeonActionMonsterObject
+	DungeonActionObjectRecs          []*record.DungeonActionObject
 }
 
 // teardownData -

@@ -52,6 +52,12 @@ type LocationData struct {
 
 type CharacterData struct {
 	Name string `json:"name"`
+	// Health and fatigue is always assigned to show how wounded or
+	// tired a character at a location appears
+	Health         int `json:"health"`
+	Fatigue        int `json:"fatigue"`
+	CurrentHealth  int `json:"current_health"`
+	CurrentFatigue int `json:"current_fatigue"`
 }
 
 type CharacterDetailedData struct {
@@ -67,10 +73,23 @@ type CharacterDetailedData struct {
 	Fatigue             int    `json:"fatigue"`
 	CurrentHealth       int    `json:"current_health"`
 	CurrentFatigue      int    `json:"current_fatigue"`
+	// Equipped objects are always assigned for the character
+	// performing the action or a target character
+	EquippedObjects []ObjectData `json:"equipped_objects,omitempty"`
+	// Stashed objects are only assigned for the
+	// character performing the action
+	StashedObjects []ObjectData `json:"stashed_objects,omitempty"`
+	// TODO: Add effects currently applied
 }
 
 type MonsterData struct {
 	Name string `json:"name"`
+	// Health and fatigue is always assigned to show how wounded or
+	// tired a monster at a location appears
+	Health         int `json:"health"`
+	Fatigue        int `json:"fatigue"`
+	CurrentHealth  int `json:"current_health"`
+	CurrentFatigue int `json:"current_fatigue"`
 }
 
 type MonsterDetailedData struct {
@@ -86,6 +105,9 @@ type MonsterDetailedData struct {
 	Fatigue             int    `json:"fatigue"`
 	CurrentHealth       int    `json:"current_health"`
 	CurrentFatigue      int    `json:"current_fatigue"`
+	// Equipped objects are always assigned for a target monster
+	EquippedObjects []ObjectData `json:"equipped_objects,omitempty"`
+	// TODO: Add effects currently applied
 }
 
 type ObjectData struct {
@@ -97,4 +119,5 @@ type ObjectDetailedData struct {
 	Description string `json:"description"`
 	IsStashed   bool   `json:"is_stashed"`
 	IsEquipped  bool   `json:"is_equipped"`
+	// TODO: Add effects that are applied
 }

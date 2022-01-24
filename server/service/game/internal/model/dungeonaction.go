@@ -7,17 +7,35 @@ import (
 )
 
 type DungeonActionRecordSet struct {
-	ActionRec                *record.DungeonAction
-	ActionCharacterRec       *record.DungeonActionCharacter
-	ActionMonsterRec         *record.DungeonActionMonster
-	CurrentLocation          *DungeonActionLocationRecordSet
-	EquippedActionObjectRec  *record.DungeonActionObject
-	StashedActionObjectRec   *record.DungeonActionObject
-	DroppedActionObjectRec   *record.DungeonActionObject
-	TargetActionObjectRec    *record.DungeonActionObject
+	ActionRec *record.DungeonAction
+	// The character performing the action
+	ActionCharacterRec *record.DungeonActionCharacter
+	// The stashed and equipped objects of the character that is performing the action
+	ActionCharacterObjectRecs []*record.DungeonActionCharacterObject
+	// The monster performing the action
+	ActionMonsterRec *record.DungeonActionMonster
+	// The stashed and equipped objects of the monster performing the action
+	ActionMonsterObjectRecs []*record.DungeonActionMonsterObject
+	// The current location of the character or monster performing the action
+	CurrentLocation *DungeonActionLocationRecordSet
+	// The object that was equipped as a result of an action
+	EquippedActionObjectRec *record.DungeonActionObject
+	// The object that was stashed as a result of an action
+	StashedActionObjectRec *record.DungeonActionObject
+	// The object that was dropped as a result of an action
+	DroppedActionObjectRec *record.DungeonActionObject
+	// The object that the action is being performed on
+	TargetActionObjectRec *record.DungeonActionObject
+	// The character the action is being performed on
 	TargetActionCharacterRec *record.DungeonActionCharacter
-	TargetActionMonsterRec   *record.DungeonActionMonster
-	TargetLocation           *DungeonActionLocationRecordSet
+	// The equipped objects of the character the action is being performed on
+	TargetActionCharacterObjectRecs []*record.DungeonActionCharacterObject
+	// The monster the action is being performed on
+	TargetActionMonsterRec *record.DungeonActionMonster
+	// The equipped objects of the monster the action is being performed on
+	TargetActionMonsterObjectRecs []*record.DungeonActionMonsterObject
+	// The location where the action is being performed
+	TargetLocation *DungeonActionLocationRecordSet
 }
 
 type DungeonActionLocationRecordSet struct {
@@ -106,7 +124,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
-	// Create source dungeon action character
+	// Create dungeon action character record
 	dungeonActionCharacterRec := record.DungeonActionCharacter{
 		RecordType:          record.DungeonActionCharacterRecordTypeSource,
 		DungeonActionID:     dungeonActionRec.ID,
@@ -129,9 +147,39 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		return nil, err
 	}
 
+	// Create dungeon action character object records
+	sourceCharacterObjectRecs, err := m.GetCharacterObjectRecs(sourceCharacterRec.ID)
+	if err != nil {
+		m.Log.Warn("failed getting source character object records >%v<", err)
+		return nil, err
+	}
+
+	actionCharacterObjectRecs := []*record.DungeonActionCharacterObject{}
+
+	for _, sourceCharacterObjectRec := range sourceCharacterObjectRecs {
+		m.Log.Debug("Adding character object record >%v<", sourceCharacterObjectRec)
+		recordType := record.DungeonActionCharacterObjectRecordTypeEquipped
+		if sourceCharacterObjectRec.IsStashed {
+			recordType = record.DungeonActionCharacterObjectRecordTypeStashed
+		}
+		dungeonCharacterObjectRec := record.DungeonActionCharacterObject{
+			DungeonActionID:    dungeonActionRec.ID,
+			RecordType:         recordType,
+			DungeonCharacterID: sourceCharacterRec.ID,
+			DungeonObjectID:    sourceCharacterObjectRec.ID,
+		}
+		err := m.CreateDungeonActionCharacterObjectRec(&dungeonCharacterObjectRec)
+		if err != nil {
+			m.Log.Warn("failed creating source dungeon action character object record >%v<", err)
+			return nil, err
+		}
+		actionCharacterObjectRecs = append(actionCharacterObjectRecs, &dungeonCharacterObjectRec)
+	}
+
 	dungeonActionRecordSet := DungeonActionRecordSet{
-		ActionRec:          dungeonActionRec,
-		ActionCharacterRec: &dungeonActionCharacterRec,
+		ActionRec:                 dungeonActionRec,
+		ActionCharacterRec:        &dungeonActionCharacterRec,
+		ActionCharacterObjectRecs: actionCharacterObjectRecs,
 	}
 
 	// Get the updated current dungeon location record set
