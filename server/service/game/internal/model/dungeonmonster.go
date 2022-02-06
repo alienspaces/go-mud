@@ -7,7 +7,7 @@ import (
 // GetMonsterObjectRecs -
 func (m *Model) GetMonsterObjectRecs(monsterID string) ([]*record.DungeonObject, error) {
 
-	m.Log.Info("Getting monster ID >%s< object records", monsterID)
+	m.Log.Warn("Getting monster ID >%s< object records", monsterID)
 
 	r := m.DungeonObjectRepository()
 

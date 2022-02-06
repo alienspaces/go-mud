@@ -70,7 +70,7 @@ var DefaultDataConfig = DataConfig{
 			DungeonMonsterConfig: []DungeonMonsterConfig{
 				{
 					Record: record.DungeonMonster{
-						Name: "White Cat",
+						Name: "Grumpy Dwarf",
 					},
 					LocationName: "Cave Entrance",
 				},
@@ -116,11 +116,33 @@ var DefaultDataConfig = DataConfig{
 					},
 					CharacterName: "Barricade",
 				},
+				{
+					Record: record.DungeonObject{
+						Name:                "Bone Dagger",
+						Description:         "A bone dagger.",
+						DescriptionDetailed: "A bone dagger.",
+						IsEquipped:          true,
+					},
+					MonsterName: "Grumpy Dwarf",
+				},
+				{
+					Record: record.DungeonObject{
+						Name:                "Vial Of Ogre Blood",
+						Description:         "A large vial of ogre blood.",
+						DescriptionDetailed: "A large vial of ogre blood.",
+						IsStashed:           true,
+					},
+					MonsterName: "Grumpy Dwarf",
+				},
 			},
 			DungeonActionConfig: []DungeonActionConfig{
 				{
 					CharacterName: "Barricade",
 					Command:       "look north",
+				},
+				{
+					CharacterName: "Barricade",
+					Command:       "look grumpy dwarf",
 				},
 			},
 		},

@@ -41,7 +41,7 @@ func (m *Model) GetDungeonActionMonsterRec(recID string, forUpdate bool) (*recor
 // CreateDungeonActionMonsterRec -
 func (m *Model) CreateDungeonActionMonsterRec(rec *record.DungeonActionMonster) error {
 
-	m.Log.Debug("Creating dungeon action monster rec >%#v<", rec)
+	m.Log.Info("Creating dungeon action monster rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterRepository()
 

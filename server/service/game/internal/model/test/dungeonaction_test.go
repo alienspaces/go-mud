@@ -63,6 +63,18 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						Health:              data.DungeonCharacterRecs[0].Health,
 						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
+					ActionCharacterObjectRecs: []*record.DungeonActionCharacterObject{
+						{
+							RecordType:         record.DungeonActionCharacterObjectRecordTypeEquipped,
+							DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+							DungeonObjectID:    data.DungeonObjectRecs[2].ID,
+						},
+						{
+							RecordType:         record.DungeonActionCharacterObjectRecordTypeStashed,
+							DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+							DungeonObjectID:    data.DungeonObjectRecs[3].ID,
+						},
+					},
 					TargetLocation: &model.DungeonActionLocationRecordSet{
 						LocationRec: &record.DungeonLocation{
 							Name: data.DungeonLocationRecs[0].Name,
@@ -98,6 +110,18 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
 						Health:              data.DungeonCharacterRecs[0].Health,
 						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
+					},
+					ActionCharacterObjectRecs: []*record.DungeonActionCharacterObject{
+						{
+							RecordType:         record.DungeonActionCharacterObjectRecordTypeEquipped,
+							DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+							DungeonObjectID:    data.DungeonObjectRecs[2].ID,
+						},
+						{
+							RecordType:         record.DungeonActionCharacterObjectRecordTypeStashed,
+							DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+							DungeonObjectID:    data.DungeonObjectRecs[3].ID,
+						},
 					},
 					TargetLocation: &model.DungeonActionLocationRecordSet{
 						LocationRec: &record.DungeonLocation{
@@ -135,6 +159,18 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 						Health:              data.DungeonCharacterRecs[0].Health,
 						Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 					},
+					ActionCharacterObjectRecs: []*record.DungeonActionCharacterObject{
+						{
+							RecordType:         record.DungeonActionCharacterObjectRecordTypeEquipped,
+							DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+							DungeonObjectID:    data.DungeonObjectRecs[2].ID,
+						},
+						{
+							RecordType:         record.DungeonActionCharacterObjectRecordTypeStashed,
+							DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
+							DungeonObjectID:    data.DungeonObjectRecs[3].ID,
+						},
+					},
 					TargetActionObjectRec: &record.DungeonActionObject{
 						Name:        data.DungeonObjectRecs[0].Name,
 						Description: data.DungeonObjectRecs[0].Description,
@@ -153,7 +189,7 @@ func TestProcessDungeonCharacterAction(t *testing.T) {
 			dungeonCharacterID: func(data harness.Data) string {
 				return data.DungeonCharacterRecs[0].ID
 			},
-			sentence: "look white cat",
+			sentence: "look grumpy dwarf",
 			expectDungeonActionRecordSet: func(data harness.Data) *model.DungeonActionRecordSet {
 				return &model.DungeonActionRecordSet{
 					ActionRec: &record.DungeonAction{

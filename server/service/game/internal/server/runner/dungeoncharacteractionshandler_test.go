@@ -396,7 +396,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.DungeonActionRequest{
 						Data: schema.DungeonActionRequestData{
-							Sentence: "look white cat",
+							Sentence: "look Grumpy Dwarf",
 						},
 					}
 					return &res
@@ -790,7 +790,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		{
 			// Submit nothing
 			TestCase: TestCase{
-				Skip:              true,
+				Skip:              false,
 				Name:              "Submit nothing",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,

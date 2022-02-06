@@ -209,7 +209,7 @@ CREATE TABLE "dungeon_action_character_object" (
   "deleted_at"           timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_action_character_object_dungeon_action_id_fk" FOREIGN KEY (dungeon_action_id) REFERENCES dungeon_action(id),
   CONSTRAINT "dungeon_action_character_object_dungeon_character_id_fk" FOREIGN KEY (dungeon_character_id) REFERENCES dungeon_character(id),
-  CONSTRAINT "dungeon_action_character_object_dungeon_object_id_fk" FOREIGN KEY (dungeon_object_id) REFERENCES dungeon_location(id),
+  CONSTRAINT "dungeon_action_character_object_dungeon_object_id_fk" FOREIGN KEY (dungeon_object_id) REFERENCES dungeon_object(id),
   CONSTRAINT "dungeon_action_character_record_type_ck" CHECK (
     record_type = 'equipped' OR 
     record_type = 'stashed'
@@ -255,7 +255,7 @@ CREATE TABLE "dungeon_action_monster_object" (
   "deleted_at"         timestamp WITH TIME ZONE,
   CONSTRAINT "dungeon_action_monster_object_dungeon_action_id_fk" FOREIGN KEY (dungeon_action_id) REFERENCES dungeon_action(id),
   CONSTRAINT "dungeon_action_monster_object_dungeon_monster_id_fk" FOREIGN KEY (dungeon_monster_id) REFERENCES dungeon_monster(id),
-  CONSTRAINT "dungeon_action_monster_object_dungeon_object_id_fk" FOREIGN KEY (dungeon_object_id) REFERENCES dungeon_location(id),
+  CONSTRAINT "dungeon_action_monster_object_dungeon_object_id_fk" FOREIGN KEY (dungeon_object_id) REFERENCES dungeon_object(id),
   CONSTRAINT "dungeon_action_monster_record_type_ck" CHECK (
     record_type = 'equipped' OR 
     record_type = 'stashed'

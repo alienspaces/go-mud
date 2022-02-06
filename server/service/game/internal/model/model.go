@@ -98,12 +98,26 @@ func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.R
 	}
 	repositoryList = append(repositoryList, dungeonActionCharacterRepo)
 
+	dungeonActionCharacterObjectRepo, err := dungeonactioncharacterobject.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon action character object repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, dungeonActionCharacterObjectRepo)
+
 	dungeonActionMonsterRepo, err := dungeonactionmonster.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster repository >%v<", err)
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonActionMonsterRepo)
+
+	dungeonActionMonsterObjectRepo, err := dungeonactionmonsterobject.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon action monster object repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, dungeonActionMonsterObjectRepo)
 
 	dungeonActionObjectRepo, err := dungeonactionobject.NewRepository(m.Log, p, tx)
 	if err != nil {

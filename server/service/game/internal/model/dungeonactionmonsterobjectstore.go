@@ -10,7 +10,7 @@ import (
 // GetDungeonActionMonsterObjectRecs -
 func (m *Model) GetDungeonActionMonsterObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonActionMonsterObject, error) {
 
-	m.Log.Info("Getting dungeon action character records params >%s<", params)
+	m.Log.Info("Getting dungeon action monster object records params >%#v<", params)
 
 	r := m.DungeonActionMonsterObjectRepository()
 
@@ -20,7 +20,7 @@ func (m *Model) GetDungeonActionMonsterObjectRecs(params map[string]interface{},
 // GetDungeonActionMonsterObjectRec -
 func (m *Model) GetDungeonActionMonsterObjectRec(recID string, forUpdate bool) (*record.DungeonActionMonsterObject, error) {
 
-	m.Log.Info("Getting dungeon action character rec ID >%s<", recID)
+	m.Log.Info("Getting dungeon action monster object rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterObjectRepository()
 
@@ -41,7 +41,7 @@ func (m *Model) GetDungeonActionMonsterObjectRec(recID string, forUpdate bool) (
 // CreateDungeonActionMonsterObjectRec -
 func (m *Model) CreateDungeonActionMonsterObjectRec(rec *record.DungeonActionMonsterObject) error {
 
-	m.Log.Info("Creating dungeon action character rec >%#v<", rec)
+	m.Log.Info("Creating dungeon action monster object rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterObjectRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateDungeonActionMonsterObjectRec(rec *record.DungeonActionMon
 // UpdateDungeonActionMonsterObjectRec -
 func (m *Model) UpdateDungeonActionMonsterObjectRec(rec *record.DungeonActionMonsterObject) error {
 
-	m.Log.Info("Updating dungeon action character rec >%#v<", rec)
+	m.Log.Info("Updating dungeon action monster object rec >%#v<", rec)
 
 	r := m.DungeonActionMonsterObjectRepository()
 
@@ -73,7 +73,7 @@ func (m *Model) UpdateDungeonActionMonsterObjectRec(rec *record.DungeonActionMon
 // DeleteDungeonActionMonsterObjectRec -
 func (m *Model) DeleteDungeonActionMonsterObjectRec(recID string) error {
 
-	m.Log.Info("Deleting dungeon action character rec ID >%s<", recID)
+	m.Log.Info("Deleting dungeon action monster object rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterObjectRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteDungeonActionMonsterObjectRec(recID string) error {
 // RemoveDungeonActionMonsterObjectRec -
 func (m *Model) RemoveDungeonActionMonsterObjectRec(recID string) error {
 
-	m.Log.Info("Removing dungeon action character rec ID >%s<", recID)
+	m.Log.Info("Removing dungeon action monster object rec ID >%s<", recID)
 
 	r := m.DungeonActionMonsterObjectRepository()
 

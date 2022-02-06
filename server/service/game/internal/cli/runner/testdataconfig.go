@@ -99,7 +99,7 @@ var testDataConfig = harness.DataConfig{
 						Record: repository.Record{
 							ID: "1e8179aa-fc2e-4f5a-abe1-e70a237739f5",
 						},
-						Name: "White Cat",
+						Name: "Grumpy Dwarf",
 					},
 					LocationName: "Cave Entrance",
 				},

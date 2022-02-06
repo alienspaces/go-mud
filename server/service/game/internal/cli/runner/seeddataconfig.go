@@ -63,7 +63,7 @@ var seedDataConfig = harness.DataConfig{
 			DungeonMonsterConfig: []harness.DungeonMonsterConfig{
 				{
 					Record: record.DungeonMonster{
-						Name: "White Cat",
+						Name: "Grumpy Dwarf",
 					},
 					LocationName: "Cave Entrance",
 				},
@@ -90,6 +90,24 @@ var seedDataConfig = harness.DataConfig{
 						DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
 					},
 					LocationName: "Cave Room",
+				},
+				{
+					Record: record.DungeonObject{
+						Name:                "Bone Dagger",
+						Description:         "A bone dagger.",
+						DescriptionDetailed: "A bone dagger.",
+						IsEquipped:          true,
+					},
+					MonsterName: "Grumpy Dwarf",
+				},
+				{
+					Record: record.DungeonObject{
+						Name:                "Vial Of Ogre Blood",
+						Description:         "A large vial of ogre blood.",
+						DescriptionDetailed: "A large vial of ogre blood.",
+						IsStashed:           true,
+					},
+					MonsterName: "Grumpy Dwarf",
 				},
 			},
 		},
