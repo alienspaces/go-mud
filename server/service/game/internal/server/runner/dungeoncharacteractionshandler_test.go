@@ -891,9 +891,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					t.Logf("Checking object count >%d< >%d<", len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects))
 					require.Equal(t, len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects), "Response objects count equals expected")
 					if len(expectData.Location.Objects) > 0 {
-						for oIdx, object := range expectData.Location.Objects {
-							t.Logf("Checking object name >%s< >%s<", object.Name, responseBody.Data[idx].Location.Objects[oIdx].Name)
-							require.Equal(t, object.Name, responseBody.Data[idx].Location.Objects[oIdx].Name, "Object name equals expected")
+						for _, eObject := range expectData.Location.Objects {
+							found := false
+							for _, rObject := range responseBody.Data[idx].Location.Objects {
+								t.Logf("Checking expected object name >%s< response object name >%s<", eObject.Name, rObject.Name)
+								if eObject.Name == rObject.Name {
+									found = true
+								}
+							}
+							require.True(t, found, "Object name equals expected")
 						}
 					}
 					if len(expectData.Location.Objects) == 0 {
