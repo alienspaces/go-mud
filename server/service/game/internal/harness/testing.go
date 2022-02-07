@@ -181,7 +181,7 @@ func (t *Testing) CreateData() error {
 
 		// Create object records
 		for _, dungeonObjectConfig := range dungeonConfig.DungeonObjectConfig {
-			t.Log.Warn("Creating dungeon object >%#v<", dungeonObjectConfig)
+			t.Log.Info("Creating dungeon object >%#v<", dungeonObjectConfig)
 			dungeonObjectRec, err := t.createDungeonObjectRec(dungeonRec, dungeonObjectConfig)
 			if err != nil {
 				t.Log.Warn("Failed creating dungeon object record >%v<", err)

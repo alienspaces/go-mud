@@ -42,7 +42,7 @@ func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.Dunge
 		return nil, err
 	}
 
-	m.Log.Warn("Resolved dungeon action rec >%#v<", dungeonActionRec)
+	m.Log.Info("Resolved dungeon action rec >%#v<", dungeonActionRec)
 
 	return dungeonActionRec, nil
 }
