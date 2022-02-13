@@ -68,12 +68,14 @@ var DefaultDataConfig = DataConfig{
 				},
 			},
 			DungeonMonsterConfig: []DungeonMonsterConfig{
+				// 0
 				{
 					Record: record.DungeonMonster{
 						Name: "Grumpy Dwarf",
 					},
 					LocationName: "Cave Entrance",
 				},
+				// 1
 				{
 					Record: record.DungeonMonster{
 						Name: "Angry Goblin",
@@ -82,6 +84,7 @@ var DefaultDataConfig = DataConfig{
 				},
 			},
 			DungeonObjectConfig: []DungeonObjectConfig{
+				// 0
 				{
 					Record: record.DungeonObject{
 						Name:                "Rusted Sword",
@@ -90,6 +93,7 @@ var DefaultDataConfig = DataConfig{
 					},
 					LocationName: "Cave Entrance",
 				},
+				// 1
 				{
 					Record: record.DungeonObject{
 						Name:                "Silver Key",
@@ -98,6 +102,7 @@ var DefaultDataConfig = DataConfig{
 					},
 					LocationName: "Cave Room",
 				},
+				// 2
 				{
 					Record: record.DungeonObject{
 						Name:                "Dull Bronze Ring",
@@ -107,6 +112,7 @@ var DefaultDataConfig = DataConfig{
 					},
 					CharacterName: "Barricade",
 				},
+				// 3
 				{
 					Record: record.DungeonObject{
 						Name:                "Blood Stained Pouch",
@@ -116,6 +122,7 @@ var DefaultDataConfig = DataConfig{
 					},
 					CharacterName: "Barricade",
 				},
+				// 4
 				{
 					Record: record.DungeonObject{
 						Name:                "Bone Dagger",
@@ -125,6 +132,7 @@ var DefaultDataConfig = DataConfig{
 					},
 					MonsterName: "Grumpy Dwarf",
 				},
+				// 5
 				{
 					Record: record.DungeonObject{
 						Name:                "Vial Of Ogre Blood",

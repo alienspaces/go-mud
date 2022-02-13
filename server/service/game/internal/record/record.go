@@ -128,16 +128,13 @@ type DungeonActionCharacter struct {
 	repository.Record
 }
 
-const (
-	DungeonActionCharacterObjectRecordTypeEquipped string = "equipped"
-	DungeonActionCharacterObjectRecordTypeStashed  string = "stashed"
-)
-
 type DungeonActionCharacterObject struct {
-	RecordType         string `db:"record_type"`
 	DungeonActionID    string `db:"dungeon_action_id"`
 	DungeonCharacterID string `db:"dungeon_character_id"`
 	DungeonObjectID    string `db:"dungeon_object_id"`
+	Name               string `db:"name"`
+	IsStashed          bool   `db:"is_stashed"`
+	IsEquipped         bool   `db:"is_equipped"`
 	repository.Record
 }
 
@@ -166,16 +163,13 @@ type DungeonActionMonster struct {
 	repository.Record
 }
 
-const (
-	DungeonActionMonsterObjectRecordTypeEquipped string = "equipped"
-	DungeonActionMonsterObjectRecordTypeStashed  string = "stashed"
-)
-
 type DungeonActionMonsterObject struct {
-	RecordType       string `db:"record_type"`
 	DungeonActionID  string `db:"dungeon_action_id"`
 	DungeonMonsterID string `db:"dungeon_monster_id"`
 	DungeonObjectID  string `db:"dungeon_object_id"`
+	Name             string `db:"name"`
+	IsStashed        bool   `db:"is_stashed"`
+	IsEquipped       bool   `db:"is_equipped"`
 	repository.Record
 }
 

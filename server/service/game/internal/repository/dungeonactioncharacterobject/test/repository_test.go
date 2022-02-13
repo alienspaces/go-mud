@@ -38,10 +38,12 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.DungeonActionCharacterObject {
 				return &record.DungeonActionCharacterObject{
-					RecordType:         record.DungeonActionCharacterObjectRecordTypeEquipped,
 					DungeonActionID:    data.DungeonActionRecs[0].ID,
 					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
 					DungeonObjectID:    data.DungeonObjectRecs[0].ID,
+					Name:               data.DungeonObjectRecs[0].Name,
+					IsEquipped:         true,
+					IsStashed:          false,
 				}
 			},
 			err: false,
@@ -50,10 +52,12 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.DungeonActionCharacterObject {
 				rec := &record.DungeonActionCharacterObject{
-					RecordType:         record.DungeonActionCharacterObjectRecordTypeEquipped,
 					DungeonActionID:    data.DungeonActionRecs[0].ID,
 					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
 					DungeonObjectID:    data.DungeonObjectRecs[0].ID,
+					Name:               data.DungeonObjectRecs[0].Name,
+					IsEquipped:         true,
+					IsStashed:          false,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

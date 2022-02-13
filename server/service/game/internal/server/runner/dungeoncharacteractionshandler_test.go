@@ -2,6 +2,7 @@ package runner
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"testing"
@@ -117,6 +118,16 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -201,6 +212,16 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -286,6 +307,16 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -366,6 +397,16 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
@@ -441,6 +482,16 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:         nil,
 							EquippedObject:  nil,
@@ -459,6 +510,11 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonMonsterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonMonsterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonMonsterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[4].Name,
+									},
+								},
 							},
 							TargetLocation: nil,
 						},
@@ -523,6 +579,16 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
@@ -540,6 +606,11 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							TargetMonster:  nil,
 							TargetLocation: nil,
@@ -601,6 +672,19 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
@@ -678,6 +762,19 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[0].Name,
+									},
+									{
+										Name: data.DungeonObjectRecs[2].Name,
+									},
+								},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster: nil,
 							EquippedObject: &schema.ObjectDetailedData{
@@ -762,6 +859,12 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
 								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
 								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+								EquippedObjects:     []schema.ObjectDetailedData{},
+								StashedObjects: []schema.ObjectDetailedData{
+									{
+										Name: data.DungeonObjectRecs[3].Name,
+									},
+								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
@@ -887,23 +990,20 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, 0, len(responseBody.Data[idx].Location.Monsters), "Location monsters length is 0")
 					}
 
-					// Current location objects
+					// Current location objects (any order)
 					t.Logf("Checking object count >%d< >%d<", len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects))
 					require.Equal(t, len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects), "Response objects count equals expected")
 					if len(expectData.Location.Objects) > 0 {
 						for _, eObject := range expectData.Location.Objects {
 							found := false
 							for _, rObject := range responseBody.Data[idx].Location.Objects {
-								t.Logf("Checking expected object name >%s< response object name >%s<", eObject.Name, rObject.Name)
+								t.Logf("Checking expected location object name >%s< response location object name >%s<", eObject.Name, rObject.Name)
 								if eObject.Name == rObject.Name {
 									found = true
 								}
 							}
-							require.True(t, found, "Object name equals expected")
+							require.True(t, found, fmt.Sprintf("Location object name >%s< found", eObject.Name))
 						}
-					}
-					if len(expectData.Location.Objects) == 0 {
-						require.Equal(t, 0, len(responseBody.Data[idx].Location.Objects), "Location objects length is 0")
 					}
 
 					// Target location
@@ -942,9 +1042,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						t.Logf("Checking object count >%d< >%d<", len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects))
 						require.Equal(t, len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects), "Response objects count equals expected")
 						if len(expectData.TargetLocation.Objects) > 0 {
-							for oIdx, object := range expectData.TargetLocation.Objects {
-								t.Logf("Checking object name >%s< >%s<", object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name)
-								require.Equal(t, object.Name, responseBody.Data[idx].TargetLocation.Objects[oIdx].Name, "Object name equals expected")
+							for _, eObject := range expectData.TargetLocation.Objects {
+								found := false
+								for _, tObject := range responseBody.Data[idx].TargetLocation.Objects {
+									t.Logf("Checking expected target location object name >%s< response target location object name >%s<", eObject.Name, tObject.Name)
+									if eObject.Name == tObject.Name {
+										found = true
+									}
+								}
+								require.True(t, found, fmt.Sprintf("Target location object name >%s< found", eObject.Name))
 							}
 						}
 					}
@@ -962,10 +1068,28 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						t.Logf("Checking action character intelligence >%d< >%d<", expectData.Character.Intelligence, responseBody.Data[idx].Character.Intelligence)
 						require.Equal(t, expectData.Character.Intelligence, responseBody.Data[idx].Character.Intelligence, "Response character intelligence equals expected")
 
+						t.Logf("Checking action character current strenth >%d< >%d<", expectData.Character.CurrentStrength, responseBody.Data[idx].Character.CurrentStrength)
+						require.Equal(t, expectData.Character.CurrentStrength, responseBody.Data[idx].Character.CurrentStrength, "Response character current strength equals expected")
+						t.Logf("Checking action character current dexterity >%d< >%d<", expectData.Character.CurrentDexterity, responseBody.Data[idx].Character.CurrentDexterity)
+						require.Equal(t, expectData.Character.CurrentDexterity, responseBody.Data[idx].Character.CurrentDexterity, "Response character current dexterity equals expected")
+						t.Logf("Checking action character current intelligence >%d< >%d<", expectData.Character.CurrentIntelligence, responseBody.Data[idx].Character.CurrentIntelligence)
+						require.Equal(t, expectData.Character.CurrentIntelligence, responseBody.Data[idx].Character.CurrentIntelligence, "Response character current intelligence equals expected")
+
 						t.Logf("Checking action character health >%d< >%d<", expectData.Character.Health, responseBody.Data[idx].Character.Health)
 						require.Equal(t, expectData.Character.Health, responseBody.Data[idx].Character.Health, "Response character health equals expected")
 						t.Logf("Checking action character fatigue >%d< >%d<", expectData.Character.Fatigue, responseBody.Data[idx].Character.Fatigue)
 						require.Equal(t, expectData.Character.Fatigue, responseBody.Data[idx].Character.Fatigue, "Response character fatigue equals expected")
+
+						t.Logf("Checking action character current health >%d< >%d<", expectData.Character.CurrentHealth, responseBody.Data[idx].Character.CurrentHealth)
+						require.Equal(t, expectData.Character.CurrentHealth, responseBody.Data[idx].Character.CurrentHealth, "Response character current health equals expected")
+						t.Logf("Checking action character current fatigue >%d< >%d<", expectData.Character.CurrentFatigue, responseBody.Data[idx].Character.CurrentFatigue)
+						require.Equal(t, expectData.Character.CurrentFatigue, responseBody.Data[idx].Character.CurrentFatigue, "Response character current fatigue equals expected")
+
+						t.Logf("Checking action character equipped objects >%d< >%d<", len(expectData.Character.EquippedObjects), len(responseBody.Data[idx].Character.EquippedObjects))
+						require.Equal(t, len(expectData.Character.EquippedObjects), len(responseBody.Data[idx].Character.EquippedObjects), "Response character equipped object count equals expected")
+
+						t.Logf("Checking action character stashed objects >%d< >%d<", len(expectData.Character.StashedObjects), len(responseBody.Data[idx].Character.StashedObjects))
+						require.Equal(t, len(expectData.Character.StashedObjects), len(responseBody.Data[idx].Character.StashedObjects), "Response character stashed object count equals expected")
 					}
 
 					// Response target character
@@ -983,11 +1107,11 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.TargetCharacter.Intelligence, responseBody.Data[idx].TargetCharacter.Intelligence, "Response target character intelligence equals expected")
 
 						t.Logf("Checking target character current strenth >%d< >%d<", expectData.TargetCharacter.CurrentStrength, responseBody.Data[idx].TargetCharacter.CurrentStrength)
-						require.Equal(t, expectData.TargetCharacter.CurrentStrength, responseBody.Data[idx].TargetCharacter.CurrentStrength, "Response character current strength equals expected")
+						require.Equal(t, expectData.TargetCharacter.CurrentStrength, responseBody.Data[idx].TargetCharacter.CurrentStrength, "Response target character current strength equals expected")
 						t.Logf("Checking target character current dexterity >%d< >%d<", expectData.TargetCharacter.CurrentDexterity, responseBody.Data[idx].TargetCharacter.CurrentDexterity)
-						require.Equal(t, expectData.TargetCharacter.CurrentDexterity, responseBody.Data[idx].TargetCharacter.CurrentDexterity, "Response character current dexterity equals expected")
+						require.Equal(t, expectData.TargetCharacter.CurrentDexterity, responseBody.Data[idx].TargetCharacter.CurrentDexterity, "Response target character current dexterity equals expected")
 						t.Logf("Checking target character current intelligence >%d< >%d<", expectData.TargetCharacter.CurrentIntelligence, responseBody.Data[idx].TargetCharacter.CurrentIntelligence)
-						require.Equal(t, expectData.TargetCharacter.CurrentIntelligence, responseBody.Data[idx].TargetCharacter.CurrentIntelligence, "Response character current intelligence equals expected")
+						require.Equal(t, expectData.TargetCharacter.CurrentIntelligence, responseBody.Data[idx].TargetCharacter.CurrentIntelligence, "Response target character current intelligence equals expected")
 
 						t.Logf("Checking target character health >%d< >%d<", expectData.TargetCharacter.Health, responseBody.Data[idx].TargetCharacter.Health)
 						require.Equal(t, expectData.TargetCharacter.Health, responseBody.Data[idx].TargetCharacter.Health, "Response target character health equals expected")
@@ -998,6 +1122,12 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 						require.Equal(t, expectData.TargetCharacter.CurrentHealth, responseBody.Data[idx].TargetCharacter.CurrentHealth, "Response target character current health equals expected")
 						t.Logf("Checking target character current fatigue >%d< >%d<", expectData.TargetCharacter.CurrentFatigue, responseBody.Data[idx].TargetCharacter.CurrentFatigue)
 						require.Equal(t, expectData.TargetCharacter.CurrentFatigue, responseBody.Data[idx].TargetCharacter.CurrentFatigue, "Response target character current fatigue equals expected")
+
+						t.Logf("Checking target character equipped objects >%d< >%d<", len(expectData.TargetCharacter.EquippedObjects), len(responseBody.Data[idx].TargetCharacter.EquippedObjects))
+						require.Equal(t, len(expectData.TargetCharacter.EquippedObjects), len(responseBody.Data[idx].TargetCharacter.EquippedObjects), "Response target character equipped object count equals expected")
+
+						t.Logf("Checking target character stashed objects >%d< >%d<", len(expectData.TargetCharacter.StashedObjects), len(responseBody.Data[idx].TargetCharacter.StashedObjects))
+						require.Equal(t, len(expectData.TargetCharacter.StashedObjects), len(responseBody.Data[idx].TargetCharacter.StashedObjects), "Response target character stashed object count equals expected")
 					}
 
 					// Response monster

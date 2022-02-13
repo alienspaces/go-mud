@@ -48,7 +48,7 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	l.Debug("Resulting action monster >%#v<", dungeonActionRecordSet.ActionMonsterRec)
 
 	// Response data
-	responseData, err := rnr.RecordToDungeonActionCharacterActionResponseData(*dungeonActionRecordSet)
+	responseData, err := rnr.ActionRecordSetToActionResponse(l, *dungeonActionRecordSet)
 	if err != nil {
 		rnr.WriteSystemError(l, w, err)
 		return
@@ -68,15 +68,21 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	}
 }
 
+// TODO: This format should be valid for representing any dungeon action
+
 // RecordToCharacterResponseData -
-func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActionRecordSet model.DungeonActionRecordSet) (*schema.DungeonActionResponseData, error) {
+func (rnr *Runner) ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet model.DungeonActionRecordSet) (*schema.DungeonActionResponseData, error) {
 
 	dungeonActionRec := dungeonActionRecordSet.ActionRec
 
 	var err error
 	var characterData *schema.CharacterDetailedData
 	if dungeonActionRecordSet.ActionCharacterRec != nil {
-		characterData, err = rnr.dungeonCharacterToResponseCharacter(dungeonActionRecordSet.ActionCharacterRec)
+		characterData, err = rnr.dungeonCharacterToResponseCharacter(
+			l,
+			dungeonActionRecordSet.ActionCharacterRec,
+			dungeonActionRecordSet.ActionCharacterObjectRecs,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -84,7 +90,11 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 
 	var monsterData *schema.MonsterDetailedData
 	if dungeonActionRecordSet.ActionMonsterRec != nil {
-		monsterData, err = rnr.dungeonMonsterToResponseMonster(dungeonActionRecordSet.ActionMonsterRec)
+		monsterData, err = rnr.dungeonMonsterToResponseMonster(
+			l,
+			dungeonActionRecordSet.ActionMonsterRec,
+			dungeonActionRecordSet.ActionMonsterObjectRecs,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -148,7 +158,11 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	// Target character
 	var targetCharacterData *schema.CharacterDetailedData
 	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
-		targetCharacterData, err = rnr.dungeonCharacterToResponseCharacter(dungeonActionRecordSet.TargetActionCharacterRec)
+		targetCharacterData, err = rnr.dungeonTargetCharacterToResponseTargetCharacter(
+			l,
+			dungeonActionRecordSet.TargetActionCharacterRec,
+			dungeonActionRecordSet.TargetActionCharacterObjectRecs,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -157,7 +171,11 @@ func (rnr *Runner) RecordToDungeonActionCharacterActionResponseData(dungeonActio
 	// Target monster
 	var targetMonsterData *schema.MonsterDetailedData
 	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
-		targetMonsterData, err = rnr.dungeonMonsterToResponseMonster(dungeonActionRecordSet.TargetActionMonsterRec)
+		targetMonsterData, err = rnr.dungeonTargetMonsterToResponseTargetMonster(
+			l,
+			dungeonActionRecordSet.TargetActionMonsterRec,
+			dungeonActionRecordSet.TargetActionMonsterObjectRecs,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -191,24 +209,94 @@ func (rnr *Runner) dungeonObjectToResponseObject(dungeonObjectRec *record.Dungeo
 	}, nil
 }
 
-func (rnr *Runner) dungeonCharacterToResponseCharacter(dungeonCharacterRec *record.DungeonActionCharacter) (*schema.CharacterDetailedData, error) {
-	return &schema.CharacterDetailedData{
-		Name:                dungeonCharacterRec.Name,
-		Strength:            dungeonCharacterRec.Strength,
-		Dexterity:           dungeonCharacterRec.Dexterity,
-		Intelligence:        dungeonCharacterRec.Intelligence,
-		CurrentStrength:     dungeonCharacterRec.CurrentStrength,
-		CurrentDexterity:    dungeonCharacterRec.CurrentDexterity,
-		CurrentIntelligence: dungeonCharacterRec.CurrentIntelligence,
-		Health:              dungeonCharacterRec.Health,
-		Fatigue:             dungeonCharacterRec.Fatigue,
-		CurrentHealth:       dungeonCharacterRec.CurrentHealth,
-		CurrentFatigue:      dungeonCharacterRec.CurrentFatigue,
-	}, nil
+func (rnr *Runner) dungeonCharacterToResponseCharacter(
+	l logger.Logger,
+	characterRec *record.DungeonActionCharacter,
+	objectRecs []*record.DungeonActionCharacterObject,
+) (*schema.CharacterDetailedData, error) {
+
+	data := &schema.CharacterDetailedData{
+		Name:                characterRec.Name,
+		Strength:            characterRec.Strength,
+		Dexterity:           characterRec.Dexterity,
+		Intelligence:        characterRec.Intelligence,
+		CurrentStrength:     characterRec.CurrentStrength,
+		CurrentDexterity:    characterRec.CurrentDexterity,
+		CurrentIntelligence: characterRec.CurrentIntelligence,
+		Health:              characterRec.Health,
+		Fatigue:             characterRec.Fatigue,
+		CurrentHealth:       characterRec.CurrentHealth,
+		CurrentFatigue:      characterRec.CurrentFatigue,
+		StashedObjects:      []schema.ObjectDetailedData{},
+		EquippedObjects:     []schema.ObjectDetailedData{},
+	}
+
+	for _, objectRec := range objectRecs {
+		if objectRec.IsEquipped {
+			l.Debug("Adding character equipped object >%#v<", objectRec)
+			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
+				Name:       objectRec.Name,
+				IsEquipped: objectRec.IsEquipped,
+				IsStashed:  objectRec.IsStashed,
+			})
+			continue
+		}
+		if objectRec.IsStashed {
+			l.Debug("Adding character stashed object >%#v<", objectRec)
+			data.StashedObjects = append(data.StashedObjects, schema.ObjectDetailedData{
+				Name:       objectRec.Name,
+				IsEquipped: objectRec.IsEquipped,
+				IsStashed:  objectRec.IsStashed,
+			})
+			continue
+		}
+	}
+
+	return data, nil
 }
 
-func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.DungeonActionMonster) (*schema.MonsterDetailedData, error) {
-	return &schema.MonsterDetailedData{
+func (rnr *Runner) dungeonTargetCharacterToResponseTargetCharacter(
+	l logger.Logger,
+	characterRec *record.DungeonActionCharacter,
+	objectRecs []*record.DungeonActionCharacterObject,
+) (*schema.CharacterDetailedData, error) {
+	data := &schema.CharacterDetailedData{
+		Name:                characterRec.Name,
+		Strength:            characterRec.Strength,
+		Dexterity:           characterRec.Dexterity,
+		Intelligence:        characterRec.Intelligence,
+		CurrentStrength:     characterRec.CurrentStrength,
+		CurrentDexterity:    characterRec.CurrentDexterity,
+		CurrentIntelligence: characterRec.CurrentIntelligence,
+		Health:              characterRec.Health,
+		Fatigue:             characterRec.Fatigue,
+		CurrentHealth:       characterRec.CurrentHealth,
+		CurrentFatigue:      characterRec.CurrentFatigue,
+		EquippedObjects:     []schema.ObjectDetailedData{},
+	}
+
+	for _, objectRec := range objectRecs {
+		if objectRec.IsEquipped {
+			l.Debug("Adding target character equipped object >%#v<", objectRec)
+			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
+				Name:       objectRec.Name,
+				IsEquipped: objectRec.IsEquipped,
+				IsStashed:  objectRec.IsStashed,
+			})
+			continue
+		}
+	}
+
+	return data, nil
+}
+
+func (rnr *Runner) dungeonMonsterToResponseMonster(
+	l logger.Logger,
+	dungeonMonsterRec *record.DungeonActionMonster,
+	objectRecs []*record.DungeonActionMonsterObject,
+) (*schema.MonsterDetailedData, error) {
+
+	data := &schema.MonsterDetailedData{
 		Name:                dungeonMonsterRec.Name,
 		Strength:            dungeonMonsterRec.Strength,
 		Dexterity:           dungeonMonsterRec.Dexterity,
@@ -220,7 +308,66 @@ func (rnr *Runner) dungeonMonsterToResponseMonster(dungeonMonsterRec *record.Dun
 		Fatigue:             dungeonMonsterRec.Fatigue,
 		CurrentHealth:       dungeonMonsterRec.CurrentHealth,
 		CurrentFatigue:      dungeonMonsterRec.CurrentFatigue,
-	}, nil
+		StashedObjects:      []schema.ObjectDetailedData{},
+		EquippedObjects:     []schema.ObjectDetailedData{},
+	}
+
+	for _, objectRec := range objectRecs {
+		if objectRec.IsEquipped {
+			l.Debug("Adding monster equipped object >%#v<", objectRec)
+			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
+				Name:       objectRec.Name,
+				IsEquipped: objectRec.IsEquipped,
+				IsStashed:  objectRec.IsStashed,
+			})
+			continue
+		}
+		if objectRec.IsStashed {
+			l.Debug("Adding monster stashed object >%#v<", objectRec)
+			data.StashedObjects = append(data.StashedObjects, schema.ObjectDetailedData{
+				Name:       objectRec.Name,
+				IsEquipped: objectRec.IsEquipped,
+				IsStashed:  objectRec.IsStashed,
+			})
+			continue
+		}
+	}
+
+	return data, nil
+}
+
+func (rnr *Runner) dungeonTargetMonsterToResponseTargetMonster(
+	l logger.Logger,
+	monsterRec *record.DungeonActionMonster,
+	objectRecs []*record.DungeonActionMonsterObject,
+) (*schema.MonsterDetailedData, error) {
+	data := &schema.MonsterDetailedData{
+		Name:                monsterRec.Name,
+		Strength:            monsterRec.Strength,
+		Dexterity:           monsterRec.Dexterity,
+		Intelligence:        monsterRec.Intelligence,
+		CurrentStrength:     monsterRec.CurrentStrength,
+		CurrentDexterity:    monsterRec.CurrentDexterity,
+		CurrentIntelligence: monsterRec.CurrentIntelligence,
+		Health:              monsterRec.Health,
+		Fatigue:             monsterRec.Fatigue,
+		CurrentHealth:       monsterRec.CurrentHealth,
+		CurrentFatigue:      monsterRec.CurrentFatigue,
+		EquippedObjects:     []schema.ObjectDetailedData{},
+	}
+
+	for _, objectRec := range objectRecs {
+		if objectRec.IsEquipped {
+			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
+				Name:       objectRec.Name,
+				IsEquipped: objectRec.IsEquipped,
+				IsStashed:  objectRec.IsStashed,
+			})
+			continue
+		}
+	}
+
+	return data, nil
 }
 
 // actionLocationToReponseLocation -

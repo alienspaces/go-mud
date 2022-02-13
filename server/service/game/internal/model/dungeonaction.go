@@ -139,6 +139,8 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		CurrentIntelligence: sourceCharacterRec.CurrentIntelligence,
 		Health:              sourceCharacterRec.Health,
 		Fatigue:             sourceCharacterRec.Fatigue,
+		CurrentHealth:       sourceCharacterRec.CurrentHealth,
+		CurrentFatigue:      sourceCharacterRec.CurrentFatigue,
 	}
 
 	err = m.CreateDungeonActionCharacterRec(&dungeonActionCharacterRec)
@@ -148,24 +150,22 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	}
 
 	// Create dungeon action character object records
-	characterObjectRecs, err := m.GetCharacterObjectRecs(sourceCharacterRec.ID)
+	objectRecs, err := m.GetCharacterObjectRecs(sourceCharacterRec.ID)
 	if err != nil {
 		m.Log.Warn("failed getting source character object records >%v<", err)
 		return nil, err
 	}
 
 	actionCharacterObjectRecs := []*record.DungeonActionCharacterObject{}
-	for _, characterObjectRec := range characterObjectRecs {
-		m.Log.Debug("Adding character object record >%v<", characterObjectRec)
-		recordType := record.DungeonActionCharacterObjectRecordTypeEquipped
-		if characterObjectRec.IsStashed {
-			recordType = record.DungeonActionCharacterObjectRecordTypeStashed
-		}
+	for _, objectRec := range objectRecs {
+		m.Log.Debug("Adding character action object record >%v<", objectRec)
 		dungeonCharacterObjectRec := record.DungeonActionCharacterObject{
 			DungeonActionID:    dungeonActionRec.ID,
-			RecordType:         recordType,
 			DungeonCharacterID: sourceCharacterRec.ID,
-			DungeonObjectID:    characterObjectRec.ID,
+			DungeonObjectID:    objectRec.ID,
+			Name:               objectRec.Name,
+			IsEquipped:         objectRec.IsEquipped,
+			IsStashed:          objectRec.IsStashed,
 		}
 		err := m.CreateDungeonActionCharacterObjectRec(&dungeonCharacterObjectRec)
 		if err != nil {
@@ -412,7 +412,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	// Create the target dungeon character action record
 	if dungeonActionRec.ResolvedTargetDungeonCharacterID.Valid {
 
-		m.Log.Warn("Resolved target character ID >%s<", dungeonActionRec.ResolvedTargetDungeonCharacterID.String)
+		m.Log.Info("Resolved target character ID >%s<", dungeonActionRec.ResolvedTargetDungeonCharacterID.String)
 
 		targetCharacterRec, err := m.GetDungeonCharacterRec(dungeonActionRec.ResolvedTargetDungeonCharacterID.String, false)
 		if err != nil {
@@ -446,24 +446,24 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		dungeonActionRecordSet.TargetActionCharacterRec = rec
 
 		// Create dungeon action character object records
-		characterObjectRecs, err := m.GetCharacterObjectRecs(targetCharacterRec.ID)
+		objectRecs, err := m.GetCharacterEquippedDungeonObjectRecs(targetCharacterRec.ID)
 		if err != nil {
 			m.Log.Warn("failed getting target character object records >%v<", err)
 			return nil, err
 		}
 
+		m.Log.Info("Adding >%d< target character object records", len(objectRecs))
+
 		targetCharacterObjectRecs := []*record.DungeonActionCharacterObject{}
-		for _, characterObjectRec := range characterObjectRecs {
-			m.Log.Info("Adding character object record >%v<", characterObjectRec)
-			recordType := record.DungeonActionCharacterObjectRecordTypeEquipped
-			if characterObjectRec.IsStashed {
-				recordType = record.DungeonActionCharacterObjectRecordTypeStashed
-			}
+		for _, objectRec := range objectRecs {
+			m.Log.Info("Adding target character object record >%v<", objectRecs)
 			dungeonCharacterObjectRec := record.DungeonActionCharacterObject{
 				DungeonActionID:    dungeonActionRec.ID,
-				RecordType:         recordType,
 				DungeonCharacterID: targetCharacterRec.ID,
-				DungeonObjectID:    characterObjectRec.ID,
+				DungeonObjectID:    objectRec.ID,
+				Name:               objectRec.Name,
+				IsEquipped:         objectRec.IsEquipped,
+				IsStashed:          objectRec.IsStashed,
 			}
 			err := m.CreateDungeonActionCharacterObjectRec(&dungeonCharacterObjectRec)
 			if err != nil {
@@ -478,7 +478,7 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 	// Create the target dungeon monster action record
 	if dungeonActionRec.ResolvedTargetDungeonMonsterID.Valid {
 
-		m.Log.Warn("Resolved target monster ID >%s<", dungeonActionRec.ResolvedTargetDungeonMonsterID.String)
+		m.Log.Info("Resolved target monster ID >%s<", dungeonActionRec.ResolvedTargetDungeonMonsterID.String)
 
 		targetMonsterRec, err := m.GetDungeonMonsterRec(dungeonActionRec.ResolvedTargetDungeonMonsterID.String, false)
 		if err != nil {
@@ -512,26 +512,24 @@ func (m *Model) ProcessDungeonCharacterAction(dungeonID string, dungeonCharacter
 		dungeonActionRecordSet.TargetActionMonsterRec = rec
 
 		// Create dungeon action monster object records
-		monsterObjectRecs, err := m.GetMonsterObjectRecs(targetMonsterRec.ID)
+		objectRecs, err := m.GetMonsterEquippedDungeonObjectRecs(targetMonsterRec.ID)
 		if err != nil {
 			m.Log.Warn("failed getting target monster object records >%v<", err)
 			return nil, err
 		}
 
-		m.Log.Info("Adding >%d< monster object records", len(monsterObjectRecs))
+		m.Log.Info("Adding >%d< target monster object records", len(objectRecs))
 
 		targetMonsterObjectRecs := []*record.DungeonActionMonsterObject{}
-		for _, monsterObjectRec := range monsterObjectRecs {
-			m.Log.Info("Adding monster object record >%v<", monsterObjectRec)
-			recordType := record.DungeonActionMonsterObjectRecordTypeEquipped
-			if monsterObjectRec.IsStashed {
-				recordType = record.DungeonActionMonsterObjectRecordTypeStashed
-			}
+		for _, objectRec := range objectRecs {
+			m.Log.Info("Adding target monster object record >%v<", objectRec)
 			dungeonMonsterObjectRec := record.DungeonActionMonsterObject{
 				DungeonActionID:  dungeonActionRec.ID,
-				RecordType:       recordType,
 				DungeonMonsterID: targetMonsterRec.ID,
-				DungeonObjectID:  monsterObjectRec.ID,
+				DungeonObjectID:  objectRec.ID,
+				Name:             objectRec.Name,
+				IsEquipped:       objectRec.IsEquipped,
+				IsStashed:        objectRec.IsStashed,
 			}
 			err := m.CreateDungeonActionMonsterObjectRec(&dungeonMonsterObjectRec)
 			if err != nil {

@@ -9,9 +9,6 @@ import (
 // ValidateDungeonActionMonsterObjectRec - validates creating and updating a game record
 func (m *Model) ValidateDungeonActionMonsterObjectRec(rec *record.DungeonActionMonsterObject) error {
 
-	if rec.RecordType == "" {
-		return fmt.Errorf("failed validation, RecordType is empty")
-	}
 	if rec.DungeonActionID == "" {
 		return fmt.Errorf("failed validation, DungeonActionID is empty")
 	}
@@ -20,6 +17,9 @@ func (m *Model) ValidateDungeonActionMonsterObjectRec(rec *record.DungeonActionM
 	}
 	if rec.DungeonObjectID == "" {
 		return fmt.Errorf("failed validation, DungeonObjectID is empty")
+	}
+	if rec.IsStashed == rec.IsEquipped {
+		return fmt.Errorf("failed validation, IsStashed equals IsEquipped")
 	}
 
 	return nil

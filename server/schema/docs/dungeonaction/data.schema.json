@@ -134,6 +134,24 @@
         },
         "fatigue": {
           "type": "integer"
+        },
+        "current_health": {
+          "type": "integer"
+        },
+        "current_fatigue": {
+          "type": "integer"
+        },
+        "equipped_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object_detailed"
+          }
+        },
+        "stashed_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object_detailed"
+          }
         }
       }
     },
@@ -188,8 +206,26 @@
         },
         "fatigue": {
           "type": "integer"
+        },
+        "current_health": {
+          "type": "integer"
+        },
+        "current_fatigue": {
+          "type": "integer"
+        },
+        "equipped_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object_detailed"
+          }
+        },
+        "stashed_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object_detailed"
+          }
         }
-     }
+      }
     },
     "object": {
       "type": "object",
