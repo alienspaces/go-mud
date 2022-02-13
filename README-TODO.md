@@ -8,8 +8,7 @@
 
 ## Now
 
-- Client: Display equipped items
-- Client: Display stashed items
+- Client: Support actions on equipped and stashed object
 
 ## Next
 
