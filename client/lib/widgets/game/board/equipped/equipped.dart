@@ -25,7 +25,19 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
       builder: (BuildContext context, DungeonActionState state) {
         log.info('Rendering equipped inventory');
 
-        return const Text('Equipped');
+        List<Widget> equippedWidgets = [];
+        if (state is DungeonActionStatePlaying &&
+            state.current.character != null &&
+            state.current.character?.equippedObjects != null) {
+          var equipped = state.current.character?.equippedObjects;
+          for (var i = 0; i < equipped!.length; i++) {
+            equippedWidgets.add(Text(equipped[i].name));
+          }
+        }
+        return GridView.count(
+          crossAxisCount: 4,
+          children: equippedWidgets,
+        );
       },
     );
   }

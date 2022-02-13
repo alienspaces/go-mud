@@ -25,7 +25,19 @@ class _GameStashedWidgetState extends State<GameStashedWidget> {
       builder: (BuildContext context, DungeonActionState state) {
         log.info('Rendering stashed inventory');
 
-        return const Text('Stashed');
+        List<Widget> stashedWidgets = [];
+        if (state is DungeonActionStatePlaying &&
+            state.current.character != null &&
+            state.current.character?.stashedObjects != null) {
+          var stashed = state.current.character?.stashedObjects;
+          for (var i = 0; i < stashed!.length; i++) {
+            stashedWidgets.add(Text(stashed[i].name));
+          }
+        }
+        return GridView.count(
+          crossAxisCount: 4,
+          children: stashedWidgets,
+        );
       },
     );
   }

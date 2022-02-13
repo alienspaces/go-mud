@@ -61,6 +61,15 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 		},
 	}
 
+	l.Info("Response >%#v<", res)
+	if len(res.Data) != 0 {
+		l.Info("Response character >%#v<", res.Data[0].Character)
+		l.Info("Response monster >%#v<", res.Data[0].Monster)
+		l.Info("Response target character >%#v<", res.Data[0].TargetCharacter)
+		l.Info("Response target monster >%#v<", res.Data[0].TargetMonster)
+		l.Info("Response target object >%#v<", res.Data[0].TargetObject)
+	}
+
 	err = rnr.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)

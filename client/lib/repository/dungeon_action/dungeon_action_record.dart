@@ -233,6 +233,7 @@ class LocationData {
   final List<CharacterData>? characters;
   final List<MonsterData>? monsters;
   final List<ObjectData>? objects;
+
   LocationData({
     required this.name,
     required this.description,
@@ -258,6 +259,7 @@ class ObjectDetailedData {
   final String description;
   final bool isStashed;
   final bool isEquipped;
+
   ObjectDetailedData(
       {required this.name,
       required this.description,
@@ -300,6 +302,8 @@ class CharacterDetailedData {
   final int fatigue;
   final int currentHealth;
   final int currentFatigue;
+  final List<ObjectDetailedData>? stashedObjects;
+  final List<ObjectDetailedData>? equippedObjects;
 
   CharacterDetailedData({
     required this.name,
@@ -313,9 +317,25 @@ class CharacterDetailedData {
     required this.fatigue,
     required this.currentHealth,
     required this.currentFatigue,
+    required this.stashedObjects,
+    required this.equippedObjects,
   });
 
   factory CharacterDetailedData.fromJson(Map<String, dynamic> json) {
+    List<dynamic>? stashedObjects = json['stashed_objects'];
+    List<ObjectDetailedData>? stashedObjectData;
+    if (stashedObjects != null) {
+      stashedObjectData =
+          stashedObjects.map((e) => ObjectDetailedData.fromJson(e)).toList();
+    }
+
+    List<dynamic>? equippedObjects = json['equipped_objects'];
+    List<ObjectDetailedData>? equippedObjectData;
+    if (equippedObjects != null) {
+      equippedObjectData =
+          equippedObjects.map((e) => ObjectDetailedData.fromJson(e)).toList();
+    }
+
     return CharacterDetailedData(
       name: json['name'],
       strength: json['strength'],
@@ -328,6 +348,8 @@ class CharacterDetailedData {
       fatigue: json['fatigue'],
       currentHealth: json['current_health'],
       currentFatigue: json['current_fatigue'],
+      stashedObjects: stashedObjectData,
+      equippedObjects: equippedObjectData,
     );
   }
 }
@@ -358,6 +380,8 @@ class MonsterDetailedData {
   final int fatigue;
   final int currentHealth;
   final int currentFatigue;
+  final List<ObjectDetailedData>? stashedObjects;
+  final List<ObjectDetailedData>? equippedObjects;
 
   MonsterDetailedData({
     required this.name,
@@ -371,9 +395,25 @@ class MonsterDetailedData {
     required this.fatigue,
     required this.currentHealth,
     required this.currentFatigue,
+    required this.stashedObjects,
+    required this.equippedObjects,
   });
 
   factory MonsterDetailedData.fromJson(Map<String, dynamic> json) {
+    List<dynamic>? stashedObjects = json['stashed_objects'];
+    List<ObjectDetailedData>? stashedObjectData;
+    if (stashedObjects != null) {
+      stashedObjectData =
+          stashedObjects.map((e) => ObjectDetailedData.fromJson(e)).toList();
+    }
+
+    List<dynamic>? equippedObjects = json['equipped_objects'];
+    List<ObjectDetailedData>? equippedObjectData;
+    if (equippedObjects != null) {
+      equippedObjectData =
+          equippedObjects.map((e) => ObjectDetailedData.fromJson(e)).toList();
+    }
+
     return MonsterDetailedData(
       name: json['name'],
       strength: json['strength'],
@@ -386,6 +426,8 @@ class MonsterDetailedData {
       fatigue: json['fatigue'],
       currentHealth: json['current_health'],
       currentFatigue: json['current_fatigue'],
+      stashedObjects: stashedObjectData,
+      equippedObjects: equippedObjectData,
     );
   }
 }
