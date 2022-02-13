@@ -8,7 +8,6 @@
 
 ## Now
 
-- Server: Add equipped (and stashed) objects to characters and monsters in action storage and action API responses
 - Client: Display equipped items
 - Client: Display stashed items
 
