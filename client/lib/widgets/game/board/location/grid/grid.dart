@@ -5,10 +5,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/style.dart';
+
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
+
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
+
+import 'package:go_mud_client/widgets/game/board/buttons/character_button.dart';
+import 'package:go_mud_client/widgets/game/board/buttons/monster_button.dart';
+import 'package:go_mud_client/widgets/game/board/buttons/object_button.dart';
 
 class GameLocationGridWidget extends StatefulWidget {
   final LocationData locationData;
@@ -151,50 +157,17 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
   // Character widget
   Widget _characterWidget(BuildContext context, String characterName) {
-    return Container(
-      margin: gameButtonMargin,
-      child: ElevatedButton(
-        onPressed: () {
-          final log = getLogger('GameLocationGridWidget');
-          log.info('Selecting character >$characterName<');
-          _selectTarget(context, characterName);
-        },
-        style: gameButtonStyle,
-        child: Text(characterName),
-      ),
-    );
+    return CharacterButtonWidget(characterName: characterName);
   }
 
   // Monster widget
   Widget _monsterWidget(BuildContext context, String monsterName) {
-    return Container(
-      margin: gameButtonMargin,
-      child: ElevatedButton(
-        onPressed: () {
-          final log = getLogger('GameLocationGridWidget');
-          log.info('Selecting monster >$monsterName<');
-          _selectTarget(context, monsterName);
-        },
-        style: gameButtonStyle,
-        child: Text(monsterName),
-      ),
-    );
+    return MonsterButtonWidget(monsterName: monsterName);
   }
 
   // Object widget
   Widget _objectWidget(BuildContext context, String objectName) {
-    return Container(
-      margin: gameButtonMargin,
-      child: ElevatedButton(
-        onPressed: () {
-          final log = getLogger('GameLocationGridWidget');
-          log.info('Selecting object >$objectName<');
-          _selectTarget(context, objectName);
-        },
-        style: gameButtonStyle,
-        child: Text(objectName),
-      ),
-    );
+    return ObjectButtonWidget(objectName: objectName);
   }
 
   // Empty widget

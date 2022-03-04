@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+
+import 'package:go_mud_client/widgets/game/board/buttons/object_button.dart';
 
 class GameStashedWidget extends StatefulWidget {
   const GameStashedWidget({Key? key}) : super(key: key);
@@ -31,7 +34,9 @@ class _GameStashedWidgetState extends State<GameStashedWidget> {
             state.current.character?.stashedObjects != null) {
           var stashed = state.current.character?.stashedObjects;
           for (var i = 0; i < stashed!.length; i++) {
-            stashedWidgets.add(Text(stashed[i].name));
+            stashedWidgets.add(
+              ObjectButtonWidget(objectName: stashed[i].name),
+            );
           }
         }
         return GridView.count(

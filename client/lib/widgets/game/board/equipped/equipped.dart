@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+
+import 'package:go_mud_client/widgets/game/board/buttons/object_button.dart';
 
 class GameEquippedWidget extends StatefulWidget {
   const GameEquippedWidget({Key? key}) : super(key: key);
@@ -31,7 +34,9 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
             state.current.character?.equippedObjects != null) {
           var equipped = state.current.character?.equippedObjects;
           for (var i = 0; i < equipped!.length; i++) {
-            equippedWidgets.add(Text(equipped[i].name));
+            equippedWidgets.add(
+              ObjectButtonWidget(objectName: equipped[i].name),
+            );
           }
         }
         return GridView.count(
