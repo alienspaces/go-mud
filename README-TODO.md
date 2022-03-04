@@ -8,14 +8,12 @@
 
 ## Now
 
-- Client: Support actions on equipped and stashed object
+- Client: Include character and monster equipped items when looking
 
 ## Next
 
 - Server: Provide narration in action responses
 - Client: Display narration from action responses
-- Server: Include character and monster equipped items when looking
-- Client: Include character and monster equipped items when looking
 
 ## Later
 
