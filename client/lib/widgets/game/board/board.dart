@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/style.dart';
-import 'package:go_mud_client/widgets/game/board/board_equipped.dart';
-import 'package:go_mud_client/widgets/game/board/board_stashed.dart';
-import 'package:go_mud_client/widgets/game/board/board_location.dart';
+
+import 'package:go_mud_client/widgets/game/board/equipped_board.dart';
+import 'package:go_mud_client/widgets/game/board/stashed_board.dart';
+import 'package:go_mud_client/widgets/game/board/location_board.dart';
 
 enum BoardButtonType { location, equipped, stashed }
 Map<BoardButtonType, String> boardButtonLabels = {

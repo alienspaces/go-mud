@@ -3,13 +3,23 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/repository.dart';
+
 import 'package:go_mud_client/widgets/common/bar.dart';
+import 'package:go_mud_client/widgets/game/card/equipped.dart';
 
-void displayLookMonsterDialog(
-    BuildContext context, DungeonActionRecord dungeonActionRecord) {
-  final log = getLogger('displayLookMonsterDialog');
+void displayLookMonsterCard(
+  BuildContext context,
+  DungeonActionRecord dungeonActionRecord,
+) {
+  final log = getLogger('displayLookMonsterCard');
 
-  log.info('Rendering look Monster dialogue');
+  log.info(
+    'Rendering look monster dialogue',
+    dungeonActionRecord.targetMonster!.equippedObjects,
+  );
+
+  MonsterDetailedData monster = dungeonActionRecord.targetMonster!;
+
   Widget content = Container(
     alignment: Alignment.center,
     color: Theme.of(context).colorScheme.background,
@@ -17,15 +27,15 @@ void displayLookMonsterDialog(
     child: Column(
       children: <Widget>[
         const Expanded(
-          flex: 7,
+          flex: 4,
           child: Text('IMAGE PLACEHOLDER'),
         ),
         Expanded(
           flex: 1,
           child: bar(
             "Strength",
-            dungeonActionRecord.targetMonster!.strength,
-            dungeonActionRecord.targetMonster!.currentStrength,
+            monster.strength,
+            monster.currentStrength,
             null,
             null,
           ),
@@ -34,8 +44,8 @@ void displayLookMonsterDialog(
           flex: 1,
           child: bar(
             "Dexterity",
-            dungeonActionRecord.targetMonster!.dexterity,
-            dungeonActionRecord.targetMonster!.currentDexterity,
+            monster.dexterity,
+            monster.currentDexterity,
             null,
             null,
           ),
@@ -44,8 +54,8 @@ void displayLookMonsterDialog(
           flex: 1,
           child: bar(
             "Intelligence",
-            dungeonActionRecord.targetMonster!.intelligence,
-            dungeonActionRecord.targetMonster!.currentIntelligence,
+            monster.intelligence,
+            monster.currentIntelligence,
             null,
             null,
           ),
@@ -54,8 +64,8 @@ void displayLookMonsterDialog(
           flex: 1,
           child: bar(
             "Health",
-            dungeonActionRecord.targetMonster!.health,
-            dungeonActionRecord.targetMonster!.currentHealth,
+            monster.health,
+            monster.currentHealth,
             null,
             null,
           ),
@@ -64,16 +74,22 @@ void displayLookMonsterDialog(
           flex: 1,
           child: bar(
             "Fatigue",
-            dungeonActionRecord.targetMonster!.fatigue,
-            dungeonActionRecord.targetMonster!.currentFatigue,
+            monster.fatigue,
+            monster.currentFatigue,
             null,
             null,
           ),
         ),
         const Expanded(
-          flex: 7,
+          flex: 3,
           child: Text('Description'),
         ),
+        Expanded(
+          flex: 3,
+          child: GameCardEquippedWidget(
+            objects: monster.equippedObjects,
+          ),
+        )
       ],
     ),
   );
@@ -85,7 +101,7 @@ void displayLookMonsterDialog(
       return FractionallySizedBox(
         heightFactor: .8,
         child: AlertDialog(
-          title: Text(dungeonActionRecord.targetMonster!.name),
+          title: Text(monster.name),
           content: content,
           actions: <Widget>[
             TextButton(

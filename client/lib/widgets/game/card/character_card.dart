@@ -3,29 +3,36 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/repository.dart';
-import 'package:go_mud_client/widgets/common/bar.dart';
 
-void displayLookCharacterDialog(
+import 'package:go_mud_client/widgets/common/bar.dart';
+import 'package:go_mud_client/widgets/game/card/equipped.dart';
+
+void displayLookCharacterCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
-  final log = getLogger('displayLookCharacterDialog');
+  final log = getLogger('displayLookCharacterCard');
 
   log.info('Rendering look character dialogue');
+
+  CharacterDetailedData character = dungeonActionRecord.targetCharacter!;
+
   Widget content = Container(
     alignment: Alignment.center,
     color: Theme.of(context).colorScheme.background,
     padding: const EdgeInsets.all(5),
     child: Column(
       children: <Widget>[
+        // Image
         const Expanded(
           flex: 7,
           child: Text('IMAGE PLACEHOLDER'),
         ),
+        // Statistics
         Expanded(
           flex: 1,
           child: bar(
             "Strength",
-            dungeonActionRecord.targetCharacter!.strength,
-            dungeonActionRecord.targetCharacter!.currentStrength,
+            character.strength,
+            character.currentStrength,
             null,
             null,
           ),
@@ -34,8 +41,8 @@ void displayLookCharacterDialog(
           flex: 1,
           child: bar(
             "Dexterity",
-            dungeonActionRecord.targetCharacter!.dexterity,
-            dungeonActionRecord.targetCharacter!.currentDexterity,
+            character.dexterity,
+            character.currentDexterity,
             null,
             null,
           ),
@@ -44,8 +51,8 @@ void displayLookCharacterDialog(
           flex: 1,
           child: bar(
             "Intelligence",
-            dungeonActionRecord.targetCharacter!.intelligence,
-            dungeonActionRecord.targetCharacter!.currentIntelligence,
+            character.intelligence,
+            character.currentIntelligence,
             null,
             null,
           ),
@@ -54,8 +61,8 @@ void displayLookCharacterDialog(
           flex: 1,
           child: bar(
             "Health",
-            dungeonActionRecord.targetCharacter!.health,
-            dungeonActionRecord.targetCharacter!.currentHealth,
+            character.health,
+            character.currentHealth,
             null,
             null,
           ),
@@ -64,16 +71,23 @@ void displayLookCharacterDialog(
           flex: 1,
           child: bar(
             "Fatigue",
-            dungeonActionRecord.targetCharacter!.fatigue,
-            dungeonActionRecord.targetCharacter!.currentFatigue,
+            character.fatigue,
+            character.currentFatigue,
             null,
             null,
           ),
         ),
+        // Description
         const Expanded(
-          flex: 7,
+          flex: 3,
           child: Text('Description'),
         ),
+        Expanded(
+          flex: 3,
+          child: GameCardEquippedWidget(
+            objects: character.equippedObjects,
+          ),
+        )
       ],
     ),
   );
@@ -85,7 +99,7 @@ void displayLookCharacterDialog(
       return FractionallySizedBox(
         heightFactor: .8,
         child: AlertDialog(
-          title: Text(dungeonActionRecord.targetCharacter!.name),
+          title: Text(character.name),
           content: content,
           actions: <Widget>[
             TextButton(

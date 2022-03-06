@@ -3,11 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
-// TODO: USe from button widgets
+// Local
+import 'dungeon/dungeon_cubit.dart';
+import 'dungeon_command/dungeon_command_cubit.dart';
+import 'character/character_cubit.dart';
+
 void selectTarget(BuildContext context, String target) {
   final log = getLogger('selectTarget');
   log.info('Submitting move action..');

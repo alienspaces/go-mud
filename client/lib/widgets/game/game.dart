@@ -11,7 +11,7 @@ import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/action.dart';
 import 'package:go_mud_client/widgets/game/command/command.dart';
 import 'package:go_mud_client/widgets/game/board/location/description/description_container.dart';
-import 'package:go_mud_client/widgets/game/look/look.dart';
+import 'package:go_mud_client/widgets/game/card/card.dart';
 
 class GameWidget extends StatefulWidget {
   const GameWidget({Key? key}) : super(key: key);

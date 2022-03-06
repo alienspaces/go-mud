@@ -12,9 +12,9 @@ import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
-import 'package:go_mud_client/widgets/game/board/buttons/character_button.dart';
-import 'package:go_mud_client/widgets/game/board/buttons/monster_button.dart';
-import 'package:go_mud_client/widgets/game/board/buttons/object_button.dart';
+import 'package:go_mud_client/widgets/game/button/character_button.dart';
+import 'package:go_mud_client/widgets/game/button/monster_button.dart';
+import 'package:go_mud_client/widgets/game/button/object_button.dart';
 
 class GameLocationGridWidget extends StatefulWidget {
   final LocationData locationData;

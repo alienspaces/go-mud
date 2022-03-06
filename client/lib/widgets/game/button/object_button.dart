@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/style.dart';
 
-import 'package:go_mud_client/widgets/game/board/common.dart';
+import 'package:go_mud_client/cubit/target.dart';
 
 class ObjectButtonWidget extends StatefulWidget {
   final String objectName;

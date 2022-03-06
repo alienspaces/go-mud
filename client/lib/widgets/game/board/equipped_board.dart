@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 // Application packages
-// import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/game/board/equipped/equipped.dart';
 
 class BoardEquippedWidget extends StatelessWidget {

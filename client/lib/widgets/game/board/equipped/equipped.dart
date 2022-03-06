@@ -6,7 +6,7 @@ import 'package:go_mud_client/logger.dart';
 
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
-import 'package:go_mud_client/widgets/game/board/buttons/object_button.dart';
+import 'package:go_mud_client/widgets/game/button/object_button.dart';
 
 class GameEquippedWidget extends StatefulWidget {
   const GameEquippedWidget({Key? key}) : super(key: key);
@@ -40,7 +40,7 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
           }
         }
         return GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 5,
           children: equippedWidgets,
         );
       },
