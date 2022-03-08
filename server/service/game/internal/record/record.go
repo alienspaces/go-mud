@@ -85,6 +85,15 @@ type DungeonObject struct {
 	repository.Record
 }
 
+const (
+	DungeonActionCommandMove   string = "move"
+	DungeonActionCommandLook   string = "look"
+	DungeonActionCommandEquip  string = "equip"
+	DungeonActionCommandStash  string = "stash"
+	DungeonActionCommandDrop   string = "drop"
+	DungeonActionCommandAttack string = "attack"
+)
+
 type DungeonAction struct {
 	DungeonID                              string         `db:"dungeon_id"`
 	DungeonLocationID                      string         `db:"dungeon_location_id"`

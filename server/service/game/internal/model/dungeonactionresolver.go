@@ -8,6 +8,15 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+var dungeonActionResolvedCommands []string = []string{
+	record.DungeonActionCommandMove,
+	record.DungeonActionCommandLook,
+	record.DungeonActionCommandStash,
+	record.DungeonActionCommandEquip,
+	record.DungeonActionCommandDrop,
+	// record.DungeonActionCommandAttack,
+}
+
 type ResolverSentence struct {
 	Command  string
 	Sentence string
@@ -22,11 +31,11 @@ func (m *Model) resolveAction(sentence string, dungeonCharacterRec *record.Dunge
 	}
 
 	resolveFuncs := map[string]func(sentence string, dungeonCharacterRec *record.DungeonCharacter, dungeonLocationRecordSet *DungeonLocationRecordSet) (*record.DungeonAction, error){
-		"move":  m.resolveMoveAction,
-		"look":  m.resolveLookAction,
-		"stash": m.resolveStashAction,
-		"equip": m.resolveEquipAction,
-		"drop":  m.resolveDropAction,
+		record.DungeonActionCommandMove:  m.resolveMoveAction,
+		record.DungeonActionCommandLook:  m.resolveLookAction,
+		record.DungeonActionCommandStash: m.resolveStashAction,
+		record.DungeonActionCommandEquip: m.resolveEquipAction,
+		record.DungeonActionCommandDrop:  m.resolveDropAction,
 	}
 
 	resolveFunc, ok := resolveFuncs[resolved.Command]
@@ -53,7 +62,7 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 
 	m.Log.Debug("Have sentence words >%v<", sentenceWords)
 
-	for _, dungeonAction := range []string{"move", "look", "equip", "stash", "drop"} {
+	for _, dungeonAction := range dungeonActionResolvedCommands {
 		m.Log.Debug("Checking dungeon action >%s<", dungeonAction)
 
 		// NOTE: The appended space is important

@@ -12,21 +12,21 @@ type DungeonActionResponse struct {
 
 // DungeonActionResponseData -
 type DungeonActionResponseData struct {
-	ID              string                 `json:"id,omitempty"`
-	Command         string                 `json:"command"`
-	CommandResult   string                 `json:"command_result"`
-	Location        LocationData           `json:"location"`
-	Character       *CharacterDetailedData `json:"character,omitempty"`
-	Monster         *MonsterDetailedData   `json:"monster,omitempty"`
-	EquippedObject  *ObjectDetailedData    `json:"equipped_object,omitempty"`
-	StashedObject   *ObjectDetailedData    `json:"stashed_object,omitempty"`
-	DroppedObject   *ObjectDetailedData    `json:"dropped_object,omitempty"`
-	TargetObject    *ObjectDetailedData    `json:"target_object,omitempty"`
-	TargetCharacter *CharacterDetailedData `json:"target_character,omitempty"`
-	TargetMonster   *MonsterDetailedData   `json:"target_monster,omitempty"`
-	TargetLocation  *LocationData          `json:"target_location,omitempty"`
-	CreatedAt       time.Time              `json:"created_at,omitempty"`
-	UpdatedAt       time.Time              `json:"updated_at,omitempty"`
+	ID                 string                 `json:"id,omitempty"`
+	Command            string                 `json:"command"`
+	CommandDescription string                 `json:"command_description"`
+	Location           LocationData           `json:"location"`
+	Character          *CharacterDetailedData `json:"character,omitempty"`
+	Monster            *MonsterDetailedData   `json:"monster,omitempty"`
+	EquippedObject     *ObjectDetailedData    `json:"equipped_object,omitempty"`
+	StashedObject      *ObjectDetailedData    `json:"stashed_object,omitempty"`
+	DroppedObject      *ObjectDetailedData    `json:"dropped_object,omitempty"`
+	TargetObject       *ObjectDetailedData    `json:"target_object,omitempty"`
+	TargetCharacter    *CharacterDetailedData `json:"target_character,omitempty"`
+	TargetMonster      *MonsterDetailedData   `json:"target_monster,omitempty"`
+	TargetLocation     *LocationData          `json:"target_location,omitempty"`
+	CreatedAt          time.Time              `json:"created_at,omitempty"`
+	UpdatedAt          time.Time              `json:"updated_at,omitempty"`
 }
 
 // DungeonActionRequest -
