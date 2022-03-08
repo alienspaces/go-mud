@@ -8,7 +8,6 @@
 
 ## Now
 
-- Server: Provide narration in action responses
 - Client: Display narration from action responses
 
 ## Next
