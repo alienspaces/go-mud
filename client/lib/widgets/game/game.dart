@@ -104,7 +104,7 @@ class _GameWidgetState extends State<GameWidget> {
           ),
           // ignore: avoid_unnecessary_containers
           Container(
-            child: const GameLookWidget(),
+            child: const GameCardWidget(),
           )
         ],
       ),

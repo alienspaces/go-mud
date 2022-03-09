@@ -8,8 +8,8 @@ import 'package:go_mud_client/widgets/game/card/character_card.dart';
 import 'package:go_mud_client/widgets/game/card/object_card.dart';
 import 'package:go_mud_client/widgets/game/card/monster_card.dart';
 
-class GameLookWidget extends StatelessWidget {
-  const GameLookWidget({Key? key}) : super(key: key);
+class GameCardWidget extends StatelessWidget {
+  const GameCardWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +27,17 @@ class GameLookWidget extends StatelessWidget {
             if (dungeonActionRecord.targetCharacter != null) {
               log.info('Registering look character dialogue');
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                displayLookCharacterCard(context, dungeonActionRecord);
+                displayCharacterCard(context, dungeonActionRecord);
               });
             } else if (dungeonActionRecord.targetMonster != null) {
               log.info('Registering look monster dialogue');
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                displayLookMonsterCard(context, dungeonActionRecord);
+                displayMonsterCard(context, dungeonActionRecord);
               });
             } else if (dungeonActionRecord.targetObject != null) {
               log.info('Registering look object dialogue');
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                displayLookObjectCard(context, dungeonActionRecord);
+                displayObjectCard(context, dungeonActionRecord);
               });
             }
           }

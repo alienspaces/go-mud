@@ -7,9 +7,9 @@ import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/widgets/common/bar.dart';
 import 'package:go_mud_client/widgets/game/card/equipped.dart';
 
-void displayLookCharacterCard(
+void displayCharacterCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
-  final log = getLogger('displayLookCharacterCard');
+  final log = getLogger('displayCharacterCard');
 
   log.info('Rendering look character dialogue');
 

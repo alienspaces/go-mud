@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/repository.dart';
 
-void displayLookObjectCard(
+void displayObjectCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
-  final log = getLogger('displayLookObjectCard');
+  final log = getLogger('displayObjectCard');
 
   log.info('Rendering look Object dialogue');
   Widget content = Container(

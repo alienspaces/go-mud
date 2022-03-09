@@ -7,11 +7,11 @@ import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/widgets/common/bar.dart';
 import 'package:go_mud_client/widgets/game/card/equipped.dart';
 
-void displayLookMonsterCard(
+void displayMonsterCard(
   BuildContext context,
   DungeonActionRecord dungeonActionRecord,
 ) {
-  final log = getLogger('displayLookMonsterCard');
+  final log = getLogger('displayMonsterCard');
 
   log.info(
     'Rendering look monster dialogue',
