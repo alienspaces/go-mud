@@ -5,6 +5,10 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+func SeedDataConfig() harness.DataConfig {
+	return seedDataConfig
+}
+
 var seedDataConfig = harness.DataConfig{
 	DungeonConfig: []harness.DungeonConfig{
 		{

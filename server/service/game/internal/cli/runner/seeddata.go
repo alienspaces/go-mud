@@ -11,7 +11,7 @@ func (rnr *Runner) LoadSeedData(c *cli.Context) error {
 
 	rnr.Log.Info("** Loading Seed Data **")
 
-	config := seedDataConfig
+	config := SeedDataConfig()
 
 	h, err := harness.NewTesting(rnr.Config, rnr.Log, rnr.Store, rnr.Model, config)
 	if err != nil {

@@ -6,6 +6,10 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+func TestDataConfig() harness.DataConfig {
+	return testDataConfig
+}
+
 var testDataConfig = harness.DataConfig{
 	DungeonConfig: []harness.DungeonConfig{
 		{
