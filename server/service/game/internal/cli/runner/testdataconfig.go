@@ -144,6 +144,7 @@ var testDataConfig = harness.DataConfig{
 						Name:                "Dull Bronze Ring",
 						Description:         "A bronze ring.",
 						DescriptionDetailed: "A dull bronze ring.",
+						IsEquipped:          true,
 					},
 					CharacterName: "Barricade",
 				},
