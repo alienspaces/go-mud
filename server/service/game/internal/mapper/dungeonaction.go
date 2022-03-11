@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"strings"
+
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/schema"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
@@ -118,26 +120,26 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet mod
 		}
 	}
 
-	commandDescription, err := dungeonActionToCommandDescription(l, dungeonActionRecordSet)
+	narrative, err := dungeonActionToNarrative(l, dungeonActionRecordSet)
 	if err != nil {
 		return nil, err
 	}
 
 	data := schema.DungeonActionResponseData{
-		ID:                 dungeonActionRec.ID,
-		Command:            dungeonActionRec.ResolvedCommand,
-		CommandDescription: commandDescription,
-		Location:           *locationData,
-		Character:          characterData,
-		Monster:            monsterData,
-		EquippedObject:     equippedObjectData,
-		StashedObject:      stashedObjectData,
-		DroppedObject:      droppedObjectData,
-		TargetObject:       targetObjectData,
-		TargetCharacter:    targetCharacterData,
-		TargetMonster:      targetMonsterData,
-		TargetLocation:     targetLocationData,
-		CreatedAt:          dungeonActionRec.CreatedAt,
+		ID:              dungeonActionRec.ID,
+		Command:         dungeonActionRec.ResolvedCommand,
+		Narrative:       narrative,
+		Location:        *locationData,
+		Character:       characterData,
+		Monster:         monsterData,
+		EquippedObject:  equippedObjectData,
+		StashedObject:   stashedObjectData,
+		DroppedObject:   droppedObjectData,
+		TargetObject:    targetObjectData,
+		TargetCharacter: targetCharacterData,
+		TargetMonster:   targetMonsterData,
+		TargetLocation:  targetLocationData,
+		CreatedAt:       dungeonActionRec.CreatedAt,
 	}
 
 	return &data, nil
@@ -398,8 +400,8 @@ func dungeonActionLocationToResponseLocation(recordSet *model.DungeonActionLocat
 // TODO: This might evolve to being its own lifeform so should potentially be
 // pulled out of this mapper and into its own package.
 
-// dungeonActionToCommandDescription -
-func dungeonActionToCommandDescription(l logger.Logger, set model.DungeonActionRecordSet) (string, error) {
+// dungeonActionToNarrative -
+func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet) (string, error) {
 
 	desc := ""
 	if set.ActionCharacterRec != nil {
@@ -432,6 +434,8 @@ func dungeonActionToCommandDescription(l logger.Logger, set model.DungeonActionR
 	} else if set.TargetLocation != nil {
 		desc += set.ActionRec.ResolvedTargetDungeonLocationDirection.String
 	}
+
+	desc = strings.TrimRight(desc, " ")
 
 	return desc, nil
 }

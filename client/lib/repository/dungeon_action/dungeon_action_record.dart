@@ -22,7 +22,7 @@ class CreateDungeonActionRecord extends Equatable {
 class DungeonActionRecord extends Equatable {
   final String id;
   final String command;
-  final String commandDescription;
+  final String narrative;
   final LocationData location;
   final CharacterDetailedData? character;
   final MonsterDetailedData? monster;
@@ -37,7 +37,7 @@ class DungeonActionRecord extends Equatable {
   const DungeonActionRecord({
     required this.id,
     required this.command,
-    required this.commandDescription,
+    required this.narrative,
     required this.location,
     required this.character,
     required this.monster,
@@ -194,7 +194,7 @@ class DungeonActionRecord extends Equatable {
     return DungeonActionRecord(
       id: json['id'],
       command: json['command'],
-      commandDescription: json['command_description'],
+      narrative: json['narrative'],
       location: locationData,
       character: characterData,
       monster: monsterData,
@@ -212,7 +212,7 @@ class DungeonActionRecord extends Equatable {
   List<Object?> get props => [
         id,
         command,
-        commandDescription,
+        narrative,
         location,
         character,
         monster,

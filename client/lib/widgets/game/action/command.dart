@@ -5,17 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
-class GameCommandWidget extends StatefulWidget {
-  const GameCommandWidget({Key? key}) : super(key: key);
+class GameActionCommandWidget extends StatefulWidget {
+  const GameActionCommandWidget({Key? key}) : super(key: key);
 
   @override
-  _GameCommandWidgetState createState() => _GameCommandWidgetState();
+  _GameActionCommandWidgetState createState() =>
+      _GameActionCommandWidgetState();
 }
 
-class _GameCommandWidgetState extends State<GameCommandWidget> {
+class _GameActionCommandWidgetState extends State<GameActionCommandWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationGridWidget');
+    final log = getLogger('GameActionCommandWidget');
     log.info('Building..');
 
     return BlocConsumer<DungeonCommandCubit, DungeonCommandState>(

@@ -8,8 +8,9 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
-import 'package:go_mud_client/widgets/game/action/action.dart';
-import 'package:go_mud_client/widgets/game/command/command.dart';
+import 'package:go_mud_client/widgets/game/action/panel.dart';
+import 'package:go_mud_client/widgets/game/action/narrative.dart';
+import 'package:go_mud_client/widgets/game/action/command.dart';
 import 'package:go_mud_client/widgets/game/board/location/description/description_container.dart';
 import 'package:go_mud_client/widgets/game/card/card.dart';
 
@@ -92,12 +93,12 @@ class _GameWidgetState extends State<GameWidget> {
                 // Current actions
                 Expanded(
                   flex: 4,
-                  child: GameActionWidget(),
+                  child: GameActionPanelWidget(),
                 ),
                 // Current command
                 Expanded(
                   flex: 1,
-                  child: GameCommandWidget(),
+                  child: GameActionCommandWidget(),
                 ),
               ],
             ),
@@ -105,6 +106,10 @@ class _GameWidgetState extends State<GameWidget> {
           // ignore: avoid_unnecessary_containers
           Container(
             child: const GameCardWidget(),
+          ),
+          // ignore: avoid_unnecessary_containers
+          Container(
+            child: const GameActionNarrativeWidget(),
           )
         ],
       ),

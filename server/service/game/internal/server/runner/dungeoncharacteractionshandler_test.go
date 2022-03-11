@@ -85,7 +85,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "look",
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -184,7 +185,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "move",
+							Command:   "move",
+							Narrative: fmt.Sprintf("%s moves north", data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[1].Name,
 								Description: data.DungeonLocationRecs[1].Description,
@@ -274,7 +276,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "look",
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks north", data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -364,7 +367,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "look",
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -449,7 +453,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "look",
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonMonsterRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -524,10 +529,10 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 			},
 		},
 		{
-			// Look at a character in the current room
+			// Look at themselves in the current room
 			TestCase: TestCase{
 				Skip:              false,
-				Name:              "Look at a character in the current room",
+				Name:              "Look at themselves in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
@@ -546,7 +551,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "look",
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -643,7 +649,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "stash",
+							Command:   "stash",
+							Narrative: fmt.Sprintf("%s stashes %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -733,7 +740,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "equip",
+							Command:   "equip",
+							Narrative: fmt.Sprintf("%s equips %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -823,7 +831,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				res := schema.DungeonActionResponse{
 					Data: []schema.DungeonActionResponseData{
 						{
-							Command: "drop",
+							Command:   "drop",
+							Narrative: fmt.Sprintf("%s drops %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[2].Name),
 							Location: schema.LocationData{
 								Name:        data.DungeonLocationRecs[0].Name,
 								Description: data.DungeonLocationRecs[0].Description,
@@ -955,6 +964,9 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 
 					// Command
 					require.Equal(t, expectData.Command, responseBody.Data[idx].Command)
+
+					// Narrative
+					require.Equal(t, expectData.Narrative, responseBody.Data[idx].Narrative)
 
 					// Current location
 					t.Logf("Checking location name >%s< >%s<", expectData.Location.Name, responseBody.Data[idx].Location.Name)

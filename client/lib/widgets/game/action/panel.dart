@@ -9,17 +9,17 @@ import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/style.dart';
 
-class GameActionWidget extends StatefulWidget {
-  const GameActionWidget({Key? key}) : super(key: key);
+class GameActionPanelWidget extends StatefulWidget {
+  const GameActionPanelWidget({Key? key}) : super(key: key);
 
   @override
-  _GameActionWidgetState createState() => _GameActionWidgetState();
+  _GameActionPanelWidgetState createState() => _GameActionPanelWidgetState();
 }
 
 double gridMemberWidth = 0;
 double gridMemberHeight = 0;
 
-class _GameActionWidgetState extends State<GameActionWidget> {
+class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
   List<Widget> _generateActions(BuildContext context) {
     return [
       _actionWidget(context, 'Move', 'move'),
@@ -38,7 +38,7 @@ class _GameActionWidgetState extends State<GameActionWidget> {
       height: gridMemberHeight,
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameActionWidget');
+          final log = getLogger('GameActionPanelWidget');
           log.info('Selecting action >$action<');
           _selectAction(context, action);
         },
@@ -57,7 +57,7 @@ class _GameActionWidgetState extends State<GameActionWidget> {
       margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameActionWidget');
+          final log = getLogger('GameActionPanelWidget');
           log.info('Submitting action');
           _submitAction(context);
         },
@@ -70,7 +70,7 @@ class _GameActionWidgetState extends State<GameActionWidget> {
   }
 
   void _selectAction(BuildContext context, String action) {
-    final log = getLogger('GameActionWidget');
+    final log = getLogger('GameActionPanelWidget');
     log.info('Selecting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -99,7 +99,7 @@ class _GameActionWidgetState extends State<GameActionWidget> {
   }
 
   void _submitAction(BuildContext context) async {
-    final log = getLogger('GameActionWidget');
+    final log = getLogger('GameActionPanelWidget');
     log.info('Submitting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -134,7 +134,7 @@ class _GameActionWidgetState extends State<GameActionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameActionWidget');
+    final log = getLogger('GameActionPanelWidget');
     log.info('Building..');
 
     return LayoutBuilder(
