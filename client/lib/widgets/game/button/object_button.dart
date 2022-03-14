@@ -19,7 +19,7 @@ class _ObjectButtonWidgetState extends State<ObjectButtonWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('ObjectButtonWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return Container(
       margin: gameButtonMargin,

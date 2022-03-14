@@ -43,9 +43,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log.info('Building..');
+    log.fine('Building..');
     return MaterialApp(
-      title: 'Nest MUD Client',
+      title: 'Go MUD Client',
       theme: getTheme(context),
       home: MultiBlocProvider(
         providers: [

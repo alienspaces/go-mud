@@ -37,7 +37,7 @@ class DungeonRepository implements DungeonRepositoryInterface {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
-        log.info('Decoded response $data');
+        log.fine('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
           throw RecordCountException('Unexpected number of records returned');
@@ -66,7 +66,7 @@ class DungeonRepository implements DungeonRepositoryInterface {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
-        log.info('Decoded response $data');
+        log.fine('Decoded response $data');
         for (var element in data) {
           records.add(DungeonRecord.fromJson(element));
         }

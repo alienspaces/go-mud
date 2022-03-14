@@ -8,7 +8,7 @@ void displayObjectCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
   final log = getLogger('displayObjectCard');
 
-  log.info('Rendering look Object dialogue');
+  log.fine('Rendering look Object dialogue');
   Widget content = Container(
     alignment: Alignment.center,
     color: Theme.of(context).colorScheme.background,

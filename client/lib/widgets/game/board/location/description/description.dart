@@ -46,11 +46,11 @@ class _GameLocationDescriptionWidgetState
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameLocationDescriptionWidget');
-    log.info('Building.. ${widget.fade}');
+    log.fine('Building.. ${widget.fade}');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
         widget.fade == DescriptionOpacity.fadeIn

@@ -17,7 +17,7 @@ class HomeDungeonWidget extends StatelessWidget {
   /// Sets the current dungeon state to the provided dungeon
   void _selectDungeon(BuildContext context, DungeonRecord dungeonRecord) {
     final log = getLogger('HomeGameWidget');
-    log.info(
+    log.fine(
         'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -29,7 +29,7 @@ class HomeDungeonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('HomeDungeonWidget');
-    log.info(
+    log.fine(
         'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(

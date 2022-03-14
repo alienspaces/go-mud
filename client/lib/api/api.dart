@@ -41,7 +41,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -59,7 +59,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -72,7 +72,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -89,7 +89,7 @@ class API {
         path: '/api/v1/dungeons',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -102,7 +102,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -126,7 +126,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
@@ -159,7 +159,7 @@ class API {
       return APIResponse(error: responseBody);
     }
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -177,7 +177,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(
         uri,
@@ -194,7 +194,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -211,7 +211,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -224,7 +224,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
@@ -246,7 +246,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/actions',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
@@ -271,7 +271,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }

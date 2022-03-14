@@ -42,14 +42,15 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
 
   void _createCharacter() {
     final log = getLogger('CharacterCreateWidget');
-    log.info('Creating character name >${characterNameController.text}<');
-    log.info('Creating character strength >$strength<');
-    log.info('Creating character dexterity >$dexterity<');
-    log.info('Creating character intelligence >$intelligence<');
+    log.fine('Creating character name >${characterNameController.text}<');
+    log.fine('Creating character strength >$strength<');
+    log.fine('Creating character dexterity >$dexterity<');
+    log.fine('Creating character intelligence >$intelligence<');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
-      log.warning('Dungeon cubit dungeon record is null, cannot create character');
+      log.warning(
+          'Dungeon cubit dungeon record is null, cannot create character');
       return;
     }
 
@@ -61,7 +62,8 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
       intelligence: intelligence,
     );
 
-    characterCubit.createCharacter(dungeonCubit.dungeonRecord!.id, createCharacterRecord);
+    characterCubit.createCharacter(
+        dungeonCubit.dungeonRecord!.id, createCharacterRecord);
   }
 
   void _incrementStrength() {
@@ -115,7 +117,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterCreateWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     InputDecoration _fieldDecoration(String hintText) {
       return InputDecoration(
@@ -133,7 +135,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
 
     return BlocConsumer<CharacterCubit, CharacterState>(
       listener: (BuildContext context, CharacterState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, CharacterState state) {
         // Build attribute row
@@ -186,11 +188,13 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
           ];
         }
 
-        if (state is CharacterStateInitial || state is CharacterStateCreateError) {
+        if (state is CharacterStateInitial ||
+            state is CharacterStateCreateError) {
           List<Widget> formWidgets = [
             // ignore: avoid_unnecessary_containers
             Container(
-              child: Text('Create Character', style: Theme.of(context).textTheme.headline3),
+              child: Text('Create Character',
+                  style: Theme.of(context).textTheme.headline3),
             )
           ];
 

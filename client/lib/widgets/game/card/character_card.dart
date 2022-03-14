@@ -11,7 +11,7 @@ void displayCharacterCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
   final log = getLogger('displayCharacterCard');
 
-  log.info('Rendering look character dialogue');
+  log.fine('Rendering look character dialogue');
 
   CharacterDetailedData character = dungeonActionRecord.targetCharacter!;
 

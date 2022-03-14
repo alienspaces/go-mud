@@ -40,11 +40,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     BoardButtonType boardButtonType,
   ) {
     final log = getLogger('buildBoardButton');
-    log.info('Building..');
+    log.fine('Building..');
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.info(
+        log.fine(
           'Building width ${constraints.maxWidth} height ${constraints.maxHeight}',
         );
 
@@ -78,11 +78,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   Widget buildBoardPanel(BuildContext context, {required Widget panel}) {
     final log = getLogger('buildBoardPanel');
-    log.info('Building..');
+    log.fine('Building..');
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.info(
+        log.fine(
           'Building width ${constraints.maxWidth} height ${constraints.maxHeight}',
         );
 
@@ -115,7 +115,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameBoardWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return Row(
       children: <Widget>[

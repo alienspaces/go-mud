@@ -19,14 +19,14 @@ class _GameStashedWidgetState extends State<GameStashedWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameStashedWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
-        log.info('Rendering stashed inventory');
+        log.fine('Rendering stashed inventory');
 
         List<Widget> stashedWidgets = [];
         if (state is DungeonActionStatePlaying &&

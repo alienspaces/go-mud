@@ -57,7 +57,7 @@ class _CharacterScreenState extends State<CharacterScreen> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterScreen');
-    log.info('Building..');
+    log.fine('Building..');
 
     return Scaffold(
       appBar: header(context, widget.callbacks),

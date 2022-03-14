@@ -25,11 +25,11 @@ class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterContainer');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(
       listener: (BuildContext context, CharacterState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, CharacterState characterState) {
         if (characterState is CharacterStateInitial ||
@@ -50,7 +50,7 @@ class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
         }
 
         // Shouldn't get here..
-        log.info('Character state >$characterState<');
+        log.fine('Character state >$characterState<');
 
         // ignore: avoid_unnecessary_containers
         return Container(

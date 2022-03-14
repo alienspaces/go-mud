@@ -17,11 +17,11 @@ class _GameActionCommandWidgetState extends State<GameActionCommandWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameActionCommandWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonCommandCubit, DungeonCommandState>(
       listener: (BuildContext context, DungeonCommandState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonCommandState state) {
         if (state is DungeonCommandStatePreparing) {

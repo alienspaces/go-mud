@@ -42,7 +42,7 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
-        log.info('Decoded response $data');
+        log.fine('Decoded response $data');
         if (data.length > 1) {
           // TODO: Add support for multiple dungeon actions in response
           log.warning('Unexpected number of records returned');

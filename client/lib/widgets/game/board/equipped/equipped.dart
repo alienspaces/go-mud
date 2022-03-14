@@ -19,14 +19,14 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameEquippedWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
-        log.info('Rendering equipped inventory');
+        log.fine('Rendering equipped inventory');
 
         List<Widget> equippedWidgets = [];
         if (state is DungeonActionStatePlaying &&

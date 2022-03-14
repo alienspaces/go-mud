@@ -16,11 +16,11 @@ class BoardLocationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameLocationWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
@@ -30,7 +30,7 @@ class BoardLocationWidget extends StatelessWidget {
           var dungeonActionRecord = state.current;
 
           if (dungeonActionRecord != null) {
-            log.info(
+            log.fine(
                 'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.command}');
             widgets.add(
               GameLocationGridWidget(
@@ -40,7 +40,7 @@ class BoardLocationWidget extends StatelessWidget {
               ),
             );
           } else {
-            log.info(
+            log.fine(
                 'DungeonActionStateCreating - Rendering loading container..');
             widgets.add(
               Container(
@@ -54,7 +54,7 @@ class BoardLocationWidget extends StatelessWidget {
         else if (state is DungeonActionStateCreated) {
           var dungeonActionRecord = state.current;
 
-          log.info(
+          log.fine(
               'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
 
           widgets.add(
@@ -69,7 +69,7 @@ class BoardLocationWidget extends StatelessWidget {
         else if (state is DungeonActionStatePlaying) {
           var dungeonActionRecord = state.current;
 
-          log.info(
+          log.fine(
               'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
 
           if (dungeonActionRecord.command == 'move') {
@@ -100,7 +100,7 @@ class BoardLocationWidget extends StatelessWidget {
               ),
             );
             if (dungeonActionRecord.targetLocation != null) {
-              log.info('Rendering look target location');
+              log.fine('Rendering look target location');
               widgets.add(
                 GameLocationGridLookWidget(
                   key: UniqueKey(),
@@ -122,7 +122,7 @@ class BoardLocationWidget extends StatelessWidget {
           }
         }
 
-        log.info('Rendering ${widgets.length} dungeon grid panels');
+        log.fine('Rendering ${widgets.length} dungeon grid panels');
 
         return Stack(
           clipBehavior: Clip.antiAlias,

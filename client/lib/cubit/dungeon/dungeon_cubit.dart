@@ -25,7 +25,7 @@ class DungeonCubit extends Cubit<DungeonState> {
 
   Future<void> loadDungeons() async {
     final log = getLogger('DungeonCubit');
-    log.info('Loading dungeons...');
+    log.fine('Loading dungeons...');
     emit(const DungeonStateLoading());
 
     List<DungeonRecord>? dungeonRecords;

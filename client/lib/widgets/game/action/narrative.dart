@@ -18,19 +18,35 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
   List<Widget> lines = [];
 
   @override
+  void dispose() {
+    final log = getLogger('GameActionNarrativeWidget');
+    if (!mounted) {
+      log.info('### Not mounted, not disposing..');
+      return;
+    }
+    log.info('### Disposing...');
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final log = getLogger('GameActionNarrativeWidget');
     log.info('Building..');
+    double width = MediaQuery.of(context).size.width;
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
+        log.info('listener... width $width');
         if (state is DungeonActionStatePlaying) {
           // Add narrative line
           var lineWidget = GameActionNarrativeLineWidget(
+            key: UniqueKey(),
+            width: width,
             line: state.current.narrative,
           );
-          lines.add(lineWidget);
+          setState(() {
+            lines.add(lineWidget);
+          });
         }
       },
       builder: (BuildContext context, DungeonActionState state) {
@@ -48,8 +64,10 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
 
 class GameActionNarrativeLineWidget extends StatefulWidget {
   final String line;
+  final double width;
 
-  const GameActionNarrativeLineWidget({Key? key, required this.line})
+  const GameActionNarrativeLineWidget(
+      {Key? key, required this.line, required this.width})
       : super(key: key);
   @override
   _GameActionNarrativeLineWidgetState createState() =>
@@ -63,13 +81,20 @@ class _GameActionNarrativeLineWidgetState
   late Timer animationTimer;
   @override
   initState() {
-    final log = getLogger('GameActionNarrativeLineWidget');
+    final log = getLogger('GameActionNarrativeLineWidget - (line)');
+
     super.initState();
-    log.info('### Initialised state');
+
+    if (!mounted) {
+      log.info('### Not mounted, not initialising..');
+      return;
+    }
+
+    log.info('### Initialising..');
 
     animationTimer = Timer(const Duration(milliseconds: 200), () {
       double newOpacity = 0.0;
-      double newBottom = 1000;
+      double newBottom = 1500;
       setState(() {
         opacity = newOpacity;
         bottom = newBottom;
@@ -80,25 +105,51 @@ class _GameActionNarrativeLineWidgetState
 
   @override
   void dispose() {
+    final log = getLogger('GameActionNarrativeLineWidget - (line)');
+
+    if (!mounted) {
+      log.info('### Not mounted, not disposing..');
+      return;
+    }
+
+    log.info('### Disposing..');
     animationTimer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameActionNarrativeLineWidget');
+    final log = getLogger('GameActionNarrativeLineWidget - (line)');
+
+    if (!mounted) {
+      log.info('^^^ Not mounted, not building with line "${widget.line}"');
+      return Container();
+    }
+
     log.info(
         '^^^ Building with line "${widget.line}" opacity "$opacity" bottom "$bottom"');
 
     return AnimatedPositioned(
       bottom: bottom,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 3000),
       child: Container(
+        width: widget.width,
         alignment: Alignment.center,
         child: AnimatedOpacity(
           opacity: opacity,
-          duration: const Duration(milliseconds: 2500),
-          child: Text(': ${widget.line}'.trimRight()),
+          duration: const Duration(milliseconds: 1500),
+          child: Container(
+            margin: const EdgeInsets.all(3),
+            alignment: Alignment.center,
+            child: Text(
+              ': ${widget.line}'.trimRight(),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                    fontSize: 30,
+                    color: Colors.brown[800],
+                  ),
+            ),
+          ),
         ),
       ),
     );

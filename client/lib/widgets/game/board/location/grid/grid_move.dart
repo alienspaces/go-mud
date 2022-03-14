@@ -67,12 +67,19 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
   void initState() {
     final log = getLogger('GameLocationGridMoveWidget');
 
+    if (!mounted) {
+      log.info('+++ Not mounted, not initialising');
+      return;
+    }
+
+    super.initState();
+
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
 
-    log.info(
+    log.fine(
         '(initState) Target dungeon location direction ${widget.direction}');
-    log.info('(initState) Target dungeon location slide ${widget.slide}');
+    log.fine('(initState) Target dungeon location slide ${widget.slide}');
 
     if (widget.direction != null) {
       if (widget.slide == Slide.slideIn) {
@@ -96,20 +103,32 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
       WidgetsBinding.instance
           ?.addPostFrameCallback((_) => _controller.forward());
     }
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
+    final log = getLogger('GameLocationGridMoveWidget');
+
+    if (!mounted) {
+      log.info('### Not mounted, not disposing');
+      return;
+    }
+
+    log.info('### Disposing..');
     _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameLocationGridMoveWidget');
-    log.info('Building ${widget.key} - ${widget.slide}..');
+
+    if (!mounted) {
+      log.info('<<< Not mounted, not building grid..');
+      return Container();
+    }
+
+    log.info('<<< Building ${widget.key} - ${widget.slide}..');
 
     return AnimatedBuilder(
       animation: _controller,

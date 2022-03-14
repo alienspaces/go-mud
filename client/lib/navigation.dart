@@ -43,7 +43,7 @@ class _NavigationState extends State<Navigation> {
   // Callback functions set the desired page stack
   void openHomePage(BuildContext context) {
     final log = getLogger('Navigation');
-    log.info('(openHomePage) Opening home page..');
+    log.fine('(openHomePage) Opening home page..');
     setState(() {
       _pageList = [HomePage.pageName];
     });
@@ -51,7 +51,7 @@ class _NavigationState extends State<Navigation> {
 
   void openCharacterPage(BuildContext context) {
     final log = getLogger('Navigation');
-    log.info('(openCharacterPage) Opening character page..');
+    log.fine('(openCharacterPage) Opening character page..');
     setState(() {
       _pageList = [CharacterPage.pageName];
     });
@@ -59,11 +59,11 @@ class _NavigationState extends State<Navigation> {
 
   void openGamePage(BuildContext context) {
     final log = getLogger('Navigation');
-    log.info('(openGamePage) Opening game page..');
+    log.fine('(openGamePage) Opening game page..');
 
     // Clear all dungeon actions
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    log.info(
+    log.fine(
         '(openGamePage) Dungeon action record count ${dungeonActionCubit.dungeonActionRecords.length}');
     dungeonActionCubit.clearActions();
 
@@ -74,7 +74,7 @@ class _NavigationState extends State<Navigation> {
 
   List<Page<dynamic>> _pages(BuildContext context) {
     final log = getLogger('Navigation - _pages');
-    log.info('Building pages..');
+    log.fine('Building pages..');
 
     List<Page<dynamic>> pages = [];
 
@@ -87,15 +87,15 @@ class _NavigationState extends State<Navigation> {
     for (var pageName in _pageList) {
       switch (pageName) {
         case HomePage.pageName:
-          log.info('Adding ${HomePage.pageName}');
+          log.fine('Adding ${HomePage.pageName}');
           pages.add(HomePage(callbacks: callbacks));
           break;
         case CharacterPage.pageName:
-          log.info('Adding ${CharacterPage.pageName}');
+          log.fine('Adding ${CharacterPage.pageName}');
           pages.add(CharacterPage(callbacks: callbacks));
           break;
         case GamePage.pageName:
-          log.info('Adding ${GamePage.pageName}');
+          log.fine('Adding ${GamePage.pageName}');
           pages.add(GamePage(callbacks: callbacks));
           break;
         default:
@@ -107,7 +107,7 @@ class _NavigationState extends State<Navigation> {
 
   bool _onPopPage(Route<dynamic> route, dynamic result, BuildContext context) {
     final log = getLogger('Navigation - _onPopPage');
-    log.info('Page name ${route.settings.name}');
+    log.fine('Page name ${route.settings.name}');
 
     if (!route.didPop(result)) {
       return false;
@@ -119,7 +119,7 @@ class _NavigationState extends State<Navigation> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('Navigation - build');
-    log.info('Building..');
+    log.fine('Building..');
     return Navigator(
       key: navigatorKey,
       pages: _pages(context),

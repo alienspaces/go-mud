@@ -190,7 +190,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
   void _selectTarget(BuildContext context, String target) {
     final log = getLogger('GameLocationGridWidget');
-    log.info('Submitting move action..');
+    log.fine('Submitting move action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
@@ -208,12 +208,12 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
     if (dungeonCommandCubit.target == target) {
-      log.info('++ Unselecting target $target');
+      log.fine('++ Unselecting target $target');
       dungeonCommandCubit.unselectTarget();
       return;
     }
 
-    log.info('++ Selecting target $target');
+    log.fine('++ Selecting target $target');
     dungeonCommandCubit.selectTarget(target);
   }
 
@@ -223,7 +223,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.info(
+        log.fine(
             'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
 
         // Set grid member dimensions
@@ -236,7 +236,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
           gridMemberWidth = gridMemberHeight;
         }
 
-        log.info(
+        log.fine(
           '(B-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
         );
 
@@ -250,7 +250,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
               ),
               borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            // TODO: Convert this to 5 rows of 5
             child: GridView.count(
               crossAxisCount: 5,
               children: _generateGrid(context),

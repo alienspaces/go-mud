@@ -33,7 +33,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
   Future<CharacterRecord?> createOne(
       String dungeonID, CreateCharacterRecord createRecord) async {
     final log = getLogger('CharacterRepository');
-    log.warning('Creating character ${createRecord.name}');
+    log.info('Creating character ${createRecord.name}');
 
     var response = await api.createCharacter(
       dungeonID,
@@ -42,8 +42,8 @@ class CharacterRepository implements CharacterRepositoryInterface {
       dexterity: createRecord.dexterity,
       intelligence: createRecord.intelligence,
     );
-    log.warning('APIResponse body ${response.body}');
-    log.warning('APIResponse error ${response.error}');
+    log.info('APIResponse body ${response.body}');
+    log.info('APIResponse error ${response.error}');
 
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');
@@ -57,7 +57,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
-        log.info('Decoded response $data');
+        log.fine('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
           throw RecordCountException('Unexpected number of records returned');
@@ -89,7 +89,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
-        log.info('Decoded response $data');
+        log.fine('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
           throw RecordCountException('Unexpected number of records returned');
@@ -118,7 +118,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
-        log.info('Decoded response $data');
+        log.fine('Decoded response $data');
         for (var element in data) {
           records.add(CharacterRecord.fromJson(element));
         }

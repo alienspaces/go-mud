@@ -39,7 +39,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameActionPanelWidget');
-          log.info('Selecting action >$action<');
+          log.fine('Selecting action >$action<');
           _selectAction(context, action);
         },
         style: gameButtonStyle,
@@ -58,7 +58,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
       child: ElevatedButton(
         onPressed: () {
           final log = getLogger('GameActionPanelWidget');
-          log.info('Submitting action');
+          log.fine('Submitting action');
           _submitAction(context);
         },
         style: ElevatedButton.styleFrom(
@@ -71,7 +71,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
   void _selectAction(BuildContext context, String action) {
     final log = getLogger('GameActionPanelWidget');
-    log.info('Selecting action..');
+    log.fine('Selecting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
@@ -89,18 +89,18 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
     if (dungeonCommandCubit.action == action) {
-      log.info('++ Unselecting action $action');
+      log.fine('++ Unselecting action $action');
       dungeonCommandCubit.unselectAction();
       return;
     }
 
-    log.info('++ Selecting action $action');
+    log.fine('++ Selecting action $action');
     dungeonCommandCubit.selectAction(action);
   }
 
   void _submitAction(BuildContext context) async {
     final log = getLogger('GameActionPanelWidget');
-    log.info('Submitting action..');
+    log.fine('Submitting action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
@@ -116,7 +116,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
       return;
     }
 
-    log.info('++ Submitting action');
+    log.fine('++ Submitting action');
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
@@ -129,17 +129,17 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
     // TODO: Loop this using a timer allowing animations to complete
     var moreActions = dungeonActionCubit.playAction();
-    log.info('++ More actions >$moreActions<');
+    log.fine('++ More actions >$moreActions<');
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameActionPanelWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.info(
+        log.fine(
             'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
 
         // Set grid member dimensions

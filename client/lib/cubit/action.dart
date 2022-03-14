@@ -11,7 +11,7 @@ import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 void selectAction(BuildContext context, String action) {
   final log = getLogger('GameActionPanelWidget');
-  log.info('Selecting action..');
+  log.fine('Selecting action..');
 
   final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
   if (dungeonCubit.dungeonRecord == null) {
@@ -29,18 +29,18 @@ void selectAction(BuildContext context, String action) {
 
   final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
   if (dungeonCommandCubit.action == action) {
-    log.info('++ Unselecting action $action');
+    log.fine('++ Unselecting action $action');
     dungeonCommandCubit.unselectAction();
     return;
   }
 
-  log.info('++ Selecting action $action');
+  log.fine('++ Selecting action $action');
   dungeonCommandCubit.selectAction(action);
 }
 
 void submitAction(BuildContext context) async {
   final log = getLogger('GameActionPanelWidget');
-  log.info('Submitting action..');
+  log.fine('Submitting action..');
 
   final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
   if (dungeonCubit.dungeonRecord == null) {
@@ -56,7 +56,7 @@ void submitAction(BuildContext context) async {
     return;
   }
 
-  log.info('++ Submitting action');
+  log.fine('++ Submitting action');
   final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
   final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
@@ -69,5 +69,5 @@ void submitAction(BuildContext context) async {
 
   // TODO: Loop this using a timer allowing animations to complete
   var moreActions = dungeonActionCubit.playAction();
-  log.info('++ More actions >$moreActions<');
+  log.fine('++ More actions >$moreActions<');
 }

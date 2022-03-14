@@ -21,7 +21,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   Future<void> createAction(
       String dungeonID, String characterID, String command) async {
     final log = getLogger('DungeonActionCubit');
-    log.info('(createAction) Creating dungeon action command >$command<');
+    log.fine('(createAction) Creating dungeon action command >$command<');
 
     emit(DungeonActionStateCreating(
       sentence: command,
@@ -32,15 +32,15 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
         .dungeonActionRepository
         .create(dungeonID, characterID, command);
 
-    log.info(
+    log.fine(
         '(createAction) location ${createdDungeonActionRecord?.location.name}');
-    log.info(
+    log.fine(
         '(createAction) targetLocation ${createdDungeonActionRecord?.targetLocation?.name}');
-    log.info(
+    log.fine(
         '(createAction) targetCharacter ${createdDungeonActionRecord?.targetCharacter?.name}');
-    log.info(
+    log.fine(
         '(createAction) targetMonster ${createdDungeonActionRecord?.targetMonster?.name}');
-    log.info(
+    log.fine(
         '(createAction) targetObject ${createdDungeonActionRecord?.targetObject?.name}');
 
     if (createdDungeonActionRecord != null) {
@@ -68,7 +68,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     final log = getLogger('DungeonActionCubit');
 
     if (dungeonActionRecords.length < 2) {
-      log.info(
+      log.fine(
           '(playAction) Not enough dungeon action records, not playing action');
       return false;
     }
@@ -81,22 +81,22 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     }
 
     if (current.targetLocation != null) {
-      log.info(
+      log.fine(
           '(playAction) Play action command >${current.command}< direction >$direction<');
     }
 
     if (current.targetCharacter != null) {
-      log.info(
+      log.fine(
           '(playAction) Play action command >${current.command}< character >${current.targetCharacter?.name}<');
     }
 
     if (current.targetMonster != null) {
-      log.info(
+      log.fine(
           '(playAction) Play action command >${current.command}< monster >${current.targetMonster?.name}<');
     }
 
     if (current.targetObject != null) {
-      log.info(
+      log.fine(
           '(playAction) Play action command >${current.command}< object >${current.targetObject?.name}<');
     }
 

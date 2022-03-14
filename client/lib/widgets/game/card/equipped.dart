@@ -22,7 +22,7 @@ class GameCardEquippedWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final log = getLogger('GameCardEquippedWidget');
 
-    log.info('Building..');
+    log.fine('Building..');
 
     List<Widget> objectWidgets = [];
     if (objects == null || objects!.isEmpty) {

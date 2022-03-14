@@ -19,15 +19,15 @@ class _GameLocationDescriptionContainerWidgetState
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameLocationDescriptionContainerWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStateCreated) {
-          log.info('dungeon state is created');
+          log.fine('dungeon state is created');
           List<Widget> widgets = [];
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
@@ -37,7 +37,7 @@ class _GameLocationDescriptionContainerWidgetState
             children: widgets,
           );
         } else if (state is DungeonActionStatePlaying) {
-          log.info('dungeon state is playing');
+          log.fine('dungeon state is playing');
           List<Widget> widgets = [];
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeOut,

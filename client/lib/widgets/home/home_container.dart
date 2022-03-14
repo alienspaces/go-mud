@@ -10,7 +10,8 @@ import 'package:go_mud_client/widgets/home/home_dungeon.dart';
 class HomeContainerWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
 
-  const HomeContainerWidget({Key? key, required this.callbacks}) : super(key: key);
+  const HomeContainerWidget({Key? key, required this.callbacks})
+      : super(key: key);
 
   @override
   _HomeContainerWidgetState createState() => _HomeContainerWidgetState();
@@ -20,7 +21,7 @@ class _HomeContainerWidgetState extends State<HomeContainerWidget> {
   @override
   void initState() {
     final log = getLogger('HomeContainerWidget');
-    log.info('Initialising state..');
+    log.fine('Initialising state..');
 
     super.initState();
 
@@ -29,7 +30,7 @@ class _HomeContainerWidgetState extends State<HomeContainerWidget> {
 
   void _loadDungeons(BuildContext context) {
     final log = getLogger('HomeContainerWidget');
-    log.info('Loading dungeons');
+    log.fine('Loading dungeons');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     dungeonCubit.loadDungeons();
@@ -38,20 +39,20 @@ class _HomeContainerWidgetState extends State<HomeContainerWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('HomeContainerWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonCubit, DungeonState>(
       listener: (context, state) {
-        log.info('listener...');
+        log.fine('listener...');
       },
       builder: (BuildContext context, DungeonState state) {
-        log.info('builder...');
+        log.fine('builder...');
         List<Widget> widgets = [];
 
         if (state is DungeonStateLoaded) {
           // Dungeon list
           state.dungeonRecords?.forEach((dungeonRecord) {
-            log.info('Displaying dungeon widget');
+            log.fine('Displaying dungeon widget');
             widgets.add(
               // ignore: avoid_unnecessary_containers
               Container(

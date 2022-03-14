@@ -34,7 +34,7 @@ FontScale getFontScale() {
   var safeWidth = logicalWidth - paddingLeft - paddingRight;
   var safeHeight = logicalHeight - paddingTop - paddingBottom;
 
-  log.info("Screen width >$safeWidth< height >$safeHeight<");
+  log.fine("Screen width >$safeWidth< height >$safeHeight<");
 
   if (safeWidth < 370) {
     sizeFactor = 0.85;
@@ -44,7 +44,7 @@ FontScale getFontScale() {
     sizeFactor = 0.95;
   }
 
-  log.info("Font sizeDelta >$sizeDelta< sizeFactor >$sizeFactor<");
+  log.fine("Font sizeDelta >$sizeDelta< sizeFactor >$sizeFactor<");
 
   return FontScale(sizeDelta: sizeDelta, sizeFactor: sizeFactor);
 }

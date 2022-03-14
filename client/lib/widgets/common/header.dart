@@ -50,7 +50,7 @@ void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     dungeonCubit.clearDungeon();
 
-    log.info('Navigating to home page...');
+    log.fine('Navigating to home page...');
     callbacks.openHomePage(context);
   });
 }
@@ -58,14 +58,14 @@ void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
 void _navigateCharacter(BuildContext context, NavigationCallbacks callbacks) {
   final log = getLogger('Header');
 
-  log.info('Navigating to character page...');
+  log.fine('Navigating to character page...');
   callbacks.openCharacterPage(context);
 }
 
 void _navigateGame(BuildContext context, NavigationCallbacks callbacks) {
   final log = getLogger('Header');
 
-  log.info('Navigating to game page...');
+  log.fine('Navigating to game page...');
   callbacks.openGamePage(context);
 }
 

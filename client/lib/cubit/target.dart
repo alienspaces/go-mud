@@ -11,7 +11,7 @@ import 'character/character_cubit.dart';
 
 void selectTarget(BuildContext context, String target) {
   final log = getLogger('selectTarget');
-  log.info('Submitting move action..');
+  log.fine('Submitting move action..');
 
   final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
   if (dungeonCubit.dungeonRecord == null) {
@@ -29,11 +29,11 @@ void selectTarget(BuildContext context, String target) {
 
   final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
   if (dungeonCommandCubit.target == target) {
-    log.info('++ Unselecting target $target');
+    log.fine('++ Unselecting target $target');
     dungeonCommandCubit.unselectTarget();
     return;
   }
 
-  log.info('++ Selecting target $target');
+  log.fine('++ Selecting target $target');
   dungeonCommandCubit.selectTarget(target);
 }

@@ -25,7 +25,7 @@ class _GameWidgetState extends State<GameWidget> {
   @override
   void initState() {
     final log = getLogger('HomeContainerWidget');
-    log.info('Initialising state..');
+    log.fine('Initialising state..');
 
     super.initState();
 
@@ -34,7 +34,7 @@ class _GameWidgetState extends State<GameWidget> {
 
   void _initAction(BuildContext context) {
     final log = getLogger('GameWidget');
-    log.info('Initialising action..');
+    log.fine('Initialising action..');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
     if (dungeonCubit.dungeonRecord == null) {
@@ -68,7 +68,7 @@ class _GameWidgetState extends State<GameWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('Game');
-    log.info('Building..');
+    log.fine('Building..');
 
     // ignore: avoid_unnecessary_containers
     return Container(

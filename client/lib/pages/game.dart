@@ -57,7 +57,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameScreen');
-    log.info('Building..');
+    log.fine('Building..');
 
     return Scaffold(
       appBar: header(context, widget.callbacks),

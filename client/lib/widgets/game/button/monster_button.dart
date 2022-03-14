@@ -19,7 +19,7 @@ class _MonsterButtonWidgetState extends State<MonsterButtonWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('MonsterButtonWidget');
-    log.info('Building..');
+    log.fine('Building..');
 
     return Container(
       margin: gameButtonMargin,
