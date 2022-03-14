@@ -80,3 +80,16 @@ A character may attempt `use` any object that is equipped, stashed or in their c
 use sword
 use door
 ```
+
+### Attack Actions
+
+📝 _Unimplemented_
+
+A character may attempt `attack` any monster in the same room with any equipped object that can cause damage. By default the object in the characters main hand will be used. Otherwise you may specify the object that is held in the characters main or off hand.
+
+**Syntax Examples:**
+
+```text
+attack Grumpy Dwarf
+attack Grumpy Dwarf with Rusted Dagger
+```
