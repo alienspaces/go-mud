@@ -8,11 +8,10 @@
 
 ## Now
 
-- Client: Display narration from action responses
+- Server: Implement 2 second turns
 
 ## Next
 
-- Server: Implement 2 second turns
 - Client: Implement 2 second progress bar and retries
 
 ## Later
