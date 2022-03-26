@@ -456,7 +456,7 @@ func (c *Client) BuildURL(method, requestURL string, params map[string]string) (
 	case http.MethodPut, http.MethodDelete:
 		if _, ok := params["id"]; !ok {
 			if _, ok := params[":id"]; !ok {
-				msg := "Params must contain :id for method Put"
+				msg := "Params must contain :id for method Put and Delete"
 				c.Log.Warn(msg)
 				return requestURL, fmt.Errorf(msg)
 			}

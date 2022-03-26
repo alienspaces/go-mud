@@ -9,88 +9,47 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
-// TODO: Use Runner InitTx in this function
-
 // Tx -
-func (rnr *Runner) Tx(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error) {
+func (rnr *Runner) Tx(h Handle) (Handle, error) {
 
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) {
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-		l.Debug("** Tx ** beginning database transaction")
-
-		tx, err := rnr.Store.GetTx()
-		if err != nil {
-			l.Warn("Failed getting DB connection >%v<", err)
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		// preparer
-		if rnr.PreparerFunc == nil {
-			l.Warn("Runner PreparerFunc is nil")
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		p, err := rnr.PreparerFunc(l)
-		if err != nil {
-			l.Warn("Failed PreparerFunc >%v<", err)
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		if p == nil {
-			l.Warn("Preparer is nil, cannot continue")
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		// NOTE: The modeller is created an initialised with every request instead of
+		// NOTE: The modeller is created and initialised with every request instead of
 		// creating and assigning to a runner struct "Model" property at start up.
 		// This prevents directly accessing a shared property from with the handler
 		// function which is running in a goroutine. Otherwise accessing the "Model"
 		// property would require locking and block simultaneous requests.
 
-		// modeller
-		if rnr.ModellerFunc == nil {
-			l.Warn("Runner ModellerFunc is nil")
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
+		l.Info("** Tx ** initialising database transaction")
 
-		m, err := rnr.ModellerFunc(l)
+		m, err := rnr.InitTx(l)
 		if err != nil {
-			l.Warn("Failed ModellerFunc >%v<", err)
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
+			l.Error("failed initialising database transaction, cannot authen >%v<", err)
+			WriteSystemError(l, w, err)
+			return err
 		}
 
-		if m == nil {
-			l.Warn("Modeller is nil, cannot continue")
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		err = m.Init(p, tx)
+		err = h(w, r, pp, qp, l, m)
 		if err != nil {
-			l.Warn("Failed init modeller >%v<", err)
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
+			l.Warn("** Tx ** rolling back database transaction")
+
+			if err := m.Rollback(); err != nil {
+				l.Warn("failed Tx rollback >%v<", err)
+				return err
+			}
+			return err
 		}
 
-		// delegate request
-		h(w, r, pp, qp, l, m)
+		l.Info("** Tx ** committing database transaction")
 
-		l.Debug("** Tx ** committing database transaction")
-
-		// TODO: Handle should return a possible error so we can
-		// determine whether we need to commit or rollback
-		err = tx.Commit()
+		err = m.Commit()
 		if err != nil {
-			l.Warn("Failed Tx commit >%v<", err)
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
+			l.Warn("failed Tx commit >%v<", err)
+			WriteSystemError(l, w, err)
+			return err
 		}
+
+		return nil
 	}
 
 	return handle, nil

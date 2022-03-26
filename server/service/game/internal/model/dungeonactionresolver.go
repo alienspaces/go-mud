@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/alienspaces/go-mud/server/core/store"
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -107,10 +107,10 @@ func (m *Model) resolveMoveAction(sentence string, dungeonCharacterRec *record.D
 	dungeonActionRecord := record.DungeonAction{
 		DungeonID:                              dungeonCharacterRec.DungeonID,
 		DungeonLocationID:                      dungeonCharacterRec.DungeonLocationID,
-		DungeonCharacterID:                     store.NullString(dungeonCharacterRec.ID),
+		DungeonCharacterID:                     nullstring.FromString(dungeonCharacterRec.ID),
 		ResolvedCommand:                        "move",
-		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
-		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
+		ResolvedTargetDungeonLocationDirection: nullstring.FromString(targetDungeonLocationDirection),
+		ResolvedTargetDungeonLocationID:        nullstring.FromString(targetDungeonLocationID),
 	}
 
 	return &dungeonActionRecord, nil
@@ -175,13 +175,13 @@ func (m *Model) resolveLookAction(sentence string, dungeonCharacterRec *record.D
 	dungeonActionRecord := record.DungeonAction{
 		DungeonID:                              dungeonCharacterRec.DungeonID,
 		DungeonLocationID:                      dungeonCharacterRec.DungeonLocationID,
-		DungeonCharacterID:                     store.NullString(dungeonCharacterRec.ID),
+		DungeonCharacterID:                     nullstring.FromString(dungeonCharacterRec.ID),
 		ResolvedCommand:                        "look",
-		ResolvedTargetDungeonObjectID:          store.NullString(targetDungeonObjectID),
-		ResolvedTargetDungeonMonsterID:         store.NullString(targetDungeonMonsterID),
-		ResolvedTargetDungeonCharacterID:       store.NullString(targetDungeonCharacterID),
-		ResolvedTargetDungeonLocationDirection: store.NullString(targetDungeonLocationDirection),
-		ResolvedTargetDungeonLocationID:        store.NullString(targetDungeonLocationID),
+		ResolvedTargetDungeonObjectID:          nullstring.FromString(targetDungeonObjectID),
+		ResolvedTargetDungeonMonsterID:         nullstring.FromString(targetDungeonMonsterID),
+		ResolvedTargetDungeonCharacterID:       nullstring.FromString(targetDungeonCharacterID),
+		ResolvedTargetDungeonLocationDirection: nullstring.FromString(targetDungeonLocationDirection),
+		ResolvedTargetDungeonLocationID:        nullstring.FromString(targetDungeonLocationID),
 	}
 
 	return &dungeonActionRecord, nil
@@ -219,10 +219,10 @@ func (m *Model) resolveStashAction(sentence string, dungeonCharacterRec *record.
 	dungeonActionRec := record.DungeonAction{
 		DungeonID:                      dungeonCharacterRec.DungeonID,
 		DungeonLocationID:              dungeonCharacterRec.DungeonLocationID,
-		DungeonCharacterID:             store.NullString(dungeonCharacterRec.ID),
+		DungeonCharacterID:             nullstring.FromString(dungeonCharacterRec.ID),
 		ResolvedCommand:                "stash",
-		ResolvedTargetDungeonObjectID:  store.NullString(stashedDungeonObjectID),
-		ResolvedStashedDungeonObjectID: store.NullString(stashedDungeonObjectID),
+		ResolvedTargetDungeonObjectID:  nullstring.FromString(stashedDungeonObjectID),
+		ResolvedStashedDungeonObjectID: nullstring.FromString(stashedDungeonObjectID),
 	}
 
 	return &dungeonActionRec, nil
@@ -260,10 +260,10 @@ func (m *Model) resolveEquipAction(sentence string, dungeonCharacterRec *record.
 	dungeonActionRec := record.DungeonAction{
 		DungeonID:                       dungeonCharacterRec.DungeonID,
 		DungeonLocationID:               dungeonCharacterRec.DungeonLocationID,
-		DungeonCharacterID:              store.NullString(dungeonCharacterRec.ID),
+		DungeonCharacterID:              nullstring.FromString(dungeonCharacterRec.ID),
 		ResolvedCommand:                 "equip",
-		ResolvedTargetDungeonObjectID:   store.NullString(equippedDungeonObjectID),
-		ResolvedEquippedDungeonObjectID: store.NullString(equippedDungeonObjectID),
+		ResolvedTargetDungeonObjectID:   nullstring.FromString(equippedDungeonObjectID),
+		ResolvedEquippedDungeonObjectID: nullstring.FromString(equippedDungeonObjectID),
 	}
 
 	return &dungeonActionRec, nil
@@ -310,10 +310,10 @@ func (m *Model) resolveDropAction(sentence string, dungeonCharacterRec *record.D
 	dungeonActionRec := record.DungeonAction{
 		DungeonID:                      dungeonCharacterRec.DungeonID,
 		DungeonLocationID:              dungeonCharacterRec.DungeonLocationID,
-		DungeonCharacterID:             store.NullString(dungeonCharacterRec.ID),
+		DungeonCharacterID:             nullstring.FromString(dungeonCharacterRec.ID),
 		ResolvedCommand:                "drop",
-		ResolvedTargetDungeonObjectID:  store.NullString(droppedDungeonObjectID),
-		ResolvedDroppedDungeonObjectID: store.NullString(droppedDungeonObjectID),
+		ResolvedTargetDungeonObjectID:  nullstring.FromString(droppedDungeonObjectID),
+		ResolvedDroppedDungeonObjectID: nullstring.FromString(droppedDungeonObjectID),
 	}
 
 	return &dungeonActionRec, nil

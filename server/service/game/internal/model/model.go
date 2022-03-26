@@ -45,7 +45,7 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 }
 
 // NewRepositories - Custom repositories for this model
-func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.Repositor, error) {
+func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
 
 	repositoryList := []repositor.Repositor{}
 

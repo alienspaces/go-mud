@@ -8,7 +8,6 @@ import (
 )
 
 func TestNewConfig(t *testing.T) {
-
 	tests := map[string]struct {
 		setup   func() func()
 		dotEnv  bool
@@ -44,32 +43,44 @@ func TestNewConfig(t *testing.T) {
 			items:   nil,
 			wantErr: true,
 		},
+		"NewConfig without APP_SERVER_HOME": {
+			setup: func() func() {
+				appHome := os.Getenv("APP_SERVER_HOME")
+				os.Setenv("APP_SERVER_HOME", "")
+				return func() {
+					os.Setenv("APP_SERVER_HOME", appHome)
+				}
+			},
+			dotEnv:  false,
+			items:   nil,
+			wantErr: false,
+		},
 	}
 
 	for tcName, tc := range tests {
+		t.Run(tcName, func(t *testing.T) {
+			t.Logf("Running test >%s<", tcName)
 
-		t.Logf("Running test >%s<", tcName)
+			func() {
 
-		func() {
+				teardown := tc.setup()
+				defer func() {
+					teardown()
+				}()
 
-			teardown := tc.setup()
-			defer func() {
-				teardown()
+				e, err := NewConfig(tc.items, tc.dotEnv)
+				if tc.wantErr {
+					require.Error(t, err, "NewConfig returns with error")
+					return
+				}
+				require.NoError(t, err, "NewConfig returns without error")
+				require.NotNil(t, e, "NewConfig returns environment object")
 			}()
-
-			e, err := NewConfig(tc.items, tc.dotEnv)
-			if tc.wantErr {
-				require.Error(t, err, "NewConfig returns with error")
-				return
-			}
-			require.NoError(t, err, "NewConfig returns without error")
-			require.NotNil(t, e, "NewConfig returns environment object")
-		}()
+		})
 	}
 }
 
 func TestGet(t *testing.T) {
-
 	tests := map[string]struct {
 		items      []Item
 		wantErr    bool
@@ -99,17 +110,18 @@ func TestGet(t *testing.T) {
 		}}
 
 	for tcName, tc := range tests {
+		t.Run(tcName, func(t *testing.T) {
+			t.Logf("Running test >%s<", tcName)
 
-		t.Logf("Running test >%s<", tcName)
-
-		e, err := NewConfig(tc.items, false)
-		if tc.wantErr {
-			require.Error(t, err, "NewConfig returns with error")
-			continue
-		}
-		for idx, item := range tc.items {
-			value := e.Get(item.Key)
-			require.Equal(t, tc.wantValues[idx], value, "Get returns expected value")
-		}
+			e, err := NewConfig(tc.items, false)
+			if tc.wantErr {
+				require.Error(t, err, "NewConfig returns with error")
+			} else {
+				for idx, item := range tc.items {
+					value := e.Get(item.Key)
+					require.Equal(t, tc.wantValues[idx], value, "Get returns expected value")
+				}
+			}
+		})
 	}
 }

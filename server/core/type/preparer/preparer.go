@@ -6,27 +6,48 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparable"
 )
 
-// Preparer -
-type Preparer interface {
-	Init(db *sqlx.DB) (err error)
-	Prepare(m preparable.Preparable) error
-	GetOneStmt(m preparable.Preparable) *sqlx.Stmt
-	GetOneForUpdateStmt(m preparable.Preparable) *sqlx.Stmt
-	GetManyStmt(m preparable.Preparable) *sqlx.NamedStmt
-	CreateOneStmt(m preparable.Preparable) *sqlx.NamedStmt
-	UpdateOneStmt(m preparable.Preparable) *sqlx.NamedStmt
-	UpdateManyStmt(m preparable.Preparable) *sqlx.NamedStmt
-	DeleteOneStmt(m preparable.Preparable) *sqlx.NamedStmt
-	DeleteManyStmt(m preparable.Preparable) *sqlx.NamedStmt
-	RemoveOneStmt(m preparable.Preparable) *sqlx.NamedStmt
-	RemoveManyStmt(m preparable.Preparable) *sqlx.NamedStmt
-	GetOneSQL(m preparable.Preparable) string
-	GetManySQL(m preparable.Preparable) string
-	CreateSQL(m preparable.Preparable) string
-	UpdateOneSQL(m preparable.Preparable) string
-	UpdateManySQL(m preparable.Preparable) string
-	DeleteOneSQL(m preparable.Preparable) string
-	DeleteManySQL(m preparable.Preparable) string
-	RemoveOneSQL(m preparable.Preparable) string
-	RemoveManySQL(m preparable.Preparable) string
+type ExcludePreparation struct {
+	GetOne          bool
+	GetOneForUpdate bool
+	GetMany         bool
+	CreateOne       bool
+	CreateMany      bool
+	UpdateOne       bool
+	UpdateMany      bool
+	DeleteOne       bool
+	DeleteMany      bool
+	RemoveOne       bool
+	RemoveMany      bool
+}
+
+type Repository interface {
+	Init(tx *sqlx.DB) (err error)
+	Prepare(m preparable.Repository, e ExcludePreparation) error
+	GetOneStmt(m preparable.Repository) *sqlx.Stmt
+	GetOneForUpdateStmt(m preparable.Repository) *sqlx.Stmt
+	GetManyStmt(m preparable.Repository) *sqlx.NamedStmt
+	CreateOneStmt(m preparable.Repository) *sqlx.NamedStmt
+	UpdateOneStmt(m preparable.Repository) *sqlx.NamedStmt
+	UpdateManyStmt(m preparable.Repository) *sqlx.NamedStmt
+	DeleteOneStmt(m preparable.Repository) *sqlx.NamedStmt
+	DeleteManyStmt(m preparable.Repository) *sqlx.NamedStmt
+	RemoveOneStmt(m preparable.Repository) *sqlx.NamedStmt
+	RemoveManyStmt(m preparable.Repository) *sqlx.NamedStmt
+	GetOneSQL(m preparable.Repository) string
+	GetManySQL(m preparable.Repository) string
+	CreateSQL(m preparable.Repository) string
+	UpdateOneSQL(m preparable.Repository) string
+	UpdateManySQL(m preparable.Repository) string
+	DeleteOneSQL(m preparable.Repository) string
+	DeleteManySQL(m preparable.Repository) string
+	RemoveOneSQL(m preparable.Repository) string
+	RemoveManySQL(m preparable.Repository) string
+}
+
+type Query interface {
+	Init(tx *sqlx.DB) (err error)
+	Prepare(q preparable.Query) error
+
+	Stmt() *sqlx.NamedStmt
+	SQL() string
 }

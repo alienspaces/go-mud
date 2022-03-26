@@ -1,11 +1,15 @@
 package harness
 
 import (
-	"fmt"
+	"testing"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/core/config"
+	"gitlab.com/alienspaces/go-mud/server/core/log"
 	"gitlab.com/alienspaces/go-mud/server/core/prepare"
+	"gitlab.com/alienspaces/go-mud/server/core/store"
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -21,11 +25,12 @@ type RemoveDataFunc func() error
 
 // Testing -
 type Testing struct {
-	Config  configurer.Configurer
-	Log     logger.Logger
-	Store   storer.Storer
-	Prepare preparer.Preparer
-	Model   modeller.Modeller
+	Config            configurer.Configurer
+	Log               logger.Logger
+	Store             storer.Storer
+	PrepareRepository preparer.Repository
+	PrepareQuery      preparer.Query
+	Model             modeller.Modeller
 
 	// Configuration
 	CommitData bool
@@ -42,14 +47,9 @@ type Testing struct {
 }
 
 // NewTesting -
-func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) (t *Testing, err error) {
+func NewTesting() (t *Testing, err error) {
 
-	t = &Testing{
-		Config: c,
-		Log:    l,
-		Store:  s,
-		Model:  m,
-	}
+	t = &Testing{}
 
 	return t, nil
 }
@@ -57,53 +57,46 @@ func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m mod
 // Init -
 func (t *Testing) Init() (err error) {
 
-	// Configurer
+	// configurer
 	if t.Config == nil {
-		c, err := NewDefaultConfig()
+		t.Config, err = config.NewConfigWithDefaults(nil, false)
 		if err != nil {
 			return err
 		}
-		t.Config = c
 	}
 
-	// Logger
+	// logger
 	if t.Log == nil {
-		l, err := NewDefaultLogger(t.Config)
+		t.Log, err = log.NewLogger(t.Config)
 		if err != nil {
 			return err
 		}
-		t.Log = l
 	}
 
-	// Storer
+	// storer
 	if t.Store == nil {
-		s, err := NewDefaultStorer(t.Config, t.Log)
+		t.Store, err = store.NewStore(t.Config, t.Log)
 		if err != nil {
-			return err
-		}
-		t.Store = s
-	}
-
-	// Modeller
-	if t.Model == nil {
-		if t.ModellerFunc == nil {
-			msg := "failed Init, ModellerFunc is nil"
-			t.Log.Warn(msg)
-			return fmt.Errorf(msg)
-		}
-		t.Model, err = t.ModellerFunc()
-		if err != nil {
-			t.Log.Warn("failed new modeller >%v<", err)
 			return err
 		}
 	}
 
-	t.Log.Debug("Modeller ready")
+	err = t.Store.Init()
+	if err != nil {
+		t.Log.Warn("failed storer init >%v<", err)
+		return err
+	}
 
-	// Preparer
-	t.Prepare, err = prepare.NewPrepare(t.Log)
+	// preparer
+	t.PrepareRepository, err = prepare.NewPrepare(t.Log)
 	if err != nil {
 		t.Log.Warn("failed new preparer >%v<", err)
+		return err
+	}
+
+	t.PrepareQuery, err = prepare.NewQuery(t.Log)
+	if err != nil {
+		t.Log.Warn("failed new preparer config >%v<", err)
 		return err
 	}
 
@@ -113,13 +106,28 @@ func (t *Testing) Init() (err error) {
 		return err
 	}
 
-	err = t.Prepare.Init(db)
+	err = t.PrepareRepository.Init(db)
 	if err != nil {
 		t.Log.Warn("failed preparer init >%v<", err)
 		return err
 	}
 
-	t.Log.Debug("Preparer ready")
+	err = t.PrepareQuery.Init(db)
+	if err != nil {
+		t.Log.Warn("failed preparer config init >%v<", err)
+		return err
+	}
+
+	t.Log.Debug("Repository ready")
+
+	// modeller
+	t.Model, err = t.ModellerFunc()
+	if err != nil {
+		t.Log.Warn("failed new modeller >%v<", err)
+		return err
+	}
+
+	t.Log.Debug("Modeller ready")
 
 	return nil
 }
@@ -138,7 +146,7 @@ func (t *Testing) InitTx(tx *sqlx.Tx) (err error) {
 		}
 	}
 
-	err = t.Model.Init(t.Prepare, tx)
+	err = t.Model.Init(t.PrepareRepository, t.PrepareQuery, tx)
 	if err != nil {
 		t.Log.Warn("failed modeller init >%v<", err)
 		return err
@@ -233,10 +241,19 @@ func (t *Testing) Teardown() (err error) {
 		t.Log.Debug("Committing database tx")
 		err = t.CommitTx()
 		if err != nil {
-			t.Log.Warn("failed comitting data >%v<", err)
+			t.Log.Warn("failed committing data >%v<", err)
 			return err
 		}
 	}
 
 	return nil
+}
+
+// Shutdown -
+func (t *Testing) Shutdown(test *testing.T) {
+	db, err := t.Store.GetDb()
+	require.NoError(test, err, "getDb should return no error")
+
+	err = db.Close()
+	require.NoError(test, err, "close db should return no error")
 }

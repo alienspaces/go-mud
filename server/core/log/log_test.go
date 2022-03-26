@@ -12,7 +12,7 @@ import (
 func TestLogger(t *testing.T) {
 
 	// config
-	c, err := config.NewConfig([]config.Item{}, false)
+	c, err := config.NewConfigWithDefaults([]config.Item{}, false)
 	require.Nil(t, err, "NewConfig returns without error")
 
 	envVars := map[string]string{

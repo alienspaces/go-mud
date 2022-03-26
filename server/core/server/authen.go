@@ -2,141 +2,65 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"strings"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 
-	"gitlab.com/alienspaces/go-mud/server/core/auth"
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
-// auth
-var authen *auth.Auth
-
-// authenCache - path, method
-var authenCache map[string]map[string][]string
-
 // Authen -
-func (rnr *Runner) Authen(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error) {
+func (rnr *Runner) Authen(hc HandlerConfig, h Handle) (Handle, error) {
+	authenTypes := ToAuthenticationSet(hc.MiddlewareConfig.AuthenTypes...)
 
-	var err error
-	if authen == nil {
-		authen, err = auth.NewAuth(rnr.Config, rnr.Log)
-		if err != nil {
-			rnr.Log.Warn("Failed new auth >%v<", err)
-			return nil, err
-		}
-	}
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	// Cache authen configuration
-	err = rnr.authenCacheConfig(hc)
-	if err != nil {
-		rnr.Log.Warn("Failed caching authen config >%v<", err)
-		return nil, err
-	}
-
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
-
-		l.Info("** Authen **")
-
-		ctx, err := rnr.handleAuthen(r, l, m, hc)
-		if err != nil {
-			l.Warn("Failed authen >%v<", err)
-			rnr.WriteUnauthorizedError(l, w, err)
-			return
+		if _, ok := authenTypes[AuthenTypePublic]; ok {
+			return h(w, r, pp, qp, l, m)
 		}
 
-		h(w, r.WithContext(ctx), pp, qp, l, m)
+		xAuthorization := r.Header.Get("X-Authorization")
+
+		apiKey, apiKeyErr := uuid.Parse(xAuthorization)
+		if _, ok := authenTypes[AuthenTypeAPIKey]; ok && apiKeyErr == nil {
+			return rnr.handleAuthByAPIKey(w, r, pp, qp, l, m, h, apiKey.String())
+		}
+
+		err := coreerror.NewUnauthenticatedError("X-Authorization header value is missing or invalid.")
+		l.Warn(err.Error())
+		WriteError(l, w, err)
+
+		return err
 	}
 
 	return handle, nil
 }
 
-// handleAuthen -
-func (rnr *Runner) handleAuthen(r *http.Request, l logger.Logger, m modeller.Modeller, hc HandlerConfig) (context.Context, error) {
-
-	// Authentication may add roles and identities to request context
-	ctx := r.Context()
-
-	if authenCache == nil {
-		l.Info("Authen not configured")
-		return ctx, nil
+func (rnr *Runner) handleAuthByAPIKey(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller, h Handle, apiKey string) error {
+	auth, err := rnr.AuthenticateByAPIKeyFunc(m, l, apiKey)
+	if err != nil {
+		l.Error("failed to validate hashed API key >%v<", err)
+		WriteError(l, w, err)
+		return err
 	}
 
-	authenMethods := authenCache[hc.Path]
-	if authenMethods == nil {
-		l.Info("Authentication not configured for path >%s<", hc.Path)
-		return ctx, nil
+	if auth.IsValid {
+		l.Context("API key", auth.HashedAPIKey)
+		defer func() {
+			l.Context("API key", "")
+		}()
+
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, ctxKeyAuth, auth)
+		r = r.WithContext(ctx)
+		return h(w, r, pp, qp, l, m)
 	}
 
-	authenTypes := authenMethods[hc.Method]
-	if authenTypes == nil {
-		l.Info("Authentication not configured for path >%s< method >%s<", hc.Path, hc.Method)
-		return ctx, nil
-	}
-
-	for _, authenType := range authenTypes {
-		switch authenType {
-		case auth.AuthTypeJWT:
-			l.Info("** Authen ** JWT")
-			// Get authentication token
-			authString := r.Header.Get("Authorization")
-			if authString == "" {
-				msg := "authorization header is empty"
-				l.Warn(msg)
-				return ctx, fmt.Errorf(msg)
-			}
-			if strings.Contains(authString, "Bearer ") {
-				authString = strings.Split(authString, "Bearer ")[1]
-			}
-
-			// Decode authentication token
-			claims, err := authen.DecodeJWT(authString)
-			if err != nil {
-				l.Warn("Failed authenticating token >%v<", err)
-				return ctx, err
-			}
-
-			l.Info("Have claims >%#v<", claims)
-
-			// Add roles to request context
-			ctx, err = rnr.addContextRoles(ctx, claims.Roles)
-			if err != nil {
-				l.Warn("Failed adding roles context >%v<", err)
-				return ctx, err
-			}
-
-			// Add identity to request context
-			ctx, err = rnr.addContextIdentity(ctx, claims.Identity)
-			if err != nil {
-				return ctx, err
-			}
-
-		default:
-			// Unsupported authentication configuration
-			msg := "unsupported authentication configuration"
-			return ctx, fmt.Errorf(msg)
-		}
-	}
-
-	return ctx, nil
-}
-
-// authenCacheConfig - cache authen configuration
-func (rnr *Runner) authenCacheConfig(hc HandlerConfig) error {
-
-	if hc.MiddlewareConfig.AuthTypes != nil {
-		if authenCache == nil {
-			authenCache = make(map[string]map[string][]string)
-		}
-		if authenCache[hc.Path] == nil {
-			authenCache[hc.Path] = make(map[string][]string)
-		}
-		authenCache[hc.Path][hc.Method] = append(authenCache[hc.Path][hc.Method], hc.MiddlewareConfig.AuthTypes...)
-	}
-
-	return nil
+	m.Rollback()
+	err = coreerror.NewUnauthenticatedError("X-Authorization header API key is missing or invalid.")
+	WriteError(l, w, err)
+	return err
 }

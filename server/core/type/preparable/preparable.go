@@ -1,8 +1,8 @@
 package preparable
 
-// Preparable -
-type Preparable interface {
+type Repository interface {
 	TableName() string
+	Attributes() []string
 	GetOneSQL() string
 	GetOneForUpdateSQL() string
 	GetManySQL() string
@@ -13,4 +13,8 @@ type Preparable interface {
 	DeleteManySQL() string
 	RemoveOneSQL() string
 	RemoveManySQL() string
+}
+
+type Query interface {
+	SQL() string
 }

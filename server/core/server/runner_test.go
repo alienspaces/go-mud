@@ -11,52 +11,71 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 )
 
 // TestRunner - allow Init and Run functions to be defined by tests
 type TestRunner struct {
 	Runner
-	InitFunc func(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error
+	InitFunc func(c configurer.Configurer, l logger.Logger, s storer.Storer) error
 }
 
-func (rnr *TestRunner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
+func (rnr *TestRunner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer) error {
+	rnr.Config = c
+	rnr.Log = l
+
 	if rnr.InitFunc == nil {
-		return rnr.Runner.Init(c, l, s, m)
+		return rnr.Runner.Init(s)
 	}
-	return rnr.InitFunc(c, l, s, m)
+	return rnr.InitFunc(c, l, s)
 }
 
 func TestRunnerInit(t *testing.T) {
 
-	c, l, s, m, err := NewDefaultDependencies()
+	c, l, s, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
+
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
 
 	tr := TestRunner{}
 
-	err = tr.Init(c, l, s, m)
+	err = tr.Init(c, l, s)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	// test init override with failure
-	tr.InitFunc = func(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
+	tr.InitFunc = func(c configurer.Configurer, l logger.Logger, s storer.Storer) error {
 		return errors.New("Init failed")
 	}
-	err = tr.Init(c, l, s, m)
+	err = tr.Init(c, l, s)
 	require.Error(t, err, "Runner Init returns with error")
 }
 
 func TestRunnerServerError(t *testing.T) {
+	t.Parallel()
 
-	c, l, s, m, err := NewDefaultDependencies()
+	c, l, s, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
+
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
 
 	tr := TestRunner{}
 	tr.RunHTTPFunc = func(args map[string]interface{}) error {
 		return fmt.Errorf("Run server error")
 	}
 
-	err = tr.Init(c, l, s, m)
+	err = tr.Init(c, l, s)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	err = tr.Run(nil)
@@ -64,16 +83,25 @@ func TestRunnerServerError(t *testing.T) {
 }
 
 func TestRunnerDaemonError(t *testing.T) {
+	t.Parallel()
 
-	c, l, s, m, err := NewDefaultDependencies()
+	c, l, s, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
+
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
 
 	tr := TestRunner{}
 	tr.RunDaemonFunc = func(args map[string]interface{}) error {
 		return fmt.Errorf("Run daemon error")
 	}
 
-	err = tr.Init(c, l, s, m)
+	err = tr.Init(c, l, s)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	err = tr.Run(nil)
@@ -82,12 +110,20 @@ func TestRunnerDaemonError(t *testing.T) {
 
 func TestRunnerRouter(t *testing.T) {
 
-	c, l, s, m, err := NewDefaultDependencies()
+	c, l, s, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
+
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
 
 	tr := TestRunner{}
 
-	err = tr.Init(c, l, s, m)
+	err = tr.Init(c, l, s)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	// test default routes
@@ -96,13 +132,8 @@ func TestRunnerRouter(t *testing.T) {
 	require.NotNil(t, router, "DefaultRouter returns a router")
 
 	// test default configured routes
-	handle, params, redirect := router.Lookup(http.MethodGet, "/healthz")
-	require.NotNil(t, handle, "Handle is not nil")
-
-	t.Logf("Default route /")
-	t.Logf("Have handler >%#v<", handle)
-	t.Logf("Have params >%v<", params)
-	t.Logf("Have redirect >%t<", redirect)
+	handle, _, _ := router.Lookup(http.MethodGet, "/healthz")
+	require.NotNil(t, handle, "Handle for /healthz is not nil")
 
 	// test custom routes
 	tr.RouterFunc = func(router *httprouter.Router) error {
@@ -119,13 +150,8 @@ func TestRunnerRouter(t *testing.T) {
 	require.NotNil(t, router, "DefaultRouter returns a router")
 
 	// test custom configured routes
-	handle, params, redirect = router.Lookup(http.MethodGet, "/custom")
-	require.NotNil(t, handle, "Handle is not nil")
-
-	t.Logf("Custom route /custom")
-	t.Logf("Have handler >%#v<", handle)
-	t.Logf("Have params >%v<", params)
-	t.Logf("Have redirect >%t<", redirect)
+	handle, _, _ = router.Lookup(http.MethodGet, "/custom")
+	require.NotNil(t, handle, "Handle for /custom is not nil")
 
 	// test custom routes error
 	tr.RouterFunc = func(router *httprouter.Router) error {
@@ -139,12 +165,20 @@ func TestRunnerRouter(t *testing.T) {
 
 func TestRunnerMiddleware(t *testing.T) {
 
-	c, l, s, m, err := NewDefaultDependencies()
+	c, l, s, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
+
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
 
 	tr := TestRunner{}
 
-	err = tr.Init(c, l, s, m)
+	err = tr.Init(c, l, s)
 	require.NoError(t, err, "Runner Init returns without error")
 
 	// test default middleware
@@ -153,7 +187,7 @@ func TestRunnerMiddleware(t *testing.T) {
 	require.NotNil(t, handle, "DefaultMiddleware returns a handle")
 
 	// test custom middleware
-	tr.MiddlewareFunc = func(h HandlerFunc) (HandlerFunc, error) {
+	tr.MiddlewareFunc = func(h Handle) (Handle, error) {
 		return nil, errors.New("Failed middleware")
 	}
 

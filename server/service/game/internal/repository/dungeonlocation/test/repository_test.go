@@ -42,7 +42,7 @@ func TestCreateOne(t *testing.T) {
 				return &record.DungeonLocation{
 					DungeonID:              data.DungeonRecs[0].ID,
 					Name:                   "Dirt Road",
-					NorthDungeonLocationID: store.NullString(data.DungeonLocationRecs[0].ID),
+					NorthDungeonLocationID: nullstring.FromString(data.DungeonLocationRecs[0].ID),
 				}
 			},
 			err: false,
@@ -53,7 +53,7 @@ func TestCreateOne(t *testing.T) {
 				rec := &record.DungeonLocation{
 					DungeonID:              data.DungeonRecs[0].ID,
 					Name:                   "Dusty Road",
-					NorthDungeonLocationID: store.NullString(data.DungeonLocationRecs[0].ID),
+					NorthDungeonLocationID: nullstring.FromString(data.DungeonLocationRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

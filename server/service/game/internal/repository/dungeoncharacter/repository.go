@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/server/core/tag"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
@@ -25,7 +26,7 @@ type Repository struct {
 var _ repositor.Repositor = &Repository{}
 
 // NewRepository -
-func NewRepository(l logger.Logger, p preparer.Preparer, tx *sqlx.Tx) (*Repository, error) {
+func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Repository, error) {
 
 	r := &Repository{
 		repository.Repository{
@@ -35,21 +36,22 @@ func NewRepository(l logger.Logger, p preparer.Preparer, tx *sqlx.Tx) (*Reposito
 
 			// Config
 			Config: repository.Config{
-				TableName: TableName,
+				TableName:  TableName,
+				Attributes: tag.GetValues(record.DungeonCharacter{}, "db"),
 			},
 		},
 	}
 
-	err := r.Init(p, tx)
+	err := r.Init()
 	if err != nil {
-		l.Warn("Failed new repository >%v<", err)
+		l.Warn("failed new repository >%v<", err)
 		return nil, err
 	}
 
 	// prepare
-	err = p.Prepare(r)
+	err = p.Prepare(r, preparer.ExcludePreparation{})
 	if err != nil {
-		l.Warn("Failed preparing repository >%v<", err)
+		l.Warn("failed preparing repository >%v<", err)
 		return nil, err
 	}
 
@@ -70,7 +72,7 @@ func (r *Repository) NewRecordArray() []*record.DungeonCharacter {
 func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonCharacter, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
-		r.Log.Warn("Failed statement execution >%v<", err)
+		r.Log.Warn("failed statement execution >%v<", err)
 		return nil, err
 	}
 	return rec, nil
@@ -84,9 +86,9 @@ func (r *Repository) GetMany(
 
 	recs := r.NewRecordArray()
 
-	rows, err := r.GetManyRecs(params, paramOperators)
+	rows, err := r.GetManyRecs(params, paramOperators, forUpdate)
 	if err != nil {
-		r.Log.Warn("Failed statement execution >%v<", err)
+		r.Log.Warn("failed statement execution >%v<", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -95,13 +97,13 @@ func (r *Repository) GetMany(
 		rec := r.NewRecord()
 		err := rows.StructScan(rec)
 		if err != nil {
-			r.Log.Warn("Failed executing struct scan >%v<", err)
+			r.Log.Warn("failed executing struct scan >%v<", err)
 			return nil, err
 		}
 		recs = append(recs, rec)
 	}
 
-	r.Log.Debug("Fetched >%d< records", len(recs))
+	r.Log.Debug("fetched >%d< records", len(recs))
 
 	return recs, nil
 }
@@ -117,7 +119,7 @@ func (r *Repository) CreateOne(rec *record.DungeonCharacter) error {
 	err := r.CreateOneRec(rec)
 	if err != nil {
 		rec.CreatedAt = time.Time{}
-		r.Log.Warn("Failed statement execution >%v<", err)
+		r.Log.Warn("failed statement execution >%v<", err)
 		return err
 	}
 
@@ -133,7 +135,7 @@ func (r *Repository) UpdateOne(rec *record.DungeonCharacter) error {
 	err := r.UpdateOneRec(rec)
 	if err != nil {
 		rec.UpdatedAt = origUpdatedAt
-		r.Log.Warn("Failed statement execution >%v<", err)
+		r.Log.Warn("failed statement execution >%v<", err)
 		return err
 	}
 

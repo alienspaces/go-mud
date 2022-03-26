@@ -9,7 +9,9 @@ import (
 var (
 	// ErrOperatorNotSupported -
 	ErrOperatorNotSupported = errors.New("operator not supported")
+)
 
+const (
 	// OperatorIsNull -
 	OperatorIsNull = "__is_null"
 	// OperatorIsNotNull -
@@ -57,20 +59,20 @@ func (r *Repository) sqlFromParamsAndOperator(
 
 		operator, found := operators[param]
 		if !found {
-			sqlStmt += fmt.Sprintf("AND \"%s\"", param)
+			sqlStmt += fmt.Sprintf("AND %s", param)
 
-			switch val := val.(type) {
+			switch v := val.(type) {
 			case []string:
-				if len(val) == 0 {
+				if len(v) == 0 {
 					return "", nil, fmt.Errorf("value for param >%s< is empty", param)
 				}
 				// in
 				sqlStmt += " IN ("
-				for idx, paramVal := range val {
+				for idx, paramVal := range v {
 					paramName := fmt.Sprintf("%s%d", param, idx)
 					sqlStmt += fmt.Sprintf(":%s", paramName)
 					queryParams[paramName] = paramVal
-					if idx < len(val)-1 {
+					if idx < len(v)-1 {
 						sqlStmt += ", "
 					}
 				}
@@ -80,16 +82,16 @@ func (r *Repository) sqlFromParamsAndOperator(
 				delete(queryParams, param)
 
 			case []int64:
-				if len(val) == 0 {
+				if len(v) == 0 {
 					return "", nil, fmt.Errorf("value for param >%s< is empty", param)
 				}
 				// in
 				sqlStmt += " IN ("
-				for idx, paramVal := range val {
+				for idx, paramVal := range v {
 					paramName := fmt.Sprintf("%s%d", param, idx)
 					sqlStmt += fmt.Sprintf(":%s", paramName)
 					queryParams[paramName] = paramVal
-					if idx < len(val)-1 {
+					if idx < len(v)-1 {
 						sqlStmt += ", "
 					}
 				}

@@ -42,8 +42,8 @@ func TestCreateOne(t *testing.T) {
 				return &record.DungeonAction{
 					DungeonID:                     data.DungeonRecs[0].ID,
 					DungeonLocationID:             data.DungeonLocationRecs[0].ID,
-					DungeonCharacterID:            store.NullString(data.DungeonCharacterRecs[0].ID),
-					ResolvedTargetDungeonObjectID: store.NullString(data.DungeonObjectRecs[0].ID),
+					DungeonCharacterID:            nullstring.FromString(data.DungeonCharacterRecs[0].ID),
+					ResolvedTargetDungeonObjectID: nullstring.FromString(data.DungeonObjectRecs[0].ID),
 				}
 			},
 			err: false,
@@ -54,8 +54,8 @@ func TestCreateOne(t *testing.T) {
 				rec := &record.DungeonAction{
 					DungeonID:                     data.DungeonRecs[0].ID,
 					DungeonLocationID:             data.DungeonLocationRecs[0].ID,
-					DungeonCharacterID:            store.NullString(data.DungeonCharacterRecs[0].ID),
-					ResolvedTargetDungeonObjectID: store.NullString(data.DungeonObjectRecs[0].ID),
+					DungeonCharacterID:            nullstring.FromString(data.DungeonCharacterRecs[0].ID),
+					ResolvedTargetDungeonObjectID: nullstring.FromString(data.DungeonObjectRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

@@ -13,7 +13,8 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
-	coreschema "gitlab.com/alienspaces/go-mud/server/core/schema"
+
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
@@ -193,7 +194,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	if rec.Code == 200 || rec.Code == 201 {
 		require.NotNil(t, responseBody, "Response body is not nil")
 
-		v, err := coreschema.NewValidator(th.Config, th.Log)
+		v, err := jsonschema.NewValidator(th.Config, th.Log)
 		require.NoError(t, err, "Validator returns without error")
 
 		jsonData, err := json.Marshal(responseBody)
@@ -201,7 +202,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 
 		t.Logf("Validating response against schema >%s/%s<", cfg.MiddlewareConfig.ValidateSchemaLocation, cfg.MiddlewareConfig.ValidateSchemaResponseMain)
 
-		err = v.Validate(coreschema.Config{
+		err = v.Validate(jsonschema.Config{
 			Location:   cfg.MiddlewareConfig.ValidateSchemaLocation,
 			Main:       cfg.MiddlewareConfig.ValidateSchemaResponseMain,
 			References: cfg.MiddlewareConfig.ValidateSchemaResponseReferences,

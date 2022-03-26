@@ -9,6 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/querier"
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 )
@@ -19,46 +20,53 @@ type Model struct {
 	Log          logger.Logger
 	Store        storer.Storer
 	Repositories map[string]repositor.Repositor
+	Queries      map[string]querier.Querier
 	Tx           *sqlx.Tx
+	Err          error
 
 	// composable functions
-	RepositoriesFunc func(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.Repositor, error)
+	RepositoriesFunc func(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error)
+	QueriesFunc      func(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error)
 }
 
 var _ modeller.Modeller = &Model{}
 
 // NewModel - intended for testing only, maybe move into test files..
 func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (m *Model, err error) {
-
 	m = &Model{
 		Config: c,
 		Log:    l,
 		Store:  s,
+		Err:    nil,
 	}
 
 	return m, nil
 }
 
 // Init -
-func (m *Model) Init(p preparer.Preparer, tx *sqlx.Tx) (err error) {
+func (m *Model) Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) (err error) {
 
 	// tx required
 	if tx == nil {
-		m.Log.Warn("Failed init, tx is required")
-		return fmt.Errorf("Failed init, tx is required")
+		msg := "failed init, tx is required"
+		m.Log.Warn(msg)
+		return fmt.Errorf(msg)
 	}
 
 	if m.RepositoriesFunc == nil {
 		m.RepositoriesFunc = m.NewRepositories
 	}
 
-	// assign database tx for possible custom SQL execution in model functions
+	if m.QueriesFunc == nil {
+		m.QueriesFunc = m.NewQueriers
+	}
+
 	m.Tx = tx
 
 	// repositories
-	repositories, err := m.RepositoriesFunc(p, tx)
+	repositories, err := m.RepositoriesFunc(pRepo, tx)
 	if err != nil {
-		m.Log.Warn("Failed repositories func >%v<", err)
+		m.Log.Warn("failed repositories func >%v<", err)
 		return err
 	}
 
@@ -67,13 +75,31 @@ func (m *Model) Init(p preparer.Preparer, tx *sqlx.Tx) (err error) {
 		m.Repositories[r.TableName()] = r
 	}
 
+	queriers, err := m.QueriesFunc(pQ, tx)
+	if err != nil {
+		m.Log.Warn("failed queries func >%v<", err)
+	}
+
+	m.Queries = make(map[string]querier.Querier)
+	for _, q := range queriers {
+		m.Queries[q.Name()] = q
+	}
+
 	return nil
 }
 
 // NewRepositories - default repositor.RepositoriesFunc, override this function for custom repositories
-func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.Repositor, error) {
+func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
 
 	m.Log.Info("** repositor.Repositories **")
+
+	return nil, nil
+}
+
+// NewQueriers - default repositor.QueriesFunc, override this function for custom queriers
+func (m *Model) NewQueriers(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error) {
+
+	m.Log.Info("** querier.Queriers **")
 
 	return nil, nil
 }
@@ -82,8 +108,11 @@ func (m *Model) NewRepositories(p preparer.Preparer, tx *sqlx.Tx) ([]repositor.R
 func (m *Model) Commit() error {
 	if m.Tx != nil {
 		m.Tx.Commit()
+		return nil
 	}
-	return fmt.Errorf("Database Tx is nil")
+	msg := "cannot commit, database Tx is nil"
+	m.Log.Warn(msg)
+	return fmt.Errorf(msg)
 }
 
 // Rollback -
@@ -91,5 +120,7 @@ func (m *Model) Rollback() error {
 	if m.Tx != nil {
 		return m.Tx.Rollback()
 	}
-	return fmt.Errorf("Database Tx is nil")
+	msg := "cannot rollback, database Tx is nil"
+	m.Log.Warn(msg)
+	return fmt.Errorf(msg)
 }

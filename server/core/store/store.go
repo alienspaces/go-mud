@@ -27,7 +27,7 @@ func NewStore(c configurer.Configurer, l logger.Logger) (*Store, error) {
 
 	dt := c.Get("APP_SERVER_DATABASE")
 	if dt == "" {
-		l.Debug("Defaulting to postgres")
+		l.Debug("defaulting to postgres")
 		dt = DBPostgres
 	}
 
@@ -46,7 +46,7 @@ func (s *Store) Init() error {
 	// Get a database connection
 	c, err := s.GetDb()
 	if err != nil {
-		s.Log.Warn("Failed database init >%v<", err)
+		s.Log.Warn("failed database init >%v<", err)
 		return err
 	}
 	s.DB = c
@@ -63,7 +63,7 @@ func (s *Store) GetDb() (*sqlx.DB, error) {
 	}
 
 	if s.Database == DBPostgres {
-		s.Log.Debug("Connecting to postgres")
+		s.Log.Debug("connecting to postgres")
 		c, err := getPostgresDB(s.Config, s.Log)
 		if err != nil {
 			s.Log.Warn("failed getting postgres DB handle >%v<", err)
@@ -80,8 +80,9 @@ func (s *Store) GetDb() (*sqlx.DB, error) {
 func (s *Store) GetTx() (*sqlx.Tx, error) {
 
 	if s.DB == nil {
-		s.Log.Warn("not connected")
-		return nil, fmt.Errorf("not connected")
+		errMsg := "not connected"
+		s.Log.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
 	return s.DB.Beginx()

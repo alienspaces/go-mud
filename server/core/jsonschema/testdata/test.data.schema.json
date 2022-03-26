@@ -1,0 +1,39 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "http://vet.com/jsonschema/data.schema.json",
+    "title": "Test Data",
+    "description": "Payload data for testing",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "id": {
+            "description": "Resource ID",
+            "type": "string",
+            "format": "uuid",
+            "example": "a87feca8-d6f0-4794-98c7-037b30219520"
+        },
+        "name": {
+            "description": "Resource name",
+            "type": "string"
+        },
+        "description": {
+            "description": "Resource description",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "Date/time the resource was created",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+        },
+        "updated_at": {
+            "description": "Date/time the resource was last updated",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+        }
+    }
+}

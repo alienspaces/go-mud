@@ -4,6 +4,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 
@@ -14,18 +15,20 @@ import (
 
 // Repository -
 type Repository struct {
-	Config       Config
-	Log          logger.Logger
-	Tx           *sqlx.Tx
-	Prepare      preparer.Preparer
-	RecordParams map[string]*RecordParam
+	Config             Config
+	Log                logger.Logger
+	Tx                 *sqlx.Tx
+	Prepare            preparer.Repository
+	RecordParams       map[string]*RecordParam
+	computedAttributes []string
 }
 
 var _ repositor.Repositor = &Repository{}
 
 // Config -
 type Config struct {
-	TableName string
+	TableName  string
+	Attributes []string
 }
 
 // RecordParam -
@@ -36,25 +39,34 @@ type RecordParam struct {
 }
 
 // Init -
-func (r *Repository) Init(p preparer.Preparer, tx *sqlx.Tx) error {
-
+func (r *Repository) Init() error {
 	r.Log.Debug("Initialising repository %s", r.TableName())
 
-	if p != nil {
-		r.Prepare = p
-	}
-
-	if tx != nil {
-		r.Tx = tx
-	}
-
 	if r.Tx == nil {
-		return errors.New("tx is nil, cannot initialise")
+		return errors.New("repository Tx is nil, cannot initialise")
 	}
 
 	if r.Prepare == nil {
-		return errors.New("prepare is nil, cannot initialise")
+		return errors.New("repository Prepare is nil, cannot initialise")
 	}
+
+	if r.TableName() == "" {
+		return errors.New("repository TableName is empty, cannot initialise")
+	}
+
+	if len(r.Attributes()) == 0 {
+		return errors.New("repository Attributes are empty, cannot initialise")
+	}
+
+	computedAttributes := []string{}
+	for _, attribute := range r.Attributes() {
+		if attribute == "created_at" ||
+			attribute == "deleted_at" {
+			continue
+		}
+		computedAttributes = append(computedAttributes, attribute)
+	}
+	r.computedAttributes = computedAttributes
 
 	return nil
 }
@@ -62,6 +74,10 @@ func (r *Repository) Init(p preparer.Preparer, tx *sqlx.Tx) error {
 // TableName -
 func (r *Repository) TableName() string {
 	return r.Config.TableName
+}
+
+func (r *Repository) Attributes() []string {
+	return r.Config.Attributes
 }
 
 // GetOneRec -
@@ -100,7 +116,7 @@ func (r *Repository) GetOneRec(recordID string, rec interface{}, forUpdate bool)
 }
 
 // GetManyRecs -
-func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[string]string) (rows *sqlx.Rows, err error) {
+func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) (rows *sqlx.Rows, err error) {
 
 	// preparer
 	p := r.Prepare
@@ -118,9 +134,12 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 		return nil, err
 	}
 
+	if forUpdate {
+		querySQL += "FOR UPDATE SKIP LOCKED"
+	}
+
 	r.Log.Debug("Query >%s<", querySQL)
 	r.Log.Debug("Parameters >%+v<", queryParams)
-
 	rows, err = tx.NamedQuery(querySQL, queryParams)
 	if err != nil {
 		r.Log.Warn("Failed querying row >%v<", err)
@@ -255,32 +274,123 @@ func (r *Repository) removeOneRec(recordID string) error {
 	return nil
 }
 
-// GetOneSQL -
+// GetOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetOneSQL() string {
-	return fmt.Sprintf("SELECT * FROM %s WHERE id = $1 AND deleted_at IS NULL", r.TableName())
+	return fmt.Sprintf(`
+SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL
+`,
+		commaSeparated(r.Attributes()),
+		r.TableName())
 }
 
-// GetOneForUpdateSQL -
+// GetOneForUpdateSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetOneForUpdateSQL() string {
-	return fmt.Sprintf("SELECT * FROM %s WHERE id = $1 AND deleted_at IS NULL FOR UPDATE SKIP LOCKED", r.TableName())
+	return fmt.Sprintf(`
+SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL FOR UPDATE SKIP LOCKED
+`,
+		commaSeparated(r.Attributes()),
+		r.TableName())
 }
 
-// GetManySQL -
+// GetManySQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetManySQL() string {
-	sql := `
-SELECT * FROM %s WHERE deleted_at IS NULL
-`
-	return fmt.Sprintf(sql, r.TableName())
+	return fmt.Sprintf(`
+SELECT %s FROM %s WHERE deleted_at IS NULL
+`,
+		commaSeparated(r.Attributes()),
+		r.TableName())
 }
 
-// CreateOneSQL -
+func commaSeparated(attributes []string) string {
+	var strBuilder strings.Builder
+
+	for i, a := range attributes {
+		strBuilder.WriteString(a)
+
+		if i != len(attributes)-1 {
+			strBuilder.WriteString(", ")
+		}
+	}
+
+	return strBuilder.String()
+}
+
+// CreateOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) CreateOneSQL() string {
-	return ""
+	return fmt.Sprintf(`
+INSERT INTO %s (
+%s
+) VALUES (
+%s
+)
+RETURNING %s
+`,
+		r.TableName(),
+		commaNewlineSeparated(r.Attributes()),
+		colonPrefixedCommaNewlineSeparated(r.Attributes()),
+		commaSeparated(r.Attributes()))
 }
 
-// UpdateOneSQL -
+func commaNewlineSeparated(attributes []string) string {
+	var strBuilder strings.Builder
+
+	for i, a := range attributes {
+		strBuilder.WriteString("\t")
+		strBuilder.WriteString(a)
+
+		if i != len(attributes)-1 {
+			strBuilder.WriteString(",\n")
+		}
+	}
+
+	return strBuilder.String()
+}
+
+func colonPrefixedCommaNewlineSeparated(attributes []string) string {
+	var strBuilder strings.Builder
+
+	for i, a := range attributes {
+		strBuilder.WriteString("\t:")
+		strBuilder.WriteString(a)
+
+		if i != len(attributes)-1 {
+			strBuilder.WriteString(",\n")
+		}
+	}
+
+	return strBuilder.String()
+}
+
+// UpdateOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) UpdateOneSQL() string {
-	return ""
+
+	return fmt.Sprintf(`
+UPDATE %s SET
+%s
+WHERE id = :id
+AND   deleted_at IS NULL
+RETURNING %s
+`,
+		r.TableName(),
+		equalsAndNewlineSeparated(r.computedAttributes),
+		commaSeparated(r.Attributes()))
+}
+
+func equalsAndNewlineSeparated(attributes []string) string {
+	var strBuilder strings.Builder
+
+	for i, a := range attributes {
+		strBuilder.WriteString("\t")
+		strBuilder.WriteString(a)
+		strBuilder.WriteString(" = :")
+		strBuilder.WriteString(a)
+
+		if i != len(attributes)-1 {
+			strBuilder.WriteString(",\n")
+		}
+	}
+
+	return strBuilder.String()
 }
 
 // UpdateManySQL -
@@ -288,12 +398,17 @@ func (r *Repository) UpdateManySQL() string {
 	return ""
 }
 
-// DeleteOneSQL -
+// DeleteOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) DeleteOneSQL() string {
-	return fmt.Sprintf("UPDATE %s SET deleted_at = :deleted_at WHERE id = :id AND deleted_at IS NULL RETURNING *", r.TableName())
+	return fmt.Sprintf(`
+UPDATE %s SET deleted_at = :deleted_at WHERE id = :id AND deleted_at IS NULL RETURNING %s
+`,
+		r.TableName(),
+		commaSeparated(r.Attributes()),
+	)
 }
 
-// DeleteManySQL -
+// DeleteManySQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) DeleteManySQL() string {
 	sql := `
 UPDATE %s SET deleted_at = :deleted_at WHERE deleted_at IS NULL
@@ -301,12 +416,14 @@ UPDATE %s SET deleted_at = :deleted_at WHERE deleted_at IS NULL
 	return fmt.Sprintf(sql, r.TableName())
 }
 
-// RemoveOneSQL -
+// RemoveOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) RemoveOneSQL() string {
-	return fmt.Sprintf("DELETE FROM %s WHERE id = :id", r.TableName())
+	return fmt.Sprintf(`
+DELETE FROM %s WHERE id = :id
+`, r.TableName())
 }
 
-// RemoveManySQL -
+// RemoveManySQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) RemoveManySQL() string {
 	sql := `
 DELETE FROM %s WHERE 1 = 1
