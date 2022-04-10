@@ -71,7 +71,7 @@ func NewRunner() *Runner {
 		// Characters - 2 - Get many
 		{
 			Method:      http.MethodGet,
-			Path:        "/api/v1/dungeons/:dungeon_id/characters",
+			Path:        "/api/v1/characters",
 			HandlerFunc: r.GetDungeonCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				ValidateSchemaLocation:     "dungeoncharacter",
@@ -88,7 +88,7 @@ func NewRunner() *Runner {
 		// Characters - 3 - Get one
 		{
 			Method:      http.MethodGet,
-			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id",
+			Path:        "/api/v1/characters/:character_id",
 			HandlerFunc: r.GetDungeonCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				ValidateSchemaLocation:     "dungeoncharacter",
@@ -105,7 +105,7 @@ func NewRunner() *Runner {
 		// Characters - 4 - Create
 		{
 			Method:      http.MethodPost,
-			Path:        "/api/v1/dungeons/:dungeon_id/characters",
+			Path:        "/api/v1/characters",
 			HandlerFunc: r.PostDungeonCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				ValidateSchemaLocation:     "dungeoncharacter",
@@ -123,7 +123,7 @@ func NewRunner() *Runner {
 		// Characters - 5 - Update
 		{
 			Method:           http.MethodPut,
-			Path:             "/api/v1/dungeons/:dungeon_id/characters",
+			Path:             "/api/v1/characters",
 			HandlerFunc:      r.PutDungeonCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 			DocumentationConfig: server.DocumentationConfig{

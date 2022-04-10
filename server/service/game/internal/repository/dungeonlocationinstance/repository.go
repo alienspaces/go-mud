@@ -1,4 +1,4 @@
-package character
+package dungeonlocationinstance
 
 import (
 	"time"
@@ -15,7 +15,7 @@ import (
 
 const (
 	// TableName - underlying database table name used for configuration
-	TableName string = "character"
+	TableName string = "dungeon_location_instance"
 )
 
 // Repository -
@@ -37,7 +37,7 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 			// Config
 			Config: repository.Config{
 				TableName:  TableName,
-				Attributes: tag.GetValues(record.Character{}, "db"),
+				Attributes: tag.GetValues(record.DungeonLocationInstance{}, "db"),
 			},
 		},
 	}
@@ -59,17 +59,17 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.Character {
-	return &record.Character{}
+func (r *Repository) NewRecord() *record.DungeonLocationInstance {
+	return &record.DungeonLocationInstance{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.Character {
-	return []*record.Character{}
+func (r *Repository) NewRecordArray() []*record.DungeonLocationInstance {
+	return []*record.DungeonLocationInstance{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.Character, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonLocationInstance, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
@@ -82,7 +82,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.Character, error
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.Character, error) {
+	forUpdate bool) ([]*record.DungeonLocationInstance, error) {
 
 	recs := r.NewRecordArray()
 
@@ -109,7 +109,7 @@ func (r *Repository) GetMany(
 }
 
 // CreateOne -
-func (r *Repository) CreateOne(rec *record.Character) error {
+func (r *Repository) CreateOne(rec *record.DungeonLocationInstance) error {
 
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
@@ -127,7 +127,7 @@ func (r *Repository) CreateOne(rec *record.Character) error {
 }
 
 // UpdateOne -
-func (r *Repository) UpdateOne(rec *record.Character) error {
+func (r *Repository) UpdateOne(rec *record.DungeonLocationInstance) error {
 
 	origUpdatedAt := rec.UpdatedAt
 	rec.UpdatedAt = repository.NewUpdatedAt()
@@ -143,6 +143,6 @@ func (r *Repository) UpdateOne(rec *record.Character) error {
 }
 
 // CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *record.Character) error {
+func (r *Repository) CreateTestRecord(rec *record.DungeonLocationInstance) error {
 	return r.CreateOne(rec)
 }

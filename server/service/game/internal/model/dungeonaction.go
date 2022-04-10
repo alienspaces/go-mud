@@ -47,9 +47,9 @@ type DungeonActionLocationRecordSet struct {
 
 type DungeonLocationRecordSet struct {
 	LocationRec   *record.DungeonLocation
-	CharacterRecs []*record.DungeonCharacter
-	MonsterRecs   []*record.DungeonMonster
-	ObjectRecs    []*record.DungeonObject
+	CharacterRecs []*record.Character
+	MonsterRecs   []*record.Monster
+	ObjectRecs    []*record.Object
 	LocationRecs  []*record.DungeonLocation
 }
 

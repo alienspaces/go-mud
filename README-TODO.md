@@ -25,4 +25,8 @@
   - Object and spells damage effects (active)
 - Server: Object and monster respawning
 - Client: Icons for room contents
+- Server: Support multiple different servers that belong to the same service to support
+  building a separate server for managing monster movement, dungeon cleanup etc
+  - Rename `server/service/game/internal/cli/runner` to `server/service/game/internal/cli/api`
+  - Rename `server/service/game/internal/server/runner` to `server/service/game/internal/server/api`
 - All: Docker Compose

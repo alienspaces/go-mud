@@ -10,6 +10,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 
+	dungeoncharacter "gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/character"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonaction"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactioncharacter"
@@ -17,10 +18,9 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionmonster"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionmonsterobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoncharacter"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonlocation"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonmonster"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonobject"
+	dungeonmonster "gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monster"
+	dungeonobject "gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/object"
 )
 
 // Model -

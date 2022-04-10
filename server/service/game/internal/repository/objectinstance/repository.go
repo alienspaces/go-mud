@@ -1,4 +1,4 @@
-package dungeonmonster
+package objectinstance
 
 import (
 	"time"
@@ -15,7 +15,7 @@ import (
 
 const (
 	// TableName - underlying database table name used for configuration
-	TableName string = "dungeon_monster"
+	TableName string = "object_instance"
 )
 
 // Repository -
@@ -37,7 +37,7 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 			// Config
 			Config: repository.Config{
 				TableName:  TableName,
-				Attributes: tag.GetValues(record.DungeonMonster{}, "db"),
+				Attributes: tag.GetValues(record.ObjectInstance{}, "db"),
 			},
 		},
 	}
@@ -59,17 +59,17 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.DungeonMonster {
-	return &record.DungeonMonster{}
+func (r *Repository) NewRecord() *record.ObjectInstance {
+	return &record.ObjectInstance{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.DungeonMonster {
-	return []*record.DungeonMonster{}
+func (r *Repository) NewRecordArray() []*record.ObjectInstance {
+	return []*record.ObjectInstance{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonMonster, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.ObjectInstance, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
@@ -82,7 +82,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonMonster, 
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.DungeonMonster, error) {
+	forUpdate bool) ([]*record.ObjectInstance, error) {
 
 	recs := r.NewRecordArray()
 
@@ -109,7 +109,7 @@ func (r *Repository) GetMany(
 }
 
 // CreateOne -
-func (r *Repository) CreateOne(rec *record.DungeonMonster) error {
+func (r *Repository) CreateOne(rec *record.ObjectInstance) error {
 
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
@@ -127,7 +127,7 @@ func (r *Repository) CreateOne(rec *record.DungeonMonster) error {
 }
 
 // UpdateOne -
-func (r *Repository) UpdateOne(rec *record.DungeonMonster) error {
+func (r *Repository) UpdateOne(rec *record.ObjectInstance) error {
 
 	origUpdatedAt := rec.UpdatedAt
 	rec.UpdatedAt = repository.NewUpdatedAt()
@@ -143,6 +143,6 @@ func (r *Repository) UpdateOne(rec *record.DungeonMonster) error {
 }
 
 // CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *record.DungeonMonster) error {
+func (r *Repository) CreateTestRecord(rec *record.ObjectInstance) error {
 	return r.CreateOne(rec)
 }

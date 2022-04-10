@@ -72,14 +72,17 @@ var _ runnable.Runnable = &Runner{}
 
 type Handler int
 
+type RequestPath string
+type RequestMethod string
+
 // HandlerConfig - configuration for routes, handlers and middleware
 type HandlerConfig struct {
 	Name string
 	// Method - The HTTP method
 	Method string
 	// Path - The HTTP request URI including :parameter placeholders
-	Path     string
-	TagGroup TagGroupEndpoint
+	Path             string
+	DocumentTagGroup DocumentTagGroupEndpoint
 	// HandlerFunc - Function to handle requests for this method and path
 	HandlerFunc Handle
 	// MiddlewareConfig -
@@ -88,14 +91,17 @@ type HandlerConfig struct {
 	DocumentationConfig DocumentationConfig
 }
 
-type Tag string
-type TagGroup string
+// TODO: Refactor servers to use the following structure
+type ServerHandlerConfig map[RequestPath]map[RequestMethod]HandlerConfig
 
-// TagGroupEndpoint is used to group endpoints related to the same resource
-type TagGroupEndpoint struct {
-	ResourceName TagGroup `json:"name"`
-	Description  string   `json:"description"`
-	Tags         []Tag    `json:"tags"`
+type DocumentTag string
+type DocumentTagGroup string
+
+// DocumentTagGroupEndpoint is used to group endpoints related to the same resource
+type DocumentTagGroupEndpoint struct {
+	ResourceName DocumentTagGroup `json:"name"`
+	Description  string           `json:"description"`
+	DocumentTags []DocumentTag    `json:"tags"`
 }
 
 type AuthenticationType string
@@ -137,21 +143,21 @@ type MessageSubject string
 type MessageEvent string
 
 type MessageConfig struct {
-	Summary        string
-	Name           Message
-	Source         MessageSource
-	Topic          MessageTopic
-	Subject        MessageSubject
-	Event          MessageEvent
-	ValidateSchema jsonschema.SchemaWithReferences
-	TagGroup       TagGroupSchemaModel
+	Summary          string
+	Name             Message
+	Source           MessageSource
+	Topic            MessageTopic
+	Subject          MessageSubject
+	Event            MessageEvent
+	ValidateSchema   jsonschema.SchemaWithReferences
+	DocumentTagGroup DocumentTagGroupSchemaModel
 }
 
-// TagGroupSchemaModel is used to group schema models related to the same resource
-type TagGroupSchemaModel struct {
-	ResourceName TagGroup `json:"name"`
-	Description  string   `json:"description"`
-	Tag          Tag      `json:"tag"`
+// DocumentTagGroupSchemaModel is used to group schema models related to the same resource
+type DocumentTagGroupSchemaModel struct {
+	ResourceName DocumentTagGroup `json:"name"`
+	Description  string           `json:"description"`
+	DocumentTag  DocumentTag      `json:"tag"`
 }
 
 // NOTE: Request struct definitions are located in the top level `schema` module. We might
@@ -265,8 +271,8 @@ func (rnr *Runner) Init(s storer.Storer) error {
 	return nil
 }
 
-// InitTx initialises a new database transaction returning a prepared modeller
-func (rnr *Runner) InitTx(l logger.Logger) (modeller.Modeller, error) {
+// InitModeller initialises a new database transaction returning a prepared modeller
+func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 
 	// preparer
 	if rnr.PreparerRepositoryFunc == nil {
@@ -499,9 +505,7 @@ func (rnr *Runner) GetHandlerConfigs() []HandlerConfig {
 
 func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
 	var sorted []HandlerConfig
-	for _, cfg := range handlerConfigs {
-		sorted = append(sorted, cfg)
-	}
+	sorted = append(sorted, handlerConfigs...)
 
 	sort.Slice(sorted, func(i, j int) bool {
 		x := sorted[i]

@@ -33,13 +33,9 @@ func (rnr *Runner) Audit(hc HandlerConfig, h Handle) (Handle, error) {
 			return err
 		}
 
-		correlationID, ok := ctx.Value(ctxKeyCorrelationID).(string)
+		correlationID, _ := ctx.Value(ctxKeyCorrelationID).(string)
 		if correlationID == "" {
 			err := fmt.Errorf("failed to convert ctxKeyCorrelationID value to string")
-			WriteSystemError(l, w, err)
-			return err
-		} else if correlationID == "" {
-			err := fmt.Errorf("failed to retrieve request ID using ctxKeyCorrelationID")
 			WriteSystemError(l, w, err)
 			return err
 		}

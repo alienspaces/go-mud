@@ -19,7 +19,7 @@ type Object struct {
 	repository.Record
 }
 
-type InstanceObject struct {
+type ObjectInstance struct {
 	ObjectID                  string         `db:"object_id"`
 	DungeonInstanceID         string         `db:"dungeon_instance_id"`
 	DungeonLocationInstanceID sql.NullString `db:"dungeon_location_instance_id"`

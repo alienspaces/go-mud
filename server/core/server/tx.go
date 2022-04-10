@@ -12,7 +12,7 @@ import (
 // Tx -
 func (rnr *Runner) Tx(h Handle) (Handle, error) {
 
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) error {
 
 		// NOTE: The modeller is created and initialised with every request instead of
 		// creating and assigning to a runner struct "Model" property at start up.
@@ -22,7 +22,7 @@ func (rnr *Runner) Tx(h Handle) (Handle, error) {
 
 		l.Info("** Tx ** initialising database transaction")
 
-		m, err := rnr.InitTx(l)
+		m, err := rnr.InitModeller(l)
 		if err != nil {
 			l.Error("failed initialising database transaction, cannot authen >%v<", err)
 			WriteSystemError(l, w, err)

@@ -1,7 +1,9 @@
 package server
 
+type contextKey int
+
 const (
-	ctxKeyAuth = iota
-	ctxKeyData
-	ctxKeyCorrelationID
+	ctxKeyAuth          contextKey = 1
+	ctxKeyData          contextKey = 2
+	ctxKeyCorrelationID contextKey = 3
 )
