@@ -10,7 +10,9 @@ import (
 // GetMonsterInstanceRecs -
 func (m *Model) GetMonsterInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.MonsterInstance, error) {
 
-	m.Log.Debug("Getting monster instance records params >%s<", params)
+	l := m.Logger("GetMonsterInstanceRecs")
+
+	l.Debug("Getting monster instance records params >%s<", params)
 
 	r := m.MonsterInstanceRepository()
 
@@ -20,7 +22,9 @@ func (m *Model) GetMonsterInstanceRecs(params map[string]interface{}, operators 
 // GetMonsterInstanceRec -
 func (m *Model) GetMonsterInstanceRec(recID string, forUpdate bool) (*record.MonsterInstance, error) {
 
-	m.Log.Debug("Getting monster instance record ID >%s<", recID)
+	l := m.Logger("GetMonsterInstanceRec")
+
+	l.Debug("Getting monster instance record ID >%s<", recID)
 
 	r := m.MonsterInstanceRepository()
 
@@ -31,7 +35,7 @@ func (m *Model) GetMonsterInstanceRec(recID string, forUpdate bool) (*record.Mon
 
 	rec, err := r.GetOne(recID, forUpdate)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -41,7 +45,9 @@ func (m *Model) GetMonsterInstanceRec(recID string, forUpdate bool) (*record.Mon
 // GetMonsterInstanceViewRecs -
 func (m *Model) GetMonsterInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.MonsterInstanceView, error) {
 
-	m.Log.Debug("Getting monster instance view records params >%s<", params)
+	l := m.Logger("GetMonsterInstanceViewRecs")
+
+	l.Debug("Getting monster instance view records params >%s<", params)
 
 	r := m.MonsterInstanceViewRepository()
 
@@ -51,7 +57,9 @@ func (m *Model) GetMonsterInstanceViewRecs(params map[string]interface{}, operat
 // GetMonsterInstanceViewRec -
 func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstanceView, error) {
 
-	m.Log.Debug("Getting monster instance view record ID >%s<", recID)
+	l := m.Logger("GetMonsterInstanceViewRec")
+
+	l.Debug("Getting monster instance view record ID >%s<", recID)
 
 	r := m.MonsterInstanceViewRepository()
 
@@ -62,7 +70,7 @@ func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstance
 
 	rec, err := r.GetOne(recID, false)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -72,13 +80,15 @@ func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstance
 // CreateMonsterInstanceRec -
 func (m *Model) CreateMonsterInstanceRec(rec *record.MonsterInstance) error {
 
-	m.Log.Debug("Creating monster rec >%#v<", rec)
+	l := m.Logger("CreateMonsterInstanceRec")
+
+	l.Debug("Creating monster rec >%#v<", rec)
 
 	r := m.MonsterInstanceRepository()
 
 	err := m.ValidateMonsterInstanceRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -88,13 +98,15 @@ func (m *Model) CreateMonsterInstanceRec(rec *record.MonsterInstance) error {
 // UpdateMonsterInstanceRec -
 func (m *Model) UpdateMonsterInstanceRec(rec *record.MonsterInstance) error {
 
-	m.Log.Debug("Updating monster rec >%#v<", rec)
+	l := m.Logger("UpdateMonsterInstanceRec")
+
+	l.Debug("Updating monster rec >%#v<", rec)
 
 	r := m.MonsterInstanceRepository()
 
 	err := m.ValidateMonsterInstanceRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -104,7 +116,9 @@ func (m *Model) UpdateMonsterInstanceRec(rec *record.MonsterInstance) error {
 // DeleteMonsterInstanceRec -
 func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 
-	m.Log.Debug("Deleting monster rec ID >%s<", recID)
+	l := m.Logger("DeleteMonsterInstanceRec")
+
+	l.Debug("Deleting monster rec ID >%s<", recID)
 
 	r := m.MonsterInstanceRepository()
 
@@ -115,7 +129,7 @@ func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 
 	err := m.ValidateDeleteMonsterInstanceRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -125,7 +139,9 @@ func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 // RemoveMonsterInstanceRec -
 func (m *Model) RemoveMonsterInstanceRec(recID string) error {
 
-	m.Log.Debug("Removing monster rec ID >%s<", recID)
+	l := m.Logger("RemoveMonsterInstanceRec")
+
+	l.Debug("Removing monster rec ID >%s<", recID)
 
 	r := m.MonsterInstanceRepository()
 
@@ -136,7 +152,7 @@ func (m *Model) RemoveMonsterInstanceRec(recID string) error {
 
 	err := m.ValidateDeleteMonsterInstanceRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

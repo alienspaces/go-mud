@@ -10,7 +10,9 @@ import (
 // GetObjectInstanceRecs -
 func (m *Model) GetObjectInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.ObjectInstance, error) {
 
-	m.Log.Debug("Getting object instance records params >%s<", params)
+	l := m.Logger("GetObjectInstanceRecs")
+
+	l.Debug("Getting object instance records params >%s<", params)
 
 	r := m.ObjectInstanceRepository()
 
@@ -20,7 +22,9 @@ func (m *Model) GetObjectInstanceRecs(params map[string]interface{}, operators m
 // GetObjectInstanceRec -
 func (m *Model) GetObjectInstanceRec(recID string, forUpdate bool) (*record.ObjectInstance, error) {
 
-	m.Log.Debug("Getting object instance record ID >%s<", recID)
+	l := m.Logger("GetObjectInstanceRec")
+
+	l.Debug("Getting object instance record ID >%s<", recID)
 
 	r := m.ObjectInstanceRepository()
 
@@ -31,7 +35,7 @@ func (m *Model) GetObjectInstanceRec(recID string, forUpdate bool) (*record.Obje
 
 	rec, err := r.GetOne(recID, forUpdate)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -41,7 +45,9 @@ func (m *Model) GetObjectInstanceRec(recID string, forUpdate bool) (*record.Obje
 // GetObjectInstanceViewRecs -
 func (m *Model) GetObjectInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.ObjectInstanceView, error) {
 
-	m.Log.Debug("Getting object instance view records params >%s<", params)
+	l := m.Logger("GetObjectInstanceViewRecs")
+
+	l.Debug("Getting object instance view records params >%s<", params)
 
 	r := m.ObjectInstanceViewRepository()
 
@@ -51,7 +57,9 @@ func (m *Model) GetObjectInstanceViewRecs(params map[string]interface{}, operato
 // GetObjectInstanceViewRec -
 func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceView, error) {
 
-	m.Log.Debug("Getting object instance view record ID >%s<", recID)
+	l := m.Logger("GetObjectInstanceViewRec")
+
+	l.Debug("Getting object instance view record ID >%s<", recID)
 
 	r := m.ObjectInstanceViewRepository()
 
@@ -62,7 +70,7 @@ func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceVi
 
 	rec, err := r.GetOne(recID, false)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -72,13 +80,15 @@ func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceVi
 // CreateObjectInstanceRec -
 func (m *Model) CreateObjectInstanceRec(rec *record.ObjectInstance) error {
 
-	m.Log.Debug("Creating object rec >%#v<", rec)
+	l := m.Logger("CreateObjectInstanceRec")
+
+	l.Debug("Creating object rec >%#v<", rec)
 
 	r := m.ObjectInstanceRepository()
 
 	err := m.ValidateObjectInstanceRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -88,13 +98,15 @@ func (m *Model) CreateObjectInstanceRec(rec *record.ObjectInstance) error {
 // UpdateObjectInstanceRec -
 func (m *Model) UpdateObjectInstanceRec(rec *record.ObjectInstance) error {
 
-	m.Log.Debug("Updating object rec >%#v<", rec)
+	l := m.Logger("UpdateObjectInstanceRec")
+
+	l.Debug("Updating object rec >%#v<", rec)
 
 	r := m.ObjectInstanceRepository()
 
 	err := m.ValidateObjectInstanceRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -104,7 +116,9 @@ func (m *Model) UpdateObjectInstanceRec(rec *record.ObjectInstance) error {
 // DeleteObjectInstanceRec -
 func (m *Model) DeleteObjectInstanceRec(recID string) error {
 
-	m.Log.Debug("Deleting object rec ID >%s<", recID)
+	l := m.Logger("DeleteObjectInstanceRec")
+
+	l.Debug("Deleting object rec ID >%s<", recID)
 
 	r := m.ObjectInstanceRepository()
 
@@ -115,7 +129,7 @@ func (m *Model) DeleteObjectInstanceRec(recID string) error {
 
 	err := m.ValidateDeleteObjectInstanceRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -125,7 +139,9 @@ func (m *Model) DeleteObjectInstanceRec(recID string) error {
 // RemoveObjectInstanceRec -
 func (m *Model) RemoveObjectInstanceRec(recID string) error {
 
-	m.Log.Debug("Removing object rec ID >%s<", recID)
+	l := m.Logger("RemoveObjectInstanceRec")
+
+	l.Debug("Removing object rec ID >%s<", recID)
 
 	r := m.ObjectInstanceRepository()
 
@@ -136,7 +152,7 @@ func (m *Model) RemoveObjectInstanceRec(recID string) error {
 
 	err := m.ValidateDeleteObjectInstanceRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

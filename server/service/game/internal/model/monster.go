@@ -7,7 +7,9 @@ import (
 // GetMonsterObjectRecs -
 func (m *Model) GetMonsterObjectRecs(monsterID string) ([]*record.Object, error) {
 
-	m.Log.Info("Getting monster ID >%s< object records", monsterID)
+	l := m.Logger("GetMonsterObjectRecs")
+
+	l.Info("Getting monster ID >%s< object records", monsterID)
 
 	r := m.ObjectRepository()
 
@@ -19,7 +21,9 @@ func (m *Model) GetMonsterObjectRecs(monsterID string) ([]*record.Object, error)
 // GetMonsterEquippedObjectRecs -
 func (m *Model) GetMonsterEquippedObjectRecs(monsterID string) ([]*record.Object, error) {
 
-	m.Log.Info("Getting monster ID >%s< equipped object records", monsterID)
+	l := m.Logger("GetMonsterEquippedObjectRecs")
+
+	l.Info("Getting monster ID >%s< equipped object records", monsterID)
 
 	r := m.ObjectRepository()
 
@@ -32,7 +36,9 @@ func (m *Model) GetMonsterEquippedObjectRecs(monsterID string) ([]*record.Object
 // GetMonsterStashedObjectRecs -
 func (m *Model) GetMonsterStashedObjectRecs(monsterID string) ([]*record.Object, error) {
 
-	m.Log.Info("Getting monster ID >%s< stashed object records", monsterID)
+	l := m.Logger("GetMonsterStashedObjectRecs")
+
+	l.Info("Getting monster ID >%s< stashed object records", monsterID)
 
 	r := m.ObjectRepository()
 

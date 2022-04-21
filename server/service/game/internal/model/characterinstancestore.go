@@ -10,7 +10,9 @@ import (
 // GetCharacterInstanceRecs -
 func (m *Model) GetCharacterInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.CharacterInstance, error) {
 
-	m.Log.Debug("Getting character instance records params >%s<", params)
+	l := m.Logger("GetCharacterInstanceRecs")
+
+	l.Debug("Getting character instance records params >%s<", params)
 
 	r := m.CharacterInstanceRepository()
 
@@ -20,7 +22,9 @@ func (m *Model) GetCharacterInstanceRecs(params map[string]interface{}, operator
 // GetCharacterInstanceRec -
 func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.CharacterInstance, error) {
 
-	m.Log.Debug("Getting character instance record ID >%s<", recID)
+	l := m.Logger("GetCharacterInstanceRec")
+
+	l.Debug("Getting character instance record ID >%s<", recID)
 
 	r := m.CharacterInstanceRepository()
 
@@ -31,7 +35,7 @@ func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.C
 
 	rec, err := r.GetOne(recID, forUpdate)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -41,7 +45,9 @@ func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.C
 // GetCharacterInstanceRecs -
 func (m *Model) GetCharacterInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.CharacterInstanceView, error) {
 
-	m.Log.Debug("Getting character instance view records params >%s<", params)
+	l := m.Logger("GetCharacterInstanceViewRecs")
+
+	l.Debug("Getting character instance view records params >%s<", params)
 
 	r := m.CharacterInstanceViewRepository()
 
@@ -51,7 +57,9 @@ func (m *Model) GetCharacterInstanceViewRecs(params map[string]interface{}, oper
 // GetCharacterInstanceRec -
 func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInstanceView, error) {
 
-	m.Log.Debug("Getting character instance view record ID >%s<", recID)
+	l := m.Logger("GetCharacterInstanceViewRec")
+
+	l.Debug("Getting character instance view record ID >%s<", recID)
 
 	r := m.CharacterInstanceViewRepository()
 
@@ -62,7 +70,7 @@ func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInst
 
 	rec, err := r.GetOne(recID, false)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -72,7 +80,9 @@ func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInst
 // CreateCharacterInstanceRec -
 func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error {
 
-	m.Log.Debug("Creating character rec >%#v<", rec)
+	l := m.Logger("CreateCharacterInstanceRec")
+
+	l.Debug("Creating character rec >%#v<", rec)
 
 	characterRepo := m.CharacterInstanceRepository()
 
@@ -83,13 +93,13 @@ func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error 
 	}, nil, false)
 	if err != nil {
 		msg := fmt.Sprintf("failed to get default dungeon location record for dungeon ID >%s< >%v<", rec.DungeonInstanceID, err)
-		m.Log.Debug(msg)
+		l.Debug(msg)
 		return err
 	}
 
 	if len(locationRecs) != 1 {
 		msg := fmt.Sprintf("unexpected number of dungeon location records returned for dungeon ID >%s<", rec.DungeonInstanceID)
-		m.Log.Warn(msg)
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
@@ -97,7 +107,7 @@ func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error 
 
 	err = m.ValidateCharacterInstanceRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -107,13 +117,15 @@ func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error 
 // UpdateCharacterInstanceRec -
 func (m *Model) UpdateCharacterInstanceRec(rec *record.CharacterInstance) error {
 
-	m.Log.Debug("Updating character rec >%#v<", rec)
+	l := m.Logger("UpdateCharacterInstanceRec")
+
+	l.Debug("Updating character rec >%#v<", rec)
 
 	r := m.CharacterInstanceRepository()
 
 	err := m.ValidateCharacterInstanceRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -123,7 +135,9 @@ func (m *Model) UpdateCharacterInstanceRec(rec *record.CharacterInstance) error 
 // DeleteCharacterInstanceRec -
 func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 
-	m.Log.Debug("Deleting character rec ID >%s<", recID)
+	l := m.Logger("DeleteCharacterInstanceRec")
+
+	l.Debug("Deleting character rec ID >%s<", recID)
 
 	r := m.CharacterInstanceRepository()
 
@@ -134,7 +148,7 @@ func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 
 	err := m.ValidateDeleteCharacterInstanceRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -144,7 +158,9 @@ func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 // RemoveCharacterInstanceRec -
 func (m *Model) RemoveCharacterInstanceRec(recID string) error {
 
-	m.Log.Debug("Removing character rec ID >%s<", recID)
+	l := m.Logger("RemoveCharacterInstanceRec")
+
+	l.Debug("Removing character rec ID >%s<", recID)
 
 	r := m.CharacterInstanceRepository()
 
@@ -155,7 +171,7 @@ func (m *Model) RemoveCharacterInstanceRec(recID string) error {
 
 	err := m.ValidateDeleteCharacterInstanceRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

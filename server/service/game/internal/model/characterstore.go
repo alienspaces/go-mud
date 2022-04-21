@@ -14,7 +14,9 @@ const defaultAttributePoints = 36
 // GetCharacterRecs -
 func (m *Model) GetCharacterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Character, error) {
 
-	m.Log.Debug("Getting dungeon character records params >%s<", params)
+	l := m.Logger("GetCharacterRecs")
+
+	l.Debug("Getting dungeon character records params >%s<", params)
 
 	r := m.CharacterRepository()
 
@@ -24,7 +26,9 @@ func (m *Model) GetCharacterRecs(params map[string]interface{}, operators map[st
 // GetCharacterRec -
 func (m *Model) GetCharacterRec(recID string, forUpdate bool) (*record.Character, error) {
 
-	m.Log.Debug("Getting dungeon character rec ID >%s<", recID)
+	l := m.Logger("GetCharacterRec")
+
+	l.Debug("Getting dungeon character rec ID >%s<", recID)
 
 	r := m.CharacterRepository()
 
@@ -35,7 +39,7 @@ func (m *Model) GetCharacterRec(recID string, forUpdate bool) (*record.Character
 
 	rec, err := r.GetOne(recID, forUpdate)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -45,7 +49,9 @@ func (m *Model) GetCharacterRec(recID string, forUpdate bool) (*record.Character
 // CreateCharacterRec -
 func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
-	m.Log.Debug("Creating dungeon character rec >%#v<", rec)
+	l := m.Logger("CreateCharacterRec")
+
+	l.Debug("Creating dungeon character rec >%#v<", rec)
 
 	characterRepo := m.CharacterRepository()
 
@@ -57,7 +63,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
 	err := m.ValidateCharacterRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -67,13 +73,15 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 // UpdateCharacterRec -
 func (m *Model) UpdateCharacterRec(rec *record.Character) error {
 
-	m.Log.Debug("Updating dungeon character rec >%#v<", rec)
+	l := m.Logger("UpdateCharacterRec")
+
+	l.Debug("Updating dungeon character rec >%#v<", rec)
 
 	r := m.CharacterRepository()
 
 	err := m.ValidateCharacterRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -83,7 +91,9 @@ func (m *Model) UpdateCharacterRec(rec *record.Character) error {
 // DeleteCharacterRec -
 func (m *Model) DeleteCharacterRec(recID string) error {
 
-	m.Log.Debug("Deleting dungeon character rec ID >%s<", recID)
+	l := m.Logger("DeleteCharacterRec")
+
+	l.Debug("Deleting dungeon character rec ID >%s<", recID)
 
 	r := m.CharacterRepository()
 
@@ -94,7 +104,7 @@ func (m *Model) DeleteCharacterRec(recID string) error {
 
 	err := m.ValidateDeleteCharacterRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -104,7 +114,9 @@ func (m *Model) DeleteCharacterRec(recID string) error {
 // RemoveCharacterRec -
 func (m *Model) RemoveCharacterRec(recID string) error {
 
-	m.Log.Debug("Removing dungeon character rec ID >%s<", recID)
+	l := m.Logger("RemoveCharacterRec")
+
+	l.Debug("Removing dungeon character rec ID >%s<", recID)
 
 	r := m.CharacterRepository()
 
@@ -115,7 +127,7 @@ func (m *Model) RemoveCharacterRec(recID string) error {
 
 	err := m.ValidateDeleteCharacterRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

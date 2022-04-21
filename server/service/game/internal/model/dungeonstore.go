@@ -10,7 +10,9 @@ import (
 // GetDungeonRecs -
 func (m *Model) GetDungeonRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Dungeon, error) {
 
-	m.Log.Debug("Getting dungeon records params >%s<", params)
+	l := m.Logger("GetDungeonRecs")
+
+	l.Debug("Getting dungeon records params >%s<", params)
 
 	r := m.DungeonRepository()
 
@@ -20,7 +22,9 @@ func (m *Model) GetDungeonRecs(params map[string]interface{}, operators map[stri
 // GetDungeonRec -
 func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, error) {
 
-	m.Log.Debug("Getting dungeon rec ID >%s<", recID)
+	l := m.Logger("GetDungeonRec")
+
+	l.Debug("Getting dungeon rec ID >%s<", recID)
 
 	r := m.DungeonRepository()
 
@@ -31,7 +35,7 @@ func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, er
 
 	rec, err := r.GetOne(recID, forUpdate)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -41,13 +45,15 @@ func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, er
 // CreateDungeonRec -
 func (m *Model) CreateDungeonRec(rec *record.Dungeon) error {
 
-	m.Log.Debug("Creating dungeon rec >%#v<", rec)
+	l := m.Logger("CreateDungeonRec")
+
+	l.Debug("Creating dungeon rec >%#v<", rec)
 
 	r := m.DungeonRepository()
 
 	err := m.ValidateDungeonRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -57,13 +63,15 @@ func (m *Model) CreateDungeonRec(rec *record.Dungeon) error {
 // UpdateDungeonRec -
 func (m *Model) UpdateDungeonRec(rec *record.Dungeon) error {
 
-	m.Log.Debug("Updating dungeon rec >%#v<", rec)
+	l := m.Logger("UpdateDungeonRec")
+
+	l.Debug("Updating dungeon rec >%#v<", rec)
 
 	r := m.DungeonRepository()
 
 	err := m.ValidateDungeonRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -73,7 +81,9 @@ func (m *Model) UpdateDungeonRec(rec *record.Dungeon) error {
 // DeleteDungeonRec -
 func (m *Model) DeleteDungeonRec(recID string) error {
 
-	m.Log.Debug("Deleting dungeon rec ID >%s<", recID)
+	l := m.Logger("DeleteDungeonRec")
+
+	l.Debug("Deleting dungeon rec ID >%s<", recID)
 
 	r := m.DungeonRepository()
 
@@ -84,7 +94,7 @@ func (m *Model) DeleteDungeonRec(recID string) error {
 
 	err := m.ValidateDeleteDungeonRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -94,7 +104,9 @@ func (m *Model) DeleteDungeonRec(recID string) error {
 // RemoveDungeonRec -
 func (m *Model) RemoveDungeonRec(recID string) error {
 
-	m.Log.Debug("Removing dungeon rec ID >%s<", recID)
+	l := m.Logger("RemoveDungeonRec")
+
+	l.Debug("Removing dungeon rec ID >%s<", recID)
 
 	r := m.DungeonRepository()
 
@@ -105,7 +117,7 @@ func (m *Model) RemoveDungeonRec(recID string) error {
 
 	err := m.ValidateDeleteDungeonRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

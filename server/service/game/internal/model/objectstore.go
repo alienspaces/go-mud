@@ -10,7 +10,9 @@ import (
 // GetObjectRecs -
 func (m *Model) GetObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Object, error) {
 
-	m.Log.Debug("Getting dungeon object records params >%s<", params)
+	l := m.Logger("GetObjectRecs")
+
+	l.Debug("Getting dungeon object records params >%s<", params)
 
 	r := m.ObjectRepository()
 
@@ -20,7 +22,9 @@ func (m *Model) GetObjectRecs(params map[string]interface{}, operators map[strin
 // GetObjectRec -
 func (m *Model) GetObjectRec(recID string, forUpdate bool) (*record.Object, error) {
 
-	m.Log.Debug("Getting dungeon object rec ID >%s<", recID)
+	l := m.Logger("GetObjectRec")
+
+	l.Debug("Getting dungeon object rec ID >%s<", recID)
 
 	r := m.ObjectRepository()
 
@@ -31,7 +35,7 @@ func (m *Model) GetObjectRec(recID string, forUpdate bool) (*record.Object, erro
 
 	rec, err := r.GetOne(recID, forUpdate)
 	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
+		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
 	}
 
@@ -41,13 +45,15 @@ func (m *Model) GetObjectRec(recID string, forUpdate bool) (*record.Object, erro
 // CreateObjectRec -
 func (m *Model) CreateObjectRec(rec *record.Object) error {
 
-	m.Log.Debug("Creating dungeon object rec >%#v<", rec)
+	l := m.Logger("CreateObjectRec")
+
+	l.Debug("Creating dungeon object rec >%#v<", rec)
 
 	r := m.ObjectRepository()
 
 	err := m.ValidateObjectRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -57,13 +63,15 @@ func (m *Model) CreateObjectRec(rec *record.Object) error {
 // UpdateObjectRec -
 func (m *Model) UpdateObjectRec(rec *record.Object) error {
 
-	m.Log.Debug("Updating dungeon object rec >%#v<", rec)
+	l := m.Logger("UpdateObjectRec")
+
+	l.Debug("Updating dungeon object rec >%#v<", rec)
 
 	r := m.ObjectRepository()
 
 	err := m.ValidateObjectRec(rec)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -73,7 +81,9 @@ func (m *Model) UpdateObjectRec(rec *record.Object) error {
 // DeleteObjectRec -
 func (m *Model) DeleteObjectRec(recID string) error {
 
-	m.Log.Debug("Deleting dungeon object rec ID >%s<", recID)
+	l := m.Logger("DeleteObjectRec")
+
+	l.Debug("Deleting dungeon object rec ID >%s<", recID)
 
 	r := m.ObjectRepository()
 
@@ -84,7 +94,7 @@ func (m *Model) DeleteObjectRec(recID string) error {
 
 	err := m.ValidateDeleteObjectRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -94,7 +104,9 @@ func (m *Model) DeleteObjectRec(recID string) error {
 // RemoveObjectRec -
 func (m *Model) RemoveObjectRec(recID string) error {
 
-	m.Log.Debug("Removing dungeon object rec ID >%s<", recID)
+	l := m.Logger("RemoveObjectRec")
+
+	l.Debug("Removing dungeon object rec ID >%s<", recID)
 
 	r := m.ObjectRepository()
 
@@ -105,7 +117,7 @@ func (m *Model) RemoveObjectRec(recID string) error {
 
 	err := m.ValidateDeleteObjectRec(recID)
 	if err != nil {
-		m.Log.Debug("Failed model validation >%v<", err)
+		l.Debug("Failed model validation >%v<", err)
 		return err
 	}
 

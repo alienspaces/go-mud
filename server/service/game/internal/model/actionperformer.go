@@ -15,6 +15,8 @@ func (m *Model) performCharacterAction(
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
 
+	l := m.Logger("performCharacterAction")
+
 	actionFuncs := map[string]func(
 		characterInstanceViewRec *record.CharacterInstanceView,
 		actionRec *record.Action,
@@ -29,18 +31,18 @@ func (m *Model) performCharacterAction(
 	actionFunc, ok := actionFuncs[actionRec.ResolvedCommand]
 	if !ok {
 		msg := fmt.Sprintf("Action >%s< not supported", actionRec.ResolvedCommand)
-		m.Log.Warn(msg)
+		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
 	var err error
 	actionRec, err = actionFunc(characterInstanceViewRec, actionRec, locationInstanceRecordSet)
 	if err != nil {
-		m.Log.Warn("Failed performing action >%s< >%v<", actionRec.ResolvedCommand, err)
+		l.Warn("Failed performing action >%s< >%v<", actionRec.ResolvedCommand, err)
 		return nil, err
 	}
 
-	m.Log.Info("Have updated dungeon action record >%v<", actionRec)
+	l.Info("Have updated dungeon action record >%v<", actionRec)
 
 	return actionRec, nil
 }
