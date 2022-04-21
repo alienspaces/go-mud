@@ -22,7 +22,7 @@ func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon
 	return &rec, nil
 }
 
-func (t *Testing) createDungeonLocationRec(dungeonRec *record.Dungeon, dungeonLocationConfig DungeonLocationConfig) (*record.DungeonLocation, error) {
+func (t *Testing) createLocationRec(dungeonRec *record.Dungeon, dungeonLocationConfig LocationConfig) (*record.Location, error) {
 
 	rec := dungeonLocationConfig.Record
 
@@ -30,7 +30,7 @@ func (t *Testing) createDungeonLocationRec(dungeonRec *record.Dungeon, dungeonLo
 
 	t.Log.Debug("(testing) Creating dungeon location record >%#v<", rec)
 
-	err := t.Model.(*model.Model).CreateDungeonLocationRec(&rec)
+	err := t.Model.(*model.Model).CreateLocationRec(&rec)
 	if err != nil {
 		t.Log.Warn("(testing) Failed creating dungeon location record >%v<", err)
 		return nil, err
@@ -38,11 +38,11 @@ func (t *Testing) createDungeonLocationRec(dungeonRec *record.Dungeon, dungeonLo
 	return &rec, nil
 }
 
-func (t *Testing) updateDungeonLocationRec(rec *record.DungeonLocation) error {
+func (t *Testing) updateLocationRec(rec *record.Location) error {
 
 	t.Log.Debug("(testing) Updating dungeon location record >%#v<", rec)
 
-	err := t.Model.(*model.Model).UpdateDungeonLocationRec(rec)
+	err := t.Model.(*model.Model).UpdateLocationRec(rec)
 	if err != nil {
 		t.Log.Warn("(testing) Failed updating dungeon location record >%v<", err)
 		return err
@@ -122,7 +122,7 @@ func (t *Testing) createDungeonObjectRec(dungeonRec *record.Dungeon, dungeonObje
 	return &rec, nil
 }
 
-func (t *Testing) createDungeonCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*model.DungeonActionRecordSet, error) {
+func (t *Testing) createDungeonCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*model.ActionRecordSet, error) {
 
 	t.Log.Debug("(testing) Creating dungeon action for character ID >%s< sentence >%s<", dungeonCharacterID, sentence)
 

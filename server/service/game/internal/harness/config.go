@@ -11,17 +11,23 @@ type DataConfig struct {
 
 // DungeonConfig -
 type DungeonConfig struct {
-	Record record.Dungeon
-	// DefaultDungeonLocationName string
-	DungeonLocationConfig  []DungeonLocationConfig
+	Record                 record.Dungeon
+	LocationConfig  []LocationConfig
 	DungeonCharacterConfig []DungeonCharacterConfig
 	DungeonMonsterConfig   []DungeonMonsterConfig
 	DungeonObjectConfig    []DungeonObjectConfig
-	DungeonActionConfig    []DungeonActionConfig
+	ActionConfig    []ActionConfig
+	DungeonInstanceConfig[]
 }
 
-type DungeonLocationConfig struct {
-	Record                record.DungeonLocation
+// DungeonInstanceConfig -
+type DungeonInstanceConfig struct {
+
+}
+
+// LocationConfig -
+type LocationConfig struct {
+	Record                record.Location
 	NorthLocationName     string
 	NortheastLocationName string
 	EastLocationName      string
@@ -34,22 +40,26 @@ type DungeonLocationConfig struct {
 	DownLocationName      string
 }
 
-type DungeonActionConfig struct {
+// ActionConfig -
+type ActionConfig struct {
 	CharacterName string
 	MonsterName   string
 	Command       string
 }
 
+// DungeonCharacterConfig -
 type DungeonCharacterConfig struct {
 	Record       record.DungeonCharacter
 	LocationName string
 }
 
+// DungeonMonsterConfig -
 type DungeonMonsterConfig struct {
 	Record       record.DungeonMonster
 	LocationName string
 }
 
+// DungeonObjectConfig - 
 type DungeonObjectConfig struct {
 	Record        record.DungeonObject
 	LocationName  string

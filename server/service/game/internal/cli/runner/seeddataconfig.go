@@ -15,9 +15,9 @@ var seedDataConfig = harness.DataConfig{
 			Record: record.Dungeon{
 				Name: "Cave",
 			},
-			DungeonLocationConfig: []harness.DungeonLocationConfig{
+			LocationConfig: []harness.LocationConfig{
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Cave Entrance",
 						Description: "A large cave entrance.",
 						Default:     true,
@@ -25,7 +25,7 @@ var seedDataConfig = harness.DataConfig{
 					NorthLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Cave Tunnel",
 						Description: "A cave tunnel descends into the mountain.",
 					},
@@ -34,14 +34,14 @@ var seedDataConfig = harness.DataConfig{
 					NorthwestLocationName: "Narrow Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Cave Room",
 						Description: "A large cave room.",
 					},
 					SouthLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Narrow Tunnel",
 						Description: "A narrow tunnel gradually descending into the darkness.",
 					},
@@ -49,7 +49,7 @@ var seedDataConfig = harness.DataConfig{
 					SoutheastLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Dark Narrow Tunnel",
 						Description: "A dark narrow tunnel.",
 					},
@@ -57,7 +57,7 @@ var seedDataConfig = harness.DataConfig{
 					DownLocationName:      "Dark Room",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Dark Room",
 						Description: "A dark room.",
 					},

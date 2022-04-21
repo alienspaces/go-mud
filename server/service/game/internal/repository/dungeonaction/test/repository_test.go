@@ -33,15 +33,15 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonAction
+		rec  func(data harness.Data) *record.Action
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonAction {
-				return &record.DungeonAction{
+			rec: func(data harness.Data) *record.Action {
+				return &record.Action{
 					DungeonID:                     data.DungeonRecs[0].ID,
-					DungeonLocationID:             data.DungeonLocationRecs[0].ID,
+					LocationID:             data.LocationRecs[0].ID,
 					DungeonCharacterID:            nullstring.FromString(data.DungeonCharacterRecs[0].ID),
 					ResolvedTargetDungeonObjectID: nullstring.FromString(data.DungeonObjectRecs[0].ID),
 				}
@@ -50,10 +50,10 @@ func TestCreateOne(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonAction {
-				rec := &record.DungeonAction{
+			rec: func(data harness.Data) *record.Action {
+				rec := &record.Action{
 					DungeonID:                     data.DungeonRecs[0].ID,
-					DungeonLocationID:             data.DungeonLocationRecs[0].ID,
+					LocationID:             data.LocationRecs[0].ID,
 					DungeonCharacterID:            nullstring.FromString(data.DungeonCharacterRecs[0].ID),
 					ResolvedTargetDungeonObjectID: nullstring.FromString(data.DungeonObjectRecs[0].ID),
 				}
@@ -84,7 +84,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionRepository()
+			r := h.Model.(*model.Model).ActionRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec(h.Data)
@@ -124,7 +124,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonActionRecs[0].ID
+				return h.Data.ActionRecs[0].ID
 			},
 			err: false,
 		},
@@ -156,7 +156,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionRepository()
+			r := h.Model.(*model.Model).ActionRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -191,21 +191,21 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonAction
+		rec  func() *record.Action
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonAction {
-				rec := *h.Data.DungeonActionRecs[0]
+			rec: func() *record.Action {
+				rec := *h.Data.ActionRecs[0]
 				return &rec
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonAction {
-				rec := *h.Data.DungeonActionRecs[0]
+			rec: func() *record.Action {
+				rec := *h.Data.ActionRecs[0]
 				rec.ID = ""
 				return &rec
 			},
@@ -232,7 +232,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionRepository()
+			r := h.Model.(*model.Model).ActionRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -272,7 +272,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonActionRecs[0].ID
+				return h.Data.ActionRecs[0].ID
 			},
 			err: false,
 		},
@@ -304,7 +304,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionRepository()
+			r := h.Model.(*model.Model).ActionRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())

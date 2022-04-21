@@ -1,0 +1,113 @@
+package model
+
+import (
+	"database/sql"
+	"fmt"
+
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+)
+
+// GetDungeonInstanceRecs -
+func (m *Model) GetDungeonInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonInstance, error) {
+
+	m.Log.Debug("Getting dungeon records params >%s<", params)
+
+	r := m.DungeonInstanceRepository()
+
+	return r.GetMany(params, operators, forUpdate)
+}
+
+// GetDungeonInstanceRec -
+func (m *Model) GetDungeonInstanceRec(recID string, forUpdate bool) (*record.DungeonInstance, error) {
+
+	m.Log.Debug("Getting dungeon rec ID >%s<", recID)
+
+	r := m.DungeonInstanceRepository()
+
+	// validate UUID
+	if !m.IsUUID(recID) {
+		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
+	}
+
+	rec, err := r.GetOne(recID, forUpdate)
+	if err == sql.ErrNoRows {
+		m.Log.Warn("No record found ID >%s<", recID)
+		return nil, nil
+	}
+
+	return rec, err
+}
+
+// CreateDungeonInstanceRec -
+func (m *Model) CreateDungeonInstanceRec(rec *record.DungeonInstance) error {
+
+	m.Log.Debug("Creating dungeon rec >%#v<", rec)
+
+	r := m.DungeonInstanceRepository()
+
+	err := m.ValidateDungeonInstanceRec(rec)
+	if err != nil {
+		m.Log.Debug("Failed model validation >%v<", err)
+		return err
+	}
+
+	return r.CreateOne(rec)
+}
+
+// UpdateDungeonInstanceRec -
+func (m *Model) UpdateDungeonInstanceRec(rec *record.DungeonInstance) error {
+
+	m.Log.Debug("Updating dungeon rec >%#v<", rec)
+
+	r := m.DungeonInstanceRepository()
+
+	err := m.ValidateDungeonInstanceRec(rec)
+	if err != nil {
+		m.Log.Debug("Failed model validation >%v<", err)
+		return err
+	}
+
+	return r.UpdateOne(rec)
+}
+
+// DeleteDungeonInstanceRec -
+func (m *Model) DeleteDungeonInstanceRec(recID string) error {
+
+	m.Log.Debug("Deleting dungeon rec ID >%s<", recID)
+
+	r := m.DungeonInstanceRepository()
+
+	// validate UUID
+	if !m.IsUUID(recID) {
+		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
+	}
+
+	err := m.ValidateDeleteDungeonInstanceRec(recID)
+	if err != nil {
+		m.Log.Debug("Failed model validation >%v<", err)
+		return err
+	}
+
+	return r.DeleteOne(recID)
+}
+
+// RemoveDungeonInstanceRec -
+func (m *Model) RemoveDungeonInstanceRec(recID string) error {
+
+	m.Log.Debug("Removing dungeon rec ID >%s<", recID)
+
+	r := m.DungeonInstanceRepository()
+
+	// validate UUID
+	if !m.IsUUID(recID) {
+		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
+	}
+
+	err := m.ValidateDeleteDungeonInstanceRec(recID)
+	if err != nil {
+		m.Log.Debug("Failed model validation >%v<", err)
+		return err
+	}
+
+	return r.RemoveOne(recID)
+}

@@ -19,9 +19,9 @@ var testDataConfig = harness.DataConfig{
 				},
 				Name: "Cave",
 			},
-			DungeonLocationConfig: []harness.DungeonLocationConfig{
+			LocationConfig: []harness.LocationConfig{
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Record: repository.Record{
 							ID: "b47febf0-3c51-405e-8f41-abc18d20392a",
 						},
@@ -32,7 +32,7 @@ var testDataConfig = harness.DataConfig{
 					NorthLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Record: repository.Record{
 							ID: "8bfd0e7d-7249-43f7-ab8b-176f32b962bb",
 						},
@@ -44,7 +44,7 @@ var testDataConfig = harness.DataConfig{
 					NorthwestLocationName: "Narrow Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Record: repository.Record{
 							ID: "08c75bd1-13e7-4b44-a594-c87a125885d0",
 						},
@@ -54,7 +54,7 @@ var testDataConfig = harness.DataConfig{
 					SouthLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Record: repository.Record{
 							ID: "4a6697e9-11df-4fc4-8a9b-8e26a0c64a21",
 						},
@@ -65,7 +65,7 @@ var testDataConfig = harness.DataConfig{
 					SoutheastLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Record: repository.Record{
 							ID: "495c7346-caa0-4993-bb9a-b9e48fee0ac1",
 						},
@@ -76,7 +76,7 @@ var testDataConfig = harness.DataConfig{
 					DownLocationName:      "Dark Room",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Record: repository.Record{
 							ID: "dc2206de-795b-4864-8d52-36c55d80d33e",
 						},
@@ -153,7 +153,7 @@ var testDataConfig = harness.DataConfig{
 					CharacterName: "Barricade",
 				},
 			},
-			DungeonActionConfig: []harness.DungeonActionConfig{
+			ActionConfig: []harness.ActionConfig{
 				{
 					CharacterName: "Barricade",
 					Command:       "look north",

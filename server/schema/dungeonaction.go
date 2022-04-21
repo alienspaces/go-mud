@@ -4,18 +4,18 @@ import (
 	"time"
 )
 
-// DungeonActionResponse -
-type DungeonActionResponse struct {
+// ActionResponse -
+type ActionResponse struct {
 	Response
-	Data []DungeonActionResponseData `json:"data"`
+	Data []ActionResponseData `json:"data"`
 }
 
-// DungeonActionResponseData -
-type DungeonActionResponseData struct {
+// ActionResponseData -
+type ActionResponseData struct {
 	ID              string                 `json:"id,omitempty"`
 	Command         string                 `json:"command"`
 	Narrative       string                 `json:"narrative"`
-	Location        LocationData           `json:"location"`
+	Location        LocationDetailedData   `json:"location"`
 	Character       *CharacterDetailedData `json:"character,omitempty"`
 	Monster         *MonsterDetailedData   `json:"monster,omitempty"`
 	EquippedObject  *ObjectDetailedData    `json:"equipped_object,omitempty"`
@@ -24,23 +24,23 @@ type DungeonActionResponseData struct {
 	TargetObject    *ObjectDetailedData    `json:"target_object,omitempty"`
 	TargetCharacter *CharacterDetailedData `json:"target_character,omitempty"`
 	TargetMonster   *MonsterDetailedData   `json:"target_monster,omitempty"`
-	TargetLocation  *LocationData          `json:"target_location,omitempty"`
+	TargetLocation  *LocationDetailedData  `json:"target_location,omitempty"`
 	CreatedAt       time.Time              `json:"created_at,omitempty"`
 	UpdatedAt       time.Time              `json:"updated_at,omitempty"`
 }
 
-// DungeonActionRequest -
-type DungeonActionRequest struct {
+// ActionRequest -
+type ActionRequest struct {
 	Request
-	Data DungeonActionRequestData `json:"data"`
+	Data ActionRequestData `json:"data"`
 }
 
-// DungeonActionRequestData -
-type DungeonActionRequestData struct {
+// ActionRequestData -
+type ActionRequestData struct {
 	Sentence string `json:"sentence"`
 }
 
-type LocationData struct {
+type LocationDetailedData struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
 	Direction   string          `json:"direction,omitempty"`

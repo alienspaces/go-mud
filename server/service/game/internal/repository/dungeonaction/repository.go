@@ -37,7 +37,7 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 			// Config
 			Config: repository.Config{
 				TableName:  TableName,
-				Attributes: tag.GetValues(record.DungeonAction{}, "db"),
+				Attributes: tag.GetValues(record.Action{}, "db"),
 			},
 		},
 	}
@@ -59,17 +59,17 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.DungeonAction {
-	return &record.DungeonAction{}
+func (r *Repository) NewRecord() *record.Action {
+	return &record.Action{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.DungeonAction {
-	return []*record.DungeonAction{}
+func (r *Repository) NewRecordArray() []*record.Action {
+	return []*record.Action{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonAction, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.Action, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
@@ -82,7 +82,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonAction, e
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.DungeonAction, error) {
+	forUpdate bool) ([]*record.Action, error) {
 
 	recs := r.NewRecordArray()
 
@@ -109,7 +109,7 @@ func (r *Repository) GetMany(
 }
 
 // CreateOne -
-func (r *Repository) CreateOne(rec *record.DungeonAction) error {
+func (r *Repository) CreateOne(rec *record.Action) error {
 
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
@@ -127,7 +127,7 @@ func (r *Repository) CreateOne(rec *record.DungeonAction) error {
 }
 
 // UpdateOne -
-func (r *Repository) UpdateOne(rec *record.DungeonAction) error {
+func (r *Repository) UpdateOne(rec *record.Action) error {
 
 	origUpdatedAt := rec.UpdatedAt
 	rec.UpdatedAt = repository.NewUpdatedAt()
@@ -140,9 +140,4 @@ func (r *Repository) UpdateOne(rec *record.DungeonAction) error {
 	}
 
 	return nil
-}
-
-// CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *record.DungeonAction) error {
-	return r.CreateOne(rec)
 }

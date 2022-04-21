@@ -40,7 +40,7 @@ func TestCreateDungeonMonsterRec(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonMonster {
 				return &record.DungeonMonster{
 					DungeonID:         data.DungeonRecs[0].ID,
-					DungeonLocationID: data.DungeonLocationRecs[0].ID,
+					LocationID: data.LocationRecs[0].ID,
 					Name:              gofakeit.StreetName() + gofakeit.Name(),
 					Strength:          10,
 					Dexterity:         10,
@@ -54,7 +54,7 @@ func TestCreateDungeonMonsterRec(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonMonster {
 				rec := &record.DungeonMonster{
 					DungeonID:         data.DungeonRecs[0].ID,
-					DungeonLocationID: data.DungeonLocationRecs[0].ID,
+					LocationID: data.LocationRecs[0].ID,
 					Name:              gofakeit.StreetName() + gofakeit.Name(),
 					Strength:          10,
 					Dexterity:         10,

@@ -159,11 +159,6 @@ func (r *Repository) UpdateOne(rec *Record) error {
 	return nil
 }
 
-// CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *Record) error {
-	return r.CreateOne(rec)
-}
-
 var createOneSQL = `
 INSERT INTO test (
 	id,

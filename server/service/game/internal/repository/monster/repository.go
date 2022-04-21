@@ -142,7 +142,3 @@ func (r *Repository) UpdateOne(rec *record.Monster) error {
 	return nil
 }
 
-// CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *record.Monster) error {
-	return r.CreateOne(rec)
-}

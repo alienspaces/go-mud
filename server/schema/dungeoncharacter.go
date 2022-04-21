@@ -20,7 +20,7 @@ type DungeonCharacterRequest struct {
 type DungeonCharacterData struct {
 	ID                  string    `json:"id,omitempty"`
 	DungeonID           string    `json:"dungeon_id,omitempty"`
-	DungeonLocationID   string    `json:"dungeon_location_id,omitempty"`
+	LocationID   string    `json:"dungeon_location_id,omitempty"`
 	Name                string    `json:"name"`
 	Strength            int       `json:"strength"`
 	Dexterity           int       `json:"dexterity"`

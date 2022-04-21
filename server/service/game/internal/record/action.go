@@ -7,59 +7,59 @@ import (
 )
 
 const (
-	DungeonActionCommandMove   string = "move"
-	DungeonActionCommandLook   string = "look"
-	DungeonActionCommandEquip  string = "equip"
-	DungeonActionCommandStash  string = "stash"
-	DungeonActionCommandDrop   string = "drop"
-	DungeonActionCommandAttack string = "attack"
+	ActionCommandMove   string = "move"
+	ActionCommandLook   string = "look"
+	ActionCommandEquip  string = "equip"
+	ActionCommandStash  string = "stash"
+	ActionCommandDrop   string = "drop"
+	ActionCommandAttack string = "attack"
 )
 
-type DungeonAction struct {
-	DungeonInstanceID                      string         `db:"dungeon_instance_id"`
-	DungeonLocationInstanceID              string         `db:"dungeon_location_instance_id"`
-	CharacterInstanceID                    sql.NullString `db:"character_instance_id"`
-	MonsterInstanceID                      sql.NullString `db:"monster_instance_id"`
-	SerialID                               sql.NullInt16  `db:"serial_id"`
-	ResolvedCommand                        string         `db:"resolved_command"`
-	ResolvedEquippedDungeonObjectID        sql.NullString `db:"resolved_equipped_dungeon_object_id"`
-	ResolvedStashedDungeonObjectID         sql.NullString `db:"resolved_stashed_dungeon_object_id"`
-	ResolvedDroppedDungeonObjectID         sql.NullString `db:"resolved_dropped_dungeon_object_id"`
-	ResolvedTargetDungeonObjectID          sql.NullString `db:"resolved_target_dungeon_object_id"`
-	ResolvedTargetDungeonCharacterID       sql.NullString `db:"resolved_target_dungeon_character_id"`
-	ResolvedTargetDungeonMonsterID         sql.NullString `db:"resolved_target_dungeon_monster_id"`
-	ResolvedTargetDungeonLocationDirection sql.NullString `db:"resolved_target_dungeon_location_direction"`
-	ResolvedTargetDungeonLocationID        sql.NullString `db:"resolved_target_dungeon_location_id"`
+type Action struct {
+	DungeonInstanceID                 string         `db:"dungeon_instance_id"`
+	LocationInstanceID                string         `db:"location_instance_id"`
+	CharacterInstanceID               sql.NullString `db:"character_instance_id"`
+	MonsterInstanceID                 sql.NullString `db:"monster_instance_id"`
+	SerialID                          sql.NullInt16  `db:"serial_id"`
+	ResolvedCommand                   string         `db:"resolved_command"`
+	ResolvedEquippedObjectInstanceID  sql.NullString `db:"resolved_equipped_object_instance_id"`
+	ResolvedStashedObjectInstanceID   sql.NullString `db:"resolved_stashed_object_instance_id"`
+	ResolvedDroppedObjectInstanceID   sql.NullString `db:"resolved_dropped_object_instance_id"`
+	ResolvedTargetObjectInstanceID    sql.NullString `db:"resolved_target_object_instance_id"`
+	ResolvedTargetCharacterInstanceID sql.NullString `db:"resolved_target_character_instance_id"`
+	ResolvedTargetMonsterInstanceID   sql.NullString `db:"resolved_target_monster_instance_id"`
+	ResolvedTargetLocationDirection   sql.NullString `db:"resolved_target_location_direction"`
+	ResolvedTargetLocationInstanceID  sql.NullString `db:"resolved_target_location_instance_id"`
 	repository.Record
 }
 
 const (
-	DungeonActionCharacterRecordTypeSource   string = "source"
-	DungeonActionCharacterRecordTypeTarget   string = "target"
-	DungeonActionCharacterRecordTypeOccupant string = "occupant"
+	ActionCharacterRecordTypeSource   string = "source"
+	ActionCharacterRecordTypeTarget   string = "target"
+	ActionCharacterRecordTypeOccupant string = "occupant"
 )
 
-type DungeonActionCharacter struct {
-	RecordType                string `db:"record_type"`
-	DungeonActionID           string `db:"dungeon_action_id"`
-	DungeonLocationInstanceID string `db:"dungeon_location_instance_id"`
-	CharacterInstanceID       string `db:"character_instance_id"`
-	Name                      string `db:"name"`
-	Strength                  int    `db:"strength"`
-	Dexterity                 int    `db:"dexterity"`
-	Intelligence              int    `db:"intelligence"`
-	CurrentStrength           int    `db:"current_strength"`
-	CurrentDexterity          int    `db:"current_dexterity"`
-	CurrentIntelligence       int    `db:"current_intelligence"`
-	Health                    int    `db:"health"`
-	Fatigue                   int    `db:"fatigue"`
-	CurrentHealth             int    `db:"current_health"`
-	CurrentFatigue            int    `db:"current_fatigue"`
+type ActionCharacter struct {
+	RecordType          string `db:"record_type"`
+	ActionID            string `db:"action_id"`
+	LocationInstanceID  string `db:"location_instance_id"`
+	CharacterInstanceID string `db:"character_instance_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
 	repository.Record
 }
 
-type DungeonActionCharacterObject struct {
-	DungeonActionID     string `db:"dungeon_action_id"`
+type ActionCharacterObject struct {
+	ActionID            string `db:"action_id"`
 	CharacterInstanceID string `db:"character_instance_id"`
 	ObjectInstanceID    string `db:"object_instance_id"`
 	Name                string `db:"name"`
@@ -69,34 +69,34 @@ type DungeonActionCharacterObject struct {
 }
 
 const (
-	DungeonActionMonsterRecordTypeSource   string = "source"
-	DungeonActionMonsterRecordTypeTarget   string = "target"
-	DungeonActionMonsterRecordTypeOccupant string = "occupant"
+	ActionMonsterRecordTypeSource   string = "source"
+	ActionMonsterRecordTypeTarget   string = "target"
+	ActionMonsterRecordTypeOccupant string = "occupant"
 )
 
-type DungeonActionMonster struct {
-	RecordType                string `db:"record_type"`
-	DungeonActionID           string `db:"dungeon_action_id"`
-	DungeonLocationInstanceID string `db:"dungeon_location_instance_id"`
-	MonsterInstanceID         string `db:"monster_instance_id"`
-	Name                      string `db:"name"`
-	Strength                  int    `db:"strength"`
-	Dexterity                 int    `db:"dexterity"`
-	Intelligence              int    `db:"intelligence"`
-	CurrentStrength           int    `db:"current_strength"`
-	CurrentDexterity          int    `db:"current_dexterity"`
-	CurrentIntelligence       int    `db:"current_intelligence"`
-	Health                    int    `db:"health"`
-	Fatigue                   int    `db:"fatigue"`
-	CurrentHealth             int    `db:"current_health"`
-	CurrentFatigue            int    `db:"current_fatigue"`
+type ActionMonster struct {
+	RecordType          string `db:"record_type"`
+	ActionID            string `db:"action_id"`
+	LocationInstanceID  string `db:"location_instance_id"`
+	MonsterInstanceID   string `db:"monster_instance_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
 	repository.Record
 }
 
-type DungeonActionMonsterObject struct {
-	DungeonActionID   string `db:"dungeon_action_id"`
-	MonsterInstanceID string `db:"dungeon_monster_instance_id"`
-	ObjectInstanceID  string `db:"dungeon_object_instance_id"`
+type ActionMonsterObject struct {
+	ActionID          string `db:"action_id"`
+	MonsterInstanceID string `db:"monster_instance_id"`
+	ObjectInstanceID  string `db:"object_instance_id"`
 	Name              string `db:"name"`
 	IsStashed         bool   `db:"is_stashed"`
 	IsEquipped        bool   `db:"is_equipped"`
@@ -105,23 +105,23 @@ type DungeonActionMonsterObject struct {
 
 const (
 	// Equipped objects are being worn or held
-	DungeonActionObjectRecordTypeEquipped string = "equipped"
+	ActionObjectRecordTypeEquipped string = "equipped"
 	// Stashed objects are packed in a bag or backback
-	DungeonActionObjectRecordTypeStashed string = "stashed"
+	ActionObjectRecordTypeStashed string = "stashed"
 	// Dropped objects are present at a location
-	DungeonActionObjectRecordTypeDropped string = "dropped"
+	ActionObjectRecordTypeDropped string = "dropped"
 	// Target objects are are being actively looked at, used, equipped or stashed
-	DungeonActionObjectRecordTypeTarget string = "target"
+	ActionObjectRecordTypeTarget string = "target"
 	// Occupant objects are present at a location
-	DungeonActionObjectRecordTypeOccupant string = "occupant"
+	ActionObjectRecordTypeOccupant string = "occupant"
 )
 
-type DungeonActionObject struct {
-	RecordType                string `db:"record_type"`
-	DungeonActionID           string `db:"dungeon_action_id"`
-	DungeonLocationInstanceID string `db:"dungeon_location_instance_id"`
-	ObjectInstanceID          string `db:"object_instance_id"`
-	Name                      string `db:"name"`
+type ActionObject struct {
+	RecordType         string `db:"record_type"`
+	ActionID           string `db:"action_id"`
+	LocationInstanceID string `db:"location_instance_id"`
+	ObjectInstanceID   string `db:"object_instance_id"`
+	Name               string `db:"name"`
 	// Description could be either the object `description` or `description_detailed`
 	// depending on the characters `look` action result.
 	Description string `db:"description"`

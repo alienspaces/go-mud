@@ -141,8 +141,3 @@ func (r *Repository) UpdateOne(rec *record.ObjectInstance) error {
 
 	return nil
 }
-
-// CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *record.ObjectInstance) error {
-	return r.CreateOne(rec)
-}

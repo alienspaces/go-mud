@@ -23,7 +23,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 
 	type testCase struct {
 		TestCase
-		expectResponseBody func(data harness.Data) *schema.DungeonActionResponse
+		expectResponseBody func(data harness.Data) *schema.ActionResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -56,7 +56,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 	}
 
 	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
-		var responseBody *schema.DungeonActionResponse
+		var responseBody *schema.ActionResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
 	}
@@ -71,8 +71,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "look",
 						},
 					}
@@ -81,15 +81,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
 							Narrative: fmt.Sprintf("%s looks", data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -137,8 +137,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							TargetCharacter: nil,
 							TargetMonster:   nil,
 							TargetLocation: &schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -171,8 +171,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "move north",
 						},
 					}
@@ -181,15 +181,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "move",
 							Narrative: fmt.Sprintf("%s moves north", data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[1].Name,
-								Description: data.DungeonLocationRecs[1].Description,
+								Name:        data.LocationRecs[1].Name,
+								Description: data.LocationRecs[1].Description,
 								Directions:  []string{"north", "south", "northwest"},
 								Characters: []schema.CharacterData{
 									{
@@ -232,8 +232,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							TargetCharacter: nil,
 							TargetMonster:   nil,
 							TargetLocation: &schema.LocationData{
-								Name:        data.DungeonLocationRecs[1].Name,
-								Description: data.DungeonLocationRecs[1].Description,
+								Name:        data.LocationRecs[1].Name,
+								Description: data.LocationRecs[1].Description,
 								Direction:   "north",
 								Directions:  []string{"north", "south", "northwest"},
 								Characters: []schema.CharacterData{
@@ -262,8 +262,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "look north",
 						},
 					}
@@ -272,15 +272,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
 							Narrative: fmt.Sprintf("%s looks north", data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -328,8 +328,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							TargetCharacter: nil,
 							TargetMonster:   nil,
 							TargetLocation: &schema.LocationData{
-								Name:        data.DungeonLocationRecs[1].Name,
-								Description: data.DungeonLocationRecs[1].Description,
+								Name:        data.LocationRecs[1].Name,
+								Description: data.LocationRecs[1].Description,
 								Direction:   "north",
 								Directions:  []string{"north", "south", "northwest"},
 								Monsters: []schema.MonsterData{
@@ -353,8 +353,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "look rusted sword",
 						},
 					}
@@ -363,15 +363,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
 							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -439,8 +439,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "look Grumpy Dwarf",
 						},
 					}
@@ -449,15 +449,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
 							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonMonsterRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -537,8 +537,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "look barricade",
 						},
 					}
@@ -547,15 +547,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
 							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonCharacterRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -635,8 +635,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "stash rusted sword",
 						},
 					}
@@ -645,15 +645,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "stash",
 							Narrative: fmt.Sprintf("%s stashes %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -726,8 +726,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "equip rusted sword",
 						},
 					}
@@ -736,15 +736,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "equip",
 							Narrative: fmt.Sprintf("%s equips %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -817,8 +817,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "drop Dull Bronze Ring",
 						},
 					}
@@ -827,15 +827,15 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonActionResponse {
-				res := schema.DungeonActionResponse{
-					Data: []schema.DungeonActionResponseData{
+			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+				res := schema.ActionResponse{
+					Data: []schema.ActionResponseData{
 						{
 							Command:   "drop",
 							Narrative: fmt.Sprintf("%s drops %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[2].Name),
 							Location: schema.LocationData{
-								Name:        data.DungeonLocationRecs[0].Name,
-								Description: data.DungeonLocationRecs[0].Description,
+								Name:        data.LocationRecs[0].Name,
+								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
 								Characters: []schema.CharacterData{
 									{
@@ -908,8 +908,8 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonActionRequest{
-						Data: schema.DungeonActionRequestData{
+					res := schema.ActionRequest{
+						Data: schema.ActionRequestData{
 							Sentence: "",
 						},
 					}
@@ -946,9 +946,9 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				return
 			}
 
-			var responseBody *schema.DungeonActionResponse
+			var responseBody *schema.ActionResponse
 			if body != nil {
-				responseBody = body.(*schema.DungeonActionResponse)
+				responseBody = body.(*schema.ActionResponse)
 			}
 
 			// Validate response body

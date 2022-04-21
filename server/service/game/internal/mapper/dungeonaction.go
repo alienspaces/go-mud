@@ -5,12 +5,11 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// RecordToCharacterResponseData -
-func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet model.DungeonActionRecordSet) (*schema.DungeonActionResponseData, error) {
+// ActionRecordSetToActionResponse -
+func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet record.ActionRecordSet) (*schema.ActionResponseData, error) {
 
 	dungeonActionRec := dungeonActionRecordSet.ActionRec
 
@@ -46,16 +45,16 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet mod
 	}
 
 	// Target location
-	var targetLocationData *schema.LocationData
+	var targetLocationDetailedData *schema.LocationDetailedData
 	if dungeonActionRecordSet.TargetLocation != nil {
-		targetLocationData, err = dungeonActionLocationToResponseLocation(dungeonActionRecordSet.TargetLocation)
+		targetLocationDetailedData, err = dungeonActionLocationToResponseLocation(dungeonActionRecordSet.TargetLocation)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if dungeonActionRec.ResolvedTargetDungeonLocationDirection.Valid {
-		targetLocationData.Direction = dungeonActionRec.ResolvedTargetDungeonLocationDirection.String
+	if dungeonActionRec.ResolvedTargetLocationDirection.Valid {
+		targetLocationDetailedData.Direction = dungeonActionRec.ResolvedTargetLocationDirection.String
 	}
 
 	// Equipped object
@@ -125,7 +124,7 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet mod
 		return nil, err
 	}
 
-	data := schema.DungeonActionResponseData{
+	data := schema.ActionResponseData{
 		ID:              dungeonActionRec.ID,
 		Command:         dungeonActionRec.ResolvedCommand,
 		Narrative:       narrative,
@@ -138,14 +137,14 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet mod
 		TargetObject:    targetObjectData,
 		TargetCharacter: targetCharacterData,
 		TargetMonster:   targetMonsterData,
-		TargetLocation:  targetLocationData,
+		TargetLocation:  targetLocationDetailedData,
 		CreatedAt:       dungeonActionRec.CreatedAt,
 	}
 
 	return &data, nil
 }
 
-func dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject) (*schema.ObjectDetailedData, error) {
+func dungeonObjectToResponseObject(dungeonObjectRec *record.ActionObject) (*schema.ObjectDetailedData, error) {
 	return &schema.ObjectDetailedData{
 		Name:        dungeonObjectRec.Name,
 		Description: dungeonObjectRec.Description,
@@ -156,8 +155,8 @@ func dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject)
 
 func dungeonCharacterToResponseCharacter(
 	l logger.Logger,
-	characterRec *record.DungeonActionCharacter,
-	objectRecs []*record.DungeonActionCharacterObject,
+	characterRec *record.ActionCharacter,
+	objectRecs []*record.ActionCharacterObject,
 ) (*schema.CharacterDetailedData, error) {
 
 	data := &schema.CharacterDetailedData{
@@ -202,8 +201,8 @@ func dungeonCharacterToResponseCharacter(
 
 func dungeonTargetCharacterToResponseTargetCharacter(
 	l logger.Logger,
-	characterRec *record.DungeonActionCharacter,
-	objectRecs []*record.DungeonActionCharacterObject,
+	characterRec *record.ActionCharacter,
+	objectRecs []*record.ActionCharacterObject,
 ) (*schema.CharacterDetailedData, error) {
 	data := &schema.CharacterDetailedData{
 		Name:                characterRec.Name,
@@ -237,8 +236,8 @@ func dungeonTargetCharacterToResponseTargetCharacter(
 
 func dungeonMonsterToResponseMonster(
 	l logger.Logger,
-	dungeonMonsterRec *record.DungeonActionMonster,
-	objectRecs []*record.DungeonActionMonsterObject,
+	dungeonMonsterRec *record.ActionMonster,
+	objectRecs []*record.ActionMonsterObject,
 ) (*schema.MonsterDetailedData, error) {
 
 	data := &schema.MonsterDetailedData{
@@ -283,8 +282,8 @@ func dungeonMonsterToResponseMonster(
 
 func dungeonTargetMonsterToResponseTargetMonster(
 	l logger.Logger,
-	monsterRec *record.DungeonActionMonster,
-	objectRecs []*record.DungeonActionMonsterObject,
+	monsterRec *record.ActionMonster,
+	objectRecs []*record.ActionMonsterObject,
 ) (*schema.MonsterDetailedData, error) {
 	data := &schema.MonsterDetailedData{
 		Name:                monsterRec.Name,
@@ -316,42 +315,42 @@ func dungeonTargetMonsterToResponseTargetMonster(
 }
 
 // actionLocationToReponseLocation -
-func dungeonActionLocationToResponseLocation(recordSet *model.DungeonActionLocationRecordSet) (*schema.LocationData, error) {
+func dungeonActionLocationToResponseLocation(recordSet *record.ActionLocationRecordSet) (*schema.LocationDetailedData, error) {
 
-	dungeonLocationRec := recordSet.LocationRec
+	dungeonLocationRec := recordSet.LocationInstanceViewRec
 
 	directions := []string{}
-	if dungeonLocationRec.NorthDungeonLocationID.Valid {
+	if dungeonLocationRec.NorthLocationInstanceID.Valid {
 		directions = append(directions, "north")
 	}
-	if dungeonLocationRec.NortheastDungeonLocationID.Valid {
+	if dungeonLocationRec.NortheastLocationInstanceID.Valid {
 		directions = append(directions, "northeast")
 	}
-	if dungeonLocationRec.EastDungeonLocationID.Valid {
+	if dungeonLocationRec.EastLocationInstanceID.Valid {
 		directions = append(directions, "east")
 	}
-	if dungeonLocationRec.SoutheastDungeonLocationID.Valid {
+	if dungeonLocationRec.SoutheastLocationInstanceID.Valid {
 		directions = append(directions, "southeast")
 	}
-	if dungeonLocationRec.SouthDungeonLocationID.Valid {
+	if dungeonLocationRec.SouthLocationInstanceID.Valid {
 		directions = append(directions, "south")
 	}
-	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
+	if dungeonLocationRec.SouthwestLocationInstanceID.Valid {
 		directions = append(directions, "southwest")
 	}
-	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
+	if dungeonLocationRec.SouthwestLocationInstanceID.Valid {
 		directions = append(directions, "southwest")
 	}
-	if dungeonLocationRec.WestDungeonLocationID.Valid {
+	if dungeonLocationRec.WestLocationInstanceID.Valid {
 		directions = append(directions, "west")
 	}
-	if dungeonLocationRec.NorthwestDungeonLocationID.Valid {
+	if dungeonLocationRec.NorthwestLocationInstanceID.Valid {
 		directions = append(directions, "northwest")
 	}
-	if dungeonLocationRec.UpDungeonLocationID.Valid {
+	if dungeonLocationRec.UpLocationInstanceID.Valid {
 		directions = append(directions, "up")
 	}
-	if dungeonLocationRec.DownDungeonLocationID.Valid {
+	if dungeonLocationRec.DownLocationInstanceID.Valid {
 		directions = append(directions, "down")
 	}
 
@@ -385,7 +384,7 @@ func dungeonActionLocationToResponseLocation(recordSet *model.DungeonActionLocat
 		}
 	}
 
-	data := &schema.LocationData{
+	data := &schema.LocationDetailedData{
 		Name:        dungeonLocationRec.Name,
 		Description: dungeonLocationRec.Description,
 		Directions:  directions,
@@ -401,7 +400,7 @@ func dungeonActionLocationToResponseLocation(recordSet *model.DungeonActionLocat
 // pulled out of this mapper and into its own package.
 
 // dungeonActionToNarrative -
-func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet) (string, error) {
+func dungeonActionToNarrative(l logger.Logger, set record.ActionRecordSet) (string, error) {
 
 	desc := ""
 	if set.ActionCharacterRec != nil {
@@ -411,15 +410,15 @@ func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet)
 	}
 
 	switch set.ActionRec.ResolvedCommand {
-	case record.DungeonActionCommandMove:
+	case record.ActionCommandMove:
 		desc += " moves "
-	case record.DungeonActionCommandLook:
+	case record.ActionCommandLook:
 		desc += " looks "
-	case record.DungeonActionCommandStash:
+	case record.ActionCommandStash:
 		desc += " stashes "
-	case record.DungeonActionCommandEquip:
+	case record.ActionCommandEquip:
 		desc += " equips "
-	case record.DungeonActionCommandDrop:
+	case record.ActionCommandDrop:
 		desc += " drops "
 	default:
 		// no-op
@@ -432,7 +431,7 @@ func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet)
 	} else if set.TargetActionObjectRec != nil {
 		desc += set.TargetActionObjectRec.Name
 	} else if set.TargetLocation != nil {
-		desc += set.ActionRec.ResolvedTargetDungeonLocationDirection.String
+		desc += set.ActionRec.ResolvedTargetLocationDirection.String
 	}
 
 	desc = strings.TrimRight(desc, " ")

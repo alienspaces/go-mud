@@ -41,7 +41,7 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonObject {
 				return &record.DungeonObject{
 					DungeonID:           data.DungeonRecs[0].ID,
-					DungeonLocationID:   sql.NullString{String: data.DungeonLocationRecs[0].ID, Valid: true},
+					LocationID:   sql.NullString{String: data.LocationRecs[0].ID, Valid: true},
 					Name:                gofakeit.StreetName() + gofakeit.Name(),
 					Description:         gofakeit.StreetName() + gofakeit.Name(),
 					DescriptionDetailed: gofakeit.StreetName() + gofakeit.Name(),
@@ -54,7 +54,7 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonObject {
 				rec := &record.DungeonObject{
 					DungeonID:           data.DungeonRecs[0].ID,
-					DungeonLocationID:   sql.NullString{String: data.DungeonLocationRecs[0].ID, Valid: true},
+					LocationID:   sql.NullString{String: data.LocationRecs[0].ID, Valid: true},
 					Name:                gofakeit.StreetName() + gofakeit.Name(),
 					Description:         gofakeit.StreetName() + gofakeit.Name(),
 					DescriptionDetailed: gofakeit.StreetName() + gofakeit.Name(),

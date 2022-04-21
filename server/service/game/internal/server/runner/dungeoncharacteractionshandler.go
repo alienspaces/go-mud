@@ -22,7 +22,7 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
 
-	req := schema.DungeonActionRequest{}
+	req := schema.ActionRequest{}
 
 	err := rnr.ReadRequest(l, r, &req)
 	if err != nil {
@@ -54,8 +54,8 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	}
 
 	// Assign response properties
-	res := schema.DungeonActionResponse{
-		Data: []schema.DungeonActionResponseData{
+	res := schema.ActionResponse{
+		Data: []schema.ActionResponseData{
 			*responseData,
 		},
 	}

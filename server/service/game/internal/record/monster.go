@@ -3,31 +3,52 @@ package record
 import "gitlab.com/alienspaces/go-mud/server/core/repository"
 
 type Monster struct {
-	DungeonID         string `db:"dungeon_id"`
-	DungeonLocationID string `db:"dungeon_location_id"`
-	Name              string `db:"name"`
-	Strength          int    `db:"strength"`
-	Dexterity         int    `db:"dexterity"`
-	Intelligence      int    `db:"intelligence"`
-	Health            int    `db:"health"`
-	Fatigue           int    `db:"fatigue"`
-	Coins             int    `db:"coins"`
-	ExperiencePoints  int    `db:"experience_points"`
-	AttributePoints   int    `db:"attribute_points"`
+	DungeonID        string `db:"dungeon_id"`
+	LocationID       string `db:"dungeon_location_id"`
+	Name             string `db:"name"`
+	Strength         int    `db:"strength"`
+	Dexterity        int    `db:"dexterity"`
+	Intelligence     int    `db:"intelligence"`
+	Health           int    `db:"health"`
+	Fatigue          int    `db:"fatigue"`
+	Coins            int    `db:"coins"`
+	ExperiencePoints int    `db:"experience_points"`
+	AttributePoints  int    `db:"attribute_points"`
 	repository.Record
 }
 
 type MonsterInstance struct {
-	MonsterID                 string `db:"monster_id"`
-	DungeonInstanceID         string `db:"dungeon_instance_id"`
-	DungeonLocationInstanceID string `db:"dungeon_location_instance_id"`
-	Strength                  int    `db:"strength"`
-	Dexterity                 int    `db:"dexterity"`
-	Intelligence              int    `db:"intelligence"`
-	Health                    int    `db:"health"`
-	Fatigue                   int    `db:"fatigue"`
-	Coins                     int    `db:"coins"`
-	ExperiencePoints          int    `db:"experience_points"`
-	AttributePoints           int    `db:"attribute_points"`
+	MonsterID          string `db:"monster_id"`
+	DungeonInstanceID  string `db:"dungeon_instance_id"`
+	LocationInstanceID string `db:"dungeon_location_instance_id"`
+	Strength           int    `db:"strength"`
+	Dexterity          int    `db:"dexterity"`
+	Intelligence       int    `db:"intelligence"`
+	Health             int    `db:"health"`
+	Fatigue            int    `db:"fatigue"`
+	Coins              int    `db:"coins"`
+	ExperiencePoints   int    `db:"experience_points"`
+	AttributePoints    int    `db:"attribute_points"`
+	repository.Record
+}
+
+type MonsterInstanceView struct {
+	MonsterID           string `db:"monster_id"`
+	DungeonInstanceID   string `db:"dungeon_instance_id"`
+	LocationInstanceID  string `db:"dungeon_location_instance_id"`
+	Name                string `db:"name"`
+	Strength            int    `db:"strength"`
+	Dexterity           int    `db:"dexterity"`
+	Intelligence        int    `db:"intelligence"`
+	CurrentStrength     int    `db:"current_strength"`
+	CurrentDexterity    int    `db:"current_dexterity"`
+	CurrentIntelligence int    `db:"current_intelligence"`
+	Health              int    `db:"health"`
+	Fatigue             int    `db:"fatigue"`
+	CurrentHealth       int    `db:"current_health"`
+	CurrentFatigue      int    `db:"current_fatigue"`
+	Coins               int    `db:"coins"`
+	ExperiencePoints    int    `db:"experience_points"`
+	AttributePoints     int    `db:"attribute_points"`
 	repository.Record
 }

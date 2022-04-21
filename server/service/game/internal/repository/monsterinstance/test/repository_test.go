@@ -39,7 +39,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonMonster {
 				return &record.DungeonMonster{
 					DungeonID:         data.DungeonRecs[0].ID,
-					DungeonLocationID: data.DungeonLocationRecs[2].ID,
+					LocationID: data.LocationRecs[2].ID,
 					Name:              "Grey Troll",
 					Strength:          10,
 					Dexterity:         10,
@@ -53,7 +53,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonMonster {
 				rec := &record.DungeonMonster{
 					DungeonID:         data.DungeonRecs[0].ID,
-					DungeonLocationID: data.DungeonLocationRecs[2].ID,
+					LocationID: data.LocationRecs[2].ID,
 					Name:              "Wounded Troglodyte",
 					Strength:          10,
 					Dexterity:         10,

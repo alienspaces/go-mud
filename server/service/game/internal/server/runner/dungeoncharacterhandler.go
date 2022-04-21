@@ -314,7 +314,7 @@ func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec reco
 	data := schema.DungeonCharacterData{
 		ID:                  dungeonCharacterRec.ID,
 		DungeonID:           dungeonCharacterRec.DungeonID,
-		DungeonLocationID:   dungeonCharacterRec.DungeonLocationID,
+		LocationID:   dungeonCharacterRec.LocationID,
 		Name:                dungeonCharacterRec.Name,
 		Strength:            dungeonCharacterRec.Strength,
 		Dexterity:           dungeonCharacterRec.Dexterity,

@@ -16,7 +16,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestCreateDungeonLocationRec(t *testing.T) {
+func TestCreateLocationRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -32,13 +32,13 @@ func TestCreateDungeonLocationRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonLocation
+		rec  func(data harness.Data) *record.Location
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonLocation {
-				return &record.DungeonLocation{
+			rec: func(data harness.Data) *record.Location {
+				return &record.Location{
 					DungeonID: data.DungeonRecs[0].ID,
 					Name:      gofakeit.StreetName() + gofakeit.Name(),
 				}
@@ -47,8 +47,8 @@ func TestCreateDungeonLocationRec(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonLocation {
-				rec := &record.DungeonLocation{
+			rec: func(data harness.Data) *record.Location {
+				rec := &record.Location{
 					DungeonID: data.DungeonRecs[0].ID,
 					Name:      gofakeit.StreetName() + gofakeit.Name(),
 				}
@@ -82,18 +82,18 @@ func TestCreateDungeonLocationRec(t *testing.T) {
 
 			rec := tc.rec(th.Data)
 
-			err = th.Model.(*model.Model).CreateDungeonLocationRec(rec)
+			err = th.Model.(*model.Model).CreateLocationRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "CreateDungeonLocationRec returns error")
+				require.Error(t, err, "CreateLocationRec returns error")
 				return
 			}
-			require.NoError(t, err, "CreateDungeonLocationRec returns without error")
-			require.NotEmpty(t, rec.CreatedAt, "CreateDungeonLocationRec returns record with CreatedAt")
+			require.NoError(t, err, "CreateLocationRec returns without error")
+			require.NotEmpty(t, rec.CreatedAt, "CreateLocationRec returns record with CreatedAt")
 		}()
 	}
 }
 
-func TestGetDungeonLocationRec(t *testing.T) {
+func TestGetLocationRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -115,7 +115,7 @@ func TestGetDungeonLocationRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonLocationRecs[0].ID
+				return h.Data.LocationRecs[0].ID
 			},
 			err: false,
 		},
@@ -148,19 +148,19 @@ func TestGetDungeonLocationRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonLocationRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetLocationRec(tc.id(), false)
 			if tc.err == true {
-				require.Error(t, err, "GetDungeonLocationRec returns error")
+				require.Error(t, err, "GetLocationRec returns error")
 				return
 			}
-			require.NoError(t, err, "GetDungeonLocationRec returns without error")
-			require.NotNil(t, rec, "GetDungeonLocationRec returns record")
+			require.NoError(t, err, "GetLocationRec returns without error")
+			require.NotNil(t, rec, "GetLocationRec returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 		}()
 	}
 }
 
-func TestUpdateDungeonLocationRec(t *testing.T) {
+func TestUpdateLocationRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -178,20 +178,20 @@ func TestUpdateDungeonLocationRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonLocation
+		rec  func() *record.Location
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonLocation {
-				return h.Data.DungeonLocationRecs[0]
+			rec: func() *record.Location {
+				return h.Data.LocationRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonLocation {
-				rec := h.Data.DungeonLocationRecs[0]
+			rec: func() *record.Location {
+				rec := h.Data.LocationRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -221,18 +221,18 @@ func TestUpdateDungeonLocationRec(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := h.Model.(*model.Model).UpdateDungeonLocationRec(rec)
+			err := h.Model.(*model.Model).UpdateLocationRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "UpdateDungeonLocationRec returns error")
+				require.Error(t, err, "UpdateLocationRec returns error")
 				return
 			}
-			require.NoError(t, err, "UpdateDungeonLocationRec returns without error")
-			require.NotEmpty(t, rec.UpdatedAt, "UpdateDungeonLocationRec returns record with UpdatedAt")
+			require.NoError(t, err, "UpdateLocationRec returns without error")
+			require.NotEmpty(t, rec.UpdatedAt, "UpdateLocationRec returns record with UpdatedAt")
 		}()
 	}
 }
 
-func TestDeleteDungeonLocationRec(t *testing.T) {
+func TestDeleteLocationRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -254,7 +254,7 @@ func TestDeleteDungeonLocationRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonLocationRecs[0].ID
+				return h.Data.LocationRecs[0].ID
 			},
 			err: false,
 		},
@@ -287,16 +287,16 @@ func TestDeleteDungeonLocationRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			err := h.Model.(*model.Model).DeleteDungeonLocationRec(tc.id())
+			err := h.Model.(*model.Model).DeleteLocationRec(tc.id())
 			if tc.err == true {
-				require.Error(t, err, "DeleteDungeonLocationRec returns error")
+				require.Error(t, err, "DeleteLocationRec returns error")
 				return
 			}
-			require.NoError(t, err, "DeleteDungeonLocationRec returns without error")
+			require.NoError(t, err, "DeleteLocationRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonLocationRec(tc.id(), false)
-			require.NoError(t, err, "GetDungeonLocationRec returns without error")
-			require.Nil(t, rec, "GetDungeonLocationRec does not return record")
+			rec, err := h.Model.(*model.Model).GetLocationRec(tc.id(), false)
+			require.NoError(t, err, "GetLocationRec returns without error")
+			require.Nil(t, rec, "GetLocationRec does not return record")
 		}()
 	}
 }

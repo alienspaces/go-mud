@@ -40,7 +40,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonObject {
 				return &record.DungeonObject{
 					DungeonID:           data.DungeonRecs[0].ID,
-					DungeonLocationID:   nullstring.FromString(data.DungeonLocationRecs[0].ID),
+					LocationID:   nullstring.FromString(data.LocationRecs[0].ID),
 					Name:                "Red Ribbon",
 					Description:         "A red ribbon, frayed at one end.",
 					DescriptionDetailed: "A red ribbon, frayed at one end.",
@@ -53,7 +53,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.DungeonObject {
 				rec := &record.DungeonObject{
 					DungeonID:           data.DungeonRecs[0].ID,
-					DungeonLocationID:   nullstring.FromString(data.DungeonLocationRecs[0].ID),
+					LocationID:   nullstring.FromString(data.LocationRecs[0].ID),
 					Name:                "Dead Cat",
 					Description:         "A dead cat, or is it..",
 					DescriptionDetailed: "A dead cat, or is it..",

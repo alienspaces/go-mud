@@ -10,9 +10,9 @@ var DefaultDataConfig = DataConfig{
 			Record: record.Dungeon{
 				Name: "Cave",
 			},
-			DungeonLocationConfig: []DungeonLocationConfig{
+			LocationConfig: []LocationConfig{
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Cave Entrance",
 						Description: "A large cave entrance.",
 						Default:     true,
@@ -20,7 +20,7 @@ var DefaultDataConfig = DataConfig{
 					NorthLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Cave Tunnel",
 						Description: "A cave tunnel descends into the mountain.",
 					},
@@ -29,14 +29,14 @@ var DefaultDataConfig = DataConfig{
 					NorthwestLocationName: "Narrow Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Cave Room",
 						Description: "A large cave room.",
 					},
 					SouthLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Narrow Tunnel",
 						Description: "A narrow tunnel gradually descending into the darkness.",
 					},
@@ -44,7 +44,7 @@ var DefaultDataConfig = DataConfig{
 					SoutheastLocationName: "Cave Tunnel",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Dark Narrow Tunnel",
 						Description: "A dark narrow tunnel.",
 					},
@@ -52,7 +52,7 @@ var DefaultDataConfig = DataConfig{
 					DownLocationName:      "Dark Room",
 				},
 				{
-					Record: record.DungeonLocation{
+					Record: record.Location{
 						Name:        "Dark Room",
 						Description: "A dark room.",
 					},
@@ -143,7 +143,7 @@ var DefaultDataConfig = DataConfig{
 					MonsterName: "Grumpy Dwarf",
 				},
 			},
-			DungeonActionConfig: []DungeonActionConfig{
+			ActionConfig: []ActionConfig{
 				{
 					CharacterName: "Barricade",
 					Command:       "look north",

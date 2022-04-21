@@ -31,16 +31,16 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonActionObject
+		rec  func(data harness.Data) *record.ActionObject
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonActionObject {
-				return &record.DungeonActionObject{
-					RecordType:        record.DungeonActionObjectRecordTypeOccupant,
-					DungeonActionID:   data.DungeonActionRecs[0].ID,
-					DungeonLocationID: data.DungeonLocationRecs[0].ID,
+			rec: func(data harness.Data) *record.ActionObject {
+				return &record.ActionObject{
+					RecordType:        record.ActionObjectRecordTypeOccupant,
+					ActionID:   data.ActionRecs[0].ID,
+					LocationID: data.LocationRecs[0].ID,
 					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
 					Name:              data.DungeonObjectRecs[0].Name,
 					Description:       data.DungeonObjectRecs[0].Description,
@@ -50,11 +50,11 @@ func TestCreateOne(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonActionObject {
-				rec := &record.DungeonActionObject{
-					RecordType:        record.DungeonActionObjectRecordTypeOccupant,
-					DungeonActionID:   data.DungeonActionRecs[0].ID,
-					DungeonLocationID: data.DungeonLocationRecs[0].ID,
+			rec: func(data harness.Data) *record.ActionObject {
+				rec := &record.ActionObject{
+					RecordType:        record.ActionObjectRecordTypeOccupant,
+					ActionID:   data.ActionRecs[0].ID,
+					LocationID: data.LocationRecs[0].ID,
 					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
 					Name:              data.DungeonObjectRecs[0].Name,
 					Description:       data.DungeonObjectRecs[0].Description,
@@ -86,7 +86,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionObjectRepository()
+			r := h.Model.(*model.Model).ActionObjectRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec(h.Data)
@@ -126,7 +126,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonActionObjectRecs[0].ID
+				return h.Data.ActionObjectRecs[0].ID
 			},
 			err: false,
 		},
@@ -158,7 +158,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionObjectRepository()
+			r := h.Model.(*model.Model).ActionObjectRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -193,21 +193,21 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonActionObject
+		rec  func() *record.ActionObject
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonActionObject {
-				rec := *h.Data.DungeonActionObjectRecs[0]
+			rec: func() *record.ActionObject {
+				rec := *h.Data.ActionObjectRecs[0]
 				return &rec
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonActionObject {
-				rec := *h.Data.DungeonActionObjectRecs[0]
+			rec: func() *record.ActionObject {
+				rec := *h.Data.ActionObjectRecs[0]
 				rec.ID = ""
 				return &rec
 			},
@@ -234,7 +234,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionObjectRepository()
+			r := h.Model.(*model.Model).ActionObjectRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -274,7 +274,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonActionObjectRecs[0].ID
+				return h.Data.ActionObjectRecs[0].ID
 			},
 			err: false,
 		},
@@ -306,7 +306,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonActionObjectRepository()
+			r := h.Model.(*model.Model).ActionObjectRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())
