@@ -24,11 +24,23 @@ type Testing struct {
 
 // Data -
 type Data struct {
-	DungeonRecs                      []*record.Dungeon
-	LocationRecs              []*record.Location
-	DungeonCharacterRecs             []*record.DungeonCharacter
-	DungeonMonsterRecs               []*record.DungeonMonster
-	DungeonObjectRecs                []*record.DungeonObject
+	// Character
+	CharacterRecs []*record.Character
+
+	// Dungeon
+	DungeonRecs  []*record.Dungeon
+	LocationRecs []*record.Location
+	MonsterRecs  []*record.Monster
+	ObjectRecs   []*record.Object
+
+	// Dungeon Instance
+	DungeonInstanceRecs   []*record.DungeonInstance
+	LocationInstanceRecs  []*record.LocationInstance
+	CharacterInstanceRecs []*record.CharacterInstance
+	MonsterInstanceRecs   []*record.MonsterInstance
+	ObjectInstanceRecs    []*record.ObjectInstance
+
+	// Action
 	ActionRecs                []*record.Action
 	ActionCharacterRecs       []*record.ActionCharacter
 	ActionCharacterObjectRecs []*record.ActionCharacterObject
@@ -39,11 +51,11 @@ type Data struct {
 
 // teardownData -
 type teardownData struct {
-	DungeonRecs                      []record.Dungeon
+	DungeonRecs               []record.Dungeon
 	LocationRecs              []record.Location
-	DungeonCharacterRecs             []record.DungeonCharacter
-	DungeonMonsterRecs               []record.DungeonMonster
-	DungeonObjectRecs                []record.DungeonObject
+	CharacterRecs             []record.Character
+	MonsterRecs               []record.Monster
+	ObjectRecs                []record.Object
 	ActionRecs                []*record.Action
 	ActionCharacterRecs       []*record.ActionCharacter
 	ActionCharacterObjectRecs []*record.ActionCharacterObject
@@ -94,8 +106,21 @@ func (t *Testing) CreateData() error {
 	data := Data{}
 	teardownData := teardownData{}
 
+	// Characters
+	for _, characterConfig := range t.DataConfig.CharacterConfig {
+		characterRec, err := t.createCharacterRec(characterConfig)
+		if err != nil {
+			t.Log.Warn("Failed creating character record >%v<", err)
+			return err
+		}
+		data.CharacterRecs = append(data.CharacterRecs, characterRec)
+		teardownData.CharacterRecs = append(teardownData.CharacterRecs, *characterRec)
+	}
+
+	// Dungeons
 	for _, dungeonConfig := range t.DataConfig.DungeonConfig {
 
+		// Create the dungeon record
 		dungeonRec, err := t.createDungeonRec(dungeonConfig)
 		if err != nil {
 			t.Log.Warn("Failed creating dungeon record >%v<", err)
@@ -104,12 +129,14 @@ func (t *Testing) CreateData() error {
 		data.DungeonRecs = append(data.DungeonRecs, dungeonRec)
 		teardownData.DungeonRecs = append(teardownData.DungeonRecs, *dungeonRec)
 
+		// Assign the created dungeon record identifier to child configuration records
 		dungeonConfig, err = t.resolveConfigDungeonIdentifiers(dungeonRec, dungeonConfig)
 		if err != nil {
 			t.Log.Warn("Failed resolving dungeon config dungeon identifiers >%v<", err)
 			return err
 		}
 
+		// Create the dungeons location records
 		for _, dungeonLocationConfig := range dungeonConfig.LocationConfig {
 			dungeonLocationRec, err := t.createLocationRec(dungeonRec, dungeonLocationConfig)
 			if err != nil {
@@ -127,7 +154,8 @@ func (t *Testing) CreateData() error {
 			return err
 		}
 
-		// Update all location records
+		// Update all previously created location records as they now have all their
+		// reference location identifiers set correctly.
 		for _, dungeonLocationRec := range data.LocationRecs {
 			err := t.updateLocationRec(dungeonLocationRec)
 			if err != nil {
@@ -136,33 +164,22 @@ func (t *Testing) CreateData() error {
 			}
 		}
 
-		// Resolve character, monster and object config locations
+		// Resolve monster and object config locations
 		dungeonConfig, err = t.resolveConfigLocationIdentifiers(data, dungeonConfig)
 		if err != nil {
 			t.Log.Warn("Failed resolving config location identifiers >%v<", err)
 			return err
 		}
 
-		// Create character records
-		for _, dungeonCharacterConfig := range dungeonConfig.DungeonCharacterConfig {
-			dungeonCharacterRec, err := t.createDungeonCharacterRec(dungeonRec, dungeonCharacterConfig)
-			if err != nil {
-				t.Log.Warn("Failed creating dungeon character record >%v<", err)
-				return err
-			}
-			data.DungeonCharacterRecs = append(data.DungeonCharacterRecs, dungeonCharacterRec)
-			teardownData.DungeonCharacterRecs = append(teardownData.DungeonCharacterRecs, *dungeonCharacterRec)
-		}
-
 		// Create monster records
-		for _, dungeonMonsterConfig := range dungeonConfig.DungeonMonsterConfig {
-			dungeonMonsterRec, err := t.createDungeonMonsterRec(dungeonRec, dungeonMonsterConfig)
+		for _, dungeonMonsterConfig := range dungeonConfig.MonsterConfig {
+			dungeonMonsterRec, err := t.createMonsterRec(dungeonRec, dungeonMonsterConfig)
 			if err != nil {
 				t.Log.Warn("Failed creating dungeon monster record >%v<", err)
 				return err
 			}
-			data.DungeonMonsterRecs = append(data.DungeonMonsterRecs, dungeonMonsterRec)
-			teardownData.DungeonMonsterRecs = append(teardownData.DungeonMonsterRecs, *dungeonMonsterRec)
+			data.MonsterRecs = append(data.MonsterRecs, dungeonMonsterRec)
+			teardownData.MonsterRecs = append(teardownData.MonsterRecs, *dungeonMonsterRec)
 		}
 
 		// Resolve object config character identifiers
@@ -180,113 +197,113 @@ func (t *Testing) CreateData() error {
 		}
 
 		// Create object records
-		for _, dungeonObjectConfig := range dungeonConfig.DungeonObjectConfig {
+		for _, dungeonObjectConfig := range dungeonConfig.ObjectConfig {
 			t.Log.Info("Creating dungeon object >%#v<", dungeonObjectConfig)
-			dungeonObjectRec, err := t.createDungeonObjectRec(dungeonRec, dungeonObjectConfig)
+			dungeonObjectRec, err := t.createObjectRec(dungeonRec, dungeonObjectConfig)
 			if err != nil {
 				t.Log.Warn("Failed creating dungeon object record >%v<", err)
 				return err
 			}
-			data.DungeonObjectRecs = append(data.DungeonObjectRecs, dungeonObjectRec)
-			teardownData.DungeonObjectRecs = append(teardownData.DungeonObjectRecs, *dungeonObjectRec)
-		}
-
-		// Create action records
-		for _, dungeonActionConfig := range dungeonConfig.ActionConfig {
-			dungeonID := ""
-			dungeonCharacterID := ""
-			for _, characterRecord := range data.DungeonCharacterRecs {
-				if characterRecord.Name == dungeonActionConfig.CharacterName {
-					dungeonID = characterRecord.DungeonID
-					dungeonCharacterID = characterRecord.ID
-				}
-			}
-			if dungeonID == "" || dungeonCharacterID == "" {
-				msg := fmt.Sprintf("Failed to find dungeon character record name >%s<", dungeonActionConfig.CharacterName)
-				t.Log.Error(msg)
-				return fmt.Errorf(msg)
-			}
-
-			dungeonActionRecordSet, err := t.createDungeonCharacterActionRec(dungeonID, dungeonCharacterID, dungeonActionConfig.Command)
-			if err != nil {
-				t.Log.Warn("Failed creating dungeon action record >%v<", err)
-				return err
-			}
-
-			data.ActionRecs = append(data.ActionRecs, dungeonActionRecordSet.ActionRec)
-			teardownData.ActionRecs = append(teardownData.ActionRecs, dungeonActionRecordSet.ActionRec)
-
-			// Source
-			if dungeonActionRecordSet.ActionCharacterRec != nil {
-				data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionRecordSet.ActionCharacterRec)
-				teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionRecordSet.ActionCharacterRec)
-
-				data.ActionCharacterObjectRecs = append(data.ActionCharacterObjectRecs, dungeonActionRecordSet.ActionCharacterObjectRecs...)
-				teardownData.ActionCharacterObjectRecs = append(teardownData.ActionCharacterObjectRecs, dungeonActionRecordSet.ActionCharacterObjectRecs...)
-			}
-			if dungeonActionRecordSet.ActionMonsterRec != nil {
-				data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionRecordSet.ActionMonsterRec)
-				teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionRecordSet.ActionMonsterRec)
-
-				data.ActionMonsterObjectRecs = append(data.ActionMonsterObjectRecs, dungeonActionRecordSet.ActionMonsterObjectRecs...)
-				teardownData.ActionMonsterObjectRecs = append(teardownData.ActionMonsterObjectRecs, dungeonActionRecordSet.ActionMonsterObjectRecs...)
-			}
-
-			// Current location
-			t.Log.Info("Dungeon action record set current location >%#v<", dungeonActionRecordSet.CurrentLocation)
-			if dungeonActionRecordSet.CurrentLocation != nil {
-				dungeonActionLocationRecordSet := dungeonActionRecordSet.CurrentLocation
-				data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
-				data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
-				data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
-
-				teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
-				teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
-				teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
-			}
-
-			// Target location
-			t.Log.Info("Dungeon action record set target location >%#v<", dungeonActionRecordSet.TargetLocation)
-			if dungeonActionRecordSet.TargetLocation != nil {
-				dungeonActionLocationRecordSet := dungeonActionRecordSet.TargetLocation
-				data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
-				data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
-				data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
-
-				teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
-				teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
-				teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
-			}
-
-			// Targets
-			if dungeonActionRecordSet.TargetActionCharacterRec != nil {
-				data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionRecordSet.TargetActionCharacterRec)
-				teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionRecordSet.TargetActionCharacterRec)
-
-				data.ActionCharacterObjectRecs = append(data.ActionCharacterObjectRecs, dungeonActionRecordSet.TargetActionCharacterObjectRecs...)
-				teardownData.ActionCharacterObjectRecs = append(teardownData.ActionCharacterObjectRecs, dungeonActionRecordSet.TargetActionCharacterObjectRecs...)
-			}
-			if dungeonActionRecordSet.TargetActionMonsterRec != nil {
-				data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionRecordSet.TargetActionMonsterRec)
-				teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionRecordSet.TargetActionMonsterRec)
-
-				data.ActionMonsterObjectRecs = append(data.ActionMonsterObjectRecs, dungeonActionRecordSet.TargetActionMonsterObjectRecs...)
-				teardownData.ActionMonsterObjectRecs = append(teardownData.ActionMonsterObjectRecs, dungeonActionRecordSet.TargetActionMonsterObjectRecs...)
-			}
-			if dungeonActionRecordSet.EquippedActionObjectRec != nil {
-				data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionRecordSet.EquippedActionObjectRec)
-				teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionRecordSet.EquippedActionObjectRec)
-			}
-			if dungeonActionRecordSet.StashedActionObjectRec != nil {
-				data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionRecordSet.StashedActionObjectRec)
-				teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionRecordSet.StashedActionObjectRec)
-			}
-			if dungeonActionRecordSet.TargetActionObjectRec != nil {
-				data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionRecordSet.TargetActionObjectRec)
-				teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionRecordSet.TargetActionObjectRec)
-			}
+			data.ObjectRecs = append(data.ObjectRecs, dungeonObjectRec)
+			teardownData.ObjectRecs = append(teardownData.ObjectRecs, *dungeonObjectRec)
 		}
 	}
+
+	// // Create action records
+	// for _, dungeonActionConfig := range dungeonConfig.ActionConfig {
+	// 	dungeonID := ""
+	// 	dungeonCharacterID := ""
+	// 	for _, characterRecord := range data.CharacterRecs {
+	// 		if characterRecord.Name == dungeonActionConfig.CharacterName {
+	// 			dungeonID = characterRecord.DungeonID
+	// 			dungeonCharacterID = characterRecord.ID
+	// 		}
+	// 	}
+	// 	if dungeonID == "" || dungeonCharacterID == "" {
+	// 		msg := fmt.Sprintf("Failed to find dungeon character record name >%s<", dungeonActionConfig.CharacterName)
+	// 		t.Log.Error(msg)
+	// 		return fmt.Errorf(msg)
+	// 	}
+
+	// 	actionRecordSet, err := t.createDungeonCharacterActionRec(dungeonID, dungeonCharacterID, dungeonActionConfig.Command)
+	// 	if err != nil {
+	// 		t.Log.Warn("Failed creating dungeon action record >%v<", err)
+	// 		return err
+	// 	}
+
+	// 	data.ActionRecs = append(data.ActionRecs, actionRecordSet.ActionRec)
+	// 	teardownData.ActionRecs = append(teardownData.ActionRecs, actionRecordSet.ActionRec)
+
+	// 	// Source
+	// 	if actionRecordSet.ActionCharacterRec != nil {
+	// 		data.ActionCharacterRecs = append(data.ActionCharacterRecs, actionRecordSet.ActionCharacterRec)
+	// 		teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, actionRecordSet.ActionCharacterRec)
+
+	// 		data.ActionCharacterObjectRecs = append(data.ActionCharacterObjectRecs, actionRecordSet.ActionCharacterObjectRecs...)
+	// 		teardownData.ActionCharacterObjectRecs = append(teardownData.ActionCharacterObjectRecs, actionRecordSet.ActionCharacterObjectRecs...)
+	// 	}
+	// 	if actionRecordSet.ActionMonsterRec != nil {
+	// 		data.ActionMonsterRecs = append(data.ActionMonsterRecs, actionRecordSet.ActionMonsterRec)
+	// 		teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, actionRecordSet.ActionMonsterRec)
+
+	// 		data.ActionMonsterObjectRecs = append(data.ActionMonsterObjectRecs, actionRecordSet.ActionMonsterObjectRecs...)
+	// 		teardownData.ActionMonsterObjectRecs = append(teardownData.ActionMonsterObjectRecs, actionRecordSet.ActionMonsterObjectRecs...)
+	// 	}
+
+	// 	// Current location
+	// 	t.Log.Info("Dungeon action record set current location >%#v<", actionRecordSet.CurrentLocation)
+	// 	if actionRecordSet.CurrentLocation != nil {
+	// 		dungeonActionLocationRecordSet := actionRecordSet.CurrentLocation
+	// 		data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+	// 		data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+	// 		data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+
+	// 		teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+	// 		teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+	// 		teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+	// 	}
+
+	// 	// Target location
+	// 	t.Log.Info("Dungeon action record set target location >%#v<", actionRecordSet.TargetLocation)
+	// 	if actionRecordSet.TargetLocation != nil {
+	// 		dungeonActionLocationRecordSet := actionRecordSet.TargetLocation
+	// 		data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+	// 		data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+	// 		data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+
+	// 		teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+	// 		teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+	// 		teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+	// 	}
+
+	// 	// Targets
+	// 	if actionRecordSet.TargetActionCharacterRec != nil {
+	// 		data.ActionCharacterRecs = append(data.ActionCharacterRecs, actionRecordSet.TargetActionCharacterRec)
+	// 		teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, actionRecordSet.TargetActionCharacterRec)
+
+	// 		data.ActionCharacterObjectRecs = append(data.ActionCharacterObjectRecs, actionRecordSet.TargetActionCharacterObjectRecs...)
+	// 		teardownData.ActionCharacterObjectRecs = append(teardownData.ActionCharacterObjectRecs, actionRecordSet.TargetActionCharacterObjectRecs...)
+	// 	}
+	// 	if actionRecordSet.TargetActionMonsterRec != nil {
+	// 		data.ActionMonsterRecs = append(data.ActionMonsterRecs, actionRecordSet.TargetActionMonsterRec)
+	// 		teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, actionRecordSet.TargetActionMonsterRec)
+
+	// 		data.ActionMonsterObjectRecs = append(data.ActionMonsterObjectRecs, actionRecordSet.TargetActionMonsterObjectRecs...)
+	// 		teardownData.ActionMonsterObjectRecs = append(teardownData.ActionMonsterObjectRecs, actionRecordSet.TargetActionMonsterObjectRecs...)
+	// 	}
+	// 	if actionRecordSet.EquippedActionObjectRec != nil {
+	// 		data.ActionObjectRecs = append(data.ActionObjectRecs, actionRecordSet.EquippedActionObjectRec)
+	// 		teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.EquippedActionObjectRec)
+	// 	}
+	// 	if actionRecordSet.StashedActionObjectRec != nil {
+	// 		data.ActionObjectRecs = append(data.ActionObjectRecs, actionRecordSet.StashedActionObjectRec)
+	// 		teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.StashedActionObjectRec)
+	// 	}
+	// 	if actionRecordSet.TargetActionObjectRec != nil {
+	// 		data.ActionObjectRecs = append(data.ActionObjectRecs, actionRecordSet.TargetActionObjectRec)
+	// 		teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.TargetActionObjectRec)
+	// 	}
+	// }
 
 	// Assign data once we have successfully set up ll data
 	t.Data = data
@@ -462,8 +479,8 @@ func (t *Testing) resolveDataLocationDirectionIdentifiers(data Data, dungeonConf
 
 func (t *Testing) resolveConfigObjectCharacterIdentifiers(data Data, dungeonConfig DungeonConfig) (DungeonConfig, error) {
 
-	findDungeonCharacterRec := func(characterName string) *record.DungeonCharacter {
-		for _, dungeonCharacterRec := range data.DungeonCharacterRecs {
+	findCharacterRec := func(characterName string) *record.Character {
+		for _, dungeonCharacterRec := range data.CharacterRecs {
 			if dungeonCharacterRec.Name == characterName {
 				return dungeonCharacterRec
 			}
@@ -471,18 +488,18 @@ func (t *Testing) resolveConfigObjectCharacterIdentifiers(data Data, dungeonConf
 		return nil
 	}
 
-	for idx := range dungeonConfig.DungeonObjectConfig {
-		if dungeonConfig.DungeonObjectConfig[idx].CharacterName == "" {
+	for idx := range dungeonConfig.ObjectConfig {
+		if dungeonConfig.ObjectConfig[idx].CharacterName == "" {
 			continue
 		}
-		dungeonCharacterRec := findDungeonCharacterRec(dungeonConfig.DungeonObjectConfig[idx].CharacterName)
-		if dungeonCharacterRec == nil {
-			msg := fmt.Sprintf("Failed to find object dungeon character record name >%s<", dungeonConfig.DungeonCharacterConfig[idx].LocationName)
+		characterRec := findCharacterRec(dungeonConfig.ObjectConfig[idx].CharacterName)
+		if characterRec == nil {
+			msg := fmt.Sprintf("Failed to find object's related character record with character name >%s<", dungeonConfig.ObjectConfig[idx].CharacterName)
 			t.Log.Error(msg)
 			return dungeonConfig, fmt.Errorf(msg)
 		}
-		dungeonConfig.DungeonObjectConfig[idx].Record.DungeonCharacterID = sql.NullString{
-			String: dungeonCharacterRec.ID,
+		dungeonConfig.ObjectConfig[idx].Record.CharacterID = sql.NullString{
+			String: characterRec.ID,
 			Valid:  true,
 		}
 	}
@@ -492,8 +509,8 @@ func (t *Testing) resolveConfigObjectCharacterIdentifiers(data Data, dungeonConf
 
 func (t *Testing) resolveConfigObjectMonsterIdentifiers(data Data, dungeonConfig DungeonConfig) (DungeonConfig, error) {
 
-	findDungeonMonsterRec := func(monsterName string) *record.DungeonMonster {
-		for _, dungeonMonsterRec := range data.DungeonMonsterRecs {
+	findMonsterRec := func(monsterName string) *record.Monster {
+		for _, dungeonMonsterRec := range data.MonsterRecs {
 			if dungeonMonsterRec.Name == monsterName {
 				return dungeonMonsterRec
 			}
@@ -501,17 +518,17 @@ func (t *Testing) resolveConfigObjectMonsterIdentifiers(data Data, dungeonConfig
 		return nil
 	}
 
-	for idx := range dungeonConfig.DungeonObjectConfig {
-		if dungeonConfig.DungeonObjectConfig[idx].MonsterName == "" {
+	for idx := range dungeonConfig.ObjectConfig {
+		if dungeonConfig.ObjectConfig[idx].MonsterName == "" {
 			continue
 		}
-		dungeonMonsterRec := findDungeonMonsterRec(dungeonConfig.DungeonObjectConfig[idx].MonsterName)
+		dungeonMonsterRec := findMonsterRec(dungeonConfig.ObjectConfig[idx].MonsterName)
 		if dungeonMonsterRec == nil {
-			msg := fmt.Sprintf("Failed to find object dungeon monster record name >%s<", dungeonConfig.DungeonMonsterConfig[idx].LocationName)
+			msg := fmt.Sprintf("Failed to find object's related monster record with monster name >%s<", dungeonConfig.ObjectConfig[idx].MonsterName)
 			t.Log.Error(msg)
 			return dungeonConfig, fmt.Errorf(msg)
 		}
-		dungeonConfig.DungeonObjectConfig[idx].Record.DungeonMonsterID = sql.NullString{
+		dungeonConfig.ObjectConfig[idx].Record.MonsterID = sql.NullString{
 			String: dungeonMonsterRec.ID,
 			Valid:  true,
 		}
@@ -531,37 +548,27 @@ func (t *Testing) resolveConfigLocationIdentifiers(data Data, dungeonConfig Dung
 		return nil
 	}
 
-	for idx := range dungeonConfig.DungeonCharacterConfig {
-		dungeonLocationRec := findLocationRec(dungeonConfig.DungeonCharacterConfig[idx].LocationName)
+	for idx := range dungeonConfig.MonsterConfig {
+		dungeonLocationRec := findLocationRec(dungeonConfig.MonsterConfig[idx].LocationName)
 		if dungeonLocationRec == nil {
-			msg := fmt.Sprintf("Failed to find character dungeon location record name >%s<", dungeonConfig.DungeonCharacterConfig[idx].LocationName)
+			msg := fmt.Sprintf("Failed to find monster dungeon location record name >%s<", dungeonConfig.MonsterConfig[idx].LocationName)
 			t.Log.Error(msg)
 			return dungeonConfig, fmt.Errorf(msg)
 		}
-		dungeonConfig.DungeonCharacterConfig[idx].Record.LocationID = dungeonLocationRec.ID
+		dungeonConfig.MonsterConfig[idx].Record.LocationID = dungeonLocationRec.ID
 	}
 
-	for idx := range dungeonConfig.DungeonMonsterConfig {
-		dungeonLocationRec := findLocationRec(dungeonConfig.DungeonMonsterConfig[idx].LocationName)
-		if dungeonLocationRec == nil {
-			msg := fmt.Sprintf("Failed to find monster dungeon location record name >%s<", dungeonConfig.DungeonMonsterConfig[idx].LocationName)
-			t.Log.Error(msg)
-			return dungeonConfig, fmt.Errorf(msg)
-		}
-		dungeonConfig.DungeonMonsterConfig[idx].Record.LocationID = dungeonLocationRec.ID
-	}
-
-	for idx := range dungeonConfig.DungeonObjectConfig {
-		if dungeonConfig.DungeonObjectConfig[idx].LocationName == "" {
+	for idx := range dungeonConfig.ObjectConfig {
+		if dungeonConfig.ObjectConfig[idx].LocationName == "" {
 			continue
 		}
-		dungeonLocationRec := findLocationRec(dungeonConfig.DungeonObjectConfig[idx].LocationName)
+		dungeonLocationRec := findLocationRec(dungeonConfig.ObjectConfig[idx].LocationName)
 		if dungeonLocationRec == nil {
-			msg := fmt.Sprintf("Failed to find object dungeon location record name >%s<", dungeonConfig.DungeonObjectConfig[idx].LocationName)
+			msg := fmt.Sprintf("Failed to find object dungeon location record name >%s<", dungeonConfig.ObjectConfig[idx].LocationName)
 			t.Log.Error(msg)
 			return dungeonConfig, fmt.Errorf(msg)
 		}
-		dungeonConfig.DungeonObjectConfig[idx].Record.LocationID = sql.NullString{
+		dungeonConfig.ObjectConfig[idx].Record.LocationID = sql.NullString{
 			String: dungeonLocationRec.ID,
 			Valid:  true,
 		}
@@ -571,6 +578,7 @@ func (t *Testing) resolveConfigLocationIdentifiers(data Data, dungeonConfig Dung
 	return dungeonConfig, nil
 }
 
+// resolveConfigDungeonIdentifiers assigned the provided dungeon record ID to configuration records
 func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, dungeonConfig DungeonConfig) (DungeonConfig, error) {
 
 	if dungeonConfig.LocationConfig != nil {
@@ -579,21 +587,21 @@ func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, du
 		}
 	}
 
-	if dungeonConfig.DungeonCharacterConfig != nil {
-		for idx := range dungeonConfig.DungeonCharacterConfig {
-			dungeonConfig.DungeonCharacterConfig[idx].Record.DungeonID = dungeonRec.ID
+	if dungeonConfig.MonsterConfig != nil {
+		for idx := range dungeonConfig.MonsterConfig {
+			dungeonConfig.MonsterConfig[idx].Record.DungeonID = dungeonRec.ID
 		}
 	}
 
-	if dungeonConfig.DungeonMonsterConfig != nil {
-		for idx := range dungeonConfig.DungeonMonsterConfig {
-			dungeonConfig.DungeonMonsterConfig[idx].Record.DungeonID = dungeonRec.ID
+	if dungeonConfig.ObjectConfig != nil {
+		for idx := range dungeonConfig.ObjectConfig {
+			dungeonConfig.ObjectConfig[idx].Record.DungeonID = dungeonRec.ID
 		}
 	}
 
-	if dungeonConfig.DungeonObjectConfig != nil {
-		for idx := range dungeonConfig.DungeonObjectConfig {
-			dungeonConfig.DungeonObjectConfig[idx].Record.DungeonID = dungeonRec.ID
+	if dungeonConfig.DungeonInstanceConfig != nil {
+		for idx := range dungeonConfig.DungeonInstanceConfig {
+			dungeonConfig.DungeonInstanceConfig[idx].Record.DungeonID = dungeonRec.ID
 		}
 	}
 
@@ -601,15 +609,13 @@ func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, du
 }
 
 func (t *Testing) AddDungeonCharacterTeardownID(id string) {
-	rec := record.DungeonCharacter{}
+	rec := record.Character{}
 	rec.ID = id
 
-	t.teardownData.DungeonCharacterRecs = append(
-		t.teardownData.DungeonCharacterRecs,
+	t.teardownData.CharacterRecs = append(
+		t.teardownData.CharacterRecs,
 		rec,
 	)
-
-	// TODO: Get all related character child records and add those for teardown
 }
 
 func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
@@ -622,66 +628,66 @@ func (t *Testing) AddDungeonCharacterActionTeardownID(id string) {
 		t.InitTx(nil)
 	}
 
-	dungeonActionRecordSet, err := t.Model.(*model.Model).GetActionRecordSet(id)
+	actionRecordSet, err := t.Model.(*model.Model).GetActionRecordSet(id)
 	if err != nil {
 		t.Log.Warn("Failed fetch dungeon action record set >%v<", err)
 		return
 	}
 
 	// Source
-	if dungeonActionRecordSet.ActionCharacterRec != nil {
-		t.Log.Info("Adding action character record ID >%s<", dungeonActionRecordSet.ActionCharacterRec.ID)
-		t.teardownData.ActionCharacterRecs = append(t.teardownData.ActionCharacterRecs, dungeonActionRecordSet.ActionCharacterRec)
-		t.teardownData.ActionCharacterObjectRecs = append(t.teardownData.ActionCharacterObjectRecs, dungeonActionRecordSet.ActionCharacterObjectRecs...)
+	if actionRecordSet.ActionCharacterRec != nil {
+		t.Log.Info("Adding action character record ID >%s<", actionRecordSet.ActionCharacterRec.ID)
+		t.teardownData.ActionCharacterRecs = append(t.teardownData.ActionCharacterRecs, actionRecordSet.ActionCharacterRec)
+		t.teardownData.ActionCharacterObjectRecs = append(t.teardownData.ActionCharacterObjectRecs, actionRecordSet.ActionCharacterObjectRecs...)
 	}
-	if dungeonActionRecordSet.ActionMonsterRec != nil {
-		t.Log.Info("Adding action monster record ID >%s<", dungeonActionRecordSet.ActionMonsterRec.ID)
-		t.teardownData.ActionMonsterRecs = append(t.teardownData.ActionMonsterRecs, dungeonActionRecordSet.ActionMonsterRec)
-		t.teardownData.ActionMonsterObjectRecs = append(t.teardownData.ActionMonsterObjectRecs, dungeonActionRecordSet.ActionMonsterObjectRecs...)
+	if actionRecordSet.ActionMonsterRec != nil {
+		t.Log.Info("Adding action monster record ID >%s<", actionRecordSet.ActionMonsterRec.ID)
+		t.teardownData.ActionMonsterRecs = append(t.teardownData.ActionMonsterRecs, actionRecordSet.ActionMonsterRec)
+		t.teardownData.ActionMonsterObjectRecs = append(t.teardownData.ActionMonsterObjectRecs, actionRecordSet.ActionMonsterObjectRecs...)
 	}
 
 	// Current location
-	if dungeonActionRecordSet.CurrentLocation != nil {
-		dungeonActionLocationRecordSet := dungeonActionRecordSet.CurrentLocation
+	if actionRecordSet.CurrentLocation != nil {
+		dungeonActionLocationRecordSet := actionRecordSet.CurrentLocation
 		t.teardownData.ActionCharacterRecs = append(t.teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
 		t.teardownData.ActionMonsterRecs = append(t.teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
 		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
 	}
 
 	// Target location
-	if dungeonActionRecordSet.TargetLocation != nil {
-		dungeonActionLocationRecordSet := dungeonActionRecordSet.TargetLocation
+	if actionRecordSet.TargetLocation != nil {
+		dungeonActionLocationRecordSet := actionRecordSet.TargetLocation
 		t.teardownData.ActionCharacterRecs = append(t.teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
 		t.teardownData.ActionMonsterRecs = append(t.teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
 		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
 	}
 
 	// Targets
-	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
-		t.Log.Info("Adding target action character record character ID >%s<", dungeonActionRecordSet.TargetActionCharacterRec.DungeonCharacterID)
-		t.teardownData.ActionCharacterRecs = append(t.teardownData.ActionCharacterRecs, dungeonActionRecordSet.TargetActionCharacterRec)
-		t.teardownData.ActionCharacterObjectRecs = append(t.teardownData.ActionCharacterObjectRecs, dungeonActionRecordSet.TargetActionCharacterObjectRecs...)
+	if actionRecordSet.TargetActionCharacterRec != nil {
+		t.Log.Info("Adding target action character record character ID >%s<", actionRecordSet.TargetActionCharacterRec.CharacterInstanceID)
+		t.teardownData.ActionCharacterRecs = append(t.teardownData.ActionCharacterRecs, actionRecordSet.TargetActionCharacterRec)
+		t.teardownData.ActionCharacterObjectRecs = append(t.teardownData.ActionCharacterObjectRecs, actionRecordSet.TargetActionCharacterObjectRecs...)
 	}
-	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
-		t.Log.Info("Adding target action monster record monster ID >%s<", dungeonActionRecordSet.TargetActionMonsterRec.DungeonMonsterID)
-		t.teardownData.ActionMonsterRecs = append(t.teardownData.ActionMonsterRecs, dungeonActionRecordSet.TargetActionMonsterRec)
-		t.teardownData.ActionMonsterObjectRecs = append(t.teardownData.ActionMonsterObjectRecs, dungeonActionRecordSet.TargetActionMonsterObjectRecs...)
+	if actionRecordSet.TargetActionMonsterRec != nil {
+		t.Log.Info("Adding target action monster record monster ID >%s<", actionRecordSet.TargetActionMonsterRec.MonsterInstanceID)
+		t.teardownData.ActionMonsterRecs = append(t.teardownData.ActionMonsterRecs, actionRecordSet.TargetActionMonsterRec)
+		t.teardownData.ActionMonsterObjectRecs = append(t.teardownData.ActionMonsterObjectRecs, actionRecordSet.TargetActionMonsterObjectRecs...)
 	}
-	if dungeonActionRecordSet.TargetActionObjectRec != nil {
-		t.Log.Info("Adding target action object record object ID >%s<", dungeonActionRecordSet.TargetActionObjectRec.DungeonObjectID)
-		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, dungeonActionRecordSet.TargetActionObjectRec)
+	if actionRecordSet.TargetActionObjectRec != nil {
+		t.Log.Info("Adding target action object record object ID >%s<", actionRecordSet.TargetActionObjectRec.ObjectInstanceID)
+		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, actionRecordSet.TargetActionObjectRec)
 	}
-	if dungeonActionRecordSet.StashedActionObjectRec != nil {
-		t.Log.Info("Adding stashed action object record object ID >%s<", dungeonActionRecordSet.StashedActionObjectRec.DungeonObjectID)
-		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, dungeonActionRecordSet.StashedActionObjectRec)
+	if actionRecordSet.StashedActionObjectRec != nil {
+		t.Log.Info("Adding stashed action object record object ID >%s<", actionRecordSet.StashedActionObjectRec.ObjectInstanceID)
+		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, actionRecordSet.StashedActionObjectRec)
 	}
-	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
-		t.Log.Info("Adding equipped action object record object ID >%s<", dungeonActionRecordSet.EquippedActionObjectRec.DungeonObjectID)
-		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, dungeonActionRecordSet.EquippedActionObjectRec)
+	if actionRecordSet.EquippedActionObjectRec != nil {
+		t.Log.Info("Adding equipped action object record object ID >%s<", actionRecordSet.EquippedActionObjectRec.ObjectInstanceID)
+		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, actionRecordSet.EquippedActionObjectRec)
 	}
-	if dungeonActionRecordSet.DroppedActionObjectRec != nil {
-		t.Log.Info("Adding dropped action object record object ID >%s<", dungeonActionRecordSet.DroppedActionObjectRec.DungeonObjectID)
-		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, dungeonActionRecordSet.DroppedActionObjectRec)
+	if actionRecordSet.DroppedActionObjectRec != nil {
+		t.Log.Info("Adding dropped action object record object ID >%s<", actionRecordSet.DroppedActionObjectRec.ObjectInstanceID)
+		t.teardownData.ActionObjectRecs = append(t.teardownData.ActionObjectRecs, actionRecordSet.DroppedActionObjectRec)
 	}
 
 	if t.CommitData {
@@ -820,16 +826,16 @@ DUNGEON_ACTION_RECS:
 
 DUNGEON_OBJECT_RECS:
 	for {
-		if len(t.teardownData.DungeonObjectRecs) == 0 {
+		if len(t.teardownData.ObjectRecs) == 0 {
 			break DUNGEON_OBJECT_RECS
 		}
-		var rec record.DungeonObject
-		rec, t.teardownData.DungeonObjectRecs = t.teardownData.DungeonObjectRecs[0], t.teardownData.DungeonObjectRecs[1:]
+		var rec record.Object
+		rec, t.teardownData.ObjectRecs = t.teardownData.ObjectRecs[0], t.teardownData.ObjectRecs[1:]
 		if seen[rec.ID] {
 			continue
 		}
 
-		err := t.Model.(*model.Model).RemoveDungeonObjectRec(rec.ID)
+		err := t.Model.(*model.Model).RemoveObjectRec(rec.ID)
 		if err != nil {
 			t.Log.Warn("Failed removing dungeon object record >%v<", err)
 			return err
@@ -839,16 +845,16 @@ DUNGEON_OBJECT_RECS:
 
 DUNGEON_CHARACTER_RECS:
 	for {
-		if len(t.teardownData.DungeonCharacterRecs) == 0 {
+		if len(t.teardownData.CharacterRecs) == 0 {
 			break DUNGEON_CHARACTER_RECS
 		}
-		var rec record.DungeonCharacter
-		rec, t.teardownData.DungeonCharacterRecs = t.teardownData.DungeonCharacterRecs[0], t.teardownData.DungeonCharacterRecs[1:]
+		var rec record.Character
+		rec, t.teardownData.CharacterRecs = t.teardownData.CharacterRecs[0], t.teardownData.CharacterRecs[1:]
 		if seen[rec.ID] {
 			continue
 		}
 
-		err := t.Model.(*model.Model).RemoveDungeonCharacterRec(rec.ID)
+		err := t.Model.(*model.Model).RemoveCharacterRec(rec.ID)
 		if err != nil {
 			t.Log.Warn("Failed removing dungeon character record >%v<", err)
 			return err
@@ -858,16 +864,16 @@ DUNGEON_CHARACTER_RECS:
 
 DUNGEON_MONSTER_RECS:
 	for {
-		if len(t.teardownData.DungeonMonsterRecs) == 0 {
+		if len(t.teardownData.MonsterRecs) == 0 {
 			break DUNGEON_MONSTER_RECS
 		}
-		var rec record.DungeonMonster
-		rec, t.teardownData.DungeonMonsterRecs = t.teardownData.DungeonMonsterRecs[0], t.teardownData.DungeonMonsterRecs[1:]
+		var rec record.Monster
+		rec, t.teardownData.MonsterRecs = t.teardownData.MonsterRecs[0], t.teardownData.MonsterRecs[1:]
 		if seen[rec.ID] {
 			continue
 		}
 
-		err := t.Model.(*model.Model).RemoveDungeonMonsterRec(rec.ID)
+		err := t.Model.(*model.Model).RemoveMonsterRec(rec.ID)
 		if err != nil {
 			t.Log.Warn("Failed removing dungeon monster record >%v<", err)
 			return err

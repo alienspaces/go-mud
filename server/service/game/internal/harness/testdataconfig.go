@@ -5,6 +5,15 @@ import (
 )
 
 var DefaultDataConfig = DataConfig{
+	CharacterConfig: []CharacterConfig{
+		{
+			Record: record.Character{
+				Name: "Barricade",
+			},
+			// REMOVE:
+			// LocationName: "Cave Entrance",
+		},
+	},
 	DungeonConfig: []DungeonConfig{
 		{
 			Record: record.Dungeon{
@@ -59,34 +68,26 @@ var DefaultDataConfig = DataConfig{
 					UpLocationName: "Dark Narrow Tunnel",
 				},
 			},
-			DungeonCharacterConfig: []DungeonCharacterConfig{
-				{
-					Record: record.DungeonCharacter{
-						Name: "Barricade",
-					},
-					LocationName: "Cave Entrance",
-				},
-			},
-			DungeonMonsterConfig: []DungeonMonsterConfig{
+			MonsterConfig: []MonsterConfig{
 				// 0
 				{
-					Record: record.DungeonMonster{
+					Record: record.Monster{
 						Name: "Grumpy Dwarf",
 					},
 					LocationName: "Cave Entrance",
 				},
 				// 1
 				{
-					Record: record.DungeonMonster{
+					Record: record.Monster{
 						Name: "Angry Goblin",
 					},
 					LocationName: "Cave Tunnel",
 				},
 			},
-			DungeonObjectConfig: []DungeonObjectConfig{
+			ObjectConfig: []ObjectConfig{
 				// 0
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Rusted Sword",
 						Description:         "A rusted sword.",
 						DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
@@ -95,7 +96,7 @@ var DefaultDataConfig = DataConfig{
 				},
 				// 1
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Silver Key",
 						Description:         "A silver key.",
 						DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
@@ -104,7 +105,7 @@ var DefaultDataConfig = DataConfig{
 				},
 				// 2
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Dull Bronze Ring",
 						Description:         "A dull bronze ring.",
 						DescriptionDetailed: "A dull bronze ring.",
@@ -114,7 +115,7 @@ var DefaultDataConfig = DataConfig{
 				},
 				// 3
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Blood Stained Pouch",
 						Description:         "A blood stained pouch.",
 						DescriptionDetailed: "A blood stained pouch.",
@@ -124,7 +125,7 @@ var DefaultDataConfig = DataConfig{
 				},
 				// 4
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Bone Dagger",
 						Description:         "A bone dagger.",
 						DescriptionDetailed: "A bone dagger.",
@@ -134,7 +135,7 @@ var DefaultDataConfig = DataConfig{
 				},
 				// 5
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Vial Of Ogre Blood",
 						Description:         "A large vial of ogre blood.",
 						DescriptionDetailed: "A large vial of ogre blood.",
@@ -143,16 +144,17 @@ var DefaultDataConfig = DataConfig{
 					MonsterName: "Grumpy Dwarf",
 				},
 			},
-			ActionConfig: []ActionConfig{
-				{
-					CharacterName: "Barricade",
-					Command:       "look north",
-				},
-				{
-					CharacterName: "Barricade",
-					Command:       "look grumpy dwarf",
-				},
-			},
+			// MOVE:
+			// ActionConfig: []ActionConfig{
+			// 	{
+			// 		CharacterName: "Barricade",
+			// 		Command:       "look north",
+			// 	},
+			// 	{
+			// 		CharacterName: "Barricade",
+			// 		Command:       "look grumpy dwarf",
+			// 	},
+			// },
 		},
 	},
 }

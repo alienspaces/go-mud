@@ -50,9 +50,9 @@ func (t *Testing) updateLocationRec(rec *record.Location) error {
 	return nil
 }
 
-func (t *Testing) createDungeonCharacterRec(dungeonRec *record.Dungeon, dungeonCharacterConfig DungeonCharacterConfig) (*record.DungeonCharacter, error) {
+func (t *Testing) createCharacterRec(characterConfig CharacterConfig) (*record.Character, error) {
 
-	rec := dungeonCharacterConfig.Record
+	rec := characterConfig.Record
 
 	// Default values
 	if rec.Name == "" {
@@ -70,7 +70,7 @@ func (t *Testing) createDungeonCharacterRec(dungeonRec *record.Dungeon, dungeonC
 
 	t.Log.Debug("(testing) Creating dungeon character record >%#v<", rec)
 
-	err := t.Model.(*model.Model).CreateDungeonCharacterRec(&rec)
+	err := t.Model.(*model.Model).CreateCharacterRec(&rec)
 	if err != nil {
 		t.Log.Warn("(testing) Failed creating dungeon character record >%v<", err)
 		return nil, err
@@ -78,7 +78,7 @@ func (t *Testing) createDungeonCharacterRec(dungeonRec *record.Dungeon, dungeonC
 	return &rec, nil
 }
 
-func (t *Testing) createDungeonMonsterRec(dungeonRec *record.Dungeon, dungeonMonsterConfig DungeonMonsterConfig) (*record.DungeonMonster, error) {
+func (t *Testing) createMonsterRec(dungeonRec *record.Dungeon, dungeonMonsterConfig MonsterConfig) (*record.Monster, error) {
 
 	rec := dungeonMonsterConfig.Record
 
@@ -98,7 +98,7 @@ func (t *Testing) createDungeonMonsterRec(dungeonRec *record.Dungeon, dungeonMon
 
 	t.Log.Debug("(testing) Creating dungeon monster record >%#v<", rec)
 
-	err := t.Model.(*model.Model).CreateDungeonMonsterRec(&rec)
+	err := t.Model.(*model.Model).CreateMonsterRec(&rec)
 	if err != nil {
 		t.Log.Warn("(testing) Failed creating dungeon monster record >%v<", err)
 		return nil, err
@@ -106,7 +106,7 @@ func (t *Testing) createDungeonMonsterRec(dungeonRec *record.Dungeon, dungeonMon
 	return &rec, nil
 }
 
-func (t *Testing) createDungeonObjectRec(dungeonRec *record.Dungeon, dungeonObjectConfig DungeonObjectConfig) (*record.DungeonObject, error) {
+func (t *Testing) createObjectRec(dungeonRec *record.Dungeon, dungeonObjectConfig ObjectConfig) (*record.Object, error) {
 
 	rec := dungeonObjectConfig.Record
 
@@ -114,7 +114,7 @@ func (t *Testing) createDungeonObjectRec(dungeonRec *record.Dungeon, dungeonObje
 
 	t.Log.Debug("(testing) Creating dungeon object record >%#v<", rec)
 
-	err := t.Model.(*model.Model).CreateDungeonObjectRec(&rec)
+	err := t.Model.(*model.Model).CreateObjectRec(&rec)
 	if err != nil {
 		t.Log.Warn("(testing) Failed creating dungeon object record >%v<", err)
 		return nil, err
@@ -122,11 +122,11 @@ func (t *Testing) createDungeonObjectRec(dungeonRec *record.Dungeon, dungeonObje
 	return &rec, nil
 }
 
-func (t *Testing) createDungeonCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*model.ActionRecordSet, error) {
+func (t *Testing) createCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*record.ActionRecordSet, error) {
 
 	t.Log.Debug("(testing) Creating dungeon action for character ID >%s< sentence >%s<", dungeonCharacterID, sentence)
 
-	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessDungeonCharacterAction(dungeonID, dungeonCharacterID, sentence)
+	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessCharacterAction(dungeonID, dungeonCharacterID, sentence)
 	if err != nil {
 		t.Log.Warn("(testing) Failed creating dungeon character action record >%v<", err)
 		return nil, err
