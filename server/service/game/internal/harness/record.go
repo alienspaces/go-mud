@@ -10,8 +10,6 @@ func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon
 
 	rec := dungeonConfig.Record
 
-	// NOTE: Add default values for required properties here
-
 	t.Log.Debug("(testing) Creating dungeon record >%#v<", rec)
 
 	err := t.Model.(*model.Model).CreateDungeonRec(&rec)
@@ -25,8 +23,6 @@ func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon
 func (t *Testing) createLocationRec(dungeonRec *record.Dungeon, dungeonLocationConfig LocationConfig) (*record.Location, error) {
 
 	rec := dungeonLocationConfig.Record
-
-	// NOTE: Add default values for required properties here
 
 	t.Log.Debug("(testing) Creating dungeon location record >%#v<", rec)
 
@@ -110,8 +106,6 @@ func (t *Testing) createObjectRec(dungeonRec *record.Dungeon, dungeonObjectConfi
 
 	rec := dungeonObjectConfig.Record
 
-	// NOTE: Add default values for required properties here
-
 	t.Log.Debug("(testing) Creating dungeon object record >%#v<", rec)
 
 	err := t.Model.(*model.Model).CreateObjectRec(&rec)
@@ -122,15 +116,74 @@ func (t *Testing) createObjectRec(dungeonRec *record.Dungeon, dungeonObjectConfi
 	return &rec, nil
 }
 
-func (t *Testing) createCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*record.ActionRecordSet, error) {
+// Dungeon instance
+func (t *Testing) createDungeonInstanceRec(dungeonID string) (*record.DungeonInstance, error) {
 
-	t.Log.Debug("(testing) Creating dungeon action for character ID >%s< sentence >%s<", dungeonCharacterID, sentence)
+	t.Log.Debug("(testing) Creating dungeon instance for dungeon ID >%s<", dungeonID)
 
-	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessCharacterAction(dungeonID, dungeonCharacterID, sentence)
+	rec, err := t.Model.(*model.Model).CreateDungeonInstance(dungeonID)
 	if err != nil {
-		t.Log.Warn("(testing) Failed creating dungeon character action record >%v<", err)
+		t.Log.Warn("(testing) Failed creating dungeon instance record >%v<", err)
 		return nil, err
 	}
-
-	return dungeonActionRecordSet, nil
+	return rec, nil
 }
+
+func (t *Testing) getLocationInstanceRecs(dungeonInstanceID string) ([]*record.LocationInstance, error) {
+
+	locationInstanceRecs, err := t.Model.(*model.Model).GetLocationInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		},
+		nil, false,
+	)
+	if err != nil {
+		t.Log.Warn("(testing) Failed getting location instance records >%v<", err)
+		return nil, err
+	}
+	return locationInstanceRecs, nil
+}
+
+func (t *Testing) getMonsterInstanceRecs(dungeonInstanceID string) ([]*record.MonsterInstance, error) {
+
+	monsterInstanceRecs, err := t.Model.(*model.Model).GetMonsterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		},
+		nil, false,
+	)
+	if err != nil {
+		t.Log.Warn("(testing) Failed getting monster instance records >%v<", err)
+		return nil, err
+	}
+	return monsterInstanceRecs, nil
+}
+
+func (t *Testing) getObjectInstanceRecs(dungeonInstanceID string) ([]*record.ObjectInstance, error) {
+
+	objectInstanceRecs, err := t.Model.(*model.Model).GetObjectInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		},
+		nil, false,
+	)
+	if err != nil {
+		t.Log.Warn("(testing) Failed getting object instance records >%v<", err)
+		return nil, err
+	}
+	return objectInstanceRecs, nil
+}
+
+// TODO: Character actions are tied to dungeon instances
+// func (t *Testing) createCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*record.ActionRecordSet, error) {
+
+// 	t.Log.Debug("(testing) Creating dungeon action for character ID >%s< sentence >%s<", dungeonCharacterID, sentence)
+
+// 	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessCharacterAction(dungeonID, dungeonCharacterID, sentence)
+// 	if err != nil {
+// 		t.Log.Warn("(testing) Failed creating dungeon character action record >%v<", err)
+// 		return nil, err
+// 	}
+
+// 	return dungeonActionRecordSet, nil
+// }

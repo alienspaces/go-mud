@@ -51,11 +51,23 @@ type Data struct {
 
 // teardownData -
 type teardownData struct {
-	DungeonRecs               []record.Dungeon
-	LocationRecs              []record.Location
-	CharacterRecs             []record.Character
-	MonsterRecs               []record.Monster
-	ObjectRecs                []record.Object
+	// Character
+	CharacterRecs []record.Character
+
+	// Dungeon
+	DungeonRecs  []record.Dungeon
+	LocationRecs []record.Location
+	MonsterRecs  []record.Monster
+	ObjectRecs   []record.Object
+
+	// Dungeon Instance
+	DungeonInstanceRecs   []*record.DungeonInstance
+	LocationInstanceRecs  []*record.LocationInstance
+	CharacterInstanceRecs []*record.CharacterInstance
+	MonsterInstanceRecs   []*record.MonsterInstance
+	ObjectInstanceRecs    []*record.ObjectInstance
+
+	// Action
 	ActionRecs                []*record.Action
 	ActionCharacterRecs       []*record.ActionCharacter
 	ActionCharacterObjectRecs []*record.ActionCharacterObject
@@ -206,6 +218,52 @@ func (t *Testing) CreateData() error {
 			}
 			data.ObjectRecs = append(data.ObjectRecs, dungeonObjectRec)
 			teardownData.ObjectRecs = append(teardownData.ObjectRecs, *dungeonObjectRec)
+		}
+
+		// Create dungeon instances
+		for _, dungeonInstanceConfig := range dungeonConfig.DungeonInstanceConfig {
+
+			// Create dungeon instance record
+			t.Log.Info("Creating dungeon instance >%#v<", dungeonInstanceConfig)
+			dungeonInstanceRec, err := t.createDungeonInstanceRec(dungeonRec.ID)
+			if err != nil {
+				t.Log.Warn("Failed creating dungeon instance record >%v<", err)
+				return err
+			}
+			data.DungeonInstanceRecs = append(data.DungeonInstanceRecs, dungeonInstanceRec)
+			teardownData.DungeonInstanceRecs = append(teardownData.DungeonInstanceRecs, dungeonInstanceRec)
+
+			// Get resulting location instance records
+			locationInstanceRecs, err := t.getLocationInstanceRecs(dungeonInstanceRec.ID)
+			if err != nil {
+				t.Log.Warn("Failed getting location instance records >%v<", err)
+				return err
+			}
+			data.LocationInstanceRecs = append(data.LocationInstanceRecs, locationInstanceRecs...)
+			teardownData.LocationInstanceRecs = append(teardownData.LocationInstanceRecs, locationInstanceRecs...)
+
+			// Get resulting monster instance records
+			monsterInstanceRecs, err := t.getMonsterInstanceRecs(dungeonInstanceRec.ID)
+			if err != nil {
+				t.Log.Warn("Failed getting monster instance records >%v<", err)
+				return err
+			}
+			data.MonsterInstanceRecs = append(data.MonsterInstanceRecs, monsterInstanceRecs...)
+			teardownData.MonsterInstanceRecs = append(teardownData.MonsterInstanceRecs, monsterInstanceRecs...)
+
+			// Get resulting object instance records
+			objectInstanceRecs, err := t.getObjectInstanceRecs(dungeonInstanceRec.ID)
+			if err != nil {
+				t.Log.Warn("Failed getting object instance records >%v<", err)
+				return err
+			}
+			data.ObjectInstanceRecs = append(data.ObjectInstanceRecs, objectInstanceRecs...)
+			teardownData.ObjectInstanceRecs = append(teardownData.ObjectInstanceRecs, objectInstanceRecs...)
+
+			// TODO: Create character instance records
+
+			// TODO: Create action records
+
 		}
 	}
 
@@ -596,12 +654,6 @@ func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, du
 	if dungeonConfig.ObjectConfig != nil {
 		for idx := range dungeonConfig.ObjectConfig {
 			dungeonConfig.ObjectConfig[idx].Record.DungeonID = dungeonRec.ID
-		}
-	}
-
-	if dungeonConfig.DungeonInstanceConfig != nil {
-		for idx := range dungeonConfig.DungeonInstanceConfig {
-			dungeonConfig.DungeonInstanceConfig[idx].Record.DungeonID = dungeonRec.ID
 		}
 	}
 

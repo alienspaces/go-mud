@@ -21,7 +21,6 @@ type DungeonConfig struct {
 
 // DungeonInstanceConfig -
 type DungeonInstanceConfig struct {
-	Record record.DungeonInstance
 
 	// TODO: A character can only have one active instance in a dungeon at a time.
 	// When configuration contains multiple  CharacterInstanceConfig definitions
