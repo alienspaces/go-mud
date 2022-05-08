@@ -88,13 +88,13 @@ func (t *Testing) Init() (err error) {
 	}
 
 	// preparer
-	t.PrepareRepository, err = prepare.NewPrepare(t.Log)
+	t.PrepareRepository, err = prepare.NewRepositoryPreparer(t.Log)
 	if err != nil {
 		t.Log.Warn("failed new preparer >%v<", err)
 		return err
 	}
 
-	t.PrepareQuery, err = prepare.NewQuery(t.Log)
+	t.PrepareQuery, err = prepare.NewQueryPreparer(t.Log)
 	if err != nil {
 		t.Log.Warn("failed new preparer config >%v<", err)
 		return err

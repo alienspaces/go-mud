@@ -5,6 +5,8 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/schema"
@@ -13,120 +15,80 @@ import (
 )
 
 // GetCharacterHandler -
-func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
 
-	var recs []*record.DungeonCharacter
+	var recs []*record.Character
 	var err error
 
 	// Path parameters
-	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
 
-	if dungeonID == "" {
-		rnr.WriteNotFoundError(l, w, dungeonID)
-		return
-	}
-	if !m.(*model.Model).IsUUID(dungeonID) {
-		l.Warn("Dungeon ID >%s< is not a UUID", dungeonID)
-		rnr.WriteNotFoundError(l, w, dungeonID)
-		return
-	}
-
 	if characterID == "" {
-		rnr.WriteNotFoundError(l, w, characterID)
-		return
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
 	}
 	if !m.(*model.Model).IsUUID(characterID) {
-		l.Warn("Character ID >%s< is not a UUID", characterID)
-		rnr.WriteNotFoundError(l, w, characterID)
-		return
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
-	rec, err := m.(*model.Model).GetDungeonCharacterRec(characterID, false)
+	rec, err := m.(*model.Model).GetCharacterRec(characterID, false)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Resource not found
 	if rec == nil {
-		rnr.WriteNotFoundError(l, w, characterID)
-		return
-	}
-
-	// Character record dungeon does not match parameter dungeon
-	if rec.DungeonID != dungeonID {
-		rnr.WriteNotFoundError(l, w, characterID)
-		return
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	recs = append(recs, rec)
 
 	// Assign response properties
-	data := []schema.DungeonCharacterData{}
+	data := []schema.CharacterData{}
 	for _, rec := range recs {
 
 		// Response data
-		responseData, err := rnr.RecordToDungeonCharacterResponseData(*rec)
+		responseData, err := rnr.RecordToCharacterResponseData(*rec)
 		if err != nil {
-			rnr.WriteSystemError(l, w, err)
-			return
+			server.WriteError(l, w, err)
+			return err
 		}
 
 		data = append(data, responseData)
 	}
 
-	res := schema.DungeonCharacterResponse{
+	res := schema.CharacterResponse{
 		Data: data,
 	}
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // GetCharactersHandler -
-func (rnr *Runner) GetDungeonCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
+	l.Info("** Get characters handler ** p >%#v< m >%#v<", pp, m)
 
-	var recs []*record.DungeonCharacter
+	var recs []*record.Character
 	var err error
 
-	// Path parameters
-	dungeonID := pp.ByName("dungeon_id")
-
-	if dungeonID == "" {
-		rnr.WriteNotFoundError(l, w, dungeonID)
-		return
-	}
-	if !m.(*model.Model).IsUUID(dungeonID) {
-		l.Warn("Dungeon ID >%s< is not a UUID", dungeonID)
-		rnr.WriteNotFoundError(l, w, dungeonID)
-		return
-	}
-
-	l.Info("Querying dungeon record")
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
-	if err != nil {
-		l.Warn("Failed getting dungeon record >%v<", err)
-		rnr.WriteModelError(l, w, err)
-		return
-	}
-
-	if dungeonRec == nil {
-		l.Warn("Dungeon ID >%s< not found", dungeonID)
-		rnr.WriteNotFoundError(l, w, dungeonID)
-		return
-	}
-
-	l.Info("Querying dungeon character records")
+	l.Info("Querying character records")
 
 	// Add query parameters
 	params := make(map[string]interface{})
@@ -135,170 +97,163 @@ func (rnr *Runner) GetDungeonCharactersHandler(w http.ResponseWriter, r *http.Re
 		params[paramName] = paramValue
 	}
 
-	// Add path parameters
-	params["dungeon_id"] = dungeonID
-
-	recs, err = m.(*model.Model).GetDungeonCharacterRecs(params, nil, false)
+	recs, err = m.(*model.Model).GetCharacterRecs(params, nil, false)
 	if err != nil {
 		l.Warn("Failed getting dungeon character records >%v<", err)
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Assign response properties
-	data := []schema.DungeonCharacterData{}
+	data := []schema.CharacterData{}
 	for _, rec := range recs {
 
 		// Response data
-		responseData, err := rnr.RecordToDungeonCharacterResponseData(*rec)
+		responseData, err := rnr.RecordToCharacterResponseData(*rec)
 		if err != nil {
-			rnr.WriteSystemError(l, w, err)
-			return
+			server.WriteError(l, w, err)
+			return err
 		}
 
 		data = append(data, responseData)
 	}
 
-	res := schema.DungeonCharacterResponse{
+	res := schema.CharacterResponse{
 		Data: data,
 	}
 
 	l.Info("Responding with >%#v<", res)
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
-// PostDungeonCharactersHandler -
-func (rnr *Runner) PostDungeonCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+// PostCharactersHandler -
+func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Post characters handler ** p >%#v< m >#%v<", pp, m)
 
-	// Path parameters
-	dungeonID := pp.ByName("dungeon_id")
-
-	req := schema.DungeonCharacterRequest{}
-
-	err := rnr.ReadRequest(l, r, &req)
+	req := schema.CharacterRequest{}
+	err := server.ReadRequest(l, r, &req)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
-	rec := record.DungeonCharacter{DungeonID: dungeonID}
+	rec := record.Character{}
 
 	// Record data
-	err = rnr.DungeonCharacterRequestDataToRecord(req.Data, &rec)
+	err = rnr.CharacterRequestDataToRecord(req.Data, &rec)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	l.Info("Creating character record >%#v<", rec)
 
-	err = m.(*model.Model).CreateDungeonCharacterRec(&rec)
+	err = m.(*model.Model).CreateCharacterRec(&rec)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Response data
-	responseData, err := rnr.RecordToDungeonCharacterResponseData(rec)
+	responseData, err := rnr.RecordToCharacterResponseData(rec)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Assign response properties
-	res := schema.DungeonCharacterResponse{
-		Data: []schema.DungeonCharacterData{
+	res := schema.CharacterResponse{
+		Data: []schema.CharacterData{
 			responseData,
 		},
 	}
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
-// PutDungeonCharactersHandler -
-func (rnr *Runner) PutDungeonCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+// PutCharactersHandler -
+func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Put characters handler ** p >%#v< m >#%v<", pp, m)
 
 	// Path parameters
-	dungeonID := pp.ByName("dungeon_id")
-	characterID := pp.ByName("character_id")
+	id := pp.ByName("character_id")
 
-	l.Info("Updating character ID >%s<", characterID)
+	l.Info("Updating character ID >%s<", id)
 
-	rec, err := m.(*model.Model).GetDungeonCharacterRec(characterID, false)
+	rec, err := m.(*model.Model).GetCharacterRec(id, false)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Resource not found
 	if rec == nil {
-		rnr.WriteNotFoundError(l, w, characterID)
-		return
+		err := coreerror.NewNotFoundError("character", id)
+		server.WriteError(l, w, err)
+		return err
 	}
 
-	// Character record dungeon does not match parameter dungeon
-	if rec.DungeonID != dungeonID {
-		rnr.WriteNotFoundError(l, w, characterID)
-		return
-	}
+	req := schema.CharacterRequest{}
 
-	req := schema.DungeonCharacterRequest{}
-
-	err = rnr.ReadRequest(l, r, &req)
+	err = server.ReadRequest(l, r, &req)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Record data
-	err = rnr.DungeonCharacterRequestDataToRecord(req.Data, rec)
+	err = rnr.CharacterRequestDataToRecord(req.Data, rec)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
-	err = m.(*model.Model).UpdateDungeonCharacterRec(rec)
+	err = m.(*model.Model).UpdateCharacterRec(rec)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Response data
-	responseData, err := rnr.RecordToDungeonCharacterResponseData(*rec)
+	responseData, err := rnr.RecordToCharacterResponseData(*rec)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Assign response properties
-	res := schema.DungeonCharacterResponse{
-		Data: []schema.DungeonCharacterData{
+	res := schema.CharacterResponse{
+		Data: []schema.CharacterData{
 			responseData,
 		},
 	}
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return err
 }
 
 // CharacterRequestDataToRecord -
-func (rnr *Runner) DungeonCharacterRequestDataToRecord(data schema.DungeonCharacterData, rec *record.DungeonCharacter) error {
+func (rnr *Runner) CharacterRequestDataToRecord(data schema.CharacterData, rec *record.Character) error {
 
 	rec.Name = data.Name
 	rec.Strength = data.Strength
@@ -309,28 +264,21 @@ func (rnr *Runner) DungeonCharacterRequestDataToRecord(data schema.DungeonCharac
 }
 
 // RecordToCharacterResponseData -
-func (rnr *Runner) RecordToDungeonCharacterResponseData(dungeonCharacterRec record.DungeonCharacter) (schema.DungeonCharacterData, error) {
+func (rnr *Runner) RecordToCharacterResponseData(dungeonCharacterRec record.Character) (schema.CharacterData, error) {
 
-	data := schema.DungeonCharacterData{
-		ID:                  dungeonCharacterRec.ID,
-		DungeonID:           dungeonCharacterRec.DungeonID,
-		LocationID:   dungeonCharacterRec.LocationID,
-		Name:                dungeonCharacterRec.Name,
-		Strength:            dungeonCharacterRec.Strength,
-		Dexterity:           dungeonCharacterRec.Dexterity,
-		Intelligence:        dungeonCharacterRec.Intelligence,
-		CurrentStrength:     dungeonCharacterRec.CurrentStrength,
-		CurrentDexterity:    dungeonCharacterRec.CurrentDexterity,
-		CurrentIntelligence: dungeonCharacterRec.CurrentIntelligence,
-		Health:              dungeonCharacterRec.Health,
-		Fatigue:             dungeonCharacterRec.Fatigue,
-		CurrentHealth:       dungeonCharacterRec.CurrentHealth,
-		CurrentFatigue:      dungeonCharacterRec.CurrentFatigue,
-		Coins:               dungeonCharacterRec.Coins,
-		AttributePoints:     dungeonCharacterRec.AttributePoints,
-		ExperiencePoints:    dungeonCharacterRec.ExperiencePoints,
-		CreatedAt:           dungeonCharacterRec.CreatedAt,
-		UpdatedAt:           dungeonCharacterRec.UpdatedAt.Time,
+	data := schema.CharacterData{
+		ID:               dungeonCharacterRec.ID,
+		Name:             dungeonCharacterRec.Name,
+		Strength:         dungeonCharacterRec.Strength,
+		Dexterity:        dungeonCharacterRec.Dexterity,
+		Intelligence:     dungeonCharacterRec.Intelligence,
+		Health:           dungeonCharacterRec.Health,
+		Fatigue:          dungeonCharacterRec.Fatigue,
+		Coins:            dungeonCharacterRec.Coins,
+		AttributePoints:  dungeonCharacterRec.AttributePoints,
+		ExperiencePoints: dungeonCharacterRec.ExperiencePoints,
+		CreatedAt:        dungeonCharacterRec.CreatedAt,
+		UpdatedAt:        dungeonCharacterRec.UpdatedAt.Time,
 	}
 
 	return data, nil

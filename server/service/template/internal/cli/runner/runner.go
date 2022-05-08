@@ -4,9 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	command "gitlab.com/alienspaces/go-mud/server/core/cli"
-	"gitlab.com/alienspaces/go-mud/server/core/prepare"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
 )
 
@@ -44,7 +42,6 @@ func NewRunner() *Runner {
 		},
 	}
 
-	r.PreparerFunc = r.Preparer
 	r.ModellerFunc = r.Modeller
 
 	return &r
@@ -56,20 +53,6 @@ func (rnr *Runner) TestCommand(c *cli.Context) error {
 	rnr.Log.Info("** Template Test Command **")
 
 	return nil
-}
-
-// Preparer -
-func (rnr *Runner) Preparer() (preparer.Preparer, error) {
-
-	rnr.Log.Info("** Template Preparer **")
-
-	p, err := prepare.NewPrepare(rnr.Log)
-	if err != nil {
-		rnr.Log.Warn("Failed new preparer >%v<", err)
-		return nil, err
-	}
-
-	return p, nil
 }
 
 // Modeller -

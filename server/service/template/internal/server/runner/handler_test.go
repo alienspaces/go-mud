@@ -50,7 +50,7 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "GET - Get existing",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[1]
+				return rnr.HandlerConfig[getTemplate]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -82,7 +82,7 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "GET - Get non-existant",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[1]
+				return rnr.HandlerConfig[getTemplate]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -104,7 +104,7 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "POST - Create without ID",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[2]
+				return rnr.HandlerConfig[postTemplate]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -123,7 +123,7 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "POST - Create with ID",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[3]
+				return rnr.HandlerConfig[postTemplates]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -158,7 +158,7 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "PUT - Update existing",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[4]
+				return rnr.HandlerConfig[putTemplate]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -195,7 +195,7 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "PUT - Update non-existing",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[4]
+				return rnr.HandlerConfig[putTemplate]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
@@ -228,7 +228,7 @@ func TestTemplateHandler(t *testing.T) {
 				return headers
 			},
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[3]
+				return rnr.HandlerConfig[postTemplates]
 			},
 			requestData: func(data harness.Data) *schema.TemplateRequest {
 				return nil
@@ -244,7 +244,7 @@ func TestTemplateHandler(t *testing.T) {
 		func() {
 			rnr := NewRunner()
 
-			err = rnr.Init(th.Config, th.Log, th.Store, th.Model)
+			err = rnr.Init(th.Store)
 			require.NoError(t, err, "Runner init returns without error")
 
 			err = th.Setup()

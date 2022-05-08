@@ -37,7 +37,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 	}
 
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
-		return rnr.HandlerConfig[6]
+		return rnr.HandlerConfig[postAction]
 	}
 
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
@@ -50,7 +50,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 	testCaseRequestPathParams := func(data harness.Data) map[string]string {
 		params := map[string]string{
 			":dungeon_id":   data.DungeonRecs[0].ID,
-			":character_id": data.DungeonCharacterRecs[0].ID,
+			":character_id": data.CharacterRecs[0].ID,
 		}
 		return params
 	}
@@ -86,47 +86,47 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks", data.DungeonCharacterRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s looks", data.CharacterRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								Health:       data.CharacterRecs[0].Health,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
@@ -136,23 +136,23 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							TargetObject:    nil,
 							TargetCharacter: nil,
 							TargetMonster:   nil,
-							TargetLocation: &schema.LocationData{
+							TargetLocation: &schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 								},
 							},
@@ -186,42 +186,42 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "move",
-							Narrative: fmt.Sprintf("%s moves north", data.DungeonCharacterRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s moves north", data.CharacterRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[1].Name,
 								Description: data.LocationRecs[1].Description,
 								Directions:  []string{"north", "south", "northwest"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[1].Name,
+										Name: data.MonsterRecs[1].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
@@ -231,19 +231,19 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							TargetObject:    nil,
 							TargetCharacter: nil,
 							TargetMonster:   nil,
-							TargetLocation: &schema.LocationData{
+							TargetLocation: &schema.ActionLocation{
 								Name:        data.LocationRecs[1].Name,
 								Description: data.LocationRecs[1].Description,
 								Direction:   "north",
 								Directions:  []string{"north", "south", "northwest"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[1].Name,
+										Name: data.MonsterRecs[1].Name,
 									},
 								},
 							},
@@ -277,47 +277,47 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks north", data.DungeonCharacterRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s looks north", data.CharacterRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
@@ -327,14 +327,14 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							TargetObject:    nil,
 							TargetCharacter: nil,
 							TargetMonster:   nil,
-							TargetLocation: &schema.LocationData{
+							TargetLocation: &schema.ActionLocation{
 								Name:        data.LocationRecs[1].Name,
 								Description: data.LocationRecs[1].Description,
 								Direction:   "north",
 								Directions:  []string{"north", "south", "northwest"},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[1].Name,
+										Name: data.MonsterRecs[1].Name,
 									},
 								},
 							},
@@ -368,58 +368,58 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s looks %s", data.CharacterRecs[0].Name, data.ObjectRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
 							StashedObject:  nil,
-							TargetObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[0].Name,
-								Description: data.DungeonObjectRecs[0].Description,
-								IsEquipped:  data.DungeonObjectRecs[0].IsEquipped,
-								IsStashed:   data.DungeonObjectRecs[0].IsStashed,
+							TargetObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[0].Name,
+								Description: data.ObjectRecs[0].Description,
+								IsEquipped:  data.ObjectRecs[0].IsEquipped,
+								IsStashed:   data.ObjectRecs[0].IsStashed,
 							},
 							TargetCharacter: nil,
 							TargetMonster:   nil,
@@ -454,47 +454,47 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonMonsterRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s looks %s", data.CharacterRecs[0].Name, data.MonsterRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
@@ -503,21 +503,21 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							StashedObject:   nil,
 							TargetObject:    nil,
 							TargetCharacter: nil,
-							TargetMonster: &schema.MonsterDetailedData{
-								Name:                data.DungeonMonsterRecs[0].Name,
-								Strength:            data.DungeonMonsterRecs[0].Strength,
-								Dexterity:           data.DungeonMonsterRecs[0].Dexterity,
-								Intelligence:        data.DungeonMonsterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonMonsterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonMonsterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonMonsterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonMonsterRecs[0].Health,
-								Fatigue:             data.DungeonMonsterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonMonsterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonMonsterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							TargetMonster: &schema.ActionMonster{
+								Name:         data.MonsterRecs[0].Name,
+								Strength:     data.MonsterRecs[0].Strength,
+								Dexterity:    data.MonsterRecs[0].Dexterity,
+								Intelligence: data.MonsterRecs[0].Intelligence,
+								// CurrentStrength:     data.MonsterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.MonsterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.MonsterRecs[0].CurrentIntelligence,
+								Health:  data.MonsterRecs[0].Health,
+								Fatigue: data.MonsterRecs[0].Fatigue,
+								// CurrentHealth:       data.MonsterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.MonsterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[4].Name,
+										Name: data.ObjectRecs[4].Name,
 									},
 								},
 							},
@@ -552,47 +552,47 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks %s", data.DungeonCharacterRecs[0].Name, data.DungeonCharacterRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s looks %s", data.CharacterRecs[0].Name, data.CharacterRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
@@ -600,21 +600,21 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 							EquippedObject: nil,
 							StashedObject:  nil,
 							TargetObject:   nil,
-							TargetCharacter: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							TargetCharacter: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
@@ -650,61 +650,61 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "stash",
-							Narrative: fmt.Sprintf("%s stashes %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s stashes %s", data.CharacterRecs[0].Name, data.ObjectRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{},
+								Objects: []schema.ActionLocationObject{},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
-							StashedObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[0].Name,
-								Description: data.DungeonObjectRecs[0].Description,
+							StashedObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[0].Name,
+								Description: data.ObjectRecs[0].Description,
 								IsEquipped:  false,
 								IsStashed:   true,
 							},
 							DroppedObject: nil,
-							TargetObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[0].Name,
-								Description: data.DungeonObjectRecs[0].Description,
+							TargetObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[0].Name,
+								Description: data.ObjectRecs[0].Description,
 								IsEquipped:  false,
 								IsStashed:   true,
 							},
@@ -741,61 +741,61 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "equip",
-							Narrative: fmt.Sprintf("%s equips %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[0].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s equips %s", data.CharacterRecs[0].Name, data.ObjectRecs[0].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{},
+								Objects: []schema.ActionLocationObject{},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
-								StashedObjects: []schema.ObjectDetailedData{
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
 							Monster: nil,
-							EquippedObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[0].Name,
-								Description: data.DungeonObjectRecs[0].Description,
+							EquippedObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[0].Name,
+								Description: data.ObjectRecs[0].Description,
 								IsEquipped:  true,
 								IsStashed:   false,
 							},
 							StashedObject: nil,
 							DroppedObject: nil,
-							TargetObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[0].Name,
-								Description: data.DungeonObjectRecs[0].Description,
+							TargetObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[0].Name,
+								Description: data.ObjectRecs[0].Description,
 								IsEquipped:  true,
 								IsStashed:   false,
 							},
@@ -832,61 +832,61 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "drop",
-							Narrative: fmt.Sprintf("%s drops %s", data.DungeonCharacterRecs[0].Name, data.DungeonObjectRecs[2].Name),
-							Location: schema.LocationData{
+							Narrative: fmt.Sprintf("%s drops %s", data.CharacterRecs[0].Name, data.ObjectRecs[2].Name),
+							Location: schema.ActionLocation{
 								Name:        data.LocationRecs[0].Name,
 								Description: data.LocationRecs[0].Description,
 								Directions:  []string{"north"},
-								Characters: []schema.CharacterData{
+								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.DungeonCharacterRecs[0].Name,
+										Name: data.CharacterRecs[0].Name,
 									},
 								},
-								Monsters: []schema.MonsterData{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.DungeonMonsterRecs[0].Name,
+										Name: data.MonsterRecs[0].Name,
 									},
 								},
-								Objects: []schema.ObjectData{
+								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.DungeonObjectRecs[0].Name,
+										Name: data.ObjectRecs[0].Name,
 									},
 									{
-										Name: data.DungeonObjectRecs[2].Name,
+										Name: data.ObjectRecs[2].Name,
 									},
 								},
 							},
-							Character: &schema.CharacterDetailedData{
-								Name:                data.DungeonCharacterRecs[0].Name,
-								Strength:            data.DungeonCharacterRecs[0].Strength,
-								Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-								Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-								CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-								CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-								CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-								Health:              data.DungeonCharacterRecs[0].Health,
-								Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-								CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-								CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
-								EquippedObjects:     []schema.ObjectDetailedData{},
-								StashedObjects: []schema.ObjectDetailedData{
+							Character: &schema.ActionCharacter{
+								Name:         data.CharacterRecs[0].Name,
+								Strength:     data.CharacterRecs[0].Strength,
+								Dexterity:    data.CharacterRecs[0].Dexterity,
+								Intelligence: data.CharacterRecs[0].Intelligence,
+								// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+								// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+								// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+								Health:  data.CharacterRecs[0].Health,
+								Fatigue: data.CharacterRecs[0].Fatigue,
+								// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+								// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+								EquippedObjects: []schema.ActionObject{},
+								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.DungeonObjectRecs[3].Name,
+										Name: data.ObjectRecs[3].Name,
 									},
 								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
 							StashedObject:  nil,
-							DroppedObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[2].Name,
-								Description: data.DungeonObjectRecs[2].Description,
+							DroppedObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[2].Name,
+								Description: data.ObjectRecs[2].Description,
 								IsEquipped:  false,
 								IsStashed:   false,
 							},
-							TargetObject: &schema.ObjectDetailedData{
-								Name:        data.DungeonObjectRecs[2].Name,
-								Description: data.DungeonObjectRecs[2].Description,
+							TargetObject: &schema.ActionObject{
+								Name:        data.ObjectRecs[2].Name,
+								Description: data.ObjectRecs[2].Description,
 								IsEquipped:  false,
 								IsStashed:   false,
 							},
@@ -921,13 +921,13 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 		},
 	}
 
-	isCharacterNil := func(c *schema.CharacterDetailedData) bool {
+	isCharacterNil := func(c *schema.ActionCharacter) bool {
 		return c == nil
 	}
-	isMonsterNil := func(m *schema.MonsterDetailedData) bool {
+	isMonsterNil := func(m *schema.ActionMonster) bool {
 		return m == nil
 	}
-	isObjectNil := func(o *schema.ObjectDetailedData) bool {
+	isObjectNil := func(o *schema.ActionObject) bool {
 		return o == nil
 	}
 

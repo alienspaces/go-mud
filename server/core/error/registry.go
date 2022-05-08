@@ -80,9 +80,9 @@ func NewInternalError() error {
 	return GetRegistryError(Internal)
 }
 
-func NewNotFoundError(entity string, id string) error {
+func NewNotFoundError(resourceName string, resourceID string) error {
 	e := GetRegistryError(NotFound)
-	e.Message = fmt.Sprintf("%s with ID >%s< not found", entity, id)
+	e.Message = fmt.Sprintf("%s with ID >%s< not found", resourceName, resourceID)
 
 	return e
 }

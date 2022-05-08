@@ -36,7 +36,7 @@ func TestGetDungeonHandler(t *testing.T) {
 	}
 
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
-		return rnr.HandlerConfig[1]
+		return rnr.HandlerConfig[getDungeon]
 	}
 
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
@@ -85,16 +85,9 @@ func TestGetDungeonHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name: "GET - Get non-existant",
-				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[1]
-				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
+				Name:           "GET - Get non-existant",
+				HandlerConfig:  testCaseHandlerConfig,
+				RequestHeaders: testCaseRequestHeaders,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",

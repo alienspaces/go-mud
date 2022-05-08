@@ -12,21 +12,21 @@ type ActionResponse struct {
 
 // ActionResponseData -
 type ActionResponseData struct {
-	ID              string                 `json:"id,omitempty"`
-	Command         string                 `json:"command"`
-	Narrative       string                 `json:"narrative"`
-	Location        LocationDetailedData   `json:"location"`
-	Character       *CharacterDetailedData `json:"character,omitempty"`
-	Monster         *MonsterDetailedData   `json:"monster,omitempty"`
-	EquippedObject  *ObjectDetailedData    `json:"equipped_object,omitempty"`
-	StashedObject   *ObjectDetailedData    `json:"stashed_object,omitempty"`
-	DroppedObject   *ObjectDetailedData    `json:"dropped_object,omitempty"`
-	TargetObject    *ObjectDetailedData    `json:"target_object,omitempty"`
-	TargetCharacter *CharacterDetailedData `json:"target_character,omitempty"`
-	TargetMonster   *MonsterDetailedData   `json:"target_monster,omitempty"`
-	TargetLocation  *LocationDetailedData  `json:"target_location,omitempty"`
-	CreatedAt       time.Time              `json:"created_at,omitempty"`
-	UpdatedAt       time.Time              `json:"updated_at,omitempty"`
+	ID              string           `json:"id,omitempty"`
+	Command         string           `json:"command"`
+	Narrative       string           `json:"narrative"`
+	Location        ActionLocation   `json:"location"`
+	Character       *ActionCharacter `json:"character,omitempty"`
+	Monster         *ActionMonster   `json:"monster,omitempty"`
+	EquippedObject  *ActionObject    `json:"equipped_object,omitempty"`
+	StashedObject   *ActionObject    `json:"stashed_object,omitempty"`
+	DroppedObject   *ActionObject    `json:"dropped_object,omitempty"`
+	TargetObject    *ActionObject    `json:"target_object,omitempty"`
+	TargetCharacter *ActionCharacter `json:"target_character,omitempty"`
+	TargetMonster   *ActionMonster   `json:"target_monster,omitempty"`
+	TargetLocation  *ActionLocation  `json:"target_location,omitempty"`
+	CreatedAt       time.Time        `json:"created_at,omitempty"`
+	UpdatedAt       time.Time        `json:"updated_at,omitempty"`
 }
 
 // ActionRequest -
@@ -40,17 +40,17 @@ type ActionRequestData struct {
 	Sentence string `json:"sentence"`
 }
 
-type LocationDetailedData struct {
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Direction   string          `json:"direction,omitempty"`
-	Directions  []string        `json:"directions"`
-	Characters  []CharacterData `json:"characters,omitempty"`
-	Monsters    []MonsterData   `json:"monsters,omitempty"`
-	Objects     []ObjectData    `json:"objects,omitempty"`
+type ActionLocation struct {
+	Name        string                    `json:"name"`
+	Description string                    `json:"description"`
+	Direction   string                    `json:"direction,omitempty"`
+	Directions  []string                  `json:"directions"`
+	Characters  []ActionLocationCharacter `json:"characters,omitempty"`
+	Monsters    []ActionLocationMonster   `json:"monsters,omitempty"`
+	Objects     []ActionLocationObject    `json:"objects,omitempty"`
 }
 
-type CharacterData struct {
+type ActionLocationCharacter struct {
 	Name string `json:"name"`
 	// Health and fatigue is always assigned to show how wounded or
 	// tired a character at a location appears
@@ -60,7 +60,7 @@ type CharacterData struct {
 	CurrentFatigue int `json:"current_fatigue"`
 }
 
-type CharacterDetailedData struct {
+type ActionCharacter struct {
 	Name                string `json:"name"`
 	Description         string `json:"description"`
 	Strength            int    `json:"strength"`
@@ -76,15 +76,15 @@ type CharacterDetailedData struct {
 	// Equipped objects are always assigned for the character
 	// performing the action or a target character so that
 	// equipped objects are visible to all players
-	EquippedObjects []ObjectDetailedData `json:"equipped_objects,omitempty"`
+	EquippedObjects []ActionObject `json:"equipped_objects,omitempty"`
 	// Stashed objects are only assigned for the character
 	// performing the action so that stashed objects are not
 	// exposed to all players
-	StashedObjects []ObjectDetailedData `json:"stashed_objects,omitempty"`
+	StashedObjects []ActionObject `json:"stashed_objects,omitempty"`
 	// TODO: Add effects currently applied
 }
 
-type MonsterData struct {
+type ActionLocationMonster struct {
 	Name string `json:"name"`
 	// Health and fatigue is always assigned to show how wounded or
 	// tired a monster at a location appears
@@ -94,7 +94,7 @@ type MonsterData struct {
 	CurrentFatigue int `json:"current_fatigue"`
 }
 
-type MonsterDetailedData struct {
+type ActionMonster struct {
 	Name                string `json:"name"`
 	Description         string `json:"description"`
 	Strength            int    `json:"strength"`
@@ -110,19 +110,19 @@ type MonsterDetailedData struct {
 	// Equipped objects are always assigned for the monster
 	// performing the action or a target monster so that
 	// equipped objects are visible to all players
-	EquippedObjects []ObjectDetailedData `json:"equipped_objects,omitempty"`
+	EquippedObjects []ActionObject `json:"equipped_objects,omitempty"`
 	// Stashed objects are only assigned for the monster
 	// performing the action so that stashed objects are not
 	// exposed to all players
-	StashedObjects []ObjectDetailedData `json:"stashed_objects,omitempty"`
+	StashedObjects []ActionObject `json:"stashed_objects,omitempty"`
 	// TODO: Add effects currently applied
 }
 
-type ObjectData struct {
+type ActionLocationObject struct {
 	Name string `json:"name"`
 }
 
-type ObjectDetailedData struct {
+type ActionObject struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	IsStashed   bool   `json:"is_stashed"`

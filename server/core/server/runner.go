@@ -43,7 +43,7 @@ type Runner struct {
 	PrepareQuery      preparer.Query
 
 	// configuration for routes, handlers and middleware
-	HandlerConfig map[Handler]HandlerConfig
+	HandlerConfig map[HandlerConfigKey]HandlerConfig
 	MessageConfig map[Message]MessageConfig
 
 	// composable functions
@@ -70,10 +70,9 @@ type Authentication struct {
 
 var _ runnable.Runnable = &Runner{}
 
-type Handler int
-
 type RequestPath string
 type RequestMethod string
+type HandlerConfigKey string
 
 // HandlerConfig - configuration for routes, handlers and middleware
 type HandlerConfig struct {
@@ -107,8 +106,9 @@ type DocumentTagGroupEndpoint struct {
 type AuthenticationType string
 
 const (
-	AuthenTypePublic AuthenticationType = "public"
-	AuthenTypeAPIKey AuthenticationType = "API key"
+	AuthenTypePublic AuthenticationType = "Public"
+	AuthenTypeAPIKey AuthenticationType = "Key"
+	AuthenTypeJWT    AuthenticationType = "JWT"
 )
 
 type AuthorizationPermission string
@@ -260,12 +260,12 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	// http server - middleware
 	if rnr.MiddlewareFunc == nil {
-		rnr.MiddlewareFunc = rnr.Middleware
+		rnr.MiddlewareFunc = rnr.DefaultMiddlewareFunc
 	}
 
 	// http server - handler
 	if rnr.HandlerFunc == nil {
-		rnr.HandlerFunc = rnr.Handler
+		rnr.HandlerFunc = rnr.DefaultHandlerFunc
 	}
 
 	return nil
@@ -415,7 +415,7 @@ func (rnr *Runner) PreparerRepository(l logger.Logger) (preparer.Repository, err
 
 	l.Debug("Creating new preparer")
 
-	p, err := prepare.NewPrepare(l)
+	p, err := prepare.NewRepositoryPreparer(l)
 	if err != nil {
 		l.Warn("Failed new prepare >%v<", err)
 		return nil, err
@@ -452,7 +452,7 @@ func (rnr *Runner) PreparerQuery(l logger.Logger) (preparer.Query, error) {
 
 	l.Debug("Creating new preparer query")
 
-	p, err := prepare.NewQuery(l)
+	p, err := prepare.NewQueryPreparer(l)
 	if err != nil {
 		l.Warn("failed new prepare query >%v<", err)
 		return nil, err
@@ -521,7 +521,7 @@ func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
 	return sorted
 }
 
-func ResolveHandlerSchemaLocation(handlerConfig map[Handler]HandlerConfig, location string) map[Handler]HandlerConfig {
+func ResolveHandlerSchemaLocation(handlerConfig map[HandlerConfigKey]HandlerConfig, location string) map[HandlerConfigKey]HandlerConfig {
 	for handler, cfg := range handlerConfig {
 		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
 			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateQueryParams, location)
@@ -541,7 +541,7 @@ func ResolveHandlerSchemaLocation(handlerConfig map[Handler]HandlerConfig, locat
 	return handlerConfig
 }
 
-func ResolveHandlerSchemaLocationRoot(handlerConfig map[Handler]HandlerConfig, root string) (map[Handler]HandlerConfig, error) {
+func ResolveHandlerSchemaLocationRoot(handlerConfig map[HandlerConfigKey]HandlerConfig, root string) (map[HandlerConfigKey]HandlerConfig, error) {
 	for handler, cfg := range handlerConfig {
 		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
 			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateQueryParams, root)
@@ -581,7 +581,7 @@ func ResolveMessageSchemaLocationRoot(messageConfig map[Message]MessageConfig, r
 	return messageConfig, nil
 }
 
-func ResolveDocumentationSummary(handlerConfig map[Handler]HandlerConfig) map[Handler]HandlerConfig {
+func ResolveDocumentationSummary(handlerConfig map[HandlerConfigKey]HandlerConfig) map[HandlerConfigKey]HandlerConfig {
 	for name, cfg := range handlerConfig {
 		if cfg.DocumentationConfig.Summary == "" {
 			cfg.DocumentationConfig.Summary = cfg.DocumentationConfig.Description
@@ -593,7 +593,7 @@ func ResolveDocumentationSummary(handlerConfig map[Handler]HandlerConfig) map[Ha
 	return handlerConfig
 }
 
-func ValidateAuthenticationTypes(handlerConfig map[Handler]HandlerConfig) error {
+func ValidateAuthenticationTypes(handlerConfig map[HandlerConfigKey]HandlerConfig) error {
 	for _, cfg := range handlerConfig {
 		if len(cfg.MiddlewareConfig.AuthenTypes) == 0 {
 			return fmt.Errorf("handler >%s< with undefined authentication type", cfg.Name)

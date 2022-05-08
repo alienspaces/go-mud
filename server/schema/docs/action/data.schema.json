@@ -19,31 +19,31 @@
       "type": "string"
     },
     "location": {
-      "$ref": "#/$defs/location"
+      "$ref": "#/$defs/action_location"
     },
     "character": {
-      "$ref": "#/$defs/character_detailed"
+      "$ref": "#/$defs/action_character"
     },
     "monster": {
-      "$ref": "#/$defs/monster_detailed"
+      "$ref": "#/$defs/action_monster"
     },
     "equipped_object": {
-      "$ref": "#/$defs/object_detailed"
+      "$ref": "#/$defs/action_object"
     },
     "stashed_object": {
-      "$ref": "#/$defs/object_detailed"
+      "$ref": "#/$defs/action_object"
     },
     "target_object": {
-      "$ref": "#/$defs/object_detailed"
+      "$ref": "#/$defs/action_object"
     },
     "target_character": {
-      "$ref": "#/$defs/character_detailed"
+      "$ref": "#/$defs/action_character"
     },
     "target_monster": {
-      "$ref": "#/$defs/monster_detailed"
+      "$ref": "#/$defs/action_monster"
     },
     "target_location": {
-      "$ref": "#/$defs/location"
+      "$ref": "#/$defs/action_location"
     },
     "created_at": {
       "type": "string",
@@ -51,7 +51,7 @@
     }
   },
   "$defs": {
-    "location": {
+    "action_location": {
       "type": "object",
       "properties": {
         "name": {
@@ -66,24 +66,24 @@
         "characters": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/character"
+            "$ref": "#/$defs/action_location_character"
           }
         },
         "monsters": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/monster"
+            "$ref": "#/$defs/action_location_monster"
           }
         },
         "objects": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/object"
+            "$ref": "#/$defs/action_location_object"
           }
         }
       }
     },
-    "character": {
+    "action_location_character": {
       "type": "object",
       "required": [
         "name"
@@ -94,7 +94,7 @@
         }
       }
     },
-    "character_detailed": {
+    "action_character": {
       "type": "object",
       "required": [
         "name", 
@@ -144,18 +144,18 @@
         "equipped_objects": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/object_detailed"
+            "$ref": "#/$defs/action_object"
           }
         },
         "stashed_objects": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/object_detailed"
+            "$ref": "#/$defs/action_object"
           }
         }
       }
     },
-    "monster": {
+    "action_location_monster": {
       "type": "object",
       "required": [
         "name"
@@ -166,7 +166,7 @@
         }
      }
     },
-    "monster_detailed": {
+    "action_monster": {
       "type": "object",
       "required": [
         "name", 
@@ -216,18 +216,18 @@
         "equipped_objects": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/object_detailed"
+            "$ref": "#/$defs/action_object"
           }
         },
         "stashed_objects": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/object_detailed"
+            "$ref": "#/$defs/action_object"
           }
         }
       }
     },
-    "object": {
+    "action_location_object": {
       "type": "object",
       "required": [
         "name"
@@ -238,7 +238,7 @@
         }
       }
     },
-    "object_detailed": {
+    "action_object": {
       "type": "object",
       "required": [
         "name",

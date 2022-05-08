@@ -81,7 +81,7 @@ func (rnr *Runner) Router(router *httprouter.Router) error {
 }
 
 // Middleware - default MiddlewareFunc, override this function for custom middleware
-func (rnr *Runner) Middleware(h Handle) (Handle, error) {
+func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 		lc, err := l.NewInstance()
 		if err != nil {
@@ -97,7 +97,7 @@ func (rnr *Runner) Middleware(h Handle) (Handle, error) {
 }
 
 // Handler - default HandlerFunc, override this function for custom handler
-func (rnr *Runner) Handler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Handler **")
 

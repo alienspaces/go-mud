@@ -11,6 +11,16 @@ func TestDataConfig() harness.DataConfig {
 }
 
 var testDataConfig = harness.DataConfig{
+	CharacterConfig: []harness.CharacterConfig{
+		{
+			Record: record.Character{
+				Record: repository.Record{
+					ID: "38efe8fc-a228-484b-b476-ff0d961942a6",
+				},
+				Name: "Barricade",
+			},
+		},
+	},
 	DungeonConfig: []harness.DungeonConfig{
 		{
 			Record: record.Dungeon{
@@ -86,20 +96,9 @@ var testDataConfig = harness.DataConfig{
 					UpLocationName: "Dark Narrow Tunnel",
 				},
 			},
-			DungeonCharacterConfig: []harness.DungeonCharacterConfig{
+			MonsterConfig: []harness.MonsterConfig{
 				{
-					Record: record.DungeonCharacter{
-						Record: repository.Record{
-							ID: "38efe8fc-a228-484b-b476-ff0d961942a6",
-						},
-						Name: "Barricade",
-					},
-					LocationName: "Cave Entrance",
-				},
-			},
-			DungeonMonsterConfig: []harness.DungeonMonsterConfig{
-				{
-					Record: record.DungeonMonster{
+					Record: record.Monster{
 						Record: repository.Record{
 							ID: "1e8179aa-fc2e-4f5a-abe1-e70a237739f5",
 						},
@@ -108,7 +107,7 @@ var testDataConfig = harness.DataConfig{
 					LocationName: "Cave Entrance",
 				},
 				{
-					Record: record.DungeonMonster{
+					Record: record.Monster{
 						Record: repository.Record{
 							ID: "e25cbb71-8fac-4734-a0c1-4c00df729beb",
 						},
@@ -117,9 +116,9 @@ var testDataConfig = harness.DataConfig{
 					LocationName: "Cave Tunnel",
 				},
 			},
-			DungeonObjectConfig: []harness.DungeonObjectConfig{
+			ObjectConfig: []harness.ObjectConfig{
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Record: repository.Record{
 							ID: "54cf320b-6485-4e86-973e-6a5016f809fd",
 						},
@@ -130,7 +129,7 @@ var testDataConfig = harness.DataConfig{
 					LocationName: "Cave Entrance",
 				},
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Record: repository.Record{
 							ID: "86fa6a84-c23a-45de-8ede-f79966e2ce07",
 						},
@@ -141,7 +140,7 @@ var testDataConfig = harness.DataConfig{
 					LocationName: "Cave Room",
 				},
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Record: repository.Record{
 							ID: "792477df-f63d-4cba-b7a4-695a1f896c67",
 						},
@@ -153,12 +152,13 @@ var testDataConfig = harness.DataConfig{
 					CharacterName: "Barricade",
 				},
 			},
-			ActionConfig: []harness.ActionConfig{
-				{
-					CharacterName: "Barricade",
-					Command:       "look north",
-				},
-			},
+			// TODO: Move
+			// ActionConfig: []harness.ActionConfig{
+			// 	{
+			// 		CharacterName: "Barricade",
+			// 		Command:       "look north",
+			// 	},
+			// },
 		},
 	},
 }

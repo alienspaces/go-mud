@@ -64,23 +64,23 @@ var seedDataConfig = harness.DataConfig{
 					UpLocationName: "Dark Narrow Tunnel",
 				},
 			},
-			DungeonMonsterConfig: []harness.DungeonMonsterConfig{
+			MonsterConfig: []harness.MonsterConfig{
 				{
-					Record: record.DungeonMonster{
+					Record: record.Monster{
 						Name: "Grumpy Dwarf",
 					},
 					LocationName: "Cave Entrance",
 				},
 				{
-					Record: record.DungeonMonster{
+					Record: record.Monster{
 						Name: "Angry Goblin",
 					},
 					LocationName: "Cave Tunnel",
 				},
 			},
-			DungeonObjectConfig: []harness.DungeonObjectConfig{
+			ObjectConfig: []harness.ObjectConfig{
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Rusted Sword",
 						Description:         "A rusted sword.",
 						DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
@@ -88,7 +88,7 @@ var seedDataConfig = harness.DataConfig{
 					LocationName: "Cave Entrance",
 				},
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Silver Key",
 						Description:         "A silver key.",
 						DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
@@ -96,7 +96,7 @@ var seedDataConfig = harness.DataConfig{
 					LocationName: "Cave Room",
 				},
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Bone Dagger",
 						Description:         "A bone dagger.",
 						DescriptionDetailed: "A bone dagger.",
@@ -105,7 +105,7 @@ var seedDataConfig = harness.DataConfig{
 					MonsterName: "Grumpy Dwarf",
 				},
 				{
-					Record: record.DungeonObject{
+					Record: record.Object{
 						Name:                "Vial Of Ogre Blood",
 						Description:         "A large vial of ogre blood.",
 						DescriptionDetailed: "A large vial of ogre blood.",

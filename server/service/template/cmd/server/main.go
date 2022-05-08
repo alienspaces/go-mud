@@ -11,8 +11,7 @@ import (
 
 func main() {
 
-	// Dependencies
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	if err != nil {
 		fmt.Printf("Failed default dependencies >%v<", err)
 		os.Exit(0)
@@ -20,7 +19,7 @@ func main() {
 
 	r := runner.NewRunner()
 
-	svc, err := server.NewServer(c, l, s, m, r)
+	svc, err := server.NewServer(c, l, s, r)
 	if err != nil {
 		fmt.Printf("Failed new server >%v<", err)
 		os.Exit(0)

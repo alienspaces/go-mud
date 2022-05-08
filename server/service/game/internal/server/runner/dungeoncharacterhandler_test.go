@@ -16,7 +16,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
-func TestCreateDungeonCharacterHandler(t *testing.T) {
+func TestCreateCharacterHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()
@@ -24,7 +24,7 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 
 	type testCase struct {
 		TestCase
-		expectResponseBody func(data harness.Data) *schema.DungeonCharacterResponse
+		expectResponseBody func(data harness.Data) *schema.CharacterResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -38,7 +38,7 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 	}
 
 	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
-		var responseBody *schema.DungeonCharacterResponse
+		var responseBody *schema.CharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
 	}
@@ -48,7 +48,7 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name: "POST - Create one with valid attributes",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[4]
+					return rnr.HandlerConfig[postCharacter]
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
@@ -63,8 +63,8 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 					return params
 				},
 				RequestBody: func(data harness.Data) interface{} {
-					res := schema.DungeonCharacterRequest{
-						Data: schema.DungeonCharacterData{
+					res := schema.CharacterRequest{
+						Data: schema.CharacterData{
 							Name:         gofakeit.Name() + gofakeit.Name(),
 							Strength:     10,
 							Dexterity:    10,
@@ -89,9 +89,9 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 				return
 			}
 
-			var responseBody *schema.DungeonCharacterResponse
+			var responseBody *schema.CharacterResponse
 			if body != nil {
-				responseBody = body.(*schema.DungeonCharacterResponse)
+				responseBody = body.(*schema.CharacterResponse)
 			}
 
 			// Validate response body
@@ -105,7 +105,7 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 				if method == http.MethodPost {
 					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
 					t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
-					th.AddDungeonCharacterTeardownID(data.ID)
+					th.AddCharacterTeardownID(data.ID)
 				}
 			}
 		}
@@ -114,7 +114,7 @@ func TestCreateDungeonCharacterHandler(t *testing.T) {
 	}
 }
 
-func TestGetDungeonCharacterHandler(t *testing.T) {
+func TestGetCharacterHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()
@@ -122,7 +122,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 
 	type testCase struct {
 		TestCase
-		expectResponseBody func(data harness.Data) *schema.DungeonCharacterResponse
+		expectResponseBody func(data harness.Data) *schema.CharacterResponse
 	}
 
 	// validAuthToken - Generate a valid authentication token for this handler
@@ -136,7 +136,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 	}
 
 	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
-		var responseBody *schema.DungeonCharacterResponse
+		var responseBody *schema.CharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
 	}
@@ -146,7 +146,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name: "GET - Get many",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[2]
+					return rnr.HandlerConfig[getCharacters]
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
@@ -156,7 +156,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
-						":dungeon_id": data.DungeonRecs[0].ID,
+						// ":dungeon_id": data.DungeonRecs[0].ID,
 					}
 					return params
 				},
@@ -166,22 +166,22 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonCharacterResponse {
-				res := schema.DungeonCharacterResponse{
-					Data: []schema.DungeonCharacterData{
+			expectResponseBody: func(data harness.Data) *schema.CharacterResponse {
+				res := schema.CharacterResponse{
+					Data: []schema.CharacterData{
 						{
-							ID:                  data.DungeonCharacterRecs[0].ID,
-							Name:                data.DungeonCharacterRecs[0].Name,
-							Strength:            data.DungeonCharacterRecs[0].Strength,
-							Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-							Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-							CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-							CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-							CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-							Health:              data.DungeonCharacterRecs[0].Health,
-							Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-							CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-							CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+							ID:           data.CharacterRecs[0].ID,
+							Name:         data.CharacterRecs[0].Name,
+							Strength:     data.CharacterRecs[0].Strength,
+							Dexterity:    data.CharacterRecs[0].Dexterity,
+							Intelligence: data.CharacterRecs[0].Intelligence,
+							// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+							// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+							// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+							Health:  data.CharacterRecs[0].Health,
+							Fatigue: data.CharacterRecs[0].Fatigue,
+							// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+							// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
 						},
 					},
 				}
@@ -192,7 +192,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name: "GET - Get many with invalid dungeon ID",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[2]
+					return rnr.HandlerConfig[getCharacters]
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
@@ -202,7 +202,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
-						":dungeon_id": "21954f35-76fb-4a4a-bc39-fba15432b28b",
+						// ":dungeon_id": "21954f35-76fb-4a4a-bc39-fba15432b28b",
 					}
 					return params
 				},
@@ -212,7 +212,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusNotFound,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonCharacterResponse {
+			expectResponseBody: func(data harness.Data) *schema.CharacterResponse {
 				return nil
 			},
 		},
@@ -220,7 +220,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name: "GET - Get one",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[3]
+					return rnr.HandlerConfig[getCharacter]
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
@@ -230,8 +230,8 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
-						":dungeon_id":   data.DungeonRecs[0].ID,
-						":character_id": data.DungeonCharacterRecs[0].ID,
+						// ":dungeon_id":   data.DungeonRecs[0].ID,
+						":character_id": data.CharacterRecs[0].ID,
 					}
 					return params
 				},
@@ -241,22 +241,22 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				ResponseBody: testCaseResponseBody,
 				ResponseCode: http.StatusOK,
 			},
-			expectResponseBody: func(data harness.Data) *schema.DungeonCharacterResponse {
-				res := schema.DungeonCharacterResponse{
-					Data: []schema.DungeonCharacterData{
+			expectResponseBody: func(data harness.Data) *schema.CharacterResponse {
+				res := schema.CharacterResponse{
+					Data: []schema.CharacterData{
 						{
-							ID:                  data.DungeonCharacterRecs[0].ID,
-							Name:                data.DungeonCharacterRecs[0].Name,
-							Strength:            data.DungeonCharacterRecs[0].Strength,
-							Dexterity:           data.DungeonCharacterRecs[0].Dexterity,
-							Intelligence:        data.DungeonCharacterRecs[0].Intelligence,
-							CurrentStrength:     data.DungeonCharacterRecs[0].CurrentStrength,
-							CurrentDexterity:    data.DungeonCharacterRecs[0].CurrentDexterity,
-							CurrentIntelligence: data.DungeonCharacterRecs[0].CurrentIntelligence,
-							Health:              data.DungeonCharacterRecs[0].Health,
-							Fatigue:             data.DungeonCharacterRecs[0].Fatigue,
-							CurrentHealth:       data.DungeonCharacterRecs[0].CurrentHealth,
-							CurrentFatigue:      data.DungeonCharacterRecs[0].CurrentFatigue,
+							ID:           data.CharacterRecs[0].ID,
+							Name:         data.CharacterRecs[0].Name,
+							Strength:     data.CharacterRecs[0].Strength,
+							Dexterity:    data.CharacterRecs[0].Dexterity,
+							Intelligence: data.CharacterRecs[0].Intelligence,
+							// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
+							// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
+							// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
+							Health:  data.CharacterRecs[0].Health,
+							Fatigue: data.CharacterRecs[0].Fatigue,
+							// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
+							// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
 						},
 					},
 				}
@@ -267,7 +267,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name: "GET - Get one with invalid dungeon ID",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[3]
+					return rnr.HandlerConfig[getCharacter]
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
@@ -277,7 +277,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
-						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+						// ":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
 					}
 					return params
 				},
@@ -292,7 +292,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name: "GET - Get one with invalid character ID",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[3]
+					return rnr.HandlerConfig[getCharacter]
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
@@ -302,7 +302,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
-						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+						"character_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
 					}
 					return params
 				},
@@ -325,9 +325,9 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				return
 			}
 
-			var responseBody *schema.DungeonCharacterResponse
+			var responseBody *schema.CharacterResponse
 			if body != nil {
-				responseBody = body.(*schema.DungeonCharacterResponse)
+				responseBody = body.(*schema.CharacterResponse)
 			}
 
 			// Validate response body
@@ -376,7 +376,7 @@ func TestGetDungeonCharacterHandler(t *testing.T) {
 				if method == http.MethodPost {
 					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
 					t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
-					th.AddDungeonCharacterTeardownID(data.ID)
+					th.AddCharacterTeardownID(data.ID)
 				}
 			}
 		}

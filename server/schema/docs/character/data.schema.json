@@ -6,15 +6,10 @@
   "type": "object",
   "required": [
     "id",
-    "dungeon_id",
-    "dungeon_location_id",
     "name",
     "strength",
     "dexterity",
     "intelligence",
-    "current_strength",
-    "current_dexterity",
-    "current_intelligence",
     "health",
     "fatigue",
     "coins",
@@ -24,14 +19,6 @@
   ],
   "properties": {
     "id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "dungeon_id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "dungeon_location_id": {
       "type": "string",
       "format": "uuid"
     },
@@ -45,15 +32,6 @@
       "type": "number"
     },
     "intelligence": {
-      "type": "number"
-    },
-    "current_strength": {
-      "type": "number"
-    },
-    "current_dexterity": {
-      "type": "number"
-    },
-    "current_intelligence": {
       "type": "number"
     },
     "health": {

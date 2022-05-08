@@ -43,7 +43,7 @@ type Repository struct {
 var _ preparer.Repository = &Repository{}
 
 // NewPrepare -
-func NewPrepare(l logger.Logger) (*Repository, error) {
+func NewRepositoryPreparer(l logger.Logger) (*Repository, error) {
 
 	p := Repository{
 		Log: l,

@@ -4,23 +4,23 @@ import (
 	"time"
 )
 
-// DungeonCharacterResponse -
-type DungeonCharacterResponse struct {
+// CharacterResponse -
+type CharacterResponse struct {
 	Response
-	Data []DungeonCharacterData `json:"data"`
+	Data []CharacterData `json:"data"`
 }
 
-// DungeonCharacterRequest -
-type DungeonCharacterRequest struct {
+// CharacterRequest -
+type CharacterRequest struct {
 	Request
-	Data DungeonCharacterData `json:"data"`
+	Data CharacterData `json:"data"`
 }
 
-// DungeonCharacterData -
-type DungeonCharacterData struct {
+// CharacterData -
+type CharacterData struct {
 	ID                  string    `json:"id,omitempty"`
 	DungeonID           string    `json:"dungeon_id,omitempty"`
-	LocationID   string    `json:"dungeon_location_id,omitempty"`
+	LocationID          string    `json:"dungeon_location_id,omitempty"`
 	Name                string    `json:"name"`
 	Strength            int       `json:"strength"`
 	Dexterity           int       `json:"dexterity"`

@@ -20,7 +20,7 @@ type Query struct {
 
 var _ preparer.Query = &Query{}
 
-func NewQuery(l logger.Logger) (*Query, error) {
+func NewQueryPreparer(l logger.Logger) (*Query, error) {
 
 	pCfg := Query{
 		Log: l,

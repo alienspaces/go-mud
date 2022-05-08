@@ -660,7 +660,7 @@ func (t *Testing) resolveConfigDungeonIdentifiers(dungeonRec *record.Dungeon, du
 	return dungeonConfig, nil
 }
 
-func (t *Testing) AddDungeonCharacterTeardownID(id string) {
+func (t *Testing) AddCharacterTeardownID(id string) {
 	rec := record.Character{}
 	rec.ID = id
 

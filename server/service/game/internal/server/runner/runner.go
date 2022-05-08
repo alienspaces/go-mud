@@ -3,11 +3,25 @@ package runner
 import (
 	"net/http"
 
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
+)
+
+const (
+	getDungeons           server.HandlerConfigKey = "get-dungeons"
+	getDungeon            server.HandlerConfigKey = "get-dungeon"
+	getCharacters         server.HandlerConfigKey = "get-characters"
+	getCharacter          server.HandlerConfigKey = "get-character"
+	postCharacter         server.HandlerConfigKey = "post-character"
+	putCharacter          server.HandlerConfigKey = "put-character"
+	postAction            server.HandlerConfigKey = "post-action"
+	getDocumentationRoot  server.HandlerConfigKey = "get-documentation-root"
+	getDocumentationAPI   server.HandlerConfigKey = "get-documentation-api"
+	getDocumentationAPIV1 server.HandlerConfigKey = "get-documentation-api-v1"
 )
 
 // Runner -
@@ -33,17 +47,23 @@ func NewRunner() *Runner {
 	r.HandlerFunc = r.Handler
 	r.ModellerFunc = r.Modeller
 
-	r.HandlerConfig = []server.HandlerConfig{
-		// Dungeons - 0
-		{
+	r.HandlerConfig = map[server.HandlerConfigKey]server.HandlerConfig{
+		getDungeons: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons",
 			HandlerFunc: r.GetDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation:     "dungeon",
-				ValidateSchemaResponseMain: "response.schema.json",
-				ValidateSchemaResponseReferences: []string{
-					"data.schema.json",
+				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeon",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -51,16 +71,22 @@ func NewRunner() *Runner {
 				Description: "Query dungeons.",
 			},
 		},
-		// Dungeons - 1
-		{
+		getDungeon: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id",
 			HandlerFunc: r.GetDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation:     "dungeon",
-				ValidateSchemaResponseMain: "response.schema.json",
-				ValidateSchemaResponseReferences: []string{
-					"data.schema.json",
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeon",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -68,16 +94,22 @@ func NewRunner() *Runner {
 				Description: "Get a dungeon.",
 			},
 		},
-		// Characters - 2 - Get many
-		{
+		getCharacters: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/characters",
-			HandlerFunc: r.GetDungeonCharactersHandler,
+			HandlerFunc: r.GetCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation:     "dungeoncharacter",
-				ValidateSchemaResponseMain: "response.schema.json",
-				ValidateSchemaResponseReferences: []string{
-					"data.schema.json",
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -85,16 +117,22 @@ func NewRunner() *Runner {
 				Description: "Get characters.",
 			},
 		},
-		// Characters - 3 - Get one
-		{
+		getCharacter: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/characters/:character_id",
-			HandlerFunc: r.GetDungeonCharacterHandler,
+			HandlerFunc: r.GetCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation:     "dungeoncharacter",
-				ValidateSchemaResponseMain: "response.schema.json",
-				ValidateSchemaResponseReferences: []string{
-					"data.schema.json",
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -102,17 +140,34 @@ func NewRunner() *Runner {
 				Description: "Get a character.",
 			},
 		},
-		// Characters - 4 - Create
-		{
+		postCharacter: {
 			Method:      http.MethodPost,
 			Path:        "/api/v1/characters",
-			HandlerFunc: r.PostDungeonCharactersHandler,
+			HandlerFunc: r.PostCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation:     "dungeoncharacter",
-				ValidateSchemaRequestMain:  "create.request.schema.json",
-				ValidateSchemaResponseMain: "response.schema.json",
-				ValidateSchemaResponseReferences: []string{
-					"data.schema.json",
+				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "create.request.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -120,28 +175,45 @@ func NewRunner() *Runner {
 				Description: "Create a character.",
 			},
 		},
-		// Characters - 5 - Update
-		{
+		// TODO: Complete schema validation and implementation
+		putCharacter: {
 			Method:           http.MethodPut,
 			Path:             "/api/v1/characters",
-			HandlerFunc:      r.PutDungeonCharacterHandler,
+			HandlerFunc:      r.PutCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
 				Description: "Update a character.",
 			},
 		},
-		// Character Action - 6 - Create
-		{
+		postAction: {
 			Method:      http.MethodPost,
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
 			HandlerFunc: r.PostDungeonCharacterActionsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
-				ValidateSchemaLocation:     "dungeonaction",
-				ValidateSchemaRequestMain:  "create.request.schema.json",
-				ValidateSchemaResponseMain: "response.schema.json",
-				ValidateSchemaResponseReferences: []string{
-					"data.schema.json",
+				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeonaction",
+						Name:     "create.request.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeonaction",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -149,22 +221,19 @@ func NewRunner() *Runner {
 				Description: "Create a dungeon character action.",
 			},
 		},
-		// Documentation - 7
-		{
+		getDocumentationRoot: {
 			Method:           http.MethodGet,
 			Path:             "/",
 			HandlerFunc:      r.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 		},
-		// Documentation - 8
-		{
+		getDocumentationAPI: {
 			Method:           http.MethodGet,
 			Path:             "/api",
 			HandlerFunc:      r.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 		},
-		// Documentation - 9
-		{
+		getDocumentationAPIV1: {
 			Method:           http.MethodGet,
 			Path:             "/api/v1",
 			HandlerFunc:      r.GetDocumentationHandler,

@@ -18,7 +18,7 @@ type Character struct {
 type CharacterInstance struct {
 	CharacterID        string `db:"character_id"`
 	DungeonInstanceID  string `db:"dungeon_instance_id"`
-	LocationInstanceID string `db:"dungeon_location_instance_id"`
+	LocationInstanceID string `db:"location_instance_id"`
 	Strength           int    `db:"strength"`
 	Dexterity          int    `db:"dexterity"`
 	Intelligence       int    `db:"intelligence"`
@@ -33,7 +33,7 @@ type CharacterInstance struct {
 type CharacterInstanceView struct {
 	CharacterID         string `db:"character_id"`
 	DungeonInstanceID   string `db:"dungeon_instance_id"`
-	LocationInstanceID  string `db:"dungeon_location_instance_id"`
+	LocationInstanceID  string `db:"location_instance_id"`
 	Name                string `db:"name"`
 	Strength            int    `db:"strength"`
 	Dexterity           int    `db:"dexterity"`

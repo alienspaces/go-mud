@@ -39,6 +39,6 @@ func TestNewRunner(t *testing.T) {
 	require.NoError(t, err, "New test data returns without error")
 
 	rnr := NewRunner()
-	err = rnr.Init(th.Config, th.Log, th.Store, th.Model)
+	err = rnr.Init(th.Store)
 	require.NoError(t, err, "Init returns without error")
 }

@@ -5,6 +5,8 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/schema"
@@ -13,7 +15,7 @@ import (
 )
 
 // GetDungeonHandler -
-func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
 
@@ -24,22 +26,24 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 	id := pp.ByName("dungeon_id")
 
 	if id == "" {
-		rnr.WriteNotFoundError(l, w, id)
-		return
+		err := coreerror.NewNotFoundError("dungeon", id)
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	l.Info("Getting dungeon record ID >%s<", id)
 
 	rec, err := m.(*model.Model).GetDungeonRec(id, false)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Resource not found
 	if rec == nil {
-		rnr.WriteNotFoundError(l, w, id)
-		return
+		err := coreerror.NewNotFoundError("dungeon", id)
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	recs = append(recs, rec)
@@ -51,8 +55,8 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 		// Response data
 		responseData, err := rnr.RecordToDungeonResponseData(*rec)
 		if err != nil {
-			rnr.WriteSystemError(l, w, err)
-			return
+			server.WriteError(l, w, err)
+			return err
 		}
 
 		data = append(data, responseData)
@@ -62,15 +66,17 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 		Data: data,
 	}
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // GetDungeonsHandler -
-func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
 
@@ -87,8 +93,8 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 
 	recs, err = m.(*model.Model).GetDungeonRecs(params, nil, false)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Assign response properties
@@ -98,8 +104,8 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 		// Response data
 		responseData, err := rnr.RecordToDungeonResponseData(*rec)
 		if err != nil {
-			rnr.WriteSystemError(l, w, err)
-			return
+			server.WriteError(l, w, err)
+			return err
 		}
 
 		data = append(data, responseData)
@@ -111,11 +117,13 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 
 	l.Info("Responding with >%#v<", res)
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // DungeonRequestDataToRecord -

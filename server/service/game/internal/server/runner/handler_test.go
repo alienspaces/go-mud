@@ -97,7 +97,7 @@ func (t *TestCase) TestResponseCode() int {
 func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method string, body interface{})) {
 	rnr := NewRunner()
 
-	err := rnr.Init(th.Config, th.Log, th.Store, th.Model)
+	err := rnr.Init(th.Store)
 	require.NoError(t, err, "Runner init returns without error")
 
 	err = th.Setup()
@@ -194,20 +194,17 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	if rec.Code == 200 || rec.Code == 201 {
 		require.NotNil(t, responseBody, "Response body is not nil")
 
-		v, err := jsonschema.NewValidator(th.Config, th.Log)
-		require.NoError(t, err, "Validator returns without error")
+		// v, err := jsonschema.NewValidator(th.Config, th.Log)
+		// require.NoError(t, err, "Validator returns without error")
 
 		jsonData, err := json.Marshal(responseBody)
 		require.NoError(t, err, "Marshal returns without error")
 
-		t.Logf("Validating response against schema >%s/%s<", cfg.MiddlewareConfig.ValidateSchemaLocation, cfg.MiddlewareConfig.ValidateSchemaResponseMain)
+		t.Logf("Validating response against schema >%+v<", cfg.MiddlewareConfig.ValidateResponseSchema)
 
-		err = v.Validate(jsonschema.Config{
-			Location:   cfg.MiddlewareConfig.ValidateSchemaLocation,
-			Main:       cfg.MiddlewareConfig.ValidateSchemaResponseMain,
-			References: cfg.MiddlewareConfig.ValidateSchemaResponseReferences,
-		}, string(jsonData))
+		result, err := jsonschema.Validate(cfg.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
 		require.NoError(t, err, "Validates against schema without error")
+		t.Logf("JSON Schema validation result >%+v<", result)
 	}
 
 	tf(cfg.Method, responseBody)

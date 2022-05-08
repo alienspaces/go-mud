@@ -6,6 +6,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	"gitlab.com/alienspaces/go-mud/server/core/prepare"
+
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -164,20 +166,30 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 	return nil
 }
 
-// PreparerRepository - default PreparerRepositoryFunc does not provide a preparer.Repository
 func (rnr *Runner) PreparerRepository() (preparer.Repository, error) {
 
 	rnr.Log.Info("** Repository **")
 
-	return nil, nil
+	p, err := prepare.NewRepositoryPreparer(rnr.Log)
+	if err != nil {
+		rnr.Log.Warn("Failed new prepare repository >%v<", err)
+		return nil, err
+	}
+
+	return p, nil
 }
 
-// PreparerQuery - default PreparerQueryFunc does not provide a preparer.Query
 func (rnr *Runner) PreparerQuery() (preparer.Query, error) {
 
 	rnr.Log.Info("** Query **")
 
-	return nil, nil
+	p, err := prepare.NewQueryPreparer(rnr.Log)
+	if err != nil {
+		rnr.Log.Warn("Failed new prepare query >%v<", err)
+		return nil, err
+	}
+
+	return p, nil
 }
 
 // Modeller - default ModellerFunc does not provide a modeller

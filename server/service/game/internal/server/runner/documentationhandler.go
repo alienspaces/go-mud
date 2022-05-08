@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -10,9 +11,16 @@ import (
 )
 
 // GetDocumentationHandler -
-func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Get documentation handler ** p >%#v< m >%#v<", pp, m)
+	l.Info("** get schema documentation handler ** p >%#v< m >%#v<", pp, m)
+
+	docs, err := rnr.GenerateHandlerDocumentation(rnr.GetMessageConfigs(), rnr.GetHandlerConfigs())
+	if err != nil {
+		msg := fmt.Sprintf("unable to load schema documentation >%v<, cannot init runner", err)
+		rnr.Log.Error(msg)
+		return fmt.Errorf(msg)
+	}
 
 	// content type html
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -20,27 +28,14 @@ func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Reques
 	// status
 	w.WriteHeader(http.StatusOK)
 
-	documentation, err := rnr.GenerateHandlerDocumentation()
-	if err != nil {
-		l.Warn("Failed getting handler documentation >%v<", err)
-
-		// system error
-		res := rnr.SystemError(err)
-
-		err = rnr.WriteResponse(l, w, res)
-		if err != nil {
-			l.Warn("Failed writing response >%v<", err)
-			return
-		}
-		return
-	}
-
 	// content
-	written, err := w.Write(documentation)
+	written, err := w.Write(docs)
 	if err != nil {
-		l.Warn("Failed writing documentation >%v<", err)
-		return
+		l.Warn("failed writing documentation >%v<", err)
+		return err
 	}
 
-	l.Info("Wrote >%s< bytes", written)
+	l.Info("wrote >%d< bytes", written)
+
+	return nil
 }

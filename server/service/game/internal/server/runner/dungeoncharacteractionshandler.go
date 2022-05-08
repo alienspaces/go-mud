@@ -6,6 +6,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/schema"
@@ -14,7 +15,7 @@ import (
 )
 
 // PostDungeonCharacterActionsHandler -
-func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** Post characters handler ** p >%#v< m >#%v<", pp, m)
 
@@ -24,20 +25,20 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 
 	req := schema.ActionRequest{}
 
-	err := rnr.ReadRequest(l, r, &req)
+	err := server.ReadRequest(l, r, &req)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	req.Data.Sentence = strings.ToLower(req.Data.Sentence)
 
 	l.Info("Creating dungeon character action >%s<", req.Data.Sentence)
 
-	dungeonActionRecordSet, err := m.(*model.Model).ProcessDungeonCharacterAction(dungeonID, characterID, req.Data.Sentence)
+	dungeonActionRecordSet, err := m.(*model.Model).ProcessCharacterAction(dungeonID, characterID, req.Data.Sentence)
 	if err != nil {
-		rnr.WriteModelError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	l.Debug("Resulting action >%#v<", dungeonActionRecordSet.ActionRec)
@@ -49,8 +50,8 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 	// Response data
 	responseData, err := mapper.ActionRecordSetToActionResponse(l, *dungeonActionRecordSet)
 	if err != nil {
-		rnr.WriteSystemError(l, w, err)
-		return
+		server.WriteError(l, w, err)
+		return err
 	}
 
 	// Assign response properties
@@ -69,9 +70,11 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 		l.Info("Response target object >%#v<", res.Data[0].TargetObject)
 	}
 
-	err = rnr.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
-		return
+		return err
 	}
+
+	return nil
 }

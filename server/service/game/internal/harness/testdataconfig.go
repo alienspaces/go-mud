@@ -10,8 +10,6 @@ var DefaultDataConfig = DataConfig{
 			Record: record.Character{
 				Name: "Barricade",
 			},
-			// REMOVE:
-			// LocationName: "Cave Entrance",
 		},
 	},
 	DungeonConfig: []DungeonConfig{

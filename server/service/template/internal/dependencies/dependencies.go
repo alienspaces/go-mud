@@ -6,16 +6,16 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/config"
 	"gitlab.com/alienspaces/go-mud/server/core/log"
 	"gitlab.com/alienspaces/go-mud/server/core/store"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
 )
 
-func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
+// func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
+func Default() (*config.Config, *log.Log, *store.Store, error) {
 
 	// Configurer
 	c, err := config.NewConfig(nil, false)
 	if err != nil {
 		fmt.Printf("failed new config >%v<", err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	configVars := []string{
@@ -39,7 +39,7 @@ func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
 		err := c.Add(key, true)
 		if err != nil {
 			fmt.Printf("failed adding config item >%v<", err)
-			return nil, nil, nil, nil, err
+			return nil, nil, nil, err
 		}
 	}
 
@@ -47,22 +47,24 @@ func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
 	l, err := log.NewLogger(c)
 	if err != nil {
 		fmt.Printf("failed new logger >%v<", err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// Storer
 	s, err := store.NewStore(c, l)
 	if err != nil {
 		fmt.Printf("failed new store >%v<", err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	// Modeller
-	m, err := model.NewModel(c, l, s)
-	if err != nil {
-		fmt.Printf("failed new model >%v<", err)
-		return nil, nil, nil, nil, err
-	}
+	return c, l, s, nil
 
-	return c, l, s, m, nil
+	// // Modeller
+	// m, err := model.NewModel(c, l, s)
+	// if err != nil {
+	// 	fmt.Printf("failed new model >%v<", err)
+	// 	return nil, nil, nil, nil, err
+	// }
+
+	// return c, l, s, m, nil
 }

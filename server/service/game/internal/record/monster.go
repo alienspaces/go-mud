@@ -20,7 +20,7 @@ type Monster struct {
 type MonsterInstance struct {
 	MonsterID          string `db:"monster_id"`
 	DungeonInstanceID  string `db:"dungeon_instance_id"`
-	LocationInstanceID string `db:"dungeon_location_instance_id"`
+	LocationInstanceID string `db:"location_instance_id"`
 	Strength           int    `db:"strength"`
 	Dexterity          int    `db:"dexterity"`
 	Intelligence       int    `db:"intelligence"`
@@ -35,7 +35,7 @@ type MonsterInstance struct {
 type MonsterInstanceView struct {
 	MonsterID           string `db:"monster_id"`
 	DungeonInstanceID   string `db:"dungeon_instance_id"`
-	LocationInstanceID  string `db:"dungeon_location_instance_id"`
+	LocationInstanceID  string `db:"location_instance_id"`
 	Name                string `db:"name"`
 	Strength            int    `db:"strength"`
 	Dexterity           int    `db:"dexterity"`
