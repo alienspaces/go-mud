@@ -20,10 +20,10 @@ func TestCreateOne(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -109,10 +109,10 @@ func TestGetOne(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -180,10 +180,10 @@ func TestUpdateOne(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -257,10 +257,10 @@ func TestDeleteOne(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

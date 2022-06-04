@@ -21,10 +21,10 @@ func TestCreateLocationRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	th, err := harness.NewTesting(c, l, s, m, config)
+	th, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -98,10 +98,10 @@ func TestGetLocationRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -165,10 +165,10 @@ func TestUpdateLocationRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -237,10 +237,10 @@ func TestDeleteLocationRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

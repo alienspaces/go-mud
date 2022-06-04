@@ -21,10 +21,10 @@ func TestCreateDungeonMonsterRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	th, err := harness.NewTesting(c, l, s, m, config)
+	th, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -106,10 +106,10 @@ func TestGetDungeonMonsterRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -173,10 +173,10 @@ func TestUpdateDungeonMonsterRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -245,10 +245,10 @@ func TestDeleteDungeonMonsterRec(t *testing.T) {
 	// harness
 	config := harness.DefaultDataConfig
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

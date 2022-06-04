@@ -225,9 +225,9 @@ func TestPrepareInit(t *testing.T) {
 	require.NoError(t, err, "NewDependencies returns without error")
 
 	// new preparer
-	p, err := prepare.NewPrepare(l)
-	require.NoError(t, err, "NewPrepare returns without error")
-	require.NotNil(t, p, "NewPrepare returns a preparer")
+	p, err := prepare.NewRepositoryPreparer(l)
+	require.NoError(t, err, "NewRepositoryPreparer returns without error")
+	require.NotNil(t, p, "NewRepositoryPreparer returns a preparer")
 
 	// get db
 	db, err := s.GetDb()
@@ -250,9 +250,9 @@ func TestPreparePrepare(t *testing.T) {
 		require.NoError(t, err, "NewDependencies returns without error")
 
 		// new preparer
-		p, err := prepare.NewPrepare(l)
-		require.NoError(t, err, "NewPrepare returns without error")
-		require.NotNil(t, p, "NewPrepare returns a preparer")
+		p, err := prepare.NewRepositoryPreparer(l)
+		require.NoError(t, err, "NewRepositoryPreparer returns without error")
+		require.NotNil(t, p, "NewRepositoryPreparer returns a preparer")
 
 		// get db
 		db, err := s.GetDb()
@@ -345,9 +345,9 @@ func TestPreparePrepare(t *testing.T) {
 		require.NoError(t, err, "NewDependencies returns without error")
 
 		// new preparer
-		p, err := prepare.NewPrepare(l)
-		require.NoError(t, err, "NewPrepare returns without error")
-		require.NotNil(t, p, "NewPrepare returns a preparer")
+		p, err := prepare.NewRepositoryPreparer(l)
+		require.NoError(t, err, "NewRepositoryPreparer returns without error")
+		require.NotNil(t, p, "NewRepositoryPreparer returns a preparer")
 
 		// get db
 		db, err := s.GetDb()

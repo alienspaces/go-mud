@@ -66,7 +66,7 @@ func TestQueryInit(t *testing.T) {
 	require.NoError(t, err, "NewDependencies returns without error")
 
 	// new preparer.Query
-	q, err := prepare.NewQuery(l)
+	q, err := prepare.NewQueryPreparer(l)
 	require.NoError(t, err, "NewPrepare returns without error")
 	require.NotNil(t, q, "NewPrepare returns a preparer")
 
@@ -84,14 +84,14 @@ func TestQueryPrepare(t *testing.T) {
 	// NOTE: Following tests are testing function calls with a successfully
 	// prepared "preparableQuery" thing
 
-	// run the following tests within a function, so we can utilise
+	// Run the following tests within a function so we can utilise
 	// a deferred function to teardown any database setup
 	func() {
 		_, l, s, err := NewDependencies()
 		require.NoError(t, err, "NewDependencies returns without error")
 
 		// new preparer.Query
-		p, err := prepare.NewQuery(l)
+		p, err := prepare.NewQueryPreparer(l)
 		require.NoError(t, err, "NewQuerier returns without error")
 		require.NotNil(t, p, "NewQuerier returns a preparer")
 
@@ -124,14 +124,14 @@ func TestQueryPrepare(t *testing.T) {
 
 	// NOTE: Following tests are testing function calls with an unprepared "preparable" thing
 
-	// run the following tests within a function to we can utilise
+	// Run the following tests within a function so we can utilise
 	// a deferred function to teardown any database setup
 	func() {
 		_, l, s, err := NewDependencies()
 		require.NoError(t, err, "NewDependencies returns without error")
 
 		// new preparer.Query
-		p, err := prepare.NewQuery(l)
+		p, err := prepare.NewQueryPreparer(l)
 		require.NoError(t, err, "NewPrepare returns without error")
 		require.NotNil(t, p, "NewPrepare returns a preparer")
 

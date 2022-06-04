@@ -21,23 +21,23 @@ import (
 )
 
 type testNestedMultiTag struct {
-	A                      string `db:"db_A" json:"json_A"`
-	B                      string `db:"db_B" json:"json_B"`
-	testNested             `db:"nested" json:"NESTED"`
-	testEmptyNested        `db:"empty_nested" json:"EMPTY_NESTED"`
-	testSingleNestedDB     `db:"single_nested_db" json:"SINGLE_NESTED_DB"`
-	testSingleNestedJSON   `db:"single_nested_json" json:"SINGLE_NESTED_JSON"`
-	singleNestedNullTime   `db:"single_nested_null_time" json:"SINGLE_NESTED_NULL_TIME"`
-	singleNestedNullString `db:"single_nested_null_string" json:"SINGLE_NESTED_NULL_STRING"`
-	f                      int `db:"db_f"`
-	G                      int `json:"json_G"`
-	h                      int
-	time                   time.Time `db:"db_time"`
+	A                      string                 `db:"db_A" json:"json_A"`
+	B                      string                 `db:"db_B" json:"json_B"`
+	TestNested             testNested             `db:"nested" json:"NESTED"`
+	TestEmptyNested        testEmptyNested        `db:"empty_nested" json:"EMPTY_NESTED"`
+	TestSingleNestedDB     testSingleNestedDB     `db:"single_nested_db" json:"SINGLE_NESTED_DB"`
+	TestSingleNestedJSON   testSingleNestedJSON   `db:"single_nested_json" json:"SINGLE_NESTED_JSON"`
+	SingleNestedNullTime   singleNestedNullTime   `db:"single_nested_null_time" json:"SINGLE_NESTED_NULL_TIME"`
+	SingleNestedNullString singleNestedNullString `db:"single_nested_null_string" json:"SINGLE_NESTED_NULL_STRING"`
+	F                      int                    `db:"db_f"`
+	G                      int                    `json:"json_G"`
+	H                      int
+	Time                   time.Time `db:"db_time"`
 }
 
 type testNested struct {
 	C  string `json:"json_C"`
-	d  string `db:"db_d"`
+	D  string `db:"db_d"`
 	E  string `db:"db_E" json:"json_E"`
 	E2 int
 }
@@ -81,7 +81,7 @@ func NewDependencies() (configurer.Configurer, logger.Logger, storer.Storer, pre
 	}
 
 	// preparer
-	p, err := prepare.NewPrepare(l)
+	p, err := prepare.NewRepositoryPreparer(l)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
