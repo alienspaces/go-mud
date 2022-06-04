@@ -34,11 +34,11 @@ JOIN "dungeon" d on d.id = di.dungeon_id
 
 -- table location
 CREATE TABLE "location" (
-  "id"                            uuid CONSTRAINT location_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "dungeon_id"                    uuid NOT NULL,
-  "name"                          text NOT NULL,
-  "description"                   text NOT NULL,
-  "default"                       boolean NOT NULL DEFAULT FALSE,
+  "id"                    uuid CONSTRAINT location_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "dungeon_id"            uuid NOT NULL,
+  "name"                  text NOT NULL,
+  "description"           text NOT NULL,
+  "is_default"            boolean NOT NULL DEFAULT FALSE,
   "north_location_id"     uuid,
   "northeast_location_id" uuid,
   "east_location_id"      uuid,
@@ -106,7 +106,7 @@ SELECT
   dli.dungeon_instance_id,
   dl.name,
   dl.description,
-  dl.default,
+  dl.is_default,
   dli.north_location_instance_id,
   dli.northeast_location_instance_id,
   dli.east_location_instance_id,

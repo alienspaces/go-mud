@@ -16,12 +16,12 @@ func NewTestHarness(config *harness.DataConfig) (*harness.Testing, error) {
 		config = &harness.DefaultDataConfig
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	if err != nil {
 		return nil, err
 	}
 
-	h, err := harness.NewTesting(c, l, s, m, *config)
+	h, err := harness.NewTesting(c, l, s, *config)
 	if err != nil {
 		return nil, err
 	}
@@ -34,11 +34,12 @@ func NewTestHarness(config *harness.DataConfig) (*harness.Testing, error) {
 
 func TestNewRunner(t *testing.T) {
 
-	// Test harness
-	th, err := NewTestHarness(nil)
-	require.NoError(t, err, "New test data returns without error")
+	c, l, s, err := dependencies.Default()
+	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
-	rnr := NewRunner()
-	err = rnr.Init(th.Store)
+	r, err := NewRunner(c, l)
+	require.NoError(t, err, "NewRunner returns without error")
+
+	err = r.Init(s)
 	require.NoError(t, err, "Init returns without error")
 }

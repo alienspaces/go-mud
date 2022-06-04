@@ -95,9 +95,11 @@ func (t *TestCase) TestResponseCode() int {
 }
 
 func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method string, body interface{})) {
-	rnr := NewRunner()
 
-	err := rnr.Init(th.Store)
+	rnr, err := NewRunner(th.Config, th.Log)
+	require.NoError(t, err, "Runner init returns without error")
+
+	err = rnr.Init(th.Store)
 	require.NoError(t, err, "Runner init returns without error")
 
 	err = th.Setup()

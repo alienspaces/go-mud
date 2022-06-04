@@ -1,4 +1,4 @@
-package dungeonactioncharacter
+package actionobject
 
 import (
 	"time"
@@ -15,7 +15,7 @@ import (
 
 const (
 	// TableName - underlying database table name used for configuration
-	TableName string = "dungeon_action_character"
+	TableName string = "action_object"
 )
 
 // Repository -
@@ -37,7 +37,7 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 			// Config
 			Config: repository.Config{
 				TableName:  TableName,
-				Attributes: tag.GetValues(record.ActionCharacter{}, "db"),
+				Attributes: tag.GetValues(record.ActionObject{}, "db"),
 			},
 		},
 	}
@@ -59,17 +59,17 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.ActionCharacter {
-	return &record.ActionCharacter{}
+func (r *Repository) NewRecord() *record.ActionObject {
+	return &record.ActionObject{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.ActionCharacter {
-	return []*record.ActionCharacter{}
+func (r *Repository) NewRecordArray() []*record.ActionObject {
+	return []*record.ActionObject{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.ActionCharacter, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.ActionObject, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
@@ -82,7 +82,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.ActionCharacter,
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.ActionCharacter, error) {
+	forUpdate bool) ([]*record.ActionObject, error) {
 
 	recs := r.NewRecordArray()
 
@@ -109,7 +109,7 @@ func (r *Repository) GetMany(
 }
 
 // CreateOne -
-func (r *Repository) CreateOne(rec *record.ActionCharacter) error {
+func (r *Repository) CreateOne(rec *record.ActionObject) error {
 
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
@@ -127,7 +127,7 @@ func (r *Repository) CreateOne(rec *record.ActionCharacter) error {
 }
 
 // UpdateOne -
-func (r *Repository) UpdateOne(rec *record.ActionCharacter) error {
+func (r *Repository) UpdateOne(rec *record.ActionObject) error {
 
 	origUpdatedAt := rec.UpdatedAt
 	rec.UpdatedAt = repository.NewUpdatedAt()

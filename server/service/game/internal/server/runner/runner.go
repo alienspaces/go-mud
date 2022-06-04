@@ -1,10 +1,12 @@
 package runner
 
 import (
+	"fmt"
 	"net/http"
 
 	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
@@ -38,9 +40,23 @@ type Fault struct {
 var _ runnable.Runnable = &Runner{}
 
 // NewRunner -
-func NewRunner() *Runner {
+func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
 	r := Runner{}
+
+	r.Log = l
+	if r.Log == nil {
+		msg := "logger undefined, cannot init runner"
+		r.Log.Error(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	r.Config = c
+	if r.Config == nil {
+		msg := "configurer undefined, cannot init runner"
+		r.Log.Error(msg)
+		return nil, fmt.Errorf(msg)
+	}
 
 	r.RouterFunc = r.Router
 	r.MiddlewareFunc = r.Middleware
@@ -193,7 +209,7 @@ func NewRunner() *Runner {
 			MiddlewareConfig: server.MiddlewareConfig{
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeonaction",
+						Location: "schema/docs/action",
 						Name:     "create.request.schema.json",
 					},
 					References: []jsonschema.Schema{
@@ -205,7 +221,7 @@ func NewRunner() *Runner {
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeonaction",
+						Location: "schema/docs/action",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
@@ -241,7 +257,7 @@ func NewRunner() *Runner {
 		},
 	}
 
-	return &r
+	return &r, nil
 }
 
 // Modeller -

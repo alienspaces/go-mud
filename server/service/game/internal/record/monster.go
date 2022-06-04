@@ -4,7 +4,7 @@ import "gitlab.com/alienspaces/go-mud/server/core/repository"
 
 type Monster struct {
 	DungeonID        string `db:"dungeon_id"`
-	LocationID       string `db:"dungeon_location_id"`
+	LocationID       string `db:"location_id"`
 	Name             string `db:"name"`
 	Strength         int    `db:"strength"`
 	Dexterity        int    `db:"dexterity"`

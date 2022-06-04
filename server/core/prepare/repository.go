@@ -107,8 +107,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 		query := m.GetOneSQL()
 		getOneStmt, err := p.DB.Preparex(query)
 		if err != nil {
-			p.Log.Warn("Error preparing GetOneSQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing GetOneSQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.getOneSQLList[m.TableName()] = query
@@ -121,8 +122,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		getOneForUpdateStmt, err := p.DB.Preparex(query)
 		if err != nil {
-			p.Log.Warn("Error preparing GetOneForUpdateSQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing GetOneForUpdateSQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.getOneForUpdateSQLList[m.TableName()] = query
@@ -135,8 +137,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		getManyStmt, err := p.DB.PrepareNamed(m.GetManySQL())
 		if err != nil {
-			p.Log.Warn("Error preparing GetManySQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing GetManySQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.getManySQLList[m.TableName()] = query
@@ -149,8 +152,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		createStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing CreateSQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing CreateOneSQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.createSQLList[m.TableName()] = query
@@ -163,8 +167,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		updateOneStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing UpdateOneSQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing UpdateOneSQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.updateOneSQLList[m.TableName()] = query
@@ -177,8 +182,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		updateManyStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing UpdateManySQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing UpdateManySQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.updateManySQLList[m.TableName()] = query
@@ -191,8 +197,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		deleteStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing DeleteSQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing DeleteOneSQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.deleteOneSQLList[m.TableName()] = query
@@ -205,8 +212,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		deleteManyStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing DeleteManySQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing DeleteManySQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.deleteManySQLList[m.TableName()] = query
@@ -219,8 +227,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		removeStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing RemoveSQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing RemoveOneSQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.removeOneSQLList[m.TableName()] = query
@@ -233,8 +242,9 @@ func (p *Repository) Prepare(m preparable.Repository, shouldExclude preparer.Exc
 
 		removeManyStmt, err := p.DB.PrepareNamed(query)
 		if err != nil {
-			p.Log.Warn("Error preparing RemoveManySQL statement >%v<", err)
-			return err
+			msg := fmt.Sprintf("Repository >%s< error preparing RemoveManySQL statement >%s< >%v<", m.TableName(), query, err)
+			p.Log.Warn(msg)
+			return fmt.Errorf(msg)
 		}
 
 		p.removeManySQLList[m.TableName()] = query

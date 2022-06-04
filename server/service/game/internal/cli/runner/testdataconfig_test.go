@@ -8,7 +8,6 @@ import (
 
 func Test_testDataConfig(t *testing.T) {
 
-	// Test harness
 	config := TestDataConfig()
 
 	th, err := NewTestHarness(&config)

@@ -10,16 +10,16 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/action"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actioncharacter"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actioncharacterobject"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actionmonster"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actionmonsterobject"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actionobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/character"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterinstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterinstanceview"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonaction"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactioncharacter"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactioncharacterobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionmonster"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionmonsterobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeonactionobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoninstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/location"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstance"
@@ -156,42 +156,42 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, objectInstanceViewRepo)
 
-	dungeonActionRepo, err := dungeonaction.NewRepository(m.Log, p, tx)
+	dungeonActionRepo, err := action.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action repository >%v<", err)
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonActionRepo)
 
-	dungeonActionCharacterRepo, err := dungeonactioncharacter.NewRepository(m.Log, p, tx)
+	dungeonActionCharacterRepo, err := actioncharacter.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action character repository >%v<", err)
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonActionCharacterRepo)
 
-	dungeonActionCharacterObjectRepo, err := dungeonactioncharacterobject.NewRepository(m.Log, p, tx)
+	dungeonActionCharacterObjectRepo, err := actioncharacterobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action character object repository >%v<", err)
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonActionCharacterObjectRepo)
 
-	dungeonActionMonsterRepo, err := dungeonactionmonster.NewRepository(m.Log, p, tx)
+	dungeonActionMonsterRepo, err := actionmonster.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster repository >%v<", err)
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonActionMonsterRepo)
 
-	dungeonActionMonsterObjectRepo, err := dungeonactionmonsterobject.NewRepository(m.Log, p, tx)
+	dungeonActionMonsterObjectRepo, err := actionmonsterobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster object repository >%v<", err)
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonActionMonsterObjectRepo)
 
-	dungeonActionObjectRepo, err := dungeonactionobject.NewRepository(m.Log, p, tx)
+	dungeonActionObjectRepo, err := actionobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action object repository >%v<", err)
 		return nil, err
@@ -370,75 +370,75 @@ func (m *Model) ObjectInstanceViewRepository() *objectinstanceview.Repository {
 }
 
 // ActionRepository -
-func (m *Model) ActionRepository() *dungeonaction.Repository {
+func (m *Model) ActionRepository() *action.Repository {
 
-	r := m.Repositories[dungeonaction.TableName]
+	r := m.Repositories[action.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", dungeonaction.TableName)
+		m.Log.Warn("Repository >%s< is nil", action.TableName)
 		return nil
 	}
 
-	return r.(*dungeonaction.Repository)
+	return r.(*action.Repository)
 }
 
 // ActionCharacterRepository -
-func (m *Model) ActionCharacterRepository() *dungeonactioncharacter.Repository {
+func (m *Model) ActionCharacterRepository() *actioncharacter.Repository {
 
-	r := m.Repositories[dungeonactioncharacter.TableName]
+	r := m.Repositories[actioncharacter.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", dungeonactioncharacter.TableName)
+		m.Log.Warn("Repository >%s< is nil", actioncharacter.TableName)
 		return nil
 	}
 
-	return r.(*dungeonactioncharacter.Repository)
+	return r.(*actioncharacter.Repository)
 }
 
 // ActionCharacterObjectRepository -
-func (m *Model) ActionCharacterObjectRepository() *dungeonactioncharacterobject.Repository {
+func (m *Model) ActionCharacterObjectRepository() *actioncharacterobject.Repository {
 
-	r := m.Repositories[dungeonactioncharacterobject.TableName]
+	r := m.Repositories[actioncharacterobject.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", dungeonactioncharacterobject.TableName)
+		m.Log.Warn("Repository >%s< is nil", actioncharacterobject.TableName)
 		return nil
 	}
 
-	return r.(*dungeonactioncharacterobject.Repository)
+	return r.(*actioncharacterobject.Repository)
 }
 
 // ActionMonsterRepository -
-func (m *Model) ActionMonsterRepository() *dungeonactionmonster.Repository {
+func (m *Model) ActionMonsterRepository() *actionmonster.Repository {
 
-	r := m.Repositories[dungeonactionmonster.TableName]
+	r := m.Repositories[actionmonster.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", dungeonactionmonster.TableName)
+		m.Log.Warn("Repository >%s< is nil", actionmonster.TableName)
 		return nil
 	}
 
-	return r.(*dungeonactionmonster.Repository)
+	return r.(*actionmonster.Repository)
 }
 
 // ActionMonsterObjectRepository -
-func (m *Model) ActionMonsterObjectRepository() *dungeonactionmonsterobject.Repository {
+func (m *Model) ActionMonsterObjectRepository() *actionmonsterobject.Repository {
 
-	r := m.Repositories[dungeonactionmonsterobject.TableName]
+	r := m.Repositories[actionmonsterobject.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", dungeonactionmonsterobject.TableName)
+		m.Log.Warn("Repository >%s< is nil", actionmonsterobject.TableName)
 		return nil
 	}
 
-	return r.(*dungeonactionmonsterobject.Repository)
+	return r.(*actionmonsterobject.Repository)
 }
 
 // ActionObjectRepository -
-func (m *Model) ActionObjectRepository() *dungeonactionobject.Repository {
+func (m *Model) ActionObjectRepository() *actionobject.Repository {
 
-	r := m.Repositories[dungeonactionobject.TableName]
+	r := m.Repositories[actionobject.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", dungeonactionobject.TableName)
+		m.Log.Warn("Repository >%s< is nil", actionobject.TableName)
 		return nil
 	}
 
-	return r.(*dungeonactionobject.Repository)
+	return r.(*actionobject.Repository)
 }
 
 func (m *Model) Logger(functionName string) logger.Logger {

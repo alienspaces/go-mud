@@ -8,7 +8,7 @@ import (
 
 type Object struct {
 	DungeonID           string         `db:"dungeon_id"`
-	LocationID          sql.NullString `db:"dungeon_location_id"`
+	LocationID          sql.NullString `db:"location_id"`
 	CharacterID         sql.NullString `db:"character_id"`
 	MonsterID           sql.NullString `db:"monster_id"`
 	Name                string         `db:"name"`

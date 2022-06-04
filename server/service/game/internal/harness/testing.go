@@ -77,15 +77,19 @@ type teardownData struct {
 }
 
 // NewTesting -
-func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller, config DataConfig) (t *Testing, err error) {
+func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, config DataConfig) (t *Testing, err error) {
 
 	t = &Testing{
 		Testing: harness.Testing{
 			Config: c,
 			Log:    l,
 			Store:  s,
-			Model:  m,
 		},
+	}
+
+	// Require service config, logger and store
+	if t.Config == nil || t.Log == nil || t.Store == nil {
+		return nil, fmt.Errorf("missing modeller >%v<, logger >%v< or storer >%v<, cannot create new test harness", t.Config, t.Log, t.Store)
 	}
 
 	// modeller
@@ -109,7 +113,15 @@ func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, m mod
 
 // Modeller -
 func (t *Testing) Modeller() (modeller.Modeller, error) {
-	return t.Model, nil
+	l := t.Logger("Modeller")
+
+	m, err := model.NewModel(t.Config, t.Log, t.Store)
+	if err != nil {
+		l.Warn("failed new model >%v<", err)
+		return nil, err
+	}
+
+	return m, nil
 }
 
 // CreateData - Custom data
@@ -974,4 +986,9 @@ DUNGEON_RECS:
 	t.Data = Data{}
 
 	return nil
+}
+
+// Logger - Returns a logger with package context and provided function context
+func (t *Testing) Logger(fCtx string) logger.Logger {
+	return t.Log.WithPackageContext("harness").WithFunctionContext(fCtx)
 }

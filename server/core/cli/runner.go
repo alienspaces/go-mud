@@ -40,6 +40,10 @@ var _ runnable.Runnable = &Runner{}
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
 
+	if rnr.Log == nil {
+		return fmt.Errorf("logger is nil, cannot initialise CLI runner")
+	}
+
 	rnr.Log.Info("** Initialise **")
 
 	// Storer

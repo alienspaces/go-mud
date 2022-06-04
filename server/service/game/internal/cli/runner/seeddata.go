@@ -13,7 +13,7 @@ func (rnr *Runner) LoadSeedData(c *cli.Context) error {
 
 	config := SeedDataConfig()
 
-	h, err := harness.NewTesting(rnr.Config, rnr.Log, rnr.Store, rnr.Model, config)
+	h, err := harness.NewTesting(rnr.Config, rnr.Log, rnr.Store, config)
 	if err != nil {
 		rnr.Log.Warn("Failed new testing harness >%v<", err)
 		return err

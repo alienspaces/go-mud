@@ -8,7 +8,6 @@ import (
 
 func Test_seedDataConfig(t *testing.T) {
 
-	// Test harness
 	config := SeedDataConfig()
 
 	th, err := NewTestHarness(&config)

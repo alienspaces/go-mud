@@ -37,7 +37,7 @@ var testDataConfig = harness.DataConfig{
 						},
 						Name:        "Cave Entrance",
 						Description: "A large cave entrance.",
-						Default:     true,
+						IsDefault:   true,
 					},
 					NorthLocationName: "Cave Tunnel",
 				},
