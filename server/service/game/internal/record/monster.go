@@ -3,9 +3,8 @@ package record
 import "gitlab.com/alienspaces/go-mud/server/core/repository"
 
 type Monster struct {
-	DungeonID        string `db:"dungeon_id"`
-	LocationID       string `db:"location_id"`
 	Name             string `db:"name"`
+	Description      string `db:"description"`
 	Strength         int    `db:"strength"`
 	Dexterity        int    `db:"dexterity"`
 	Intelligence     int    `db:"intelligence"`
@@ -14,6 +13,14 @@ type Monster struct {
 	Coins            int    `db:"coins"`
 	ExperiencePoints int    `db:"experience_points"`
 	AttributePoints  int    `db:"attribute_points"`
+	repository.Record
+}
+
+type MonsterObject struct {
+	MonsterID  string `db:"monster_id"`
+	ObjectID   string `db:"object_id"`
+	IsStashed  bool   `db:"is_stashed"`
+	IsEquipped bool   `db:"is_equipped"`
 	repository.Record
 }
 

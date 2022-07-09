@@ -11,15 +11,6 @@ func (m *Model) ValidateMonsterRec(rec *record.Monster) error {
 
 	// New monster
 	if rec.ID == "" {
-		if rec.DungeonID == "" {
-			return fmt.Errorf("failed validation, DungeonID is empty")
-		}
-		if rec.LocationID == "" {
-			return fmt.Errorf("failed validation, LocationID is empty")
-		}
-		if rec.Name == "" {
-			return fmt.Errorf("failed validation, Name is empty")
-		}
 		if rec.Strength == 0 {
 			return fmt.Errorf("failed validation, Strength is empty")
 		}
@@ -35,6 +26,10 @@ func (m *Model) ValidateMonsterRec(rec *record.Monster) error {
 		if rec.Fatigue == 0 {
 			return fmt.Errorf("failed validation, Fatigue is empty")
 		}
+	}
+
+	if rec.Name == "" {
+		return fmt.Errorf("failed validation, Name is empty")
 	}
 
 	return nil

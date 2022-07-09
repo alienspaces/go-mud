@@ -53,7 +53,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
 	l.Debug("Creating dungeon character rec >%#v<", rec)
 
-	characterRepo := m.CharacterRepository()
+	r := m.CharacterRepository()
 
 	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
 	rec.ExperiencePoints = defaultExperiencePoints
@@ -67,7 +67,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 		return err
 	}
 
-	return characterRepo.CreateOne(rec)
+	return r.CreateOne(rec)
 }
 
 // UpdateCharacterRec -

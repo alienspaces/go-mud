@@ -12,7 +12,7 @@ func (m *Model) GetActionCharacterRecs(params map[string]interface{}, operators 
 
 	l := m.Logger("GetActionCharacterRecs")
 
-	l.Info("Getting dungeon action character records params >%s<", params)
+	l.Debug("Getting dungeon action character records params >%s<", params)
 
 	r := m.ActionCharacterRepository()
 
@@ -24,7 +24,7 @@ func (m *Model) GetActionCharacterRec(recID string, forUpdate bool) (*record.Act
 
 	l := m.Logger("GetActionCharacterRec")
 
-	l.Info("Getting dungeon action character rec ID >%s<", recID)
+	l.Debug("Getting dungeon action character rec ID >%s<", recID)
 
 	r := m.ActionCharacterRepository()
 
@@ -47,13 +47,13 @@ func (m *Model) CreateActionCharacterRec(rec *record.ActionCharacter) error {
 
 	l := m.Logger("CreateActionCharacterRec")
 
-	l.Info("Creating dungeon action character rec >%#v<", rec)
+	l.Debug("Creating dungeon action character rec >%#v<", rec)
 
 	r := m.ActionCharacterRepository()
 
 	err := m.ValidateActionCharacterRec(rec)
 	if err != nil {
-		l.Info("Failed model validation >%v<", err)
+		l.Warn("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -65,13 +65,13 @@ func (m *Model) UpdateActionCharacterRec(rec *record.ActionCharacter) error {
 
 	l := m.Logger("UpdateActionCharacterRec")
 
-	l.Info("Updating dungeon action character rec >%#v<", rec)
+	l.Debug("Updating dungeon action character rec >%#v<", rec)
 
 	r := m.ActionCharacterRepository()
 
 	err := m.ValidateActionCharacterRec(rec)
 	if err != nil {
-		l.Info("Failed model validation >%v<", err)
+		l.Warn("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -83,7 +83,7 @@ func (m *Model) DeleteActionCharacterRec(recID string) error {
 
 	l := m.Logger("DeleteActionCharacterRec")
 
-	l.Info("Deleting dungeon action character rec ID >%s<", recID)
+	l.Debug("Deleting dungeon action character rec ID >%s<", recID)
 
 	r := m.ActionCharacterRepository()
 
@@ -94,7 +94,7 @@ func (m *Model) DeleteActionCharacterRec(recID string) error {
 
 	err := m.ValidateDeleteActionCharacterRec(recID)
 	if err != nil {
-		l.Info("Failed model validation >%v<", err)
+		l.Warn("Failed model validation >%v<", err)
 		return err
 	}
 
@@ -106,7 +106,7 @@ func (m *Model) RemoveActionCharacterRec(recID string) error {
 
 	l := m.Logger("RemoveActionCharacterRec")
 
-	l.Info("Removing dungeon action character rec ID >%s<", recID)
+	l.Debug("Removing dungeon action character rec ID >%s<", recID)
 
 	r := m.ActionCharacterRepository()
 
@@ -117,7 +117,7 @@ func (m *Model) RemoveActionCharacterRec(recID string) error {
 
 	err := m.ValidateDeleteActionCharacterRec(recID)
 	if err != nil {
-		l.Info("Failed model validation >%v<", err)
+		l.Warn("Failed model validation >%v<", err)
 		return err
 	}
 

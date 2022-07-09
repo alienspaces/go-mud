@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/store"
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
@@ -32,15 +32,15 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonObject
+		rec  func(data harness.Data) *record.ObjectInstance
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonObject {
-				return &record.DungeonObject{
+			rec: func(data harness.Data) *record.ObjectInstance {
+				return &record.ObjectInstance{
 					DungeonID:           data.DungeonRecs[0].ID,
-					LocationID:   nullstring.FromString(data.LocationRecs[0].ID),
+					LocationID:          nullstring.FromString(data.LocationRecs[0].ID),
 					Name:                "Red Ribbon",
 					Description:         "A red ribbon, frayed at one end.",
 					DescriptionDetailed: "A red ribbon, frayed at one end.",
@@ -50,10 +50,10 @@ func TestCreateOne(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonObject {
-				rec := &record.DungeonObject{
+			rec: func(data harness.Data) *record.ObjectInstance {
+				rec := &record.ObjectInstance{
 					DungeonID:           data.DungeonRecs[0].ID,
-					LocationID:   nullstring.FromString(data.LocationRecs[0].ID),
+					LocationID:          nullstring.FromString(data.LocationRecs[0].ID),
 					Name:                "Dead Cat",
 					Description:         "A dead cat, or is it..",
 					DescriptionDetailed: "A dead cat, or is it..",
@@ -192,19 +192,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonObject
+		rec  func() *record.ObjectInstance
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonObject {
+			rec: func() *record.ObjectInstance {
 				return h.Data.DungeonObjectRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonObject {
+			rec: func() *record.ObjectInstance {
 				rec := h.Data.DungeonObjectRecs[0]
 				rec.ID = ""
 				return rec

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
+	coresql "gitlab.com/alienspaces/go-mud/server/core/sql"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/querier"
@@ -44,16 +45,40 @@ func (q *Query) Name() string {
 }
 
 func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
+	l := q.Log
+
 	stmt := q.Prepare.Stmt()
 	stmt = q.Tx.NamedStmt(stmt)
 
 	res, err := stmt.Exec(params)
 	if err != nil {
-		q.Log.Warn("failed exec >%v<", err)
+		l.Warn("failed exec >%v<", err)
 		return nil, err
 	}
 
 	return res, err
+}
+
+func (q *Query) GetRows(params map[string]interface{}, operators map[string]string) (*sqlx.Rows, error) {
+	l := q.Log
+	tx := q.Tx
+
+	// params
+	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Prepare.SQL(), params, operators)
+	if err != nil {
+		l.Warn("Failed generating query >%v<", err)
+		return nil, err
+	}
+
+	l.Debug("Resulting SQL >%s< Params >%#v<", querySQL, queryParams)
+
+	rows, err := tx.NamedQuery(querySQL, queryParams)
+	if err != nil {
+		l.Warn("Failed querying row >%v<", err)
+		return nil, err
+	}
+
+	return rows, err
 }
 
 // SQL should be overridden in a custom implementation with the SQL statement specific to the query

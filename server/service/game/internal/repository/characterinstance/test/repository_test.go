@@ -31,33 +31,33 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonCharacter
+		rec  func(data harness.Data) *record.CharacterInstance
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonCharacter {
-				return &record.DungeonCharacter{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[0].ID,
-					Name:              "Legislate",
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.CharacterInstance {
+				return &record.CharacterInstance{
+					DungeonID:    data.DungeonRecs[0].ID,
+					LocationID:   data.LocationRecs[0].ID,
+					Name:         "Legislate",
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonCharacter {
-				rec := &record.DungeonCharacter{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[0].ID,
-					Name:              "Bolster",
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.CharacterInstance {
+				rec := &record.CharacterInstance{
+					DungeonID:    data.DungeonRecs[0].ID,
+					LocationID:   data.LocationRecs[0].ID,
+					Name:         "Bolster",
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -193,19 +193,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonCharacter
+		rec  func() *record.CharacterInstance
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonCharacter {
+			rec: func() *record.CharacterInstance {
 				return h.Data.DungeonCharacterRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonCharacter {
+			rec: func() *record.CharacterInstance {
 				rec := h.Data.DungeonCharacterRecs[0]
 				rec.ID = ""
 				return rec

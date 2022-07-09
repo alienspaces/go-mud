@@ -1,4 +1,4 @@
-package repository
+package sql
 
 import (
 	"errors"
@@ -41,8 +41,8 @@ const (
 	OperatorGreaterThan = ">"
 )
 
-// sqlFromParamsAndOperator -
-func (r *Repository) sqlFromParamsAndOperator(
+// FromParamsAndOperators -
+func FromParamsAndOperators(
 	initialSQL string,
 	params map[string]interface{},
 	operators map[string]string) (string, map[string]interface{}, error) {

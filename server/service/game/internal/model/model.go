@@ -19,14 +19,18 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/character"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterinstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterinstanceview"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoninstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/location"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstanceview"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationmonster"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monster"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monsterinstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monsterinstanceview"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monsterobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/object"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/objectinstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/objectinstanceview"
@@ -49,6 +53,7 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 	}
 
 	m.RepositoriesFunc = m.NewRepositories
+	m.QueriesFunc = m.NewQueries
 
 	return m, nil
 }
@@ -79,6 +84,20 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, locationRepo)
 
+	locationObjectRepo, err := locationobject.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new location object repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, locationObjectRepo)
+
+	locationMonsterRepo, err := locationmonster.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new location monster repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, locationMonsterRepo)
+
 	locationInstanceRepo, err := locationinstance.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new location instance repository >%v<", err)
@@ -100,6 +119,13 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, characterRepo)
 
+	characterObjectRepo, err := characterobject.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new character object repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, characterObjectRepo)
+
 	characterInstanceRepo, err := characterinstance.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new character instance repository >%v<", err)
@@ -120,6 +146,13 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 		return nil, err
 	}
 	repositoryList = append(repositoryList, monsterRepo)
+
+	monsterObjectRepo, err := monsterobject.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new monster object repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, monsterObjectRepo)
 
 	monsterInstanceRepo, err := monsterinstance.NewRepository(m.Log, p, tx)
 	if err != nil {
@@ -237,6 +270,30 @@ func (m *Model) LocationRepository() *location.Repository {
 	return r.(*location.Repository)
 }
 
+// LocationObjectRepository -
+func (m *Model) LocationObjectRepository() *locationobject.Repository {
+
+	r := m.Repositories[locationobject.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", locationobject.TableName)
+		return nil
+	}
+
+	return r.(*locationobject.Repository)
+}
+
+// LocationMonsterRepository -
+func (m *Model) LocationMonsterRepository() *locationmonster.Repository {
+
+	r := m.Repositories[locationmonster.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", locationmonster.TableName)
+		return nil
+	}
+
+	return r.(*locationmonster.Repository)
+}
+
 // LocationInstanceRepository -
 func (m *Model) LocationInstanceRepository() *locationinstance.Repository {
 
@@ -273,6 +330,18 @@ func (m *Model) CharacterRepository() *character.Repository {
 	return r.(*character.Repository)
 }
 
+// CharacterObjectRepository -
+func (m *Model) CharacterObjectRepository() *characterobject.Repository {
+
+	r := m.Repositories[characterobject.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", characterobject.TableName)
+		return nil
+	}
+
+	return r.(*characterobject.Repository)
+}
+
 // CharacterInstanceRepository -
 func (m *Model) CharacterInstanceRepository() *characterinstance.Repository {
 
@@ -307,6 +376,18 @@ func (m *Model) MonsterRepository() *monster.Repository {
 	}
 
 	return r.(*monster.Repository)
+}
+
+// MonsterObjectRepository -
+func (m *Model) MonsterObjectRepository() *monsterobject.Repository {
+
+	r := m.Repositories[monsterobject.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", monsterobject.TableName)
+		return nil
+	}
+
+	return r.(*monsterobject.Repository)
 }
 
 // MonsterInstanceRepository -

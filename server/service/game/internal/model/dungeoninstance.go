@@ -4,24 +4,44 @@ import (
 	"fmt"
 
 	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
-
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// CreateDungeonInstance creates a dungeon, locations, monsters and objects instances
-func (m *Model) CreateDungeonInstance(dungeonID string) (*record.DungeonInstance, error) {
+type DungeonInstanceRecordSet struct {
+	DungeonInstanceRec   *record.DungeonInstance
+	LocationInstanceRecs []*record.LocationInstance
+	ObjectInstanceRecs   []*record.ObjectInstance
+	MonsterInstanceRecs  []*record.MonsterInstance
+}
 
+// GetAvailableDungeonInstance returns an available dungeon instance
+func (m *Model) GetAvailableDungeonInstance(dungeonID string) (*DungeonInstanceRecordSet, error) {
+	l := m.Logger("GetAvailableDungeonInstance")
+
+	l.Info("Finding available dungeon instance for dungeon ID >%s<", dungeonID)
+
+	// Character capacity is equal to the number of locations a dungeon has.
+
+	return nil, nil
+}
+
+// CreateDungeonInstance creates a dungeon, locations, monsters and objects instances
+func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordSet, error) {
 	l := m.Logger("CreateDungeonInstance")
 
 	l.Debug("Creating dungeon instance from dungeon ID >%s<", dungeonID)
 
 	r := m.DungeonInstanceRepository()
 
-	dungeonInstanceRec := record.DungeonInstance{
+	locationInstanceRecs := []*record.LocationInstance{}
+	monsterInstanceRecs := []*record.MonsterInstance{}
+	objectInstanceRecs := []*record.ObjectInstance{}
+
+	dungeonInstanceRec := &record.DungeonInstance{
 		DungeonID: dungeonID,
 	}
 
-	err := r.CreateOne(&dungeonInstanceRec)
+	err := r.CreateOne(dungeonInstanceRec)
 	if err != nil {
 		l.Warn("Failed creating dungeon instance record >%v<", err)
 		return nil, err
@@ -39,7 +59,6 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*record.DungeonInstance
 		return nil, err
 	}
 
-	locationInstanceRecs := []*record.LocationInstance{}
 	for _, locationRec := range locationRecs {
 		locationInstanceRec := &record.LocationInstance{
 			DungeonInstanceID: dungeonInstanceRec.ID,
@@ -69,66 +88,126 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*record.DungeonInstance
 			l.Warn("Failed updating location instance record >%v<", err)
 			return nil, err
 		}
-	}
 
-	// Create monster instance records
-	monsterRecs, err := m.GetMonsterRecs(
-		map[string]interface{}{
-			"dungeon_id": dungeonID,
-		},
-		nil, false,
-	)
-	if err != nil {
-		l.Warn("Failed getting monster records >%v<", err)
-		return nil, err
-	}
-
-	monsterMap := map[string]*record.MonsterInstance{}
-	for _, monsterRec := range monsterRecs {
-		monsterInstanceRec := &record.MonsterInstance{
-			DungeonInstanceID:  dungeonInstanceRec.ID,
-			MonsterID:          monsterRec.ID,
-			LocationInstanceID: locationMap[monsterRec.LocationID].LocationInstanceRec.ID,
-		}
-		err = m.CreateMonsterInstanceRec(monsterInstanceRec)
+		// Create location object instance records
+		locationObjectRecs, err := m.GetLocationObjectRecs(
+			map[string]interface{}{
+				"location_id": locationInstanceRec.LocationID,
+			},
+			nil, false,
+		)
 		if err != nil {
-			l.Warn("Failed creating monster instance record >%v<", err)
+			l.Warn("Failed getting location monster records >%v<", err)
 			return nil, err
 		}
-		monsterMap[monsterRec.ID] = monsterInstanceRec
-	}
 
-	// Create object instance records
-	objectRecs, err := m.GetObjectRecs(
-		map[string]interface{}{
-			"dungeon_id": dungeonID,
-		},
-		nil, false,
-	)
-	if err != nil {
-		l.Warn("Failed getting object records >%v<", err)
-		return nil, err
-	}
+		objectInstanceMap := map[string]*record.ObjectInstance{}
+		for _, locationObjectRec := range locationObjectRecs {
+			objectRec, err := m.GetObjectRec(locationObjectRec.ObjectID, false)
+			if err != nil {
+				l.Warn("Failed getting object record >%v<", err)
+				return nil, err
+			}
 
-	for _, objectRec := range objectRecs {
-		objectInstanceRec := &record.ObjectInstance{
-			DungeonInstanceID: dungeonInstanceRec.ID,
-			IsEquipped:        objectRec.IsEquipped,
-			IsStashed:         objectRec.IsStashed,
+			objectInstanceRec := &record.ObjectInstance{
+				ObjectID:           locationObjectRec.ObjectID,
+				DungeonInstanceID:  dungeonInstanceRec.ID,
+				LocationInstanceID: nullstring.FromString(locationInstanceRec.ID),
+			}
+
+			err = m.CreateObjectInstanceRec(objectInstanceRec)
+			if err != nil {
+				l.Warn("Failed creating location object instance record >%v<", err)
+				return nil, err
+			}
+
+			objectInstanceMap[objectRec.ID] = objectInstanceRec
+			objectInstanceRecs = append(objectInstanceRecs, objectInstanceRec)
 		}
-		if nullstring.IsValid(objectRec.LocationID) {
-			objectInstanceRec.LocationInstanceID = nullstring.FromString(locationMap[objectRec.LocationID.String].LocationInstanceRec.ID)
-		} else if nullstring.IsValid(objectRec.MonsterID) {
-			objectInstanceRec.MonsterInstanceID = nullstring.FromString(monsterMap[objectRec.MonsterID.String].ID)
-		}
-		err = m.CreateObjectInstanceRec(objectInstanceRec)
+
+		// Create location monster instance records
+		locationMonsterRecs, err := m.GetLocationMonsterRecs(
+			map[string]interface{}{
+				"location_id": locationInstanceRec.LocationID,
+			},
+			nil, false,
+		)
 		if err != nil {
-			l.Warn("Failed creating object instance record >%v<", err)
+			l.Warn("Failed getting location monster records >%v<", err)
 			return nil, err
 		}
+
+		monsterInstanceMap := map[string]*record.MonsterInstance{}
+		for _, monsterLocationRec := range locationMonsterRecs {
+			monsterRec, err := m.GetMonsterRec(monsterLocationRec.MonsterID, false)
+			if err != nil {
+				l.Warn("Failed getting monster record >%v<", err)
+				return nil, err
+			}
+
+			monsterInstanceRec := &record.MonsterInstance{
+				MonsterID:          monsterRec.ID,
+				DungeonInstanceID:  dungeonInstanceRec.ID,
+				LocationInstanceID: locationInstanceRec.ID,
+				Strength:           monsterRec.Strength,
+				Dexterity:          monsterRec.Dexterity,
+				Intelligence:       monsterRec.Intelligence,
+				Health:             monsterRec.Health,
+				Fatigue:            monsterRec.Fatigue,
+				Coins:              monsterRec.Coins,
+				ExperiencePoints:   monsterRec.ExperiencePoints,
+				AttributePoints:    monsterRec.AttributePoints,
+			}
+
+			err = m.CreateMonsterInstanceRec(monsterInstanceRec)
+			if err != nil {
+				l.Warn("Failed creating monster instance record >%v<", err)
+				return nil, err
+			}
+
+			monsterInstanceMap[monsterRec.ID] = monsterInstanceRec
+			monsterInstanceRecs = append(monsterInstanceRecs, monsterInstanceRec)
+
+			monsterObjectRecs, err := m.GetMonsterObjectRecs(
+				map[string]interface{}{
+					"monster_id": monsterRec.ID,
+				}, nil, false,
+			)
+			if err != nil {
+				l.Warn("Failed getting monster object records >%v<", err)
+				return nil, err
+			}
+
+			for _, monsterObjectRec := range monsterObjectRecs {
+
+				objectInstanceRec := &record.ObjectInstance{
+					ObjectID:          monsterObjectRec.ObjectID,
+					DungeonInstanceID: dungeonInstanceRec.ID,
+					MonsterInstanceID: nullstring.FromString(monsterInstanceRec.ID),
+					IsEquipped:        monsterObjectRec.IsEquipped,
+					IsStashed:         monsterObjectRec.IsStashed,
+				}
+
+				err := m.CreateObjectInstanceRec(objectInstanceRec)
+				if err != nil {
+					l.Warn("Failed creating monster object instance record >%v<", err)
+					return nil, err
+				}
+
+				objectInstanceMap[monsterObjectRec.ObjectID] = objectInstanceRec
+				objectInstanceRecs = append(objectInstanceRecs, objectInstanceRec)
+			}
+		}
 	}
 
-	return &dungeonInstanceRec, nil
+	dungeonInstanceRecordSet := DungeonInstanceRecordSet{
+		DungeonInstanceRec:   dungeonInstanceRec,
+		LocationInstanceRecs: locationInstanceRecs,
+		MonsterInstanceRecs:  monsterInstanceRecs,
+		ObjectInstanceRecs:   objectInstanceRecs,
+	}
+
+	return &dungeonInstanceRecordSet, nil
 }
 
 type LocationMapItem struct {

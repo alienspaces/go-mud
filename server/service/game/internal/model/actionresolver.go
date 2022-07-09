@@ -56,7 +56,7 @@ func (m *Model) resolveAction(
 		return nil, err
 	}
 
-	l.Info("Resolved dungeon action rec >%#v<", dungeonActionRec)
+	l.Debug("Resolved dungeon action rec >%#v<", dungeonActionRec)
 
 	return dungeonActionRec, nil
 }
@@ -86,7 +86,7 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 		}
 	}
 
-	l.Info("Resolved command >%#v<", resolved)
+	l.Debug("Resolved command >%#v<", resolved)
 
 	return &resolved, nil
 }

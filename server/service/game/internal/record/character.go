@@ -15,6 +15,14 @@ type Character struct {
 	repository.Record
 }
 
+type CharacterObject struct {
+	CharacterID string `db:"character_id"`
+	ObjectID    string `db:"object_id"`
+	IsStashed   bool   `db:"is_stashed"`
+	IsEquipped  bool   `db:"is_equipped"`
+	repository.Record
+}
+
 type CharacterInstance struct {
 	CharacterID        string `db:"character_id"`
 	DungeonInstanceID  string `db:"dungeon_instance_id"`

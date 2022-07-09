@@ -35,7 +35,7 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 			// Config
 			Config: repository.Config{
 				TableName:  TableName,
-				Attributes: tag.GetValues(record.CharacterInstance{}, "db"),
+				Attributes: tag.GetValues(record.DungeonInstanceView{}, "db"),
 			},
 		},
 	}
@@ -66,17 +66,17 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.CharacterInstance {
-	return &record.CharacterInstance{}
+func (r *Repository) NewRecord() *record.DungeonInstanceView {
+	return &record.DungeonInstanceView{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.CharacterInstance {
-	return []*record.CharacterInstance{}
+func (r *Repository) NewRecordArray() []*record.DungeonInstanceView {
+	return []*record.DungeonInstanceView{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.CharacterInstance, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.DungeonInstanceView, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
@@ -89,7 +89,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.CharacterInstanc
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.CharacterInstance, error) {
+	forUpdate bool) ([]*record.DungeonInstanceView, error) {
 
 	recs := r.NewRecordArray()
 

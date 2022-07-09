@@ -6,11 +6,64 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+// The following data is test data used to seed a test game servers
 func TestDataConfig() harness.DataConfig {
 	return testDataConfig
 }
 
 var testDataConfig = harness.DataConfig{
+	ObjectConfig: []harness.ObjectConfig{
+		{
+			Record: record.Object{
+				Record: repository.Record{
+					ID: "54cf320b-6485-4e86-973e-6a5016f809fd",
+				},
+				Name:                "Rusted Sword",
+				Description:         "A rusted sword.",
+				DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
+			},
+		},
+		{
+			Record: record.Object{
+				Record: repository.Record{
+					ID: "86fa6a84-c23a-45de-8ede-f79966e2ce07",
+				},
+				Name:                "Silver Key",
+				Description:         "A silver key.",
+				DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
+			},
+		},
+		{
+			Record: record.Object{
+				Record: repository.Record{
+					ID: "792477df-f63d-4cba-b7a4-695a1f896c67",
+				},
+				Name:                "Dull Bronze Ring",
+				Description:         "A bronze ring.",
+				DescriptionDetailed: "A dull bronze ring.",
+			},
+		},
+	},
+	MonsterConfig: []harness.MonsterConfig{
+		{
+			Record: record.Monster{
+				Record: repository.Record{
+					ID: "1e8179aa-fc2e-4f5a-abe1-e70a237739f5",
+				},
+				Name:        "Grumpy Dwarf",
+				Description: "A particularly grumpy specimen of a dwarf",
+			},
+		},
+		{
+			Record: record.Monster{
+				Record: repository.Record{
+					ID: "e25cbb71-8fac-4734-a0c1-4c00df729beb",
+				},
+				Name:        "Angry Goblin",
+				Description: "A particularly angrey specimen of a goblin",
+			},
+		},
+	},
 	CharacterConfig: []harness.CharacterConfig{
 		{
 			Record: record.Character{
@@ -18,6 +71,14 @@ var testDataConfig = harness.DataConfig{
 					ID: "38efe8fc-a228-484b-b476-ff0d961942a6",
 				},
 				Name: "Barricade",
+			},
+			CharacterObjectConfig: []harness.CharacterObjectConfig{
+				{
+					Record: record.CharacterObject{
+						IsEquipped: true,
+					},
+					ObjectName: "Dull Bronze Ring",
+				},
 			},
 		},
 	},
@@ -40,6 +101,16 @@ var testDataConfig = harness.DataConfig{
 						IsDefault:   true,
 					},
 					NorthLocationName: "Cave Tunnel",
+					LocationObjectConfig: []harness.LocationObjectConfig{
+						{
+							ObjectName: "Rusted Sword",
+						},
+					},
+					LocationMonsterConfig: []harness.LocationMonsterConfig{
+						{
+							MonsterName: "Grumpy Dwarf",
+						},
+					},
 				},
 				{
 					Record: record.Location{
@@ -52,6 +123,11 @@ var testDataConfig = harness.DataConfig{
 					NorthLocationName:     "Cave Room",
 					SouthLocationName:     "Cave Entrance",
 					NorthwestLocationName: "Narrow Tunnel",
+					LocationMonsterConfig: []harness.LocationMonsterConfig{
+						{
+							MonsterName: "Angry Goblin",
+						},
+					},
 				},
 				{
 					Record: record.Location{
@@ -62,6 +138,11 @@ var testDataConfig = harness.DataConfig{
 						Description: "A large cave room.",
 					},
 					SouthLocationName: "Cave Tunnel",
+					LocationObjectConfig: []harness.LocationObjectConfig{
+						{
+							ObjectName: "Silver Key",
+						},
+					},
 				},
 				{
 					Record: record.Location{
@@ -94,62 +175,6 @@ var testDataConfig = harness.DataConfig{
 						Description: "A dark room.",
 					},
 					UpLocationName: "Dark Narrow Tunnel",
-				},
-			},
-			MonsterConfig: []harness.MonsterConfig{
-				{
-					Record: record.Monster{
-						Record: repository.Record{
-							ID: "1e8179aa-fc2e-4f5a-abe1-e70a237739f5",
-						},
-						Name: "Grumpy Dwarf",
-					},
-					LocationName: "Cave Entrance",
-				},
-				{
-					Record: record.Monster{
-						Record: repository.Record{
-							ID: "e25cbb71-8fac-4734-a0c1-4c00df729beb",
-						},
-						Name: "Angry Goblin",
-					},
-					LocationName: "Cave Tunnel",
-				},
-			},
-			ObjectConfig: []harness.ObjectConfig{
-				{
-					Record: record.Object{
-						Record: repository.Record{
-							ID: "54cf320b-6485-4e86-973e-6a5016f809fd",
-						},
-						Name:                "Rusted Sword",
-						Description:         "A rusted sword.",
-						DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
-					},
-					LocationName: "Cave Entrance",
-				},
-				{
-					Record: record.Object{
-						Record: repository.Record{
-							ID: "86fa6a84-c23a-45de-8ede-f79966e2ce07",
-						},
-						Name:                "Silver Key",
-						Description:         "A silver key.",
-						DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
-					},
-					LocationName: "Cave Room",
-				},
-				{
-					Record: record.Object{
-						Record: repository.Record{
-							ID: "792477df-f63d-4cba-b7a4-695a1f896c67",
-						},
-						Name:                "Dull Bronze Ring",
-						Description:         "A bronze ring.",
-						DescriptionDetailed: "A dull bronze ring.",
-						IsEquipped:          true,
-					},
-					CharacterName: "Barricade",
 				},
 			},
 			// TODO: Move

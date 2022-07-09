@@ -4,28 +4,28 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// GetCharacterObjectRecs -
-func (m *Model) GetCharacterObjectRecs(characterID string) ([]*record.Object, error) {
+// CharacterEnterDungeon -
+func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonInstanceRecordSet, error) {
 
-	l := m.Logger("GetCharacterObjectRecs")
+	//
+	return nil, nil
+}
 
-	l.Info("Getting character ID >%s< object records", characterID)
+// CharacterExitDungeon -
+func (m *Model) CharacterExitDungeon(characterID string) error {
 
-	r := m.ObjectRepository()
-
-	return r.GetMany(map[string]interface{}{
-		"character_id": characterID,
-	}, nil, false)
+	//
+	return nil
 }
 
 // GetCharacterEquippedObjectRecs -
-func (m *Model) GetCharacterEquippedObjectRecs(characterID string) ([]*record.Object, error) {
+func (m *Model) GetCharacterEquippedObjectRecs(characterID string) ([]*record.CharacterObject, error) {
 
 	l := m.Logger("GetCharacterEquippedObjectRecs")
 
-	l.Info("Getting character ID >%s< equipped object records", characterID)
+	l.Debug("Getting character ID >%s< equipped object records", characterID)
 
-	r := m.ObjectRepository()
+	r := m.CharacterObjectRepository()
 
 	return r.GetMany(map[string]interface{}{
 		"character_id": characterID,
@@ -34,13 +34,13 @@ func (m *Model) GetCharacterEquippedObjectRecs(characterID string) ([]*record.Ob
 }
 
 // GetCharacterStashedObjectRecs -
-func (m *Model) GetCharacterStashedObjectRecs(characterID string) ([]*record.Object, error) {
+func (m *Model) GetCharacterStashedObjectRecs(characterID string) ([]*record.CharacterObject, error) {
 
 	l := m.Logger("GetCharacterStashedObjectRecs")
 
-	l.Info("Getting character ID >%s< stashed object records", characterID)
+	l.Debug("Getting character ID >%s< stashed object records", characterID)
 
-	r := m.ObjectRepository()
+	r := m.CharacterObjectRepository()
 
 	return r.GetMany(map[string]interface{}{
 		"character_id": characterID,

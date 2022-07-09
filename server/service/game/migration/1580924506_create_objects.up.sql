@@ -1,36 +1,120 @@
+
 -- table dungeon
 CREATE TABLE "dungeon" (
-  "id"                    uuid CONSTRAINT dungeon_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "name"                  text NOT NULL,
-  "description"           text NOT NULL,
+  "id"          uuid CONSTRAINT dungeon_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "name"        text NOT NULL,
+  "description" text NOT NULL,
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE
 );
+COMMENT ON TABLE "dungeon" IS 'A dungeon is a set of locations that contain objects and monsters.';
 
--- dungeon_instance
-CREATE TABLE "dungeon_instance" (
-  "id"                    uuid CONSTRAINT dungeon_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "dungeon_id"            uuid NOT NULL,
+-- TODO: effects
+
+-- table object
+CREATE TABLE "object" (
+  "id"                   uuid CONSTRAINT object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "name"                 text NOT NULL,
+  "description"          text NOT NULL,
+  "description_detailed" text NOT NULL,
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT dungeon_instance_dungeon_id_fk FOREIGN KEY (dungeon_id) REFERENCES dungeon(id)
+  CONSTRAINT "object_name_ck" CHECK (
+    char_length("name") > 0
+  ),
+  CONSTRAINT "object_description_ck" CHECK (
+    char_length("description") > 0
+  ),
+  CONSTRAINT "object_description_detailed_ck" CHECK (
+    char_length("description_detailed") > 0
+  )
 );
+COMMENT ON TABLE "object" IS 'An object can be used, equipped, stashed or dropped.';
 
--- dungeon_instance_view
-CREATE OR REPLACE VIEW "dungeon_instance_view" AS
-SELECT 
-  di.id,
-  di.dungeon_id,
-  d.name,
-  d.description,
-  di.created_at,
-  di.updated_at,
-  di.deleted_at
-FROM "dungeon_instance" di
-JOIN "dungeon" d on d.id = di.dungeon_id
-;
+-- TODO: object effects
+
+-- table monster
+CREATE TABLE "monster" (
+  "id"                uuid CONSTRAINT monster_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "name"              text NOT NULL,
+  "description"       text NOT NULL,
+  "strength"          integer NOT NULL DEFAULT 10,
+  "dexterity"         integer NOT NULL DEFAULT 10,
+  "intelligence"      integer NOT NULL DEFAULT 10,
+  "health"            integer NOT NULL DEFAULT 0,
+  "fatigue"           integer NOT NULL DEFAULT 0,
+  "coins"             integer NOT NULL DEFAULT 0,
+  "experience_points" integer NOT NULL DEFAULT 0,
+  "attribute_points"  integer NOT NULL DEFAULT 0,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "monster_name_uq" UNIQUE("name"),
+  CONSTRAINT "monster_name_ck" CHECK (
+    char_length("name") > 0
+  ),
+  CONSTRAINT "monster_description_ck" CHECK (
+    char_length("description") > 0
+  )
+);
+COMMENT ON TABLE "monster" IS 'A monster can move, attack, converse with characters and interact objects.';
+
+-- table monster_object
+CREATE TABLE "monster_object" (
+  "id"          uuid CONSTRAINT monster_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "monster_id"  uuid,
+  "object_id"   uuid,
+  "is_stashed"  boolean NOT NULL,
+  "is_equipped" boolean NOT NULL,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "monster_object_monster_id_fk" FOREIGN KEY (monster_id) REFERENCES "monster"(id),
+  CONSTRAINT "monster_object_object_id_fk" FOREIGN KEY (object_id) REFERENCES "object"(id),
+  CONSTRAINT "monster_object_equipped_stashed_ck" CHECK (
+    is_stashed != is_equipped
+  )
+);
+COMMENT ON TABLE "monster_object" IS 'An object that is carried by a monster.';
+
+-- table character
+CREATE TABLE "character" (
+  "id"                uuid CONSTRAINT character_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "name"              text NOT NULL,
+  "strength"          integer NOT NULL DEFAULT 10,
+  "dexterity"         integer NOT NULL DEFAULT 10,
+  "intelligence"      integer NOT NULL DEFAULT 10,
+  "health"            integer NOT NULL DEFAULT 0,
+  "fatigue"           integer NOT NULL DEFAULT 0,
+  "coins"             integer NOT NULL DEFAULT 0,
+  "experience_points" integer NOT NULL DEFAULT 0,
+  "attribute_points"  integer NOT NULL DEFAULT 0,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "character_name_uq" UNIQUE ("name")
+);
+COMMENT ON TABLE "monster" IS 'A character is controlled by a player and can move, attack, converse with monsters and interact with objects.';
+
+-- table character_object
+CREATE TABLE "character_object" (
+  "id"           uuid CONSTRAINT character_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "character_id" uuid,
+  "object_id"    uuid,
+  "is_stashed"   boolean NOT NULL,
+  "is_equipped"  boolean NOT NULL,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "character_object_character_id_fk" FOREIGN KEY (character_id) REFERENCES "character"(id),
+  CONSTRAINT "character_object_object_id_fk" FOREIGN KEY (object_id) REFERENCES "object"(id),
+  CONSTRAINT "character_object_equipped_stashed_ck" CHECK (
+    is_stashed != is_equipped
+  )
+);
+COMMENT ON TABLE "character_object" IS 'An object that is carried by a character.';
 
 -- table location
 CREATE TABLE "location" (
@@ -52,6 +136,12 @@ CREATE TABLE "location" (
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "location_name_ck" CHECK (
+    char_length("name") > 0
+  ),
+  CONSTRAINT "location_description_ck" CHECK (
+    char_length("description") > 0
+  ),
   CONSTRAINT location_dungeon_id_fk FOREIGN KEY (dungeon_id) REFERENCES dungeon(id),
   CONSTRAINT location_north_location_id_fk FOREIGN KEY (north_location_id) REFERENCES location(id) INITIALLY DEFERRED,
   CONSTRAINT location_northeast_location_id_fk FOREIGN KEY (northeast_location_id) REFERENCES location(id) INITIALLY DEFERRED,
@@ -63,6 +153,63 @@ CREATE TABLE "location" (
   CONSTRAINT location_northwest_location_id_fk FOREIGN KEY (northwest_location_id) REFERENCES location(id) INITIALLY DEFERRED,
   CONSTRAINT location_up_location_id_fk FOREIGN KEY (up_location_id) REFERENCES location(id) INITIALLY DEFERRED,
   CONSTRAINT location_down_location_id_fk FOREIGN KEY (down_location_id) REFERENCES location(id) INITIALLY DEFERRED
+);
+COMMENT ON TABLE "location" IS 'A location is a room or place within a dungeon.';
+
+-- table location_object
+CREATE TABLE "location_object" (
+  "id"                   uuid CONSTRAINT location_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "location_id"          uuid,
+  "object_id"            uuid,
+  "spawn_minutes"        integer NOT NULL DEFAULT 0,
+  "spawn_percent_chance" integer NOT NULL DEFAULT 100,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "location_object_location_id_fk" FOREIGN KEY (location_id) REFERENCES "location"(id),
+  CONSTRAINT "location_object_object_id_fk" FOREIGN KEY (object_id) REFERENCES "object"(id),
+  CONSTRAINT "location_object_spawn_minutes_ck" CHECK (
+    spawn_minutes BETWEEN 0 AND 60
+  ),
+  CONSTRAINT "location_object_spawn_percent_chance_ck" CHECK (
+    spawn_percent_chance BETWEEN 1 AND 100
+  )
+);
+COMMENT ON TABLE "location_object" IS 'An object that spawns at a location.';
+
+-- table location_monster
+CREATE TABLE "location_monster" (
+  "id"                   uuid CONSTRAINT location_monster_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "location_id"          uuid NOT NULL,
+  "monster_id"           uuid NOT NULL,
+  "spawn_minutes"        integer NOT NULL DEFAULT 0,
+  "spawn_percent_chance" integer NOT NULL DEFAULT 100,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "location_monster_location_id_fk" FOREIGN KEY (location_id) REFERENCES "location"(id),
+  CONSTRAINT "location_monster_monster_id_fk" FOREIGN KEY (monster_id) REFERENCES "monster"(id),
+  CONSTRAINT "location_monster_spawn_minutes_ck" CHECK (
+    spawn_minutes BETWEEN 0 AND 60
+  ),
+  CONSTRAINT "location_monster_spawn_percent_chance_ck" CHECK (
+    spawn_percent_chance BETWEEN 1 AND 100
+  )
+);
+COMMENT ON TABLE "location_monster" IS 'A monster that spawns at a location.';
+
+-- --
+-- -- Instance objects
+-- --
+
+-- dungeon_instance
+CREATE TABLE "dungeon_instance" (
+  "id"         uuid CONSTRAINT dungeon_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "dungeon_id" uuid NOT NULL,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT dungeon_instance_dungeon_id_fk FOREIGN KEY (dungeon_id) REFERENCES dungeon(id)
 );
 
 -- table location_instance
@@ -97,37 +244,12 @@ CREATE TABLE "location_instance" (
   CONSTRAINT "location_instance_down_location_instance_id_fk" FOREIGN KEY (down_location_instance_id) REFERENCES location_instance(id) INITIALLY DEFERRED
 );
 
--- location_instance_view
-CREATE OR REPLACE VIEW "location_instance_view" AS
-SELECT 
-  dli.id,
-  dl.dungeon_id,
-  dli.location_id,
-  dli.dungeon_instance_id,
-  dl.name,
-  dl.description,
-  dl.is_default,
-  dli.north_location_instance_id,
-  dli.northeast_location_instance_id,
-  dli.east_location_instance_id,
-  dli.southeast_location_instance_id,
-  dli.south_location_instance_id,
-  dli.southwest_location_instance_id,
-  dli.west_location_instance_id,
-  dli.northwest_location_instance_id,
-  dli.up_location_instance_id,
-  dli.down_location_instance_id,  
-  dli.created_at,
-  dli.updated_at,
-  dli.deleted_at
-FROM "location_instance" dli
-JOIN "location" dl on dl.id = dli.location_id
-;
-
--- table character
-CREATE TABLE "character" (
-  "id"                   uuid CONSTRAINT character_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "name"                 text NOT NULL,
+-- table character_instance
+CREATE TABLE "character_instance" (
+  "id"                   uuid CONSTRAINT character_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "character_id"         uuid NOT NULL,
+  "dungeon_instance_id"  uuid NOT NULL,
+  "location_instance_id" uuid NOT NULL,
   "strength"             integer NOT NULL DEFAULT 10,
   "dexterity"            integer NOT NULL DEFAULT 10,
   "intelligence"         integer NOT NULL DEFAULT 10,
@@ -139,32 +261,102 @@ CREATE TABLE "character" (
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "character_name_uq" UNIQUE ("name")
-);
-
--- table character_instance
-CREATE TABLE "character_instance" (
-  "id"                           uuid CONSTRAINT character_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "character_id"                 uuid NOT NULL,
-  "dungeon_instance_id"          uuid NOT NULL,
-  "location_instance_id"         uuid NOT NULL,
-  "strength"                     integer NOT NULL DEFAULT 10,
-  "dexterity"                    integer NOT NULL DEFAULT 10,
-  "intelligence"                 integer NOT NULL DEFAULT 10,
-  "health"                       integer NOT NULL DEFAULT 0,
-  "fatigue"                      integer NOT NULL DEFAULT 0,
-  "coins"                        integer NOT NULL DEFAULT 0,
-  "experience_points"            integer NOT NULL DEFAULT 0,
-  "attribute_points"             integer NOT NULL DEFAULT 0,
-  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
-  "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE,
   CONSTRAINT "character_instance_character_id_fk" FOREIGN KEY (character_id) REFERENCES character(id),
   CONSTRAINT "character_instance_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id),
   CONSTRAINT "character_instance_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id)
 );
 
--- character_instance_view
+-- table monster_instance
+CREATE TABLE "monster_instance" (
+  "id"                   uuid CONSTRAINT monster_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "monster_id"           uuid NOT NULL,
+  "dungeon_instance_id"  uuid NOT NULL,
+  "location_instance_id" uuid NOT NULL,
+  "strength"             integer NOT NULL DEFAULT 10,
+  "dexterity"            integer NOT NULL DEFAULT 10,
+  "intelligence"         integer NOT NULL DEFAULT 10,
+  "health"               integer NOT NULL DEFAULT 0,
+  "fatigue"              integer NOT NULL DEFAULT 0,
+  "coins"                integer NOT NULL DEFAULT 0,
+  "experience_points"    integer NOT NULL DEFAULT 0,
+  "attribute_points"     integer NOT NULL DEFAULT 0,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "monster_instance_monster_id_fk" FOREIGN KEY (monster_id) REFERENCES monster(id),
+  CONSTRAINT "monster_instance_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id),
+  CONSTRAINT "monster_instance_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id)
+);
+
+-- table object_instance
+CREATE TABLE "object_instance" (
+  "id"                    uuid CONSTRAINT object_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "object_id"             uuid NOT NULL,
+  "dungeon_instance_id"   uuid NOT NULL,
+  "location_instance_id"  uuid,
+  "character_instance_id" uuid,
+  "monster_instance_id"   uuid,
+  "is_stashed"            boolean NOT NULL DEFAULT FALSE,
+  "is_equipped"           boolean NOT NULL DEFAULT FALSE,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "object_instance_object_id_fk" FOREIGN KEY (object_id) REFERENCES object(id),
+  CONSTRAINT "object_instance_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id),
+  CONSTRAINT "object_instance_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id),
+  CONSTRAINT "object_instance_character_instance_id_fk" FOREIGN KEY (character_instance_id) REFERENCES character_instance(id),
+  CONSTRAINT "object_instance_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES monster_instance(id),
+  CONSTRAINT "object_instance_location_character_monster_ck" CHECK (
+    num_nonnulls(location_instance_id, character_instance_id, monster_instance_id) = 1
+  )
+);
+
+-- --
+-- -- Views
+-- --
+
+-- view dungeon_instance_view
+CREATE OR REPLACE VIEW "dungeon_instance_view" AS
+SELECT 
+  di.id,
+  di.dungeon_id,
+  d.name,
+  d.description,
+  di.created_at,
+  di.updated_at,
+  di.deleted_at
+FROM "dungeon_instance" di
+JOIN "dungeon" d on d.id = di.dungeon_id
+;
+
+-- view location_instance_view
+CREATE OR REPLACE VIEW "location_instance_view" AS
+SELECT 
+  li.id,
+  l.dungeon_id,
+  li.location_id,
+  li.dungeon_instance_id,
+  l.name,
+  l.description,
+  l.is_default,
+  li.north_location_instance_id,
+  li.northeast_location_instance_id,
+  li.east_location_instance_id,
+  li.southeast_location_instance_id,
+  li.south_location_instance_id,
+  li.southwest_location_instance_id,
+  li.west_location_instance_id,
+  li.northwest_location_instance_id,
+  li.up_location_instance_id,
+  li.down_location_instance_id,  
+  li.created_at,
+  li.updated_at,
+  li.deleted_at
+FROM "location_instance" li
+JOIN "location" l on l.id = li.location_id
+;
+
+-- view character_instance_view
 CREATE OR REPLACE VIEW "character_instance_view" AS
 SELECT 
   ci.id,
@@ -192,51 +384,7 @@ FROM "character_instance" ci
 JOIN "character" c on c.id = ci.character_id
 ;
 
--- table monster
-CREATE TABLE "monster" (
-  "id"                   uuid CONSTRAINT monster_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "dungeon_id"           uuid NOT NULL,
-  "location_id"          uuid NOT NULL,
-  "name"                 text NOT NULL,
-  "strength"             integer NOT NULL DEFAULT 10,
-  "dexterity"            integer NOT NULL DEFAULT 10,
-  "intelligence"         integer NOT NULL DEFAULT 10,
-  "health"               integer NOT NULL DEFAULT 0,
-  "fatigue"              integer NOT NULL DEFAULT 0,
-  "coins"                integer NOT NULL DEFAULT 0,
-  "experience_points"    integer NOT NULL DEFAULT 0,
-  "attribute_points"     integer NOT NULL DEFAULT 0,
-  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
-  "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "monster_dungeon_id_fk" FOREIGN KEY (dungeon_id) REFERENCES dungeon(id),
-  CONSTRAINT "monster_location_id_fk" FOREIGN KEY (location_id) REFERENCES location(id),
-  CONSTRAINT "monster_dungeon_id_name_uq" UNIQUE (dungeon_id, "name")
-);
-
--- table monster_instance
-CREATE TABLE "monster_instance" (
-  "id"                           uuid CONSTRAINT monster_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "monster_id"                   uuid NOT NULL,
-  "dungeon_instance_id"          uuid NOT NULL,
-  "location_instance_id"         uuid NOT NULL,
-  "strength"                     integer NOT NULL DEFAULT 10,
-  "dexterity"                    integer NOT NULL DEFAULT 10,
-  "intelligence"                 integer NOT NULL DEFAULT 10,
-  "health"                       integer NOT NULL DEFAULT 0,
-  "fatigue"                      integer NOT NULL DEFAULT 0,
-  "coins"                        integer NOT NULL DEFAULT 0,
-  "experience_points"            integer NOT NULL DEFAULT 0,
-  "attribute_points"             integer NOT NULL DEFAULT 0,
-  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
-  "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "monster_instance_monster_id_fk" FOREIGN KEY (monster_id) REFERENCES monster(id),
-  CONSTRAINT "monster_instance_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id),
-  CONSTRAINT "monster_instance_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id)
-);
-
--- monster_instance_view
+-- view monster_instance_view
 CREATE OR REPLACE VIEW "monster_instance_view" AS
 SELECT 
   mi.id,
@@ -264,65 +412,8 @@ FROM "monster_instance" mi
 JOIN "monster" m on m.id = mi.monster_id
 ;
 
--- table object
-CREATE TABLE "object" (
-  "id"                   uuid CONSTRAINT object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "dungeon_id"           uuid NOT NULL,
-  "location_id"          uuid,
-  "character_id"         uuid,
-  "monster_id"           uuid,
-  "name"                 text NOT NULL,
-  "description"          text NOT NULL,
-  "description_detailed" text NOT NULL,
-  "is_stashed"           boolean NOT NULL DEFAULT FALSE,
-  "is_equipped"          boolean NOT NULL DEFAULT FALSE,
-  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
-  "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "object_dungeon_id_fk" FOREIGN KEY (dungeon_id) REFERENCES dungeon(id),
-  CONSTRAINT "object_location_id_fk" FOREIGN KEY (location_id) REFERENCES location(id),
-  CONSTRAINT "object_character_id_fk" FOREIGN KEY (character_id) REFERENCES character(id),
-  CONSTRAINT "object_monster_id_fk" FOREIGN KEY (monster_id) REFERENCES monster(id),
-  CONSTRAINT "object_dungeon_id_name_uq" UNIQUE (dungeon_id, "name"),
-  CONSTRAINT "object_location_character_monster_ck" CHECK (
-    num_nonnulls(location_id, character_id, monster_id) = 1
-  ),
-  CONSTRAINT "object_name_ck" CHECK (
-    char_length("name") > 0
-  ),
-  CONSTRAINT "object_description_ck" CHECK (
-    char_length("description") > 0
-  ),
-  CONSTRAINT "object_description_detailed_ck" CHECK (
-    char_length("description_detailed") > 0
-  )
-  -- CHECK only stashed or equipped, not both..
-);
 
--- table object_instance
-CREATE TABLE "object_instance" (
-  "id"                           uuid CONSTRAINT object_instance_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "object_id"                    uuid NOT NULL,
-  "dungeon_instance_id"          uuid NOT NULL,
-  "location_instance_id"         uuid,
-  "character_instance_id"        uuid,
-  "monster_instance_id"          uuid,
-  "is_stashed"                   boolean NOT NULL DEFAULT FALSE,
-  "is_equipped"                  boolean NOT NULL DEFAULT FALSE,
-  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
-  "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "object_instance_object_id_fk" FOREIGN KEY (object_id) REFERENCES object(id),
-  CONSTRAINT "object_instance_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id),
-  CONSTRAINT "object_instance_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id),
-  CONSTRAINT "object_instance_character_instance_id_fk" FOREIGN KEY (character_instance_id) REFERENCES character_instance(id),
-  CONSTRAINT "object_instance_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES monster_instance(id),
-  CONSTRAINT "object_instance_location_character_monster_ck" CHECK (
-    num_nonnulls(location_instance_id, character_instance_id, monster_instance_id) = 1
-  )
-);
-
--- object_instance_view
+-- view object_instance_view
 CREATE OR REPLACE VIEW "object_instance_view" AS
 SELECT 
   oi.id,
@@ -334,14 +425,18 @@ SELECT
   o.name,
   o.description,
   o.description_detailed,
-  oi.is_equipped,
   oi.is_stashed,
+  oi.is_equipped,
   oi.created_at,
   oi.updated_at,
   oi.deleted_at
 FROM "object_instance" oi
 JOIN "object" o on o.id = oi.object_id
 ;
+
+-- --
+-- -- Actions
+-- --
 
 -- table action
 CREATE TABLE "action" (

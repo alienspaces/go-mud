@@ -11,7 +11,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 
 	l := m.Logger("ProcessCharacterAction")
 
-	l.Info("Processing character ID >%s< action command >%s<", characterInstanceID, sentence)
+	l.Debug("Processing character ID >%s< action command >%s<", characterInstanceID, sentence)
 
 	// Verify the character performing the action exists within the specified dungeon
 	characterInstanceViewRec, err := m.GetCharacterInstanceViewRec(characterInstanceID)
@@ -50,8 +50,8 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("Dungeon action record command >%s<", actionRec.ResolvedCommand)
-	l.Info("Dungeon action record location >%s<", actionRec.LocationInstanceID)
+	l.Debug("Dungeon action record command >%s<", actionRec.ResolvedCommand)
+	l.Debug("Dungeon action record location >%s<", actionRec.LocationInstanceID)
 
 	// Perform the submitted character action
 	actionRec, err = m.performCharacterAction(characterInstanceViewRec, actionRec, locationInstanceRecordSet)
@@ -60,8 +60,8 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("Dungeon action record command >%s<", actionRec.ResolvedCommand)
-	l.Info("Dungeon action record location >%s<", actionRec.LocationInstanceID)
+	l.Debug("Dungeon action record command >%s<", actionRec.ResolvedCommand)
+	l.Debug("Dungeon action record location >%s<", actionRec.LocationInstanceID)
 
 	// Create the resulting action event record
 	err = m.CreateActionRec(actionRec)
@@ -70,7 +70,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("Created action record ID >%s<", actionRec.ID)
+	l.Debug("Created action record ID >%s<", actionRec.ID)
 
 	// TODO: Maybe don't need to do this... Get the updated character record
 	characterInstanceViewRec, err = m.GetCharacterInstanceViewRec(characterInstanceID)
@@ -143,10 +143,10 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("Dungeon location record set location name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.Name)
-	l.Info("Dungeon location record set characters >%d<", len(locationInstanceRecordSet.CharacterInstanceViewRecs))
-	l.Info("Dungeon location record set monsters >%d<", len(locationInstanceRecordSet.MonsterInstanceViewRecs))
-	l.Info("Dungeon location record set objects >%d<", len(locationInstanceRecordSet.ObjectInstanceViewRecs))
+	l.Debug("Dungeon location record set location name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.Name)
+	l.Debug("Dungeon location record set characters >%d<", len(locationInstanceRecordSet.CharacterInstanceViewRecs))
+	l.Debug("Dungeon location record set monsters >%d<", len(locationInstanceRecordSet.MonsterInstanceViewRecs))
+	l.Debug("Dungeon location record set objects >%d<", len(locationInstanceRecordSet.ObjectInstanceViewRecs))
 
 	// Current location
 	locationInstanceViewRec, err := m.GetLocationInstanceViewRec(actionRec.LocationInstanceID)
@@ -191,7 +191,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 				return nil, err
 			}
 
-			l.Info("Created current location action character record ID >%s<", dungeonActionCharacterRec.ID)
+			l.Debug("Created current location action character record ID >%s<", dungeonActionCharacterRec.ID)
 			currentLocationRecordSet.ActionCharacterRecs = append(currentLocationRecordSet.ActionCharacterRecs, &dungeonActionCharacterRec)
 		}
 	}
@@ -222,7 +222,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 				return nil, err
 			}
 
-			l.Info("Created current location action monster record ID >%s<", dungeonActionMonsterRec.ID)
+			l.Debug("Created current location action monster record ID >%s<", dungeonActionMonsterRec.ID)
 			currentLocationRecordSet.ActionMonsterRecs = append(currentLocationRecordSet.ActionMonsterRecs, &dungeonActionMonsterRec)
 		}
 	}
@@ -246,7 +246,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 				return nil, err
 			}
 
-			l.Info("Created current location action object record ID >%s<", dungeonActionObjectRec.ID)
+			l.Debug("Created current location action object record ID >%s<", dungeonActionObjectRec.ID)
 			currentLocationRecordSet.ActionObjectRecs = append(currentLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
 		}
 	}
@@ -303,7 +303,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 					return nil, err
 				}
 
-				l.Info("Created target location occupant action character record ID >%s<", dungeonActionCharacterRec.ID)
+				l.Debug("Created target location occupant action character record ID >%s<", dungeonActionCharacterRec.ID)
 				targetLocationRecordSet.ActionCharacterRecs = append(targetLocationRecordSet.ActionCharacterRecs, &dungeonActionCharacterRec)
 			}
 		}
@@ -334,7 +334,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 					return nil, err
 				}
 
-				l.Info("Created target location occupant action monster record ID >%s<", dungeonActionMonsterRec.ID)
+				l.Debug("Created target location occupant action monster record ID >%s<", dungeonActionMonsterRec.ID)
 				targetLocationRecordSet.ActionMonsterRecs = append(targetLocationRecordSet.ActionMonsterRecs, &dungeonActionMonsterRec)
 			}
 		}
@@ -358,7 +358,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 					return nil, err
 				}
 
-				l.Info("Created target location occupant action object record ID >%s<", dungeonActionObjectRec.ID)
+				l.Debug("Created target location occupant action object record ID >%s<", dungeonActionObjectRec.ID)
 				targetLocationRecordSet.ActionObjectRecs = append(targetLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
 			}
 		}
@@ -369,7 +369,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	// Create the target character action record
 	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
 
-		l.Info("Resolved target character instance ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
+		l.Debug("Resolved target character instance ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
 
 		targetCharacterInstanceViewRec, err := m.GetCharacterInstanceViewRec(actionRec.ResolvedTargetCharacterInstanceID.String)
 		if err != nil {
@@ -409,11 +409,11 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 			return nil, err
 		}
 
-		l.Info("Adding >%d< target character object records", len(objectInstanceViewRecs))
+		l.Debug("Adding >%d< target character object records", len(objectInstanceViewRecs))
 
 		targetCharacterObjectRecs := []*record.ActionCharacterObject{}
 		for _, objectInstanceViewRec := range objectInstanceViewRecs {
-			l.Info("Adding target character object record >%v<", objectInstanceViewRecs)
+			l.Debug("Adding target character object record >%v<", objectInstanceViewRecs)
 			dungeonCharacterObjectRec := record.ActionCharacterObject{
 				ActionID:            actionRec.ID,
 				CharacterInstanceID: targetCharacterInstanceViewRec.ID,
@@ -435,7 +435,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	// Create the target dungeon monster action record
 	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
 
-		l.Info("Resolved target monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
+		l.Debug("Resolved target monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
 
 		targetMonsterInstanceViewRec, err := m.GetMonsterInstanceViewRec(actionRec.ResolvedTargetMonsterInstanceID.String)
 		if err != nil {
@@ -475,11 +475,11 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 			return nil, err
 		}
 
-		l.Info("Adding >%d< target monster object records", len(objectInstanceViewRecs))
+		l.Debug("Adding >%d< target monster object records", len(objectInstanceViewRecs))
 
 		targetMonsterObjectRecs := []*record.ActionMonsterObject{}
 		for _, objectInstanceViewRec := range objectInstanceViewRecs {
-			l.Info("Adding target monster object record >%v<", objectInstanceViewRec)
+			l.Debug("Adding target monster object record >%v<", objectInstanceViewRec)
 			dungeonMonsterObjectRec := record.ActionMonsterObject{
 				ActionID:          actionRec.ID,
 				MonsterInstanceID: targetMonsterInstanceViewRec.ID,

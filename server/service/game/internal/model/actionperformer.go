@@ -42,7 +42,7 @@ func (m *Model) performCharacterAction(
 		return nil, err
 	}
 
-	l.Info("Have updated dungeon action record >%v<", actionRec)
+	l.Debug("Have updated dungeon action record >%v<", actionRec)
 
 	return actionRec, nil
 }
@@ -94,16 +94,16 @@ func (m *Model) performActionLook(
 	// should result in additional information within X turns.
 
 	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-		l.Info("Looking at location ID >%s<", actionRec.ResolvedTargetLocationInstanceID.String)
+		l.Debug("Looking at location ID >%s<", actionRec.ResolvedTargetLocationInstanceID.String)
 
 	} else if actionRec.ResolvedTargetObjectInstanceID.Valid {
-		l.Info("Looking at object ID >%s<", actionRec.ResolvedTargetObjectInstanceID.String)
+		l.Debug("Looking at object ID >%s<", actionRec.ResolvedTargetObjectInstanceID.String)
 
 	} else if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-		l.Info("Looking at monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
+		l.Debug("Looking at monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
 
 	} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-		l.Info("Looking at character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
+		l.Debug("Looking at character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
 	}
 
 	return actionRec, nil

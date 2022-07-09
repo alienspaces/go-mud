@@ -8,6 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
+	coresql "gitlab.com/alienspaces/go-mud/server/core/sql"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
@@ -128,7 +129,7 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 	tx := r.Tx
 
 	// params
-	querySQL, queryParams, err := r.sqlFromParamsAndOperator(querySQL, params, operators)
+	querySQL, queryParams, err := coresql.FromParamsAndOperators(querySQL, params, operators)
 	if err != nil {
 		r.Log.Debug("Failed generating query >%v<", err)
 		return nil, err

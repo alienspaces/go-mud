@@ -9,18 +9,8 @@ import (
 // ValidateObjectRec - validates creating and updating a game record
 func (m *Model) ValidateObjectRec(rec *record.Object) error {
 
-	if rec.ID == "" {
-		if rec.DungeonID == "" {
-			return fmt.Errorf("failed validation, DungeonID is empty")
-		}
-		if !rec.LocationID.Valid &&
-			!rec.CharacterID.Valid &&
-			!rec.MonsterID.Valid {
-			return fmt.Errorf("failed validation, all of LocationID, CharacterID and MonsterID are empty")
-		}
-		if rec.Name == "" {
-			return fmt.Errorf("failed validation, Name is empty")
-		}
+	if rec.Name == "" {
+		return fmt.Errorf("failed validation, Name is empty")
 	}
 
 	return nil

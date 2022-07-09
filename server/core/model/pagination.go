@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	coresql "gitlab.com/alienspaces/go-mud/server/core/sql"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 )
 
@@ -56,7 +56,7 @@ func resolveLimit(params map[string]interface{}, operators map[string]string) (m
 	}
 
 	limit := pageSize + 1
-	operators[repository.OperatorLimit] = strconv.Itoa(limit)
+	operators[coresql.OperatorLimit] = strconv.Itoa(limit)
 
 	return params, operators, limit, nil
 }
@@ -71,13 +71,13 @@ func resolveOffset(params map[string]interface{}, operators map[string]string, p
 	}
 
 	offset := (pageNumber - 1) * pageSize
-	operators[repository.OperatorOffset] = strconv.Itoa(offset)
+	operators[coresql.OperatorOffset] = strconv.Itoa(offset)
 	return params, operators, nil
 }
 
 // TODO sorting collection endpoint will be resolved in future story
 func resolveSortOrder(params map[string]interface{}, operators map[string]string) (map[string]interface{}, map[string]string) {
-	operators[repository.OperatorOrderByDescending] = DefaultOrderDescendingColumn
+	operators[coresql.OperatorOrderByDescending] = DefaultOrderDescendingColumn
 	return params, operators
 }
 

@@ -6,11 +6,10 @@ package test
 import (
 	"testing"
 
-	"gitlab.com/alienspaces/go-mud/server/core/store"
-
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
@@ -33,15 +32,15 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.Location
+		rec  func(data harness.Data) *record.LocationInstance
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.Location {
-				return &record.Location{
-					DungeonID:              data.DungeonRecs[0].ID,
-					Name:                   "Dirt Road",
+			rec: func(data harness.Data) *record.LocationInstance {
+				return &record.LocationInstance{
+					DungeonID:       data.DungeonRecs[0].ID,
+					Name:            "Dirt Road",
 					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
 				}
 			},
@@ -49,10 +48,10 @@ func TestCreateOne(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.Location {
-				rec := &record.Location{
-					DungeonID:              data.DungeonRecs[0].ID,
-					Name:                   "Dusty Road",
+			rec: func(data harness.Data) *record.LocationInstance {
+				rec := &record.LocationInstance{
+					DungeonID:       data.DungeonRecs[0].ID,
+					Name:            "Dusty Road",
 					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
@@ -189,19 +188,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.Location
+		rec  func() *record.LocationInstance
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.Location {
+			rec: func() *record.LocationInstance {
 				return h.Data.LocationRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.Location {
+			rec: func() *record.LocationInstance {
 				rec := h.Data.LocationRecs[0]
 				rec.ID = ""
 				return rec

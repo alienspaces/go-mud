@@ -7,15 +7,9 @@ import (
 )
 
 type Object struct {
-	DungeonID           string         `db:"dungeon_id"`
-	LocationID          sql.NullString `db:"location_id"`
-	CharacterID         sql.NullString `db:"character_id"`
-	MonsterID           sql.NullString `db:"monster_id"`
-	Name                string         `db:"name"`
-	Description         string         `db:"description"`
-	DescriptionDetailed string         `db:"description_detailed"`
-	IsStashed           bool           `db:"is_stashed"`
-	IsEquipped          bool           `db:"is_equipped"`
+	Name                string `db:"name"`
+	Description         string `db:"description"`
+	DescriptionDetailed string `db:"description_detailed"`
 	repository.Record
 }
 

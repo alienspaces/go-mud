@@ -47,7 +47,7 @@ func (m *Model) CreateActionMonsterRec(rec *record.ActionMonster) error {
 
 	l := m.Logger("CreateActionMonsterRec")
 
-	l.Info("Creating dungeon action monster rec >%#v<", rec)
+	l.Debug("Creating dungeon action monster rec >%#v<", rec)
 
 	r := m.ActionMonsterRepository()
 

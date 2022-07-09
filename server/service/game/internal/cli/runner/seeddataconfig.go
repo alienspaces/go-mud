@@ -5,11 +5,70 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+// The following data is actual game data used to seed a new game server
 func SeedDataConfig() harness.DataConfig {
 	return seedDataConfig
 }
 
 var seedDataConfig = harness.DataConfig{
+	ObjectConfig: []harness.ObjectConfig{
+		{
+			Record: record.Object{
+				Name:                "Rusted Sword",
+				Description:         "A rusted sword.",
+				DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
+			},
+		},
+		{
+			Record: record.Object{
+				Name:                "Silver Key",
+				Description:         "A silver key.",
+				DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
+			},
+		},
+		{
+			Record: record.Object{
+				Name:                "Bone Dagger",
+				Description:         "A bone dagger.",
+				DescriptionDetailed: "A bone dagger.",
+			},
+		},
+		{
+			Record: record.Object{
+				Name:                "Vial Of Ogre Blood",
+				Description:         "A large vial of ogre blood.",
+				DescriptionDetailed: "A large vial of ogre blood.",
+			},
+		},
+	},
+	MonsterConfig: []harness.MonsterConfig{
+		{
+			Record: record.Monster{
+				Name:        "Grumpy Dwarf",
+				Description: "A particularly grumpy specimen of a dwarf",
+			},
+			MonsterObjectConfig: []harness.MonsterObjectConfig{
+				{
+					Record: record.MonsterObject{
+						IsEquipped: true,
+					},
+					ObjectName: "Bone Dagger",
+				},
+				{
+					Record: record.MonsterObject{
+						IsStashed: true,
+					},
+					ObjectName: "Vial Of Ogre Blood",
+				},
+			},
+		},
+		{
+			Record: record.Monster{
+				Name:        "Angry Goblin",
+				Description: "A particularly angry specimen of a goblin",
+			},
+		},
+	},
 	DungeonConfig: []harness.DungeonConfig{
 		{
 			Record: record.Dungeon{
@@ -23,6 +82,16 @@ var seedDataConfig = harness.DataConfig{
 						IsDefault:   true,
 					},
 					NorthLocationName: "Cave Tunnel",
+					LocationMonsterConfig: []harness.LocationMonsterConfig{
+						{
+							MonsterName: "Grumpy Dwarf",
+						},
+					},
+					LocationObjectConfig: []harness.LocationObjectConfig{
+						{
+							ObjectName: "Rusted Sword",
+						},
+					},
 				},
 				{
 					Record: record.Location{
@@ -32,6 +101,12 @@ var seedDataConfig = harness.DataConfig{
 					NorthLocationName:     "Cave Room",
 					SouthLocationName:     "Cave Entrance",
 					NorthwestLocationName: "Narrow Tunnel",
+					LocationMonsterConfig: []harness.LocationMonsterConfig{
+						{
+							MonsterName: "Angry Goblin",
+						},
+					},
+					LocationObjectConfig: []harness.LocationObjectConfig{},
 				},
 				{
 					Record: record.Location{
@@ -39,6 +114,11 @@ var seedDataConfig = harness.DataConfig{
 						Description: "A large cave room.",
 					},
 					SouthLocationName: "Cave Tunnel",
+					LocationObjectConfig: []harness.LocationObjectConfig{
+						{
+							ObjectName: "Silver Key",
+						},
+					},
 				},
 				{
 					Record: record.Location{
@@ -62,56 +142,6 @@ var seedDataConfig = harness.DataConfig{
 						Description: "A dark room.",
 					},
 					UpLocationName: "Dark Narrow Tunnel",
-				},
-			},
-			MonsterConfig: []harness.MonsterConfig{
-				{
-					Record: record.Monster{
-						Name: "Grumpy Dwarf",
-					},
-					LocationName: "Cave Entrance",
-				},
-				{
-					Record: record.Monster{
-						Name: "Angry Goblin",
-					},
-					LocationName: "Cave Tunnel",
-				},
-			},
-			ObjectConfig: []harness.ObjectConfig{
-				{
-					Record: record.Object{
-						Name:                "Rusted Sword",
-						Description:         "A rusted sword.",
-						DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
-					},
-					LocationName: "Cave Entrance",
-				},
-				{
-					Record: record.Object{
-						Name:                "Silver Key",
-						Description:         "A silver key.",
-						DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
-					},
-					LocationName: "Cave Room",
-				},
-				{
-					Record: record.Object{
-						Name:                "Bone Dagger",
-						Description:         "A bone dagger.",
-						DescriptionDetailed: "A bone dagger.",
-						IsEquipped:          true,
-					},
-					MonsterName: "Grumpy Dwarf",
-				},
-				{
-					Record: record.Object{
-						Name:                "Vial Of Ogre Blood",
-						Description:         "A large vial of ogre blood.",
-						DescriptionDetailed: "A large vial of ogre blood.",
-						IsStashed:           true,
-					},
-					MonsterName: "Grumpy Dwarf",
 				},
 			},
 		},

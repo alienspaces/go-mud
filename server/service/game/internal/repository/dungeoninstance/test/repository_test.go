@@ -31,20 +31,20 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.Dungeon
+		rec  func() *record.DungeonInstance
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func() *record.Dungeon {
-				return &record.Dungeon{}
+			rec: func() *record.DungeonInstance {
+				return &record.DungeonInstance{}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func() *record.Dungeon {
-				rec := &record.Dungeon{}
+			rec: func() *record.DungeonInstance {
+				rec := &record.DungeonInstance{}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -96,7 +96,7 @@ func TestGetOne(t *testing.T) {
 	config := harness.DataConfig{
 		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Dungeon{},
+				Record: record.DungeonInstance{},
 			},
 		},
 	}
@@ -173,7 +173,7 @@ func TestUpdateOne(t *testing.T) {
 	config := harness.DataConfig{
 		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Dungeon{},
+				Record: record.DungeonInstance{},
 			},
 		},
 	}
@@ -191,19 +191,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.Dungeon
+		rec  func() *record.DungeonInstance
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.Dungeon {
+			rec: func() *record.DungeonInstance {
 				return h.Data.DungeonRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.Dungeon {
+			rec: func() *record.DungeonInstance {
 				rec := h.Data.DungeonRecs[0]
 				rec.ID = ""
 				return rec
@@ -255,7 +255,7 @@ func TestDeleteOne(t *testing.T) {
 	config := harness.DataConfig{
 		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.Dungeon{},
+				Record: record.DungeonInstance{},
 			},
 		},
 	}

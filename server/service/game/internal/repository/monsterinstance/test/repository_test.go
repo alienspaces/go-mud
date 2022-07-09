@@ -31,33 +31,33 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonMonster
+		rec  func(data harness.Data) *record.MonsterInstance
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonMonster {
-				return &record.DungeonMonster{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[2].ID,
-					Name:              "Grey Troll",
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.MonsterInstance {
+				return &record.MonsterInstance{
+					DungeonID:    data.DungeonRecs[0].ID,
+					LocationID:   data.LocationRecs[2].ID,
+					Name:         "Grey Troll",
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonMonster {
-				rec := &record.DungeonMonster{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[2].ID,
-					Name:              "Wounded Troglodyte",
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.MonsterInstance {
+				rec := &record.MonsterInstance{
+					DungeonID:    data.DungeonRecs[0].ID,
+					LocationID:   data.LocationRecs[2].ID,
+					Name:         "Wounded Troglodyte",
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -193,19 +193,19 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonMonster
+		rec  func() *record.MonsterInstance
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonMonster {
+			rec: func() *record.MonsterInstance {
 				return h.Data.DungeonMonsterRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonMonster {
+			rec: func() *record.MonsterInstance {
 				rec := h.Data.DungeonMonsterRecs[0]
 				rec.ID = ""
 				return rec

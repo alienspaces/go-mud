@@ -54,16 +54,16 @@ func (m *Model) Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) 
 	}
 
 	if m.RepositoriesFunc == nil {
-		m.RepositoriesFunc = m.NewRepositories
+		m.RepositoriesFunc = m.DefaultRepositoriesFunc
 	}
 
 	if m.QueriesFunc == nil {
-		m.QueriesFunc = m.NewQueriers
+		m.QueriesFunc = m.DefaultQueriesFunc
 	}
 
 	m.Tx = tx
 
-	// repositories
+	// Repositories
 	repositories, err := m.RepositoriesFunc(pRepo, tx)
 	if err != nil {
 		m.Log.Warn("failed repositories func >%v<", err)
@@ -75,29 +75,30 @@ func (m *Model) Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) 
 		m.Repositories[r.TableName()] = r
 	}
 
-	queriers, err := m.QueriesFunc(pQ, tx)
+	// Queries
+	queries, err := m.QueriesFunc(pQ, tx)
 	if err != nil {
 		m.Log.Warn("failed queries func >%v<", err)
 	}
 
 	m.Queries = make(map[string]querier.Querier)
-	for _, q := range queriers {
+	for _, q := range queries {
 		m.Queries[q.Name()] = q
 	}
 
 	return nil
 }
 
-// NewRepositories - default repositor.RepositoriesFunc, override this function for custom repositories
-func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
+// DefaultRepositoriesFunc - default repositor.RepositoriesFunc, override this function for custom repositories
+func (m *Model) DefaultRepositoriesFunc(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
 
 	m.Log.Info("** repositor.Repositories **")
 
 	return nil, nil
 }
 
-// NewQueriers - default repositor.QueriesFunc, override this function for custom queriers
-func (m *Model) NewQueriers(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error) {
+// DefaultQueriesFunc - default repositor.QueriesFunc, override this function for custom queries
+func (m *Model) DefaultQueriesFunc(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error) {
 
 	m.Log.Info("** querier.Queriers **")
 
@@ -106,21 +107,20 @@ func (m *Model) NewQueriers(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, e
 
 // Commit -
 func (m *Model) Commit() error {
-	if m.Tx != nil {
-		m.Tx.Commit()
-		return nil
+	if m.Tx == nil {
+		msg := "cannot commit, database Tx is nil"
+		m.Log.Warn(msg)
+		return fmt.Errorf(msg)
 	}
-	msg := "cannot commit, database Tx is nil"
-	m.Log.Warn(msg)
-	return fmt.Errorf(msg)
+	return m.Tx.Commit()
 }
 
 // Rollback -
 func (m *Model) Rollback() error {
-	if m.Tx != nil {
-		return m.Tx.Rollback()
+	if m.Tx == nil {
+		msg := "cannot rollback, database Tx is nil"
+		m.Log.Warn(msg)
+		return fmt.Errorf(msg)
 	}
-	msg := "cannot rollback, database Tx is nil"
-	m.Log.Warn(msg)
-	return fmt.Errorf(msg)
+	return m.Tx.Rollback()
 }

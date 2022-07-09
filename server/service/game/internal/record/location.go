@@ -24,9 +24,25 @@ type Location struct {
 	repository.Record
 }
 
+type LocationObject struct {
+	LocationID         string `db:"location_id"`
+	ObjectID           string `db:"object_id"`
+	SpawnMinutes       int    `db:"spawn_minutes"`
+	SpawnPercentChance int    `db:"spawn_percent_chance"`
+	repository.Record
+}
+
+type LocationMonster struct {
+	LocationID         string `db:"location_id"`
+	MonsterID          string `db:"monster_id"`
+	SpawnMinutes       int    `db:"spawn_minutes"`
+	SpawnPercentChance int    `db:"spawn_percent_chance"`
+	repository.Record
+}
+
 type LocationInstance struct {
-	DungeonInstanceID           string         `db:"dungeon_instance_id"`
 	LocationID                  string         `db:"location_id"`
+	DungeonInstanceID           string         `db:"dungeon_instance_id"`
 	NorthLocationInstanceID     sql.NullString `db:"north_location_instance_id"`
 	NortheastLocationInstanceID sql.NullString `db:"northeast_location_instance_id"`
 	EastLocationInstanceID      sql.NullString `db:"east_location_instance_id"`

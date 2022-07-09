@@ -59,13 +59,5 @@ func Default() (*config.Config, *log.Log, *store.Store, error) {
 		return nil, nil, nil, err
 	}
 
-	// TODO: Remove
-	// Modeller
-	// m, err := model.NewModel(c, l, s)
-	// if err != nil {
-	// 	fmt.Printf("failed new model >%v<", err)
-	// 	return nil, nil, nil, nil, err
-	// }
-
 	return c, l, s, nil
 }

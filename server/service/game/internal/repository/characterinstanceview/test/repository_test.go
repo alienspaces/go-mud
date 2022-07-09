@@ -35,7 +35,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonCharacterRecs[0].ID
+				return h.Data.CharacterInstance[0].ID
 			},
 			err: false,
 		},
