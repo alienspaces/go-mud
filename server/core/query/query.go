@@ -46,9 +46,10 @@ func (q *Query) Name() string {
 
 func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
 	l := q.Log
+	tx := q.Tx
 
 	stmt := q.Prepare.Stmt()
-	stmt = q.Tx.NamedStmt(stmt)
+	stmt = tx.NamedStmt(stmt)
 
 	res, err := stmt.Exec(params)
 	if err != nil {
@@ -66,7 +67,7 @@ func (q *Query) GetRows(params map[string]interface{}, operators map[string]stri
 	// params
 	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Prepare.SQL(), params, operators)
 	if err != nil {
-		l.Warn("Failed generating query >%v<", err)
+		l.Warn("failed generating query >%v<", err)
 		return nil, err
 	}
 
@@ -74,7 +75,7 @@ func (q *Query) GetRows(params map[string]interface{}, operators map[string]stri
 
 	rows, err := tx.NamedQuery(querySQL, queryParams)
 	if err != nil {
-		l.Warn("Failed querying row >%v<", err)
+		l.Warn("Failed querying rows >%v<", err)
 		return nil, err
 	}
 

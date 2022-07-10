@@ -181,57 +181,6 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 		}
-
-		// Resolve monster and object config locations
-		// dungeonConfig, err = t.resolveConfigLocationIdentifiers(data, dungeonConfig)
-		// if err != nil {
-		// 	l.Warn("Failed resolving config location identifiers >%v<", err)
-		// 	return err
-		// }
-
-		// Resolve object config character identifiers
-		// dungeonConfig, err = t.resolveConfigObjectCharacterIdentifiers(data, dungeonConfig)
-		// if err != nil {
-		// 	l.Warn("Failed resolving config object character identifiers >%v<", err)
-		// 	return err
-		// }
-
-		// Resolve object config monster identifiers
-		// dungeonConfig, err = t.resolveConfigObjectMonsterIdentifiers(data, dungeonConfig)
-		// if err != nil {
-		// 	l.Warn("Failed resolving config object monster identifiers >%v<", err)
-		// 	return err
-		// }
-
-		// Create dungeon instances
-		// for _, dungeonInstanceConfig := range dungeonConfig.DungeonInstanceConfig {
-
-		// 	// Create dungeon instance record
-		// 	t.Log.Info("Creating dungeon instance >%#v<", dungeonInstanceConfig)
-		// 	dungeonInstanceRecordSet, err := t.createDungeonInstance(dungeonRec.ID)
-		// 	if err != nil {
-		// 		l.Warn("Failed creating dungeon instance record >%v<", err)
-		// 		return err
-		// 	}
-
-		// 	l.Info("+ Created dungeon instance record set >%#v<", dungeonInstanceRecordSet)
-		// 	data.DungeonInstanceRecs = append(data.DungeonInstanceRecs, dungeonInstanceRecordSet.DungeonInstanceRec)
-		// 	teardownData.DungeonInstanceRecs = append(teardownData.DungeonInstanceRecs, dungeonInstanceRecordSet.DungeonInstanceRec)
-
-		// 	data.LocationInstanceRecs = append(data.LocationInstanceRecs, dungeonInstanceRecordSet.LocationInstanceRecs...)
-		// 	teardownData.LocationInstanceRecs = append(teardownData.LocationInstanceRecs, dungeonInstanceRecordSet.LocationInstanceRecs...)
-
-		// 	data.MonsterInstanceRecs = append(data.MonsterInstanceRecs, dungeonInstanceRecordSet.MonsterInstanceRecs...)
-		// 	teardownData.MonsterInstanceRecs = append(teardownData.MonsterInstanceRecs, dungeonInstanceRecordSet.MonsterInstanceRecs...)
-
-		// 	data.ObjectInstanceRecs = append(data.ObjectInstanceRecs, dungeonInstanceRecordSet.ObjectInstanceRecs...)
-		// 	teardownData.ObjectInstanceRecs = append(teardownData.ObjectInstanceRecs, dungeonInstanceRecordSet.ObjectInstanceRecs...)
-
-		// 	// TODO: Create character instance records
-
-		// 	// TODO: Create action records
-
-		// }
 	}
 
 	// Characters
@@ -261,11 +210,21 @@ func (t *Testing) CreateData() error {
 		// Character enter dungeon
 		if characterConfig.CharacterDungeonConfig != nil {
 			t.Log.Info("Character ID >%s< entering dungeon Name >%s<", characterRec.ID, characterConfig.CharacterDungeonConfig.DungeonName)
-			// dungeonInstanceRecordSet, err := t.characterEnterDungeon(characterRec.ID, characterConfig.CharacterDungeonConfig.DungeonName)
-			// if err != nil {
-			// 	l.Warn("Failed character entering dungeon >%v<", err)
-			// 	return err
-			// }
+
+			dungeonRec, err := data.GetDungeonRecByName(characterConfig.CharacterDungeonConfig.DungeonName)
+			if err != nil {
+				l.Warn("Failed getting dungeon record by Name >%s< >%v<", characterConfig.CharacterDungeonConfig.DungeonName, err)
+				return err
+			}
+
+			dungeonInstanceRecordSet, err := t.characterEnterDungeon(dungeonRec.ID, characterRec.ID)
+			if err != nil {
+				l.Warn("Failed character entering dungeon >%v<", err)
+				return err
+			}
+
+			data.AddDungeonInstanceRecordSet(dungeonInstanceRecordSet)
+			teardownData.AddDungeonInstanceRecordSet(dungeonInstanceRecordSet)
 		}
 	}
 

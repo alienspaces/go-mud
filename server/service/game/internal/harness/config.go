@@ -53,8 +53,8 @@ type CharacterObjectConfig struct {
 // CharacterDungeonConfig creates a character instances inside a new or existing
 // dungeon instance.
 type CharacterDungeonConfig struct {
-	// DungeonName is used to resolve the dungeon identifier of the dungeon and
-	// dungeon instance a character instance will be created in.
+	// DungeonName is used to resolve the dungeon identifier of the dungeon instance
+	// a character instance should be created in.
 	DungeonName string
 }
 
@@ -92,32 +92,8 @@ type LocationObjectConfig struct {
 	ObjectName string
 }
 
-// DungeonInstanceConfig -
-type DungeonInstanceConfig struct {
-
-	// TODO: A character can only have one active instance in a dungeon at a time.
-	// When configuration contains multiple  CharacterInstanceConfig definitions
-	// the result of applying all ActionConfig definitions should result in only
-	// one active character instance.
-	CharacterInstanceConfig []CharacterInstanceConfig
-
-	// TODO: Change this to TurnConfig that contains a list of ActionConfig
-	// definitions for character and monster instances to perform
-	ActionConfig []ActionConfig
-}
-
-// CharacterInstanceConfig -
-type CharacterInstanceConfig struct {
-	Record record.CharacterInstance
-	// CharacterName is used to resolve the required character
-	// identifier of the character instance record
-	CharacterName string
-	// LocationName is used to resolve the required location
-	// identifier of the character instance record
-	LocationName string
-}
-
-// TODO: Change this to TurnConfig that contains a list of ActionConfig
+// TODO: ???? What was I thinking here, next time give some background..
+/// - Change this to TurnConfig that contains a list of ActionConfig
 // definitions for character and monster instances to perform
 
 // ActionConfig -

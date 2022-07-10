@@ -97,6 +97,9 @@ var DefaultDataConfig = DataConfig{
 					ObjectName: "Blood Stained Pouch",
 				},
 			},
+			CharacterDungeonConfig: &CharacterDungeonConfig{
+				DungeonName: "Cave",
+			},
 		},
 	},
 	DungeonConfig: []DungeonConfig{

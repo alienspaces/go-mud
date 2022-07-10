@@ -14,7 +14,6 @@ func (m *Model) ValidateCharacterInstanceRec(rec *record.CharacterInstance) erro
 		if rec.Strength+rec.Intelligence+rec.Dexterity > defaultAttributePoints {
 			return fmt.Errorf("new character attributes exceeds allowed maximum of %d", defaultAttributePoints)
 		}
-
 		if rec.Strength == 0 {
 			return fmt.Errorf("failed validation, Strength is empty")
 		}
@@ -30,6 +29,13 @@ func (m *Model) ValidateCharacterInstanceRec(rec *record.CharacterInstance) erro
 		if rec.Fatigue == 0 {
 			return fmt.Errorf("failed validation, Fatigue is empty")
 		}
+	}
+
+	if rec.DungeonInstanceID == "" {
+		return fmt.Errorf("failed validation, DungeonInstanceID is empty")
+	}
+	if rec.LocationInstanceID == "" {
+		return fmt.Errorf("failed validation, LocationInstanceID is empty")
 	}
 
 	return nil

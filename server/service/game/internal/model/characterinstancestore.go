@@ -86,26 +86,7 @@ func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error 
 
 	characterRepo := m.CharacterInstanceRepository()
 
-	// Get default location record for the character dungeon
-	locationRecs, err := m.GetLocationRecs(map[string]interface{}{
-		"dungeon_id": rec.DungeonInstanceID,
-		"default":    true,
-	}, nil, false)
-	if err != nil {
-		msg := fmt.Sprintf("failed to get default dungeon location record for dungeon ID >%s< >%v<", rec.DungeonInstanceID, err)
-		l.Debug(msg)
-		return err
-	}
-
-	if len(locationRecs) != 1 {
-		msg := fmt.Sprintf("unexpected number of dungeon location records returned for dungeon ID >%s<", rec.DungeonInstanceID)
-		l.Warn(msg)
-		return fmt.Errorf(msg)
-	}
-
-	rec.LocationInstanceID = locationRecs[0].ID
-
-	err = m.ValidateCharacterInstanceRec(rec)
+	err := m.ValidateCharacterInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

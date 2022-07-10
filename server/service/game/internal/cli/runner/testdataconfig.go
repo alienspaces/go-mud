@@ -80,6 +80,9 @@ var testDataConfig = harness.DataConfig{
 					ObjectName: "Dull Bronze Ring",
 				},
 			},
+			CharacterDungeonConfig: &harness.CharacterDungeonConfig{
+				DungeonName: "Cave",
+			},
 		},
 	},
 	DungeonConfig: []harness.DungeonConfig{

@@ -124,6 +124,19 @@ func (t *Testing) createCharacterObjectRec(data *Data, characterRec *record.Char
 	return &rec, nil
 }
 
+func (t *Testing) characterEnterDungeon(dungeonID, characterID string) (*model.DungeonInstanceRecordSet, error) {
+
+	t.Log.Info("(testing) Character ID >%s< entering dungeon ID >%s<", characterID, dungeonID)
+
+	dungeonInstanceRecordSet, err := t.Model.(*model.Model).CharacterEnterDungeon(dungeonID, characterID)
+	if err != nil {
+		t.Log.Warn("(testing) Failed character entering dungeon >%v<", err)
+		return nil, err
+	}
+
+	return dungeonInstanceRecordSet, nil
+}
+
 func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon, error) {
 
 	rec := dungeonConfig.Record
@@ -218,65 +231,6 @@ func (t *Testing) updateLocationRec(rec *record.Location) error {
 	}
 	return nil
 }
-
-// Dungeon instance
-// func (t *Testing) createDungeonInstance(dungeonID string) (*model.DungeonInstanceRecordSet, error) {
-
-// 	t.Log.Debug("(testing) Creating dungeon instance for dungeon ID >%s<", dungeonID)
-
-// 	recordSet, err := t.Model.(*model.Model).CreateDungeonInstance(dungeonID)
-// 	if err != nil {
-// 		t.Log.Warn("(testing) Failed creating dungeon instance record set >%v<", err)
-// 		return nil, err
-// 	}
-
-// 	return recordSet, nil
-// }
-
-// func (t *Testing) getLocationInstanceRecs(dungeonInstanceID string) ([]*record.LocationInstance, error) {
-
-// 	locationInstanceRecs, err := t.Model.(*model.Model).GetLocationInstanceRecs(
-// 		map[string]interface{}{
-// 			"dungeon_instance_id": dungeonInstanceID,
-// 		},
-// 		nil, false,
-// 	)
-// 	if err != nil {
-// 		t.Log.Warn("(testing) Failed getting location instance records >%v<", err)
-// 		return nil, err
-// 	}
-// 	return locationInstanceRecs, nil
-// }
-
-// func (t *Testing) getMonsterInstanceRecs(dungeonInstanceID string) ([]*record.MonsterInstance, error) {
-
-// 	monsterInstanceRecs, err := t.Model.(*model.Model).GetMonsterInstanceRecs(
-// 		map[string]interface{}{
-// 			"dungeon_instance_id": dungeonInstanceID,
-// 		},
-// 		nil, false,
-// 	)
-// 	if err != nil {
-// 		t.Log.Warn("(testing) Failed getting monster instance records >%v<", err)
-// 		return nil, err
-// 	}
-// 	return monsterInstanceRecs, nil
-// }
-
-// func (t *Testing) getObjectInstanceRecs(dungeonInstanceID string) ([]*record.ObjectInstance, error) {
-
-// 	objectInstanceRecs, err := t.Model.(*model.Model).GetObjectInstanceRecs(
-// 		map[string]interface{}{
-// 			"dungeon_instance_id": dungeonInstanceID,
-// 		},
-// 		nil, false,
-// 	)
-// 	if err != nil {
-// 		t.Log.Warn("(testing) Failed getting object instance records >%v<", err)
-// 		return nil, err
-// 	}
-// 	return objectInstanceRecs, nil
-// }
 
 // TODO: Character actions are tied to dungeon instances
 // func (t *Testing) createCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*record.ActionRecordSet, error) {

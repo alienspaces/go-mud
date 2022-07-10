@@ -51,19 +51,21 @@ func (m *Model) GetAvailableDungeonInstanceViewRecordSet(dungeonID string) (*Dun
 		dungeonInstanceIDs = append(dungeonInstanceIDs, dungeonInstanceRec.ID)
 	}
 
-	dungeonInstanceCapacityRecs, err := q.GetMany(map[string]interface{}{
-		"dungeon_id":          dungeonID,
-		"dungeon_instance_id": dungeonInstanceIDs,
-	}, nil)
-	if err != nil {
-		l.Warn("failed querying dungeon instance capacity >%v<", err)
-		return nil, err
-	}
+	if len(dungeonInstanceIDs) > 0 {
+		dungeonInstanceCapacityRecs, err := q.GetMany(map[string]interface{}{
+			"dungeon_id":          dungeonID,
+			"dungeon_instance_id": dungeonInstanceIDs,
+		}, nil)
+		if err != nil {
+			l.Warn("failed querying dungeon instance capacity >%v<", err)
+			return nil, err
+		}
 
-	// Return a dungeon instance that has capacity
-	for _, rec := range dungeonInstanceCapacityRecs {
-		if rec.DungeonInstanceCharacterCount < rec.DungeonLocationCount {
-			return m.GetDungeonInstanceViewRecordSet(rec.DungeonInstanceID)
+		// Return a dungeon instance that has capacity
+		for _, rec := range dungeonInstanceCapacityRecs {
+			if rec.DungeonInstanceCharacterCount < rec.DungeonLocationCount {
+				return m.GetDungeonInstanceViewRecordSet(rec.DungeonInstanceID)
+			}
 		}
 	}
 
