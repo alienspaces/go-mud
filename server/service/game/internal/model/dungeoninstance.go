@@ -380,6 +380,15 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 	return &dungeonInstanceRecordSet, nil
 }
 
+// DeleteDungeonInstance -
+func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) error {
+
+	// TODO: Impelement deleting a dungeon instance. Do things like check
+	// there are no character instances left inside etc..
+
+	return nil
+}
+
 type LocationMapItem struct {
 	LocationRec         *record.Location
 	LocationInstanceRec *record.LocationInstance

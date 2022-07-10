@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -11,6 +12,8 @@ type CharacterInstanceRecordSet struct {
 	CharacterInstanceRec *record.CharacterInstance
 	ObjectInstanceRecs   []*record.ObjectInstance
 }
+
+// TODO: Possibly optimise by making this function return a DungeonInstanceViewRecordSet
 
 // CharacterEnterDungeon -
 func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonInstanceRecordSet, error) {
@@ -32,7 +35,7 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonIn
 	characterEntered := false
 	for _, locationInstanceRec := range dungeonInstance.LocationInstanceViewRecs {
 		if locationInstanceRec.IsDefault {
-			_, err := m.CreateCharacterInstance(dungeonInstance.DungeonInstanceViewRec.ID, locationInstanceRec.ID, characterID)
+			_, err := m.CreateCharacterInstance(locationInstanceRec.ID, characterID)
 			if err != nil {
 				l.Warn("failed creating character instance >%v<", err)
 				return nil, err
@@ -47,95 +50,167 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonIn
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: Optimise by just "adding" the CharacterInstanceViewRecordSet to the DungeonInstanceViewRecordSet
 	return m.GetDungeonInstanceRecordSet(dungeonInstance.DungeonInstanceViewRec.ID)
 }
 
 // CharacterExitDungeon -
 func (m *Model) CharacterExitDungeon(characterID string) error {
+	l := m.Logger("CharacterExitDungeon")
 
-	//
+	// TODO: Implement exiting a dungeon instance..
+	l.Warn("Not implemented")
+
 	return nil
 }
 
-func (m *Model) CreateCharacterInstance(dungeonInstanceID string, locationInstanceID string, characterID string) (*CharacterInstanceRecordSet, error) {
+// CreateCharacterInstance -
+func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID string) (*CharacterInstanceRecordSet, error) {
+	l := m.Logger("CreateCharacterInstance")
 
-	// TODO: Create character instance, return character instance
+	locationInstanceRec, err := m.GetLocationInstanceRec(locationInstanceID, false)
+	if err != nil {
+		l.Warn("failed getting location instance record >%v<", err)
+		return nil, err
+	}
 
-	return nil, nil
+	characterRec, err := m.GetCharacterRec(characterID, false)
+	if err != nil {
+		l.Warn("failed getting character record >%v<", err)
+		return nil, err
+	}
+
+	characterInstanceRec := &record.CharacterInstance{
+		CharacterID:        characterRec.ID,
+		DungeonInstanceID:  locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID: locationInstanceRec.ID,
+		Strength:           characterRec.Strength,
+		Dexterity:          characterRec.Dexterity,
+		Intelligence:       characterRec.Intelligence,
+		Health:             characterRec.Health,
+		Fatigue:            characterRec.Fatigue,
+		Coins:              characterRec.Coins,
+		ExperiencePoints:   characterRec.ExperiencePoints,
+		AttributePoints:    characterRec.AttributePoints,
+	}
+
+	err = m.CreateCharacterInstanceRec(characterInstanceRec)
+	if err != nil {
+		l.Warn("failed creating character instance record >%v<", err)
+		return nil, err
+	}
+
+	characterObjectRecs, err := m.GetCharacterObjectRecs(
+		map[string]interface{}{
+			"character_id": characterID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting character object records >%v<", err)
+		return nil, err
+	}
+
+	objectInstanceRecs := []*record.ObjectInstance{}
+
+	for _, characterObjectRec := range characterObjectRecs {
+
+		objectInstanceRec := &record.ObjectInstance{
+			ObjectID:            characterObjectRec.ObjectID,
+			DungeonInstanceID:   locationInstanceRec.DungeonInstanceID,
+			CharacterInstanceID: nullstring.FromString(characterInstanceRec.ID),
+			IsStashed:           characterObjectRec.IsStashed,
+			IsEquipped:          characterObjectRec.IsEquipped,
+		}
+
+		err := m.CreateObjectInstanceRec(objectInstanceRec)
+		if err != nil {
+			l.Warn("failed creating object instance record >%v<", err)
+			return nil, err
+		}
+
+		objectInstanceRecs = append(objectInstanceRecs, objectInstanceRec)
+	}
+
+	characterInstanceRecordSet := CharacterInstanceRecordSet{
+		CharacterInstanceRec: characterInstanceRec,
+		ObjectInstanceRecs:   objectInstanceRecs,
+	}
+
+	return &characterInstanceRecordSet, nil
 }
 
 // GetCharacterInstanceObjectInstanceRecs -
-func (m *Model) GetCharacterInstanceObjectInstanceRecs(characterID string) ([]*record.ObjectInstance, error) {
+func (m *Model) GetCharacterInstanceObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
 
-	m.Log.Info("Getting character ID >%s< object records", characterID)
+	m.Log.Info("Getting character instance ID >%s< object records", characterInstanceID)
 
 	r := m.ObjectInstanceRepository()
 
 	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterID,
+		"character_instance_id": characterInstanceID,
 	}, nil, false)
 }
 
 // GetCharacterInstanceEquippedObjectInstanceRecs -
-func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterID string) ([]*record.ObjectInstance, error) {
+func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
 
-	m.Log.Info("Getting character ID >%s< equipped object records", characterID)
+	m.Log.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
 	r := m.ObjectInstanceRepository()
 
 	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterID,
+		"character_instance_id": characterInstanceID,
 		"is_equipped":           true,
 	}, nil, false)
 }
 
 // GetCharacterInstanceStashedObjectInstanceRecs -
-func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterID string) ([]*record.ObjectInstance, error) {
+func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
 
-	m.Log.Info("Getting character ID >%s< stashed object records", characterID)
+	m.Log.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 
 	r := m.ObjectInstanceRepository()
 
 	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterID,
+		"character_instance_id": characterInstanceID,
 		"is_stashed":            true,
 	}, nil, false)
 }
 
 // GetCharacterInstanceObjectInstanceViewRecs -
-func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterID string) ([]*record.ObjectInstanceView, error) {
+func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
 
-	m.Log.Info("Getting character ID >%s< object records", characterID)
+	m.Log.Info("Getting character instance ID >%s< object records", characterInstanceID)
 
 	r := m.ObjectInstanceViewRepository()
 
 	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterID,
+		"character_instance_id": characterInstanceID,
 	}, nil, false)
 }
 
 // GetCharacterInstanceEquippedObjectInstanceViewRecs -
-func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterID string) ([]*record.ObjectInstanceView, error) {
+func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
 
-	m.Log.Info("Getting character ID >%s< equipped object records", characterID)
+	m.Log.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
 	r := m.ObjectInstanceViewRepository()
 
 	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterID,
+		"character_instance_id": characterInstanceID,
 		"is_equipped":           true,
 	}, nil, false)
 }
 
 // GetCharacterInstanceStashedObjectInstanceViewRecs -
-func (m *Model) GetCharacterInstanceStashedObjectInstanceViewRecs(characterID string) ([]*record.ObjectInstanceView, error) {
+func (m *Model) GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
 
-	m.Log.Info("Getting character ID >%s< stashed object records", characterID)
+	m.Log.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 
 	r := m.ObjectInstanceViewRepository()
 
 	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterID,
+		"character_instance_id": characterInstanceID,
 		"is_stashed":            true,
 	}, nil, false)
 }
