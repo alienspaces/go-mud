@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/jmoiron/sqlx"
+	"gitlab.com/alienspaces/go-mud/server/core/type/querier"
 
 	"gitlab.com/alienspaces/go-mud/server/core/model"
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
@@ -10,6 +11,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/query/dungeoninstancecapacity"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/action"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actioncharacter"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actioncharacterobject"
@@ -22,6 +24,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterobject"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoninstance"
+	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoninstanceview"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/location"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstance"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstanceview"
@@ -58,6 +61,20 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 	return m, nil
 }
 
+func (m *Model) NewQueries(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error) {
+
+	queryList := []querier.Querier{}
+
+	dungeonInstanceCapacityQuery, err := dungeoninstancecapacity.NewQuery(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon instance capacity query >%v<", err)
+		return nil, err
+	}
+	queryList = append(queryList, dungeonInstanceCapacityQuery)
+
+	return queryList, nil
+}
+
 // NewRepositories - Custom repositories for this model
 func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
 
@@ -76,6 +93,13 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 		return nil, err
 	}
 	repositoryList = append(repositoryList, dungeonInstanceRepo)
+
+	dungeonInstanceViewRepo, err := dungeoninstanceview.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon instance view repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, dungeonInstanceViewRepo)
 
 	locationRepo, err := location.NewRepository(m.Log, p, tx)
 	if err != nil {
@@ -256,6 +280,18 @@ func (m *Model) DungeonInstanceRepository() *dungeoninstance.Repository {
 	}
 
 	return r.(*dungeoninstance.Repository)
+}
+
+// DungeonInstanceViewRepository -
+func (m *Model) DungeonInstanceViewRepository() *dungeoninstanceview.Repository {
+
+	r := m.Repositories[dungeoninstanceview.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", dungeoninstanceview.TableName)
+		return nil
+	}
+
+	return r.(*dungeoninstanceview.Repository)
 }
 
 // LocationRepository -
@@ -522,6 +558,19 @@ func (m *Model) ActionObjectRepository() *actionobject.Repository {
 	return r.(*actionobject.Repository)
 }
 
+// DungeonInstanceCapacityQuery -
+func (m *Model) DungeonInstanceCapacityQuery() *dungeoninstancecapacity.Query {
+
+	q := m.Queries[dungeoninstancecapacity.QueryName]
+	if q == nil {
+		m.Log.Warn("Query >%s< is nil", dungeoninstancecapacity.QueryName)
+		return nil
+	}
+
+	return q.(*dungeoninstancecapacity.Query)
+}
+
+// Logger -
 func (m *Model) Logger(functionName string) logger.Logger {
 	return m.Log.WithPackageContext("model").WithFunctionContext(functionName)
 }

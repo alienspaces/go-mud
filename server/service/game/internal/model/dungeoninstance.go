@@ -7,22 +7,192 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+// TODO: Possibly hang methods off this structs to add, remove records etc
 type DungeonInstanceRecordSet struct {
-	DungeonInstanceRec   *record.DungeonInstance
-	LocationInstanceRecs []*record.LocationInstance
-	ObjectInstanceRecs   []*record.ObjectInstance
-	MonsterInstanceRecs  []*record.MonsterInstance
+	DungeonInstanceRec    *record.DungeonInstance
+	LocationInstanceRecs  []*record.LocationInstance
+	ObjectInstanceRecs    []*record.ObjectInstance
+	MonsterInstanceRecs   []*record.MonsterInstance
+	CharacterInstanceRecs []*record.CharacterInstance
 }
 
-// GetAvailableDungeonInstance returns an available dungeon instance
-func (m *Model) GetAvailableDungeonInstance(dungeonID string) (*DungeonInstanceRecordSet, error) {
-	l := m.Logger("GetAvailableDungeonInstance")
+// TODO: Possibly hang methods off this structs to add, remove records etc
+type DungeonInstanceViewRecordSet struct {
+	DungeonInstanceViewRec    *record.DungeonInstanceView
+	LocationInstanceViewRecs  []*record.LocationInstanceView
+	ObjectInstanceViewRecs    []*record.ObjectInstanceView
+	MonsterInstanceViewRecs   []*record.MonsterInstanceView
+	CharacterInstanceViewRecs []*record.CharacterInstanceView
+}
+
+// GetAvailableDungeonInstanceView returns an available dungeon instance
+func (m *Model) GetAvailableDungeonInstanceViewRecordSet(dungeonID string) (*DungeonInstanceViewRecordSet, error) {
+	l := m.Logger("GetAvailableDungeonInstanceView")
 
 	l.Info("Finding available dungeon instance for dungeon ID >%s<", dungeonID)
 
-	// Character capacity is equal to the number of locations a dungeon has.
+	// Find a dungeon instance with capacity
+	q := m.DungeonInstanceCapacityQuery()
 
-	return nil, nil
+	// Lock all existing dungeon instance records for the given dungeon. This call
+	// will skip records that are currently locked so depending on traffic we
+	// could end up with multiple instances being created that have few characters
+	// but that is probably okay.
+	dungeonInstanceRecs, err := m.GetDungeonInstanceRecs(map[string]interface{}{
+		"dungeon_id": dungeonID,
+	}, nil, true)
+	if err != nil {
+		l.Warn("failed querying dungeon instances >%v<", err)
+		return nil, err
+	}
+
+	dungeonInstanceIDs := []string{}
+	for _, dungeonInstanceRec := range dungeonInstanceRecs {
+		dungeonInstanceIDs = append(dungeonInstanceIDs, dungeonInstanceRec.ID)
+	}
+
+	dungeonInstanceCapacityRecs, err := q.GetMany(map[string]interface{}{
+		"dungeon_id":          dungeonID,
+		"dungeon_instance_id": dungeonInstanceIDs,
+	}, nil)
+	if err != nil {
+		l.Warn("failed querying dungeon instance capacity >%v<", err)
+		return nil, err
+	}
+
+	// Return a dungeon instance that has capacity
+	for _, rec := range dungeonInstanceCapacityRecs {
+		if rec.DungeonInstanceCharacterCount < rec.DungeonLocationCount {
+			return m.GetDungeonInstanceViewRecordSet(rec.DungeonInstanceID)
+		}
+	}
+
+	// Did not find an instance with capacity, create a new instance
+	dungeonInstanceRecordSet, err := m.CreateDungeonInstance(dungeonID)
+	if err != nil {
+		l.Warn("failed creating dungeon instance >%v<", err)
+		return nil, err
+	}
+
+	return m.GetDungeonInstanceViewRecordSet(dungeonInstanceRecordSet.DungeonInstanceRec.ID)
+}
+
+func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*DungeonInstanceViewRecordSet, error) {
+	l := m.Logger("GetDungeonInstanceViewRecordSet")
+
+	recordSet := &DungeonInstanceViewRecordSet{}
+
+	dungeonInstanceViewRec, err := m.GetDungeonInstanceViewRec(dungeonInstanceID)
+	if err != nil {
+		l.Warn("failed getting dungeon instance view record >%v<", err)
+		return nil, err
+	}
+	recordSet.DungeonInstanceViewRec = dungeonInstanceViewRec
+
+	locationInstanceViewRecs, err := m.GetLocationInstanceViewRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil,
+	)
+	if err != nil {
+		l.Warn("failed getting location instance view records >%v<", err)
+		return nil, err
+	}
+	recordSet.LocationInstanceViewRecs = locationInstanceViewRecs
+
+	objectInstanceViewRecs, err := m.GetObjectInstanceViewRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil,
+	)
+	if err != nil {
+		l.Warn("failed getting object instance view records >%v<", err)
+		return nil, err
+	}
+	recordSet.ObjectInstanceViewRecs = objectInstanceViewRecs
+
+	monsterInstanceViewRecs, err := m.GetMonsterInstanceViewRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil,
+	)
+	if err != nil {
+		l.Warn("failed getting monster instance view records >%v<", err)
+		return nil, err
+	}
+	recordSet.MonsterInstanceViewRecs = monsterInstanceViewRecs
+
+	characterInstanceViewRecs, err := m.GetCharacterInstanceViewRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil,
+	)
+	if err != nil {
+		l.Warn("failed getting character instance view records >%v<", err)
+		return nil, err
+	}
+	recordSet.CharacterInstanceViewRecs = characterInstanceViewRecs
+
+	return recordSet, nil
+}
+
+func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonInstanceRecordSet, error) {
+	l := m.Logger("GetDungeonInstanceRecordSet")
+
+	recordSet := &DungeonInstanceRecordSet{}
+
+	dungeonInstanceRec, err := m.GetDungeonInstanceRec(dungeonInstanceID, false)
+	if err != nil {
+		l.Warn("failed getting dungeon instance record >%v<", err)
+		return nil, err
+	}
+	recordSet.DungeonInstanceRec = dungeonInstanceRec
+
+	locationInstanceRecs, err := m.GetLocationInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting location instance records >%v<", err)
+		return nil, err
+	}
+	recordSet.LocationInstanceRecs = locationInstanceRecs
+
+	objectInstanceRecs, err := m.GetObjectInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting object instance records >%v<", err)
+		return nil, err
+	}
+	recordSet.ObjectInstanceRecs = objectInstanceRecs
+
+	monsterInstanceRecs, err := m.GetMonsterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting monster instance records >%v<", err)
+		return nil, err
+	}
+	recordSet.MonsterInstanceRecs = monsterInstanceRecs
+
+	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting character instance records >%v<", err)
+		return nil, err
+	}
+	recordSet.CharacterInstanceRecs = characterInstanceRecs
+
+	return recordSet, nil
 }
 
 // CreateDungeonInstance creates a dungeon, locations, monsters and objects instances

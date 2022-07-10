@@ -4,23 +4,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// CharacterEnterDungeon -
-func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonInstanceRecordSet, error) {
-
-	//
-	return nil, nil
-}
-
-// CharacterExitDungeon -
-func (m *Model) CharacterExitDungeon(characterID string) error {
-
-	//
-	return nil
-}
-
 // GetCharacterEquippedObjectRecs -
 func (m *Model) GetCharacterEquippedObjectRecs(characterID string) ([]*record.CharacterObject, error) {
-
 	l := m.Logger("GetCharacterEquippedObjectRecs")
 
 	l.Debug("Getting character ID >%s< equipped object records", characterID)

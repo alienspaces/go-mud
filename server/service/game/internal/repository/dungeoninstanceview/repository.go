@@ -1,4 +1,4 @@
-package characterinstanceview
+package dungeoninstanceview
 
 import (
 	"github.com/jmoiron/sqlx"
