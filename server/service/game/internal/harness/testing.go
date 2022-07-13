@@ -80,14 +80,14 @@ func (t *Testing) CreateData() error {
 	// Create object records
 	for _, objectConfig := range t.DataConfig.ObjectConfig {
 		t.Log.Info("Creating object >%#v<", objectConfig)
-		objectConfig, err := t.createObjectRec(objectConfig)
+		objectRec, err := t.createObjectRec(objectConfig)
 		if err != nil {
 			l.Warn("Failed creating object record >%v<", err)
 			return err
 		}
-		l.Info("+ Created object record ID >%s< Name >%s<", objectConfig.ID, objectConfig.Name)
-		data.ObjectRecs = append(data.ObjectRecs, objectConfig)
-		teardownData.ObjectRecs = append(teardownData.ObjectRecs, *objectConfig)
+		l.Info("+ Created object record ID >%s< Name >%s<", objectRec.ID, objectRec.Name)
+		data.AddObjectRec(objectRec)
+		teardownData.ObjectRecs = append(teardownData.ObjectRecs, *objectRec)
 	}
 
 	// Create monster records
@@ -98,7 +98,7 @@ func (t *Testing) CreateData() error {
 			return err
 		}
 		l.Info("+ Created monster record ID >%s< Name >%s<", monsterRec.ID, monsterRec.Name)
-		data.MonsterRecs = append(data.MonsterRecs, monsterRec)
+		data.AddMonsterRec(monsterRec)
 		teardownData.MonsterRecs = append(teardownData.MonsterRecs, *monsterRec)
 
 		for _, monsterObjectConfig := range monsterConfig.MonsterObjectConfig {
@@ -108,7 +108,7 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 			l.Info("+ Created monster object record ID >%s< monster ID >%s< object ID", monsterObjectRec.ID, monsterObjectRec.MonsterID, monsterObjectRec.ObjectID)
-			data.MonsterObjectRecs = append(data.MonsterObjectRecs, monsterObjectRec)
+			data.AddMonsterObjectRec(monsterObjectRec)
 			teardownData.MonsterObjectRecs = append(teardownData.MonsterObjectRecs, *monsterObjectRec)
 		}
 	}
@@ -123,7 +123,7 @@ func (t *Testing) CreateData() error {
 			return err
 		}
 		l.Info("+ Created dungeon record ID >%s< Name >%s<", dungeonRec.ID, dungeonRec.Name)
-		data.DungeonRecs = append(data.DungeonRecs, dungeonRec)
+		data.AddDungeonRec(dungeonRec)
 		teardownData.DungeonRecs = append(teardownData.DungeonRecs, *dungeonRec)
 
 		// Create the location records
@@ -135,7 +135,7 @@ func (t *Testing) CreateData() error {
 			}
 
 			l.Info("+ Created location record ID >%s< Name >%s<", locationRec.ID, locationRec.Name)
-			data.LocationRecs = append(data.LocationRecs, locationRec)
+			data.AddLocationRec(locationRec)
 			teardownData.LocationRecs = append(teardownData.LocationRecs, *locationRec)
 
 			// Create location objects
@@ -147,7 +147,7 @@ func (t *Testing) CreateData() error {
 				}
 
 				l.Info("+ Created location object record ID >%s< location ID >%s< object ID >%s<", locationObjectRec.ID, locationObjectRec.LocationID, locationObjectRec.ObjectID)
-				data.LocationObjectRecs = append(data.LocationObjectRecs, locationObjectRec)
+				data.AddLocationObjectRec(locationObjectRec)
 				teardownData.LocationObjectRecs = append(teardownData.LocationObjectRecs, *locationObjectRec)
 			}
 
@@ -160,7 +160,7 @@ func (t *Testing) CreateData() error {
 				}
 
 				l.Info("+ Created location monster record ID >%s< location ID >%s< monster ID >%s<", locationMonsterRec.ID, locationMonsterRec.LocationID, locationMonsterRec.MonsterID)
-				data.LocationMonsterRecs = append(data.LocationMonsterRecs, locationMonsterRec)
+				data.AddLocationMonsterRec(locationMonsterRec)
 				teardownData.LocationMonsterRecs = append(teardownData.LocationMonsterRecs, *locationMonsterRec)
 			}
 		}
@@ -192,7 +192,7 @@ func (t *Testing) CreateData() error {
 		}
 
 		l.Info("+ Created character record ID >%s< Name >%s<", characterRec.ID, characterRec.Name)
-		data.CharacterRecs = append(data.CharacterRecs, characterRec)
+		data.AddCharacterRec(characterRec)
 		teardownData.CharacterRecs = append(teardownData.CharacterRecs, *characterRec)
 
 		for _, characterObjectConfig := range characterConfig.CharacterObjectConfig {
@@ -203,7 +203,7 @@ func (t *Testing) CreateData() error {
 			}
 
 			l.Info("+ Created character object record ID >%s< character ID >%s< object ID", characterObjectRec.ID, characterObjectRec.CharacterID, characterObjectRec.ObjectID)
-			data.CharacterObjectRecs = append(data.CharacterObjectRecs, characterObjectRec)
+			data.AddCharacterObjectRec(characterObjectRec)
 			teardownData.CharacterObjectRecs = append(teardownData.CharacterObjectRecs, *characterObjectRec)
 		}
 
@@ -712,6 +712,105 @@ ACTION_RECS:
 		err := t.Model.(*model.Model).RemoveActionRec(rec.ID)
 		if err != nil {
 			l.Warn("Failed removing action record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
+	t.Log.Info("Removing >%d< object instance records", len(t.teardownData.ObjectInstanceRecs))
+
+OBJECT_INSTANCE_RECS:
+	for {
+		if len(t.teardownData.ObjectInstanceRecs) == 0 {
+			break OBJECT_INSTANCE_RECS
+		}
+		var rec *record.ObjectInstance
+		rec, t.teardownData.ObjectInstanceRecs = t.teardownData.ObjectInstanceRecs[0], t.teardownData.ObjectInstanceRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveObjectInstanceRec(rec.ID)
+		if err != nil {
+			l.Warn("Failed removing object instance record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
+	t.Log.Info("Removing >%d< monster instance records", len(t.teardownData.MonsterInstanceRecs))
+
+MONSTER_INSTANCE_RECS:
+	for {
+		if len(t.teardownData.MonsterInstanceRecs) == 0 {
+			break MONSTER_INSTANCE_RECS
+		}
+		var rec *record.MonsterInstance
+		rec, t.teardownData.MonsterInstanceRecs = t.teardownData.MonsterInstanceRecs[0], t.teardownData.MonsterInstanceRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveMonsterInstanceRec(rec.ID)
+		if err != nil {
+			l.Warn("Failed removing monster instance record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
+CHARACTER_INSTANCE_RECS:
+	for {
+		if len(t.teardownData.CharacterInstanceRecs) == 0 {
+			break CHARACTER_INSTANCE_RECS
+		}
+		var rec *record.CharacterInstance
+		rec, t.teardownData.CharacterInstanceRecs = t.teardownData.CharacterInstanceRecs[0], t.teardownData.CharacterInstanceRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveCharacterInstanceRec(rec.ID)
+		if err != nil {
+			l.Warn("Failed removing character instance record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
+LOCATION_INSTANCE_RECS:
+	for {
+		if len(t.teardownData.LocationInstanceRecs) == 0 {
+			break LOCATION_INSTANCE_RECS
+		}
+		var rec *record.LocationInstance
+		rec, t.teardownData.LocationInstanceRecs = t.teardownData.LocationInstanceRecs[0], t.teardownData.LocationInstanceRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveLocationInstanceRec(rec.ID)
+		if err != nil {
+			l.Warn("Failed removing location instance record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
+DUNGEON_INSTANCE_RECS:
+	for {
+		if len(t.teardownData.DungeonInstanceRecs) == 0 {
+			break DUNGEON_INSTANCE_RECS
+		}
+		var rec *record.DungeonInstance
+		rec, t.teardownData.DungeonInstanceRecs = t.teardownData.DungeonInstanceRecs[0], t.teardownData.DungeonInstanceRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveDungeonInstanceRec(rec.ID)
+		if err != nil {
+			l.Warn("Failed removing dungeon instance record >%v<", err)
 			return err
 		}
 		seen[rec.ID] = true
