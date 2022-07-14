@@ -6,6 +6,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -13,6 +14,51 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/mapper"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 )
+
+const (
+	postAction server.HandlerConfigKey = "post-action"
+)
+
+func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+
+	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+		postAction: {
+			Method:      http.MethodPost,
+			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
+			HandlerFunc: rnr.PostDungeonCharacterActionsHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/action",
+						Name:     "create.request.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/action",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Create a dungeon character action.",
+			},
+		},
+	})
+}
 
 // PostDungeonCharacterActionsHandler -
 func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {

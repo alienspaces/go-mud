@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 
 	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -13,6 +14,111 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
+
+const (
+	getCharacters server.HandlerConfigKey = "get-characters"
+	getCharacter  server.HandlerConfigKey = "get-character"
+	postCharacter server.HandlerConfigKey = "post-character"
+	putCharacter  server.HandlerConfigKey = "put-character"
+)
+
+func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+
+	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+		getCharacters: {
+			Method:      http.MethodGet,
+			Path:        "/api/v1/characters",
+			HandlerFunc: rnr.GetCharactersHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Get characters.",
+			},
+		},
+		getCharacter: {
+			Method:      http.MethodGet,
+			Path:        "/api/v1/characters/:character_id",
+			HandlerFunc: rnr.GetCharacterHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Get a character.",
+			},
+		},
+		postCharacter: {
+			Method:      http.MethodPost,
+			Path:        "/api/v1/characters",
+			HandlerFunc: rnr.PostCharactersHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "create.request.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeoncharacter",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Create a character.",
+			},
+		},
+		// TODO: Complete schema validation and implementation
+		putCharacter: {
+			Method:           http.MethodPut,
+			Path:             "/api/v1/characters",
+			HandlerFunc:      rnr.PutCharacterHandler,
+			MiddlewareConfig: server.MiddlewareConfig{},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Update a character.",
+			},
+		},
+	})
+}
 
 // GetCharacterHandler -
 func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {

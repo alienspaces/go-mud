@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 
 	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -13,6 +14,63 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
+
+const (
+	getDungeons server.HandlerConfigKey = "get-dungeons"
+	getDungeon  server.HandlerConfigKey = "get-dungeon"
+)
+
+func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+
+	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+		getDungeons: {
+			Method:      http.MethodGet,
+			Path:        "/api/v1/dungeons",
+			HandlerFunc: rnr.GetDungeonsHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeon",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Query dungeons.",
+			},
+		},
+		getDungeon: {
+			Method:      http.MethodGet,
+			Path:        "/api/v1/dungeons/:dungeon_id",
+			HandlerFunc: rnr.GetDungeonHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeon",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Get a dungeon.",
+			},
+		},
+	})
+}
 
 // GetDungeonHandler -
 func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {

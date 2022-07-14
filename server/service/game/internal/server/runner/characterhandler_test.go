@@ -250,13 +250,8 @@ func TestGetCharacterHandler(t *testing.T) {
 							Strength:     data.CharacterRecs[0].Strength,
 							Dexterity:    data.CharacterRecs[0].Dexterity,
 							Intelligence: data.CharacterRecs[0].Intelligence,
-							// CurrentStrength:     data.CharacterRecs[0].CurrentStrength,
-							// CurrentDexterity:    data.CharacterRecs[0].CurrentDexterity,
-							// CurrentIntelligence: data.CharacterRecs[0].CurrentIntelligence,
-							Health:  data.CharacterRecs[0].Health,
-							Fatigue: data.CharacterRecs[0].Fatigue,
-							// CurrentHealth:       data.CharacterRecs[0].CurrentHealth,
-							// CurrentFatigue:      data.CharacterRecs[0].CurrentFatigue,
+							Health:       data.CharacterRecs[0].Health,
+							Fatigue:      data.CharacterRecs[0].Fatigue,
 						},
 					},
 				}
@@ -276,9 +271,7 @@ func TestGetCharacterHandler(t *testing.T) {
 					return headers
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						// ":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
-					}
+					params := map[string]string{}
 					return params
 				},
 				RequestBody: func(data harness.Data) interface{} {
