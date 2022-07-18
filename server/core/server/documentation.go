@@ -186,7 +186,7 @@ func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, 
 		}
 		appendSchemaWithReferences(&b, count, requestSchemaMain, requestSchemaReferences, "Request Body Schema")
 
-		responseSchemaLoc := config.MiddlewareConfig.ValidateResponseSchema.Main.GetLocation()
+		responseSchemaLoc := config.MiddlewareConfig.ValidateResponseSchema.Main.GetFilePath()
 		authenTypes := ToAuthenticationSet(config.MiddlewareConfig.AuthenTypes...)
 		if _, ok := authenTypes[AuthenTypeAPIKey]; ok {
 			xAuthorizationSchema, err := rnr.loadSchema(responseSchemaLoc, "x-authorization.request.header.schema.json")
@@ -260,7 +260,7 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 		return mainSchema, referenceSchemas, nil
 	}
 
-	mainSchemaPath := s.Main.GetFullPath()
+	mainSchemaPath := s.Main.GetFileName()
 
 	rnr.Log.Debug("schema main content path >%s<", mainSchemaPath)
 
@@ -271,7 +271,7 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 
 	for _, schemaReference := range s.References {
 
-		path := schemaReference.GetFullPath()
+		path := schemaReference.GetFileName()
 
 		rnr.Log.Debug("schema reference content path >%s<", path)
 

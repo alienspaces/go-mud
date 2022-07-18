@@ -76,26 +76,29 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 			Path:        "/api/v1/characters",
 			HandlerFunc: rnr.PostCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/docs/character",
 						Name:     "create.request.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/docs/character",
 							Name:     "data.schema.json",
 						},
 					},
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/docs/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/docs/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -123,7 +126,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 // GetCharacterHandler -
 func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
+	l.Info("** Get dungeons handler **")
 
 	var recs []*record.Character
 	var err error
@@ -189,7 +192,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 // GetCharactersHandler -
 func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Get characters handler ** p >%#v< m >%#v<", pp, m)
+	l.Info("** Get characters handler **")
 
 	var recs []*record.Character
 	var err error
@@ -242,7 +245,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 // PostCharactersHandler -
 func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Post characters handler ** p >%#v< m >#%v<", pp, m)
+	l.Info("** Post characters handler **")
 
 	req := schema.CharacterRequest{}
 	err := server.ReadRequest(l, r, &req)
@@ -282,6 +285,8 @@ func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request,
 		},
 	}
 
+	l.Info("Writing response >%#v<", res)
+
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("Failed writing response >%v<", err)
@@ -294,7 +299,7 @@ func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request,
 // PutCharactersHandler -
 func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Put characters handler ** p >%#v< m >#%v<", pp, m)
+	l.Info("** Put characters handler **")
 
 	// Path parameters
 	id := pp.ByName("character_id")

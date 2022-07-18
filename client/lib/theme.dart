@@ -116,10 +116,8 @@ ThemeData getTheme(BuildContext context) {
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: Color(0xFF757575),
-      primaryVariant: Color(0xFF757575),
       onPrimary: Colors.white,
       secondary: Color(0xFF66bb6a),
-      secondaryVariant: Color(0xFF66bb6a),
       onSecondary: Colors.black,
       error: Color(0xFFc63f17),
       onError: Colors.white,

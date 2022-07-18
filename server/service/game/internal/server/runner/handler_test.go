@@ -196,17 +196,12 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	if rec.Code == 200 || rec.Code == 201 {
 		require.NotNil(t, responseBody, "Response body is not nil")
 
-		// v, err := jsonschema.NewValidator(th.Config, th.Log)
-		// require.NoError(t, err, "Validator returns without error")
-
 		jsonData, err := json.Marshal(responseBody)
 		require.NoError(t, err, "Marshal returns without error")
 
-		t.Logf("Validating response against schema >%+v<", cfg.MiddlewareConfig.ValidateResponseSchema)
-
 		result, err := jsonschema.Validate(cfg.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
 		require.NoError(t, err, "Validates against schema without error")
-		t.Logf("JSON Schema validation result >%+v<", result)
+		t.Logf("Validation result errors >%+v< valid >%t<", result.Errors(), result.Valid())
 	}
 
 	tf(cfg.Method, responseBody)

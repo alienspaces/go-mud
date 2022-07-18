@@ -22,8 +22,9 @@ import (
 func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, _ map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+		l = Logger(l, "Validate")
 
-		l.Info("(validate) request method >%s< path >%s<", r.Method, r.RequestURI)
+		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)
 
 		qp, err := validateQueryParameters(l, r.URL.Query(), hc.MiddlewareConfig.ValidateQueryParams)
 		if err != nil {
@@ -32,25 +33,25 @@ func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 		}
 
 		if r.Method != http.MethodPost && r.Method != http.MethodPut && r.Method != http.MethodPatch {
-			l.Debug("skipping validation of URI >%s< method >%s<", r.RequestURI, r.Method)
+			l.Debug("Skipping validation of URI >%s< method >%s<", r.RequestURI, r.Method)
 			return h(w, r, pp, qp, l, m)
 		}
 
 		requestSchema := hc.MiddlewareConfig.ValidateRequestSchema
 		schemaMain := requestSchema.Main
 		if schemaMain.Name == "" || schemaMain.Location == "" {
-			l.Debug("not validating URI >%s< method >%s<", r.RequestURI, r.Method)
+			l.Debug("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
 			return h(w, r, pp, qp, l, m)
 		}
 
 		data := r.Context().Value(ctxKeyData)
 
-		l.Info("(validation) schemas >%#v<", requestSchema)
-		l.Info("(validation) data >%s<", data)
+		l.Info("Validation schemas >%#v<", requestSchema)
+		l.Info("Validation data >%s<", data)
 
 		result, err := jsonschema.Validate(requestSchema, data)
 		if err != nil {
-			l.Warn("(validation) failed validate >%v<", err)
+			l.Warn("failed validation >%v<", err)
 
 			var jsonSyntaxError *json.SyntaxError
 			if errors.As(err, &jsonSyntaxError) || errors.Is(err, io.ErrUnexpectedEOF) {
@@ -66,7 +67,7 @@ func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 
 		if !result.Valid() {
 			err := coreerror.NewSchemaValidationError(result.Errors())
-			l.Warn("failed validate >%#v<", err)
+			l.Warn("failed validation >%#v<", err)
 			WriteError(l, w, err)
 			return err
 		}

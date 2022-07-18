@@ -73,6 +73,13 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 	return m, nil
 }
 
+func (rnr *Runner) Logger(functionName string) logger.Logger {
+	if rnr.Log == nil {
+		return nil
+	}
+	return rnr.Log.WithPackageContext("game/server").WithFunctionContext(functionName)
+}
+
 func mergeHandlerConfigs(hc1 map[server.HandlerConfigKey]server.HandlerConfig, hc2 map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
 	if hc1 == nil {
 		hc1 = map[server.HandlerConfigKey]server.HandlerConfig{}

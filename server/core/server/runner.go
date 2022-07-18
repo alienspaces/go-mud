@@ -188,24 +188,25 @@ var _ runnable.Runnable = &Runner{}
 
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
+	l := Logger(rnr.Log, "Init")
 
 	if rnr.Log == nil {
 		return fmt.Errorf("logger is nil, cannot initialise server runner")
 	}
 
-	rnr.Log.Debug("** Initialise **")
+	l.Debug("** Initialise **")
 
 	rnr.Store = s
 	if rnr.Store == nil {
 		msg := "storer is nil, cannot init runner"
-		rnr.Log.Warn(msg)
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
 	// Initialise storer
 	err := rnr.Store.Init()
 	if err != nil {
-		rnr.Log.Warn("Failed store init >%v<", err)
+		l.Warn("Failed store init >%v<", err)
 		return err
 	}
 
@@ -214,15 +215,15 @@ func (rnr *Runner) Init(s storer.Storer) error {
 		rnr.PreparerRepositoryFunc = rnr.PreparerRepository
 	}
 
-	pRepo, err := rnr.PreparerRepositoryFunc(rnr.Log)
+	pRepo, err := rnr.PreparerRepositoryFunc(l)
 	if err != nil {
-		rnr.Log.Warn("Failed preparer func >%v<", err)
+		l.Warn("Failed preparer func >%v<", err)
 		return err
 	}
 
 	rnr.PrepareRepository = pRepo
 	if rnr.PrepareRepository == nil {
-		rnr.Log.Warn("PreparerRepository is nil, cannot continue")
+		l.Warn("PreparerRepository is nil, cannot continue")
 		return err
 	}
 
@@ -230,15 +231,15 @@ func (rnr *Runner) Init(s storer.Storer) error {
 		rnr.PreparerQueryFunc = rnr.PreparerQuery
 	}
 
-	pQ, err := rnr.PreparerQueryFunc(rnr.Log)
+	pQ, err := rnr.PreparerQueryFunc(l)
 	if err != nil {
-		rnr.Log.Warn("Failed preparer config func >%v<", err)
+		l.Warn("Failed preparer config func >%v<", err)
 		return err
 	}
 
 	rnr.PrepareQuery = pQ
 	if rnr.PrepareQuery == nil {
-		rnr.Log.Warn("PreparerRepository Config is nil, cannot continue")
+		l.Warn("PreparerRepository Config is nil, cannot continue")
 		return err
 	}
 
@@ -257,19 +258,29 @@ func (rnr *Runner) Init(s storer.Storer) error {
 		rnr.ModellerFunc = rnr.Modeller
 	}
 
-	// http server - router
+	// HTTP server - router
 	if rnr.RouterFunc == nil {
 		rnr.RouterFunc = rnr.Router
 	}
 
-	// http server - middleware
+	// HTTP server - middleware
 	if rnr.MiddlewareFunc == nil {
 		rnr.MiddlewareFunc = rnr.DefaultMiddlewareFunc
 	}
 
-	// http server - handler
+	// HTTP server - handler
 	if rnr.HandlerFunc == nil {
 		rnr.HandlerFunc = rnr.DefaultHandlerFunc
+	}
+
+	// Initialise configured routes
+	root := rnr.Config.Get("APP_SERVER_HOME")
+	for k, v := range rnr.HandlerConfig {
+		l.Info("Resolving schema location root >%s< key >%s<", root, k)
+		v.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateQueryParams)
+		v.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateRequestSchema)
+		v.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateResponseSchema)
+		rnr.HandlerConfig[k] = v
 	}
 
 	return nil
@@ -528,15 +539,15 @@ func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
 func ResolveHandlerSchemaLocation(handlerConfig map[HandlerConfigKey]HandlerConfig, location string) map[HandlerConfigKey]HandlerConfig {
 	for handler, cfg := range handlerConfig {
 		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateQueryParams, location)
+			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateQueryParams)
 		}
 
 		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateRequestSchema, location)
+			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateRequestSchema)
 		}
 
 		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateResponseSchema, location)
+			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateResponseSchema)
 		}
 
 		handlerConfig[handler] = cfg
@@ -548,15 +559,15 @@ func ResolveHandlerSchemaLocation(handlerConfig map[HandlerConfigKey]HandlerConf
 func ResolveHandlerSchemaLocationRoot(handlerConfig map[HandlerConfigKey]HandlerConfig, root string) (map[HandlerConfigKey]HandlerConfig, error) {
 	for handler, cfg := range handlerConfig {
 		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateQueryParams, root)
+			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(root, cfg.MiddlewareConfig.ValidateQueryParams)
 		}
 
 		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateRequestSchema, root)
+			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(root, cfg.MiddlewareConfig.ValidateRequestSchema)
 		}
 
 		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateResponseSchema, root)
+			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(root, cfg.MiddlewareConfig.ValidateResponseSchema)
 		}
 
 		handlerConfig[handler] = cfg
@@ -567,7 +578,7 @@ func ResolveHandlerSchemaLocationRoot(handlerConfig map[HandlerConfigKey]Handler
 
 func ResolveMessageSchemaLocation(messageConfig map[Message]MessageConfig, location string) map[Message]MessageConfig {
 	for message, cfg := range messageConfig {
-		cfg.ValidateSchema = jsonschema.ResolveSchemaLocation(cfg.ValidateSchema, location)
+		cfg.ValidateSchema = jsonschema.ResolveSchemaLocation(location, cfg.ValidateSchema)
 
 		messageConfig[message] = cfg
 	}
@@ -577,7 +588,7 @@ func ResolveMessageSchemaLocation(messageConfig map[Message]MessageConfig, locat
 
 func ResolveMessageSchemaLocationRoot(messageConfig map[Message]MessageConfig, root string) (map[Message]MessageConfig, error) {
 	for messsage, cfg := range messageConfig {
-		cfg.ValidateSchema = jsonschema.ResolveSchemaLocationRoot(cfg.ValidateSchema, root)
+		cfg.ValidateSchema = jsonschema.ResolveSchemaLocationRoot(root, cfg.ValidateSchema)
 
 		messageConfig[messsage] = cfg
 	}

@@ -57,10 +57,7 @@ func TestCreateCharacterHandler(t *testing.T) {
 					return headers
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						":dungeon_id": data.DungeonRecs[0].ID,
-					}
-					return params
+					return nil
 				},
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.CharacterRequest{

@@ -13,10 +13,14 @@ type SchemaWithReferences struct {
 	References []Schema
 }
 
+// Schema defines the file path of a JSON schema
 type Schema struct {
+	// LocationRoot is the path from the file systems root director
 	LocationRoot string
-	Location     string
-	Name         string
+	// Location is the relative path from the root location
+	Location string
+	// Name is the file name
+	Name string
 }
 
 type cacheKey string
@@ -28,31 +32,28 @@ func (s SchemaWithReferences) IsEmpty() bool {
 	return s.Main.Name == "" || s.Main.Location == ""
 }
 
-func (s SchemaWithReferences) GetReferencesFullPaths() []string {
-	var paths []string
-
-	for _, r := range s.References {
-		paths = append(paths, r.GetFullPath())
+func (s Schema) GetFilePath() string {
+	parts := []string{}
+	if s.LocationRoot != "" {
+		parts = append(parts, s.LocationRoot)
 	}
-
-	return paths
+	if s.Location != "" {
+		parts = append(parts, s.Location)
+	}
+	return strings.Join(parts, "/")
 }
 
-func (s Schema) GetLocation() string {
-	if s.LocationRoot == "" || s.Location == "" {
-		return ""
+func (s Schema) GetFileName() string {
+	loc := s.GetFilePath()
+
+	parts := []string{}
+	if loc != "" {
+		parts = append(parts, loc)
 	}
-
-	return fmt.Sprintf("%s/%s", s.LocationRoot, s.Location)
-}
-
-func (s Schema) GetFullPath() string {
-	loc := s.GetLocation()
-	if loc == "" || s.Name == "" {
-		return ""
+	if s.Name != "" {
+		parts = append(parts, s.Name)
 	}
-
-	return fmt.Sprintf("%s/%s", loc, s.Name)
+	return strings.Join(parts, "/")
 }
 
 func ValidateJSON(schema SchemaWithReferences) func([]byte) error {
@@ -85,7 +86,20 @@ func Validate(schema SchemaWithReferences, data interface{}) (*gojsonschema.Resu
 		dataLoader = gojsonschema.NewGoLoader(d)
 	}
 
-	return s.Validate(dataLoader)
+	result, err := s.Validate(dataLoader)
+	if err != nil {
+		return nil, err
+	}
+
+	if result == nil {
+		return nil, fmt.Errorf("failed validation, result is nil")
+	}
+
+	if !result.Valid() {
+		return result, fmt.Errorf("failed validation >%+v<", result.Errors())
+	}
+
+	return result, nil
 }
 
 func MapError(result *gojsonschema.Result) error {
@@ -108,12 +122,12 @@ func MapError(result *gojsonschema.Result) error {
 
 // Compile caches JSON schema compilation
 func Compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
+
 	key := generateCacheKey(sr)
 	cached, ok := schemaCache[key]
 	if !ok {
 		mu.Lock()
 		defer mu.Unlock()
-
 		if cached, ok = schemaCache[key]; ok {
 			return cached, nil
 		}
@@ -134,10 +148,10 @@ func Compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
 func generateCacheKey(s SchemaWithReferences) cacheKey {
 	var refs []string
 	for _, r := range s.References {
-		refs = append(refs, r.GetFullPath())
+		refs = append(refs, r.GetFileName())
 	}
 
-	key := s.Main.GetFullPath() + strings.Join(refs, "-")
+	key := s.Main.GetFileName() + strings.Join(refs, "-")
 	return cacheKey(key)
 }
 
@@ -148,41 +162,37 @@ func compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
 	sl.Validate = true
 
 	for _, ref := range sr.References {
-		refPath := fmt.Sprintf("file://%s", ref.GetFullPath())
+		refPath := fmt.Sprintf("file://%s", ref.GetFileName())
 		loader := gojsonschema.NewReferenceLoader(refPath)
 		err := sl.AddSchemas(loader)
 		if err != nil {
-			return nil, fmt.Errorf("Failed adding reference schema >%s< err >%w<", refPath, err)
+			return nil, fmt.Errorf("failed adding reference schema >%s< err >%w<", refPath, err)
 		}
 	}
 
-	mainPath := fmt.Sprintf("file://%s", sr.Main.GetFullPath())
+	mainPath := fmt.Sprintf("file://%s", sr.Main.GetFileName())
 	loader := gojsonschema.NewReferenceLoader(mainPath)
 	s, err := sl.Compile(loader)
 	if err != nil {
-		return nil, fmt.Errorf("Failed adding main schema >%s< err >%w<", mainPath, err)
+		return nil, fmt.Errorf("failed adding main schema >%s< err >%w<", mainPath, err)
 	}
 
 	return s, nil
 }
 
-func ResolveSchemaLocationRoot(cfg SchemaWithReferences, root string) SchemaWithReferences {
+func ResolveSchemaLocationRoot(root string, cfg SchemaWithReferences) SchemaWithReferences {
 	cfg.Main.LocationRoot = resolveString(cfg.Main.LocationRoot, root)
-
 	for i := range cfg.References {
 		cfg.References[i].LocationRoot = resolveString(cfg.References[i].LocationRoot, root)
 	}
-
 	return cfg
 }
 
-func ResolveSchemaLocation(cfg SchemaWithReferences, location string) SchemaWithReferences {
+func ResolveSchemaLocation(location string, cfg SchemaWithReferences) SchemaWithReferences {
 	cfg.Main.Location = resolveString(cfg.Main.Location, location)
-
 	for i := range cfg.References {
 		cfg.References[i].Location = resolveString(cfg.References[i].Location, location)
 	}
-
 	return cfg
 }
 
@@ -190,6 +200,5 @@ func resolveString(str string, defaultStr string) string {
 	if str != "" {
 		return str
 	}
-
 	return defaultStr
 }

@@ -111,10 +111,9 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 
 	rnr.Log.Info("** DefaultRouter **")
 
-	// default routes
 	r := httprouter.New()
 
-	// default index handler
+	// Default index handler
 	h, err := rnr.DefaultMiddleware(HandlerConfig{Path: "/", MiddlewareConfig: MiddlewareConfig{
 		AuthenTypes: []AuthenticationType{AuthenTypePublic},
 	}}, rnr.HandlerFunc)
@@ -127,7 +126,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 		_ = rnr.HandlerFunc(w, r, pp, nil, rnr.Log, nil)
 	})
 
-	// register configured routes
+	// Register configured routes
 	for _, hc := range rnr.HandlerConfig {
 
 		rnr.Log.Info("** Router ** method >%s< path >%s<", hc.Method, hc.Path)
