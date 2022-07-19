@@ -152,9 +152,7 @@ func TestGetCharacterHandler(t *testing.T) {
 					return headers
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						// ":dungeon_id": data.DungeonRecs[0].ID,
-					}
+					params := map[string]string{}
 					return params
 				},
 				RequestBody: func(data harness.Data) interface{} {
@@ -183,34 +181,6 @@ func TestGetCharacterHandler(t *testing.T) {
 					},
 				}
 				return &res
-			},
-		},
-		{
-			TestCase: TestCase{
-				Name: "GET - Get many with invalid dungeon ID",
-				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[getCharacters]
-				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
-				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{
-						// ":dungeon_id": "21954f35-76fb-4a4a-bc39-fba15432b28b",
-					}
-					return params
-				},
-				RequestBody: func(data harness.Data) interface{} {
-					return nil
-				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusNotFound,
-			},
-			expectResponseBody: func(data harness.Data) *schema.CharacterResponse {
-				return nil
 			},
 		},
 		{
@@ -253,29 +223,6 @@ func TestGetCharacterHandler(t *testing.T) {
 					},
 				}
 				return &res
-			},
-		},
-		{
-			TestCase: TestCase{
-				Name: "GET - Get one with invalid dungeon ID",
-				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[getCharacter]
-				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
-				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{}
-					return params
-				},
-				RequestBody: func(data harness.Data) interface{} {
-					return nil
-				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusNotFound,
 			},
 		},
 		{

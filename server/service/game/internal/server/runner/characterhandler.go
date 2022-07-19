@@ -30,14 +30,17 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 			Path:        "/api/v1/characters",
 			HandlerFunc: rnr.GetCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/docs/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/docs/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -53,14 +56,17 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 			Path:        "/api/v1/characters/:character_id",
 			HandlerFunc: rnr.GetCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/docs/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/docs/character",
 							Name:     "data.schema.json",
 						},
 					},
