@@ -28,6 +28,9 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 			Path:        "/api/v1/dungeons",
 			HandlerFunc: rnr.GetDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/docs/dungeon",
@@ -51,6 +54,9 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 			Path:        "/api/v1/dungeons/:dungeon_id",
 			HandlerFunc: rnr.GetDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/docs/dungeon",
@@ -87,6 +93,11 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 		err := coreerror.NewNotFoundError("dungeon", id)
 		server.WriteError(l, w, err)
 		return err
+	} else if !m.(*model.Model).IsUUID(id) {
+		err := coreerror.NewPathParamError("dungeon_id", id)
+		server.WriteError(l, w, err)
+		return err
+
 	}
 
 	l.Info("Getting dungeon record ID >%s<", id)

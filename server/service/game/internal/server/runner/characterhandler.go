@@ -144,9 +144,8 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
-	}
-	if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewNotFoundError("character", characterID)
+	} else if !m.(*model.Model).IsUUID(characterID) {
+		err := coreerror.NewPathParamError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}

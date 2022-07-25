@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
-
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/alienspaces/go-mud/server/core/auth"
@@ -37,6 +36,13 @@ func TestCreateCharacterHandler(t *testing.T) {
 		return token
 	}
 
+	testCaseRequestHeaders := func(data harness.Data) map[string]string {
+		headers := map[string]string{
+			"Authorization": "Bearer " + validAuthToken(),
+		}
+		return headers
+	}
+
 	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.CharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
@@ -50,12 +56,7 @@ func TestCreateCharacterHandler(t *testing.T) {
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
 					return rnr.HandlerConfig[postCharacter]
 				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
+				RequestHeaders: testCaseRequestHeaders,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					return nil
 				},
@@ -132,6 +133,13 @@ func TestGetCharacterHandler(t *testing.T) {
 		return token
 	}
 
+	testCaseRequestHeaders := func(data harness.Data) map[string]string {
+		headers := map[string]string{
+			"Authorization": "Bearer " + validAuthToken(),
+		}
+		return headers
+	}
+
 	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.CharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
@@ -145,12 +153,7 @@ func TestGetCharacterHandler(t *testing.T) {
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
 					return rnr.HandlerConfig[getCharacters]
 				},
-				RequestHeaders: func(data harness.Data) map[string]string {
-					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
-					return headers
-				},
+				RequestHeaders: testCaseRequestHeaders,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{}
 					return params
