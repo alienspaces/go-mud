@@ -1,5 +1,5 @@
 # build image
-FROM registry.gitlab.com/alienspaces/go-mud/golang:1.17.2-alpine3.14 as builder
+FROM registry.gitlab.com/alienspaces/go-mud/golang:1.18.4-alpine3.16 as builder
 
 # enable https:// repositories
 RUN apk update \
@@ -23,7 +23,7 @@ RUN go build -o /go/bin/go-mud-game-cli ./cmd/cli
 RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.14.1
 
 # final image
-FROM registry.gitlab.com/alienspaces/go-mud/postgres:12.7-alpine3.14
+FROM registry.gitlab.com/alienspaces/go-mud/postgres:13.7-alpine3.16
 
 RUN apk update \
     && apk add curl \

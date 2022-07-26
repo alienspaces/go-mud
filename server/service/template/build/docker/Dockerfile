@@ -1,5 +1,5 @@
 # build image
-FROM registry.gitlab.com/alienspaces/go-mud/golang:1.17.2-alpine3.14 as builder
+FROM registry.gitlab.com/alienspaces/go-mud/golang:1.18.4-alpine3.16 as builder
 
 # enable https:// repositories
 RUN apk update \
@@ -20,7 +20,7 @@ RUN go build -o /go/bin/go-mud-template-server ./cmd/server
 RUN go build -o /go/bin/go-mud-template-cli ./cmd/cli
 
 # final image
-FROM registry.gitlab.com/alienspaces/go-mud/golang:1.17.2-alpine3.14
+FROM registry.gitlab.com/alienspaces/go-mud/golang:1.18.4-alpine3.16
 
 RUN apk update \
     && apk add curl \
