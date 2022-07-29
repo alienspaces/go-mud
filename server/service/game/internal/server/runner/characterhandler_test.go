@@ -230,6 +230,31 @@ func TestGetCharacterHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
+				Name: "GET - Get one with incorrect character ID",
+				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
+					return rnr.HandlerConfig[getCharacter]
+				},
+				RequestHeaders: func(data harness.Data) map[string]string {
+					headers := map[string]string{
+						"Authorization": "Bearer " + validAuthToken(),
+					}
+					return headers
+				},
+				RequestPathParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						":character_id": "a08eb991-759d-4671-8698-9f26056717e2",
+					}
+					return params
+				},
+				RequestBody: func(data harness.Data) interface{} {
+					return nil
+				},
+				ResponseBody: testCaseResponseBody,
+				ResponseCode: http.StatusNotFound,
+			},
+		},
+		{
+			TestCase: TestCase{
 				Name: "GET - Get one with invalid character ID",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
 					return rnr.HandlerConfig[getCharacter]
@@ -242,7 +267,7 @@ func TestGetCharacterHandler(t *testing.T) {
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
-						"character_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
+						":character_id": "notauuid-759d-4671-8698-notauuid",
 					}
 					return params
 				},
@@ -250,7 +275,7 @@ func TestGetCharacterHandler(t *testing.T) {
 					return nil
 				},
 				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusNotFound,
+				ResponseCode: http.StatusBadRequest,
 			},
 		},
 	}

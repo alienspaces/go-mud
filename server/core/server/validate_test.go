@@ -160,7 +160,6 @@ func Test_validateQueryParameters(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := validateQueryParameters(l, tt.args.q, tt.args.paramSchema)
-
 			if tt.errCode != "" {
 				require.NotNil(t, err, "validateQueryParameters should return err")
 				coreerrorErr, conversionErr := coreerror.ToError(err)

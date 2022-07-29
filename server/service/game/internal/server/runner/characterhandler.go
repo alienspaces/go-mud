@@ -131,7 +131,6 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 
 // GetCharacterHandler -
 func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
 	l.Info("** Get dungeons handler **")
 
 	var recs []*record.Character
@@ -154,6 +153,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	rec, err := m.(*model.Model).GetCharacterRec(characterID, false)
 	if err != nil {
+		l.Warn("Failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
 		return err
 	}

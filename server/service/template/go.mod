@@ -1,6 +1,6 @@
 module gitlab.com/alienspaces/go-mud/server/service/template
 
-go 1.15
+go 1.18
 
 require (
 	github.com/google/uuid v1.3.0
@@ -16,6 +16,5 @@ replace (
 	gitlab.com/alienspaces/go-mud/server/constant => ../../constant
 	gitlab.com/alienspaces/go-mud/server/core => ../../core
 	gitlab.com/alienspaces/go-mud/server/schema => ../../schema
-
 	gitlab.com/alienspaces/go-mud/server/service/template => ../../service/template
 )

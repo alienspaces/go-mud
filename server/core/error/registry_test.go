@@ -260,7 +260,7 @@ func TestNewSchemaError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := jsonschema.Validate(schema, []byte(tt.data))
-			require.Error(t, err, "should not return an error")
+			require.NoError(t, err, "should not return an error")
 
 			schemaResultErrors := result.Errors()
 			require.NotEmpty(t, schemaResultErrors, "schema validation should return errors")

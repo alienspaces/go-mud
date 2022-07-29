@@ -95,10 +95,6 @@ func Validate(schema SchemaWithReferences, data interface{}) (*gojsonschema.Resu
 		return nil, fmt.Errorf("failed validation, result is nil")
 	}
 
-	if !result.Valid() {
-		return result, fmt.Errorf("failed validation >%+v<", result.Errors())
-	}
-
 	return result, nil
 }
 

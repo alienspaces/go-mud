@@ -150,11 +150,11 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 			} else {
 				requestPath = requestPath + `&`
 			}
-			t.Logf("Adding parameter key >%s< param >%s<", paramKey, paramValue)
+			t.Logf("> Adding parameter key >%s< param >%s<", paramKey, paramValue)
 			requestPath = fmt.Sprintf("%s%s=%s", requestPath, paramKey, url.QueryEscape(paramValue))
 		}
-		t.Logf("Resulting requestPath >%s<", requestPath)
 	}
+	t.Logf("> Resulting requestPath >%s<", requestPath)
 
 	// request data
 	data := tc.TestRequestBody(th.Data)
