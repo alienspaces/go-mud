@@ -51,6 +51,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	// Handler config
 	hc := r.CharacterHandlerConfig(nil)
 	hc = r.DungeonHandlerConfig(hc)
+	hc = r.DungeonLocationHandlerConfig(hc)
 	hc = r.ActionHandlerConfig(hc)
 	hc = r.DocumentationHandlerConfig(hc)
 

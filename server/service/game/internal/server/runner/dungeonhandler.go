@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	getDungeons server.HandlerConfigKey = "get-dungeons"
-	getDungeon  server.HandlerConfigKey = "get-dungeon"
+	getDungeons  server.HandlerConfigKey = "get-dungeons"
+	getDungeon   server.HandlerConfigKey = "get-dungeon"
+	enterDungeon server.HandlerConfigKey = "enter-dungeon"
 )
 
 func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
@@ -46,7 +47,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
-				Description: "Query dungeons.",
+				Description: "List dungeons.",
 			},
 		},
 		getDungeon: {
@@ -75,13 +76,37 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 				Description: "Get a dungeon.",
 			},
 		},
+		enterDungeon: {
+			Method:      http.MethodPost,
+			Path:        "/api/v1/dungeons/:dungeon_id/enter",
+			HandlerFunc: rnr.EnterDungeonHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
+				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/dungeon-instance",
+						Name:     "response.schema.json",
+					},
+					References: []jsonschema.Schema{
+						{
+							Location: "schema/docs/dungeon-instance",
+							Name:     "data.schema.json",
+						},
+					},
+				},
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Enter a dungeon.",
+			},
+		},
 	})
 }
 
 // GetDungeonHandler -
 func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
-	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
 
 	var recs []*record.Dungeon
 	var err error
@@ -146,19 +171,16 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 // GetDungeonsHandler -
 func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
-	l.Info("** Get dungeons handler ** p >%#v< m >%#v<", pp, m)
-
 	var recs []*record.Dungeon
 	var err error
-
-	l.Info("Querying dungeon records")
 
 	params := make(map[string]interface{})
 	for paramName, paramValue := range qp {
 		l.Info("Querying dungeon records with param name >%s< value >%v<", paramName, paramValue)
 		params[paramName] = paramValue
 	}
+
+	l.Info("Querying dungeon records with params >%#v<", params)
 
 	recs, err = m.(*model.Model).GetDungeonRecs(params, nil, false)
 	if err != nil {
@@ -191,6 +213,36 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 		l.Warn("Failed writing response >%v<", err)
 		return err
 	}
+
+	return nil
+}
+
+// EnterDungeonHandler -
+func (rnr *Runner) EnterDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+
+	// Path parameters
+	id := pp.ByName("dungeon_id")
+
+	if id == "" {
+		err := coreerror.NewNotFoundError("dungeon", id)
+		server.WriteError(l, w, err)
+		return err
+	} else if !m.(*model.Model).IsUUID(id) {
+		err := coreerror.NewPathParamError("dungeon_id", id)
+		server.WriteError(l, w, err)
+		return err
+
+	}
+
+	l.Info("Entering dungeon ID >%s<")
+
+	recordSet, err := m.(*model.Model).CharacterEnterDungeon(id, "")
+	if err != nil {
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	l.Info("Record set >%#v<", recordSet)
 
 	return nil
 }
