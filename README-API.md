@@ -28,8 +28,6 @@ GET /api/v1/dungeons/{:dungeon_id}
 
 **List dungeon locations:**
 
-📝 _Unimplemented_
-
 - [Response Schema](server/schema/docs/location/response.schema.json)
 
 ```bash
@@ -37,8 +35,6 @@ GET /api/v1/dungeons/{:dungeon_id}/locations
 ```
 
 **Get dungeon location:**
-
-📝 _Unimplemented_
 
 - [Response Schema](server/schema/docs/location/response.schema.json)
 
