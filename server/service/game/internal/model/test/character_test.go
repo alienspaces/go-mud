@@ -15,7 +15,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestGetCharacterEquippedDungeonObjectRecs(t *testing.T) {
+func TestGetCharacterEquippedObjectRecs(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -30,23 +30,23 @@ func TestGetCharacterEquippedDungeonObjectRecs(t *testing.T) {
 	th.CommitData = true
 
 	tests := []struct {
-		name                    string
-		dungeonCharacterID      func(data harness.Data) string
-		expectDungeonObjectRecs func(data harness.Data) []*record.DungeonObject
-		expectError             bool
+		name               string
+		dungeonCharacterID func(data harness.Data) string
+		expectObjectRecs   func(data harness.Data) []*record.Object
+		expectError        bool
 	}{
 		{
 			name: "Returns objects for character with objects",
 			dungeonCharacterID: func(data harness.Data) string {
-				return data.DungeonCharacterRecs[0].ID
+				return data.CharacterRecs[0].ID
 			},
-			expectDungeonObjectRecs: func(data harness.Data) []*record.DungeonObject {
-				return []*record.DungeonObject{
-					&record.DungeonObject{
+			expectObjectRecs: func(data harness.Data) []*record.Object {
+				return []*record.Object{
+					&record.Object{
 						Record: repository.Record{
-							ID: data.DungeonObjectRecs[2].ID,
+							ID: data.ObjectRecs[2].ID,
 						},
-						Name: data.DungeonObjectRecs[2].Name,
+						Name: data.ObjectRecs[2].Name,
 					},
 				}
 			},
@@ -75,14 +75,14 @@ func TestGetCharacterEquippedDungeonObjectRecs(t *testing.T) {
 
 			dungeonCharacterID := tc.dungeonCharacterID(th.Data)
 
-			recs, err := th.Model.(*model.Model).GetCharacterEquippedDungeonObjectRecs(dungeonCharacterID)
+			recs, err := th.Model.(*model.Model).GetCharacterEquippedObjectRecs(dungeonCharacterID)
 			if tc.expectError == true {
-				require.Error(t, err, "GetCharacterEquippedDungeonObjectRecs returns error")
+				require.Error(t, err, "GetCharacterEquippedObjectRecs returns error")
 				return
 			}
-			require.NoError(t, err, "GetCharacterEquippedDungeonObjectRecs returns without error")
+			require.NoError(t, err, "GetCharacterEquippedObjectRecs returns without error")
 
-			expectedRecs := tc.expectDungeonObjectRecs(th.Data)
+			expectedRecs := tc.expectObjectRecs(th.Data)
 			if expectedRecs == nil {
 				return
 			}
@@ -95,7 +95,7 @@ func TestGetCharacterEquippedDungeonObjectRecs(t *testing.T) {
 	}
 }
 
-func TestGetCharacterStashedDungeonObjectRecs(t *testing.T) {
+func TestGetCharacterStashedObjectRecs(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -110,23 +110,23 @@ func TestGetCharacterStashedDungeonObjectRecs(t *testing.T) {
 	th.CommitData = true
 
 	tests := []struct {
-		name                    string
-		dungeonCharacterID      func(data harness.Data) string
-		expectDungeonObjectRecs func(data harness.Data) []*record.DungeonObject
-		expectError             bool
+		name               string
+		dungeonCharacterID func(data harness.Data) string
+		expectObjectRecs   func(data harness.Data) []*record.Object
+		expectError        bool
 	}{
 		{
 			name: "Returns objects for character with objects",
 			dungeonCharacterID: func(data harness.Data) string {
-				return data.DungeonCharacterRecs[0].ID
+				return data.CharacterRecs[0].ID
 			},
-			expectDungeonObjectRecs: func(data harness.Data) []*record.DungeonObject {
-				return []*record.DungeonObject{
-					&record.DungeonObject{
+			expectObjectRecs: func(data harness.Data) []*record.Object {
+				return []*record.Object{
+					&record.Object{
 						Record: repository.Record{
-							ID: data.DungeonObjectRecs[3].ID,
+							ID: data.ObjectRecs[3].ID,
 						},
-						Name: data.DungeonObjectRecs[3].Name,
+						Name: data.ObjectRecs[3].Name,
 					},
 				}
 			},
@@ -155,14 +155,14 @@ func TestGetCharacterStashedDungeonObjectRecs(t *testing.T) {
 
 			dungeonCharacterID := tc.dungeonCharacterID(th.Data)
 
-			recs, err := th.Model.(*model.Model).GetCharacterStashedDungeonObjectRecs(dungeonCharacterID)
+			recs, err := th.Model.(*model.Model).GetCharacterStashedObjectRecs(dungeonCharacterID)
 			if tc.expectError == true {
-				require.Error(t, err, "GetCharacterStashedDungeonObjectRecs returns error")
+				require.Error(t, err, "GetCharacterStashedObjectRecs returns error")
 				return
 			}
-			require.NoError(t, err, "GetCharacterStashedDungeonObjectRecs returns without error")
+			require.NoError(t, err, "GetCharacterStashedObjectRecs returns without error")
 
-			expectedRecs := tc.expectDungeonObjectRecs(th.Data)
+			expectedRecs := tc.expectObjectRecs(th.Data)
 			if expectedRecs == nil {
 				return
 			}

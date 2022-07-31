@@ -16,7 +16,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestCreateDungeonMonsterRec(t *testing.T) {
+func TestCreateMonsterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -32,33 +32,29 @@ func TestCreateDungeonMonsterRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonMonster
+		rec  func(data harness.Data) *record.Monster
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonMonster {
-				return &record.DungeonMonster{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[0].ID,
-					Name:              gofakeit.StreetName() + gofakeit.Name(),
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.Monster {
+				return &record.Monster{
+					Name:         gofakeit.StreetName() + gofakeit.Name(),
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonMonster {
-				rec := &record.DungeonMonster{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[0].ID,
-					Name:              gofakeit.StreetName() + gofakeit.Name(),
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.Monster {
+				rec := &record.Monster{
+					Name:         gofakeit.StreetName() + gofakeit.Name(),
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -90,18 +86,18 @@ func TestCreateDungeonMonsterRec(t *testing.T) {
 
 			rec := tc.rec(th.Data)
 
-			err = th.Model.(*model.Model).CreateDungeonMonsterRec(rec)
+			err = th.Model.(*model.Model).CreateMonsterRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "CreateDungeonMonsterRec returns error")
+				require.Error(t, err, "CreateMonsterRec returns error")
 				return
 			}
-			require.NoError(t, err, "CreateDungeonMonsterRec returns without error")
-			require.NotEmpty(t, rec.CreatedAt, "CreateDungeonMonsterRec returns record with CreatedAt")
+			require.NoError(t, err, "CreateMonsterRec returns without error")
+			require.NotEmpty(t, rec.CreatedAt, "CreateMonsterRec returns record with CreatedAt")
 		}()
 	}
 }
 
-func TestGetDungeonMonsterRec(t *testing.T) {
+func TestGetMonsterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -123,7 +119,7 @@ func TestGetDungeonMonsterRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonMonsterRecs[0].ID
+				return h.Data.MonsterRecs[0].ID
 			},
 			err: false,
 		},
@@ -156,19 +152,19 @@ func TestGetDungeonMonsterRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonMonsterRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetMonsterRec(tc.id(), false)
 			if tc.err == true {
-				require.Error(t, err, "GetDungeonMonsterRec returns error")
+				require.Error(t, err, "GetMonsterRec returns error")
 				return
 			}
-			require.NoError(t, err, "GetDungeonMonsterRec returns without error")
-			require.NotNil(t, rec, "GetDungeonMonsterRec returns record")
+			require.NoError(t, err, "GetMonsterRec returns without error")
+			require.NotNil(t, rec, "GetMonsterRec returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 		}()
 	}
 }
 
-func TestUpdateDungeonMonsterRec(t *testing.T) {
+func TestUpdateMonsterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -186,20 +182,20 @@ func TestUpdateDungeonMonsterRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonMonster
+		rec  func() *record.Monster
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonMonster {
-				return h.Data.DungeonMonsterRecs[0]
+			rec: func() *record.Monster {
+				return h.Data.MonsterRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonMonster {
-				rec := h.Data.DungeonMonsterRecs[0]
+			rec: func() *record.Monster {
+				rec := h.Data.MonsterRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -229,18 +225,18 @@ func TestUpdateDungeonMonsterRec(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := h.Model.(*model.Model).UpdateDungeonMonsterRec(rec)
+			err := h.Model.(*model.Model).UpdateMonsterRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "UpdateDungeonMonsterRec returns error")
+				require.Error(t, err, "UpdateMonsterRec returns error")
 				return
 			}
-			require.NoError(t, err, "UpdateDungeonMonsterRec returns without error")
-			require.NotEmpty(t, rec.UpdatedAt, "UpdateDungeonMonsterRec returns record with UpdatedAt")
+			require.NoError(t, err, "UpdateMonsterRec returns without error")
+			require.NotEmpty(t, rec.UpdatedAt, "UpdateMonsterRec returns record with UpdatedAt")
 		}()
 	}
 }
 
-func TestDeleteDungeonMonsterRec(t *testing.T) {
+func TestDeleteMonsterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -262,7 +258,7 @@ func TestDeleteDungeonMonsterRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonMonsterRecs[0].ID
+				return h.Data.MonsterRecs[0].ID
 			},
 			err: false,
 		},
@@ -295,16 +291,16 @@ func TestDeleteDungeonMonsterRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			err := h.Model.(*model.Model).DeleteDungeonMonsterRec(tc.id())
+			err := h.Model.(*model.Model).DeleteMonsterRec(tc.id())
 			if tc.err == true {
-				require.Error(t, err, "DeleteDungeonMonsterRec returns error")
+				require.Error(t, err, "DeleteMonsterRec returns error")
 				return
 			}
-			require.NoError(t, err, "DeleteDungeonMonsterRec returns without error")
+			require.NoError(t, err, "DeleteMonsterRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonMonsterRec(tc.id(), false)
-			require.NoError(t, err, "GetDungeonMonsterRec returns without error")
-			require.Nil(t, rec, "GetDungeonMonsterRec does not return record")
+			rec, err := h.Model.(*model.Model).GetMonsterRec(tc.id(), false)
+			require.NoError(t, err, "GetMonsterRec returns without error")
+			require.Nil(t, rec, "GetMonsterRec does not return record")
 		}()
 	}
 }

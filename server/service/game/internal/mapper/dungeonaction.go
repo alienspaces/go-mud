@@ -9,17 +9,17 @@ import (
 )
 
 // ActionRecordSetToActionResponse -
-func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet record.ActionRecordSet) (*schema.ActionResponseData, error) {
+func ActionRecordSetToActionResponse(l logger.Logger, actionRecordSet record.ActionRecordSet) (*schema.ActionResponseData, error) {
 
-	dungeonActionRec := dungeonActionRecordSet.ActionRec
+	dungeonActionRec := actionRecordSet.ActionRec
 
 	var err error
 	var characterData *schema.ActionCharacter
-	if dungeonActionRecordSet.ActionCharacterRec != nil {
+	if actionRecordSet.ActionCharacterRec != nil {
 		characterData, err = dungeonCharacterToResponseCharacter(
 			l,
-			dungeonActionRecordSet.ActionCharacterRec,
-			dungeonActionRecordSet.ActionCharacterObjectRecs,
+			actionRecordSet.ActionCharacterRec,
+			actionRecordSet.ActionCharacterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
@@ -27,11 +27,11 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 	}
 
 	var monsterData *schema.ActionMonster
-	if dungeonActionRecordSet.ActionMonsterRec != nil {
+	if actionRecordSet.ActionMonsterRec != nil {
 		monsterData, err = dungeonMonsterToResponseMonster(
 			l,
-			dungeonActionRecordSet.ActionMonsterRec,
-			dungeonActionRecordSet.ActionMonsterObjectRecs,
+			actionRecordSet.ActionMonsterRec,
+			actionRecordSet.ActionMonsterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
@@ -39,15 +39,15 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 	}
 
 	// Current location
-	locationData, err := dungeonActionLocationToResponseLocation(dungeonActionRecordSet.CurrentLocation)
+	locationData, err := actionLocationToResponseLocation(actionRecordSet.CurrentLocation)
 	if err != nil {
 		return nil, err
 	}
 
 	// Target location
 	var targetActionLocation *schema.ActionLocation
-	if dungeonActionRecordSet.TargetLocation != nil {
-		targetActionLocation, err = dungeonActionLocationToResponseLocation(dungeonActionRecordSet.TargetLocation)
+	if actionRecordSet.TargetLocation != nil {
+		targetActionLocation, err = actionLocationToResponseLocation(actionRecordSet.TargetLocation)
 		if err != nil {
 			return nil, err
 		}
@@ -59,8 +59,8 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 
 	// Equipped object
 	var equippedActionLocationObject *schema.ActionObject
-	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
-		equippedActionLocationObject, err = dungeonObjectToResponseObject(dungeonActionRecordSet.EquippedActionObjectRec)
+	if actionRecordSet.EquippedActionObjectRec != nil {
+		equippedActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.EquippedActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
@@ -68,8 +68,8 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 
 	// Stashed object
 	var stashedActionLocationObject *schema.ActionObject
-	if dungeonActionRecordSet.StashedActionObjectRec != nil {
-		stashedActionLocationObject, err = dungeonObjectToResponseObject(dungeonActionRecordSet.StashedActionObjectRec)
+	if actionRecordSet.StashedActionObjectRec != nil {
+		stashedActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.StashedActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
@@ -77,8 +77,8 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 
 	// Dropped object
 	var droppedActionLocationObject *schema.ActionObject
-	if dungeonActionRecordSet.DroppedActionObjectRec != nil {
-		droppedActionLocationObject, err = dungeonObjectToResponseObject(dungeonActionRecordSet.DroppedActionObjectRec)
+	if actionRecordSet.DroppedActionObjectRec != nil {
+		droppedActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.DroppedActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
@@ -86,8 +86,8 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 
 	// Target object
 	var targetActionLocationObject *schema.ActionObject
-	if dungeonActionRecordSet.TargetActionObjectRec != nil {
-		targetActionLocationObject, err = dungeonObjectToResponseObject(dungeonActionRecordSet.TargetActionObjectRec)
+	if actionRecordSet.TargetActionObjectRec != nil {
+		targetActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.TargetActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
@@ -95,11 +95,11 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 
 	// Target character
 	var targetActionLocationCharacter *schema.ActionCharacter
-	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
+	if actionRecordSet.TargetActionCharacterRec != nil {
 		targetActionLocationCharacter, err = dungeonTargetCharacterToResponseTargetCharacter(
 			l,
-			dungeonActionRecordSet.TargetActionCharacterRec,
-			dungeonActionRecordSet.TargetActionCharacterObjectRecs,
+			actionRecordSet.TargetActionCharacterRec,
+			actionRecordSet.TargetActionCharacterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
@@ -108,18 +108,18 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet rec
 
 	// Target monster
 	var targetActionLocationMonster *schema.ActionMonster
-	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
+	if actionRecordSet.TargetActionMonsterRec != nil {
 		targetActionLocationMonster, err = dungeonTargetMonsterToResponseTargetMonster(
 			l,
-			dungeonActionRecordSet.TargetActionMonsterRec,
-			dungeonActionRecordSet.TargetActionMonsterObjectRecs,
+			actionRecordSet.TargetActionMonsterRec,
+			actionRecordSet.TargetActionMonsterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	narrative, err := dungeonActionToNarrative(l, dungeonActionRecordSet)
+	narrative, err := dungeonActionToNarrative(l, actionRecordSet)
 	if err != nil {
 		return nil, err
 	}
@@ -314,8 +314,8 @@ func dungeonTargetMonsterToResponseTargetMonster(
 	return data, nil
 }
 
-// actionLocationToReponseLocation -
-func dungeonActionLocationToResponseLocation(recordSet *record.ActionLocationRecordSet) (*schema.ActionLocation, error) {
+// actionLocationToResponseLocation -
+func actionLocationToResponseLocation(recordSet *record.ActionLocationRecordSet) (*schema.ActionLocation, error) {
 
 	dungeonLocationRec := recordSet.LocationInstanceViewRec
 

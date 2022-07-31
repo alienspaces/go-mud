@@ -3,7 +3,6 @@ package test
 // NOTE: model tests are run is the public space to avoid cyclic dependencies
 
 import (
-	"database/sql"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
@@ -17,7 +16,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestCreateDungeonObjectRec(t *testing.T) {
+func TestCreateObjectRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -33,15 +32,13 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonObject
+		rec  func(data harness.Data) *record.Object
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonObject {
-				return &record.DungeonObject{
-					DungeonID:           data.DungeonRecs[0].ID,
-					LocationID:   sql.NullString{String: data.LocationRecs[0].ID, Valid: true},
+			rec: func(data harness.Data) *record.Object {
+				return &record.Object{
 					Name:                gofakeit.StreetName() + gofakeit.Name(),
 					Description:         gofakeit.StreetName() + gofakeit.Name(),
 					DescriptionDetailed: gofakeit.StreetName() + gofakeit.Name(),
@@ -51,10 +48,8 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonObject {
-				rec := &record.DungeonObject{
-					DungeonID:           data.DungeonRecs[0].ID,
-					LocationID:   sql.NullString{String: data.LocationRecs[0].ID, Valid: true},
+			rec: func(data harness.Data) *record.Object {
+				rec := &record.Object{
 					Name:                gofakeit.StreetName() + gofakeit.Name(),
 					Description:         gofakeit.StreetName() + gofakeit.Name(),
 					DescriptionDetailed: gofakeit.StreetName() + gofakeit.Name(),
@@ -89,18 +84,18 @@ func TestCreateDungeonObjectRec(t *testing.T) {
 
 			rec := tc.rec(th.Data)
 
-			err = th.Model.(*model.Model).CreateDungeonObjectRec(rec)
+			err = th.Model.(*model.Model).CreateObjectRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "CreateDungeonObjectRec returns error")
+				require.Error(t, err, "CreateObjectRec returns error")
 				return
 			}
-			require.NoError(t, err, "CreateDungeonObjectRec returns without error")
-			require.NotEmpty(t, rec.CreatedAt, "CreateDungeonObjectRec returns record with CreatedAt")
+			require.NoError(t, err, "CreateObjectRec returns without error")
+			require.NotEmpty(t, rec.CreatedAt, "CreateObjectRec returns record with CreatedAt")
 		}()
 	}
 }
 
-func TestGetDungeonObjectRec(t *testing.T) {
+func TestGetObjectRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -122,7 +117,7 @@ func TestGetDungeonObjectRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonObjectRecs[0].ID
+				return h.Data.ObjectRecs[0].ID
 			},
 			err: false,
 		},
@@ -155,19 +150,19 @@ func TestGetDungeonObjectRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonObjectRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetObjectRec(tc.id(), false)
 			if tc.err == true {
-				require.Error(t, err, "GetDungeonObjectRec returns error")
+				require.Error(t, err, "GetObjectRec returns error")
 				return
 			}
-			require.NoError(t, err, "GetDungeonObjectRec returns without error")
-			require.NotNil(t, rec, "GetDungeonObjectRec returns record")
+			require.NoError(t, err, "GetObjectRec returns without error")
+			require.NotNil(t, rec, "GetObjectRec returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 		}()
 	}
 }
 
-func TestUpdateDungeonObjectRec(t *testing.T) {
+func TestUpdateObjectRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -185,20 +180,20 @@ func TestUpdateDungeonObjectRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonObject
+		rec  func() *record.Object
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonObject {
-				return h.Data.DungeonObjectRecs[0]
+			rec: func() *record.Object {
+				return h.Data.ObjectRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonObject {
-				rec := h.Data.DungeonObjectRecs[0]
+			rec: func() *record.Object {
+				rec := h.Data.ObjectRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -228,18 +223,18 @@ func TestUpdateDungeonObjectRec(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := h.Model.(*model.Model).UpdateDungeonObjectRec(rec)
+			err := h.Model.(*model.Model).UpdateObjectRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "UpdateDungeonObjectRec returns error")
+				require.Error(t, err, "UpdateObjectRec returns error")
 				return
 			}
-			require.NoError(t, err, "UpdateDungeonObjectRec returns without error")
-			require.NotEmpty(t, rec.UpdatedAt, "UpdateDungeonObjectRec returns record with UpdatedAt")
+			require.NoError(t, err, "UpdateObjectRec returns without error")
+			require.NotEmpty(t, rec.UpdatedAt, "UpdateObjectRec returns record with UpdatedAt")
 		}()
 	}
 }
 
-func TestDeleteDungeonObjectRec(t *testing.T) {
+func TestDeleteObjectRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -261,7 +256,7 @@ func TestDeleteDungeonObjectRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonObjectRecs[0].ID
+				return h.Data.ObjectRecs[0].ID
 			},
 			err: false,
 		},
@@ -294,16 +289,16 @@ func TestDeleteDungeonObjectRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			err := h.Model.(*model.Model).DeleteDungeonObjectRec(tc.id())
+			err := h.Model.(*model.Model).DeleteObjectRec(tc.id())
 			if tc.err == true {
-				require.Error(t, err, "DeleteDungeonObjectRec returns error")
+				require.Error(t, err, "DeleteObjectRec returns error")
 				return
 			}
-			require.NoError(t, err, "DeleteDungeonObjectRec returns without error")
+			require.NoError(t, err, "DeleteObjectRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonObjectRec(tc.id(), false)
-			require.NoError(t, err, "GetDungeonObjectRec returns without error")
-			require.Nil(t, rec, "GetDungeonObjectRec does not return record")
+			rec, err := h.Model.(*model.Model).GetObjectRec(tc.id(), false)
+			require.NoError(t, err, "GetObjectRec returns without error")
+			require.Nil(t, rec, "GetObjectRec does not return record")
 		}()
 	}
 }

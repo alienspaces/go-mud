@@ -16,7 +16,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestCreateDungeonCharacterRec(t *testing.T) {
+func TestCreateCharacterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -32,14 +32,13 @@ func TestCreateDungeonCharacterRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonCharacter
+		rec  func(data harness.Data) *record.Character
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonCharacter {
-				return &record.DungeonCharacter{
-					DungeonID:    data.DungeonRecs[0].ID,
+			rec: func(data harness.Data) *record.Character {
+				return &record.Character{
 					Name:         gofakeit.StreetName() + gofakeit.Name(),
 					Strength:     10,
 					Dexterity:    10,
@@ -50,9 +49,8 @@ func TestCreateDungeonCharacterRec(t *testing.T) {
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonCharacter {
-				rec := &record.DungeonCharacter{
-					DungeonID:    data.DungeonRecs[0].ID,
+			rec: func(data harness.Data) *record.Character {
+				rec := &record.Character{
 					Name:         gofakeit.StreetName() + gofakeit.Name(),
 					Strength:     10,
 					Dexterity:    10,
@@ -88,18 +86,18 @@ func TestCreateDungeonCharacterRec(t *testing.T) {
 
 			rec := tc.rec(th.Data)
 
-			err = th.Model.(*model.Model).CreateDungeonCharacterRec(rec)
+			err = th.Model.(*model.Model).CreateCharacterRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "CreateDungeonCharacterRec returns error")
+				require.Error(t, err, "CreateCharacterRec returns error")
 				return
 			}
-			require.NoError(t, err, "CreateDungeonCharacterRec returns without error")
-			require.NotEmpty(t, rec.CreatedAt, "CreateDungeonCharacterRec returns record with CreatedAt")
+			require.NoError(t, err, "CreateCharacterRec returns without error")
+			require.NotEmpty(t, rec.CreatedAt, "CreateCharacterRec returns record with CreatedAt")
 		}()
 	}
 }
 
-func TestGetDungeonCharacterRec(t *testing.T) {
+func TestGetCharacterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -121,7 +119,7 @@ func TestGetDungeonCharacterRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonCharacterRecs[0].ID
+				return h.Data.CharacterRecs[0].ID
 			},
 			err: false,
 		},
@@ -154,19 +152,19 @@ func TestGetDungeonCharacterRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonCharacterRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetCharacterRec(tc.id(), false)
 			if tc.err == true {
-				require.Error(t, err, "GetDungeonCharacterRec returns error")
+				require.Error(t, err, "GetCharacterRec returns error")
 				return
 			}
-			require.NoError(t, err, "GetDungeonCharacterRec returns without error")
-			require.NotNil(t, rec, "GetDungeonCharacterRec returns record")
+			require.NoError(t, err, "GetCharacterRec returns without error")
+			require.NotNil(t, rec, "GetCharacterRec returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 		}()
 	}
 }
 
-func TestUpdateDungeonCharacterRec(t *testing.T) {
+func TestUpdateCharacterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -184,20 +182,20 @@ func TestUpdateDungeonCharacterRec(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonCharacter
+		rec  func() *record.Character
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonCharacter {
-				return h.Data.DungeonCharacterRecs[0]
+			rec: func() *record.Character {
+				return h.Data.CharacterRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonCharacter {
-				rec := h.Data.DungeonCharacterRecs[0]
+			rec: func() *record.Character {
+				rec := h.Data.CharacterRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -227,18 +225,18 @@ func TestUpdateDungeonCharacterRec(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := h.Model.(*model.Model).UpdateDungeonCharacterRec(rec)
+			err := h.Model.(*model.Model).UpdateCharacterRec(rec)
 			if tc.err == true {
-				require.Error(t, err, "UpdateDungeonCharacterRec returns error")
+				require.Error(t, err, "UpdateCharacterRec returns error")
 				return
 			}
-			require.NoError(t, err, "UpdateDungeonCharacterRec returns without error")
-			require.NotEmpty(t, rec.UpdatedAt, "UpdateDungeonCharacterRec returns record with UpdatedAt")
+			require.NoError(t, err, "UpdateCharacterRec returns without error")
+			require.NotEmpty(t, rec.UpdatedAt, "UpdateCharacterRec returns record with UpdatedAt")
 		}()
 	}
 }
 
-func TestDeleteDungeonCharacterRec(t *testing.T) {
+func TestDeleteCharacterRec(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -260,7 +258,7 @@ func TestDeleteDungeonCharacterRec(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonCharacterRecs[0].ID
+				return h.Data.CharacterRecs[0].ID
 			},
 			err: false,
 		},
@@ -293,16 +291,16 @@ func TestDeleteDungeonCharacterRec(t *testing.T) {
 			err = h.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			err := h.Model.(*model.Model).DeleteDungeonCharacterRec(tc.id())
+			err := h.Model.(*model.Model).DeleteCharacterRec(tc.id())
 			if tc.err == true {
-				require.Error(t, err, "DeleteDungeonCharacterRec returns error")
+				require.Error(t, err, "DeleteCharacterRec returns error")
 				return
 			}
-			require.NoError(t, err, "DeleteDungeonCharacterRec returns without error")
+			require.NoError(t, err, "DeleteCharacterRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonCharacterRec(tc.id(), false)
-			require.NoError(t, err, "GetDungeonCharacterRec returns without error")
-			require.Nil(t, rec, "GetDungeonCharacterRec does not return record")
+			rec, err := h.Model.(*model.Model).GetCharacterRec(tc.id(), false)
+			require.NoError(t, err, "GetCharacterRec returns without error")
+			require.Nil(t, rec, "GetCharacterRec does not return record")
 		}()
 	}
 }

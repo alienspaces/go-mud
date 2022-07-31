@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/characterinstance/data.schema.json",
+  "title": "Character Instance Data",
+  "description": "Character instance data",
+  "type": "object",
+  "required": [
+    "id",
+    "character_id",
+    "location_instance_id",
+    "name",
+    "strength",
+    "dexterity",
+    "intelligence",
+    "current_strength",
+    "current_dexterity",
+    "current_intelligence",
+    "health",
+    "fatigue",
+    "current_health",
+    "current_fatigue",
+    "coins",
+    "experience_points",
+    "attribute_points",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "character_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "location_instance_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string"
+    },
+    "strength": {
+      "type": "number"
+    },
+    "dexterity": {
+      "type": "number"
+    },
+    "intelligence": {
+      "type": "number"
+    },
+    "current_strength": {
+      "type": "number"
+    },
+    "current_dexterity": {
+      "type": "number"
+    },
+    "current_intelligence": {
+      "type": "number"
+    },
+    "health": {
+      "type": "number"
+    },
+    "fatigue": {
+      "type": "number"
+    },
+    "current_health": {
+      "type": "number"
+    },
+    "current_fatigue": {
+      "type": "number"
+    },
+    "coins": {
+      "type": "number"
+    },
+    "experience_points": {
+      "type": "number"
+    },
+    "attribute_points": {
+      "type": "number"
+    },
+    "points": {
+      "type": "number"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
