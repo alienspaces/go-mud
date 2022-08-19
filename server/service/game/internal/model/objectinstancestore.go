@@ -82,7 +82,7 @@ func (m *Model) CreateObjectInstanceRec(rec *record.ObjectInstance) error {
 
 	l := m.Logger("CreateObjectInstanceRec")
 
-	l.Debug("Creating object rec >%#v<", rec)
+	l.Warn("Creating object instance record >%#v<", rec)
 
 	r := m.ObjectInstanceRepository()
 
@@ -100,7 +100,7 @@ func (m *Model) UpdateObjectInstanceRec(rec *record.ObjectInstance) error {
 
 	l := m.Logger("UpdateObjectInstanceRec")
 
-	l.Debug("Updating object rec >%#v<", rec)
+	l.Warn("Updating object instance record >%#v<", rec)
 
 	r := m.ObjectInstanceRepository()
 
@@ -118,7 +118,7 @@ func (m *Model) DeleteObjectInstanceRec(recID string) error {
 
 	l := m.Logger("DeleteObjectInstanceRec")
 
-	l.Debug("Deleting object rec ID >%s<", recID)
+	l.Debug("Deleting object instance record ID >%s<", recID)
 
 	r := m.ObjectInstanceRepository()
 
@@ -141,7 +141,7 @@ func (m *Model) RemoveObjectInstanceRec(recID string) error {
 
 	l := m.Logger("RemoveObjectInstanceRec")
 
-	l.Debug("Removing object rec ID >%s<", recID)
+	l.Debug("Removing object instance record ID >%s<", recID)
 
 	r := m.ObjectInstanceRepository()
 

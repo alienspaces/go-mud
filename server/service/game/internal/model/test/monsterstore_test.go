@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
-
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
@@ -40,6 +39,7 @@ func TestCreateMonsterRec(t *testing.T) {
 			rec: func(data harness.Data) *record.Monster {
 				return &record.Monster{
 					Name:         gofakeit.StreetName() + gofakeit.Name(),
+					Description:  gofakeit.Sentence(7),
 					Strength:     10,
 					Dexterity:    10,
 					Intelligence: 10,
@@ -52,6 +52,7 @@ func TestCreateMonsterRec(t *testing.T) {
 			rec: func(data harness.Data) *record.Monster {
 				rec := &record.Monster{
 					Name:         gofakeit.StreetName() + gofakeit.Name(),
+					Description:  gofakeit.Sentence(7),
 					Strength:     10,
 					Dexterity:    10,
 					Intelligence: 10,

@@ -23,6 +23,7 @@ func Default() (*config.Config, *log.Log, *store.Store, error) {
 		"APP_SERVER_PORT",
 		// logger
 		"APP_SERVER_LOG_LEVEL",
+		"APP_SERVER_LOG_PRETTY",
 		// database
 		"APP_SERVER_DB_HOST",
 		"APP_SERVER_DB_PORT",

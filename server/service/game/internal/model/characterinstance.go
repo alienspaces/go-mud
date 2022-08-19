@@ -153,8 +153,9 @@ func (m *Model) GetCharacterInstanceObjectInstanceRecs(characterInstanceID strin
 
 // GetCharacterInstanceEquippedObjectInstanceRecs -
 func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
+	l := m.Logger("GetCharacterInstanceEquippedObjectInstanceRecs")
 
-	m.Log.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
+	l.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
 	r := m.ObjectInstanceRepository()
 
@@ -166,8 +167,9 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstance
 
 // GetCharacterInstanceStashedObjectInstanceRecs -
 func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
+	l := m.Logger("GetCharacterInstanceStashedObjectInstanceRecs")
 
-	m.Log.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
+	l.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 
 	r := m.ObjectInstanceRepository()
 
@@ -179,8 +181,9 @@ func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceI
 
 // GetCharacterInstanceObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
+	l := m.Logger("GetCharacterInstanceObjectInstanceViewRecs")
 
-	m.Log.Info("Getting character instance ID >%s< object records", characterInstanceID)
+	l.Info("Getting character instance ID >%s< object records", characterInstanceID)
 
 	r := m.ObjectInstanceViewRepository()
 
@@ -191,8 +194,9 @@ func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID s
 
 // GetCharacterInstanceEquippedObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
+	l := m.Logger("GetCharacterInstanceEquippedObjectInstanceViewRecs")
 
-	m.Log.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
+	l.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
 	r := m.ObjectInstanceViewRepository()
 
@@ -204,8 +208,9 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInst
 
 // GetCharacterInstanceStashedObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
+	l := m.Logger("GetCharacterInstanceStashedObjectInstanceViewRecs")
 
-	m.Log.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
+	l.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 
 	r := m.ObjectInstanceViewRepository()
 

@@ -9,6 +9,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+type characterActionFunc func(characterInstanceViewRec *record.CharacterInstanceView, actionRec *record.Action, locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error)
+
 func (m *Model) performCharacterAction(
 	characterInstanceViewRec *record.CharacterInstanceView,
 	actionRec *record.Action,
@@ -17,10 +19,7 @@ func (m *Model) performCharacterAction(
 
 	l := m.Logger("performCharacterAction")
 
-	actionFuncs := map[string]func(
-		characterInstanceViewRec *record.CharacterInstanceView,
-		actionRec *record.Action,
-		locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error){
+	actionFuncs := map[string]characterActionFunc{
 		"move":  m.performActionMove,
 		"look":  m.performActionLook,
 		"stash": m.performActionStash,
