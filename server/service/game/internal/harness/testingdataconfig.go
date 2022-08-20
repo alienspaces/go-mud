@@ -97,9 +97,6 @@ var DefaultDataConfig = DataConfig{
 					ObjectName: "Blood Stained Pouch",
 				},
 			},
-			CharacterDungeonConfig: &CharacterDungeonConfig{
-				DungeonName: "Cave",
-			},
 		},
 	},
 	DungeonConfig: []DungeonConfig{
@@ -188,17 +185,15 @@ var DefaultDataConfig = DataConfig{
 					LocationObjectConfig:  []LocationObjectConfig{},
 				},
 			},
-			// MOVE:
-			// ActionConfig: []ActionConfig{
-			// 	{
-			// 		CharacterName: "Barricade",
-			// 		Command:       "look north",
-			// 	},
-			// 	{
-			// 		CharacterName: "Barricade",
-			// 		Command:       "look grumpy dwarf",
-			// 	},
-			// },
+			DungeonInstanceConfig: []DungeonInstanceConfig{
+				{
+					CharacterInstanceConfig: []CharacterInstanceConfig{
+						{
+							Name: "Barricade",
+						},
+					},
+				},
+			},
 		},
 	},
 }

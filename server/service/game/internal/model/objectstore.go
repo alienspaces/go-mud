@@ -24,8 +24,6 @@ func (m *Model) GetObjectRec(recID string, forUpdate bool) (*record.Object, erro
 
 	l := m.Logger("GetObjectRec")
 
-	l.Debug("Getting dungeon object rec ID >%s<", recID)
-
 	r := m.ObjectRepository()
 
 	// validate UUID
@@ -47,11 +45,11 @@ func (m *Model) CreateObjectRec(rec *record.Object) error {
 
 	l := m.Logger("CreateObjectRec")
 
-	l.Debug("Creating dungeon object rec >%#v<", rec)
+	l.Debug("Creating dungeon object record >%#v<", rec)
 
 	r := m.ObjectRepository()
 
-	err := m.ValidateObjectRec(rec)
+	err := m.validateObjectRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -65,11 +63,11 @@ func (m *Model) UpdateObjectRec(rec *record.Object) error {
 
 	l := m.Logger("UpdateObjectRec")
 
-	l.Debug("Updating dungeon object rec >%#v<", rec)
+	l.Debug("Updating dungeon object record >%#v<", rec)
 
 	r := m.ObjectRepository()
 
-	err := m.ValidateObjectRec(rec)
+	err := m.validateObjectRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -92,7 +90,7 @@ func (m *Model) DeleteObjectRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteObjectRec(recID)
+	err := m.validateDeleteObjectRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -115,7 +113,7 @@ func (m *Model) RemoveObjectRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteObjectRec(recID)
+	err := m.validateDeleteObjectRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

@@ -67,7 +67,7 @@ func TestRetryRequest(t *testing.T) {
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				respData, err := json.Marshal(&Response{})
 				if err != nil {
-					l.Warn("Failed encoding data >%v<", err)
+					l.Warn("failed encoding data >%v<", err)
 					rw.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -115,7 +115,7 @@ func TestRetryRequest(t *testing.T) {
 
 				respData, err := json.Marshal(&Response{})
 				if err != nil {
-					l.Warn("Failed encoding data >%v<", err)
+					l.Warn("failed encoding data >%v<", err)
 					rw.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -189,7 +189,7 @@ func TestRetryRequest(t *testing.T) {
 
 				respData, err := json.Marshal(&Response{})
 				if err != nil {
-					l.Warn("Failed encoding data >%v<", err)
+					l.Warn("failed encoding data >%v<", err)
 					rw.WriteHeader(http.StatusInternalServerError)
 					return
 				}

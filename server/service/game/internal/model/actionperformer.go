@@ -37,7 +37,7 @@ func (m *Model) performCharacterAction(
 	var err error
 	actionRec, err = actionFunc(characterInstanceViewRec, actionRec, locationInstanceRecordSet)
 	if err != nil {
-		l.Warn("Failed performing action >%s< >%v<", actionRec.ResolvedCommand, err)
+		l.Warn("failed performing action >%s< >%v<", actionRec.ResolvedCommand, err)
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func (m *Model) performActionMove(
 		// Character move direction
 		characterInstanceRec, err := mapper.CharacterInstanceViewToCharacterInstance(l, characterInstanceViewRec)
 		if err != nil {
-			l.Warn("Failed mapping character instance view to character instance >%v<", err)
+			l.Warn("failed mapping character instance view to character instance >%v<", err)
 			return nil, err
 		}
 
@@ -66,7 +66,7 @@ func (m *Model) performActionMove(
 
 		err = m.UpdateCharacterInstanceRec(characterInstanceRec)
 		if err != nil {
-			l.Warn("Failed updated dungeon character instance record >%v<", err)
+			l.Warn("failed updated dungeon character instance record >%v<", err)
 			return nil, err
 		}
 
@@ -127,7 +127,7 @@ func (m *Model) performActionStash(
 
 		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
 		if err != nil {
-			l.Warn("Failed getting dungeon object instance record >%v<", err)
+			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
 		}
 
@@ -138,7 +138,7 @@ func (m *Model) performActionStash(
 
 		err = m.UpdateObjectInstanceRec(objectInstanceRec)
 		if err != nil {
-			l.Warn("Failed updating dungeon object instance record >%v<", err)
+			l.Warn("failed updating dungeon object instance record >%v<", err)
 			return nil, err
 		}
 
@@ -169,7 +169,7 @@ func (m *Model) performActionEquip(
 
 		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
 		if err != nil {
-			l.Warn("Failed getting dungeon object instance record >%v<", err)
+			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
 		}
 
@@ -180,7 +180,7 @@ func (m *Model) performActionEquip(
 
 		err = m.UpdateObjectInstanceRec(objectInstanceRec)
 		if err != nil {
-			l.Warn("Failed updating dungeon object instance record >%v<", err)
+			l.Warn("failed updating dungeon object instance record >%v<", err)
 			return nil, err
 		}
 
@@ -211,7 +211,7 @@ func (m *Model) performActionDrop(
 
 		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
 		if err != nil {
-			l.Warn("Failed getting dungeon object instance record >%v<", err)
+			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
 		}
 
@@ -227,7 +227,7 @@ func (m *Model) performActionDrop(
 
 		err = m.UpdateObjectInstanceRec(objectInstanceRec)
 		if err != nil {
-			l.Warn("Failed updating dungeon object instance record >%v<", err)
+			l.Warn("failed updating dungeon object instance record >%v<", err)
 			return nil, err
 		}
 

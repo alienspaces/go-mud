@@ -6,8 +6,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// ValidateMonsterRec - validates creating and updating a game record
-func (m *Model) ValidateMonsterRec(rec *record.Monster) error {
+// validateMonsterRec - validates creating and updating a game record
+func (m *Model) validateMonsterRec(rec *record.Monster) error {
 
 	// New monster
 	if rec.ID == "" {
@@ -35,8 +35,8 @@ func (m *Model) ValidateMonsterRec(rec *record.Monster) error {
 	return nil
 }
 
-// ValidateDeleteMonsterRec - validates it is okay to delete a game record
-func (m *Model) ValidateDeleteMonsterRec(recID string) error {
+// validateDeleteMonsterRec - validates it is okay to delete a game record
+func (m *Model) validateDeleteMonsterRec(recID string) error {
 
 	return nil
 }

@@ -12,7 +12,7 @@ func (m *Model) GetLocationRecs(params map[string]interface{}, operators map[str
 
 	l := m.Logger("GetLocationRecs")
 
-	l.Debug("Getting dungeon location records params >%s<", params)
+	l.Debug("Getting location records params >%s<", params)
 
 	r := m.LocationRepository()
 
@@ -24,7 +24,7 @@ func (m *Model) GetLocationRec(recID string, forUpdate bool) (*record.Location, 
 
 	l := m.Logger("GetLocationRec")
 
-	l.Debug("Getting dungeon location rec ID >%s<", recID)
+	l.Debug("Getting location rec ID >%s<", recID)
 
 	r := m.LocationRepository()
 
@@ -44,14 +44,13 @@ func (m *Model) GetLocationRec(recID string, forUpdate bool) (*record.Location, 
 
 // CreateLocationRec -
 func (m *Model) CreateLocationRec(rec *record.Location) error {
-
 	l := m.Logger("CreateLocationRec")
 
-	l.Debug("Creating dungeon location rec >%#v<", rec)
+	l.Debug("Creating location record >%#v<", rec)
 
 	r := m.LocationRepository()
 
-	err := m.ValidateLocationRec(rec)
+	err := m.validateLocationRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -65,11 +64,11 @@ func (m *Model) UpdateLocationRec(rec *record.Location) error {
 
 	l := m.Logger("UpdateLocationRec")
 
-	l.Debug("Updating dungeon location rec >%#v<", rec)
+	l.Debug("Updating location record >%#v<", rec)
 
 	r := m.LocationRepository()
 
-	err := m.ValidateLocationRec(rec)
+	err := m.validateLocationRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -83,7 +82,7 @@ func (m *Model) DeleteLocationRec(recID string) error {
 
 	l := m.Logger("DeleteLocationRec")
 
-	l.Debug("Deleting dungeon location rec ID >%s<", recID)
+	l.Debug("Deleting location rec ID >%s<", recID)
 
 	r := m.LocationRepository()
 
@@ -92,7 +91,7 @@ func (m *Model) DeleteLocationRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteLocationRec(recID)
+	err := m.validateDeleteLocationRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -106,7 +105,7 @@ func (m *Model) RemoveLocationRec(recID string) error {
 
 	l := m.Logger("RemoveLocationRec")
 
-	l.Debug("Removing dungeon location rec ID >%s<", recID)
+	l.Debug("Removing location rec ID >%s<", recID)
 
 	r := m.LocationRepository()
 
@@ -115,7 +114,7 @@ func (m *Model) RemoveLocationRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteLocationRec(recID)
+	err := m.validateDeleteLocationRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

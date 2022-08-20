@@ -206,7 +206,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 	// Initialise storer
 	err := rnr.Store.Init()
 	if err != nil {
-		l.Warn("Failed store init >%v<", err)
+		l.Warn("failed store init >%v<", err)
 		return err
 	}
 
@@ -217,7 +217,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	pRepo, err := rnr.PreparerRepositoryFunc(l)
 	if err != nil {
-		l.Warn("Failed preparer func >%v<", err)
+		l.Warn("failed preparer func >%v<", err)
 		return err
 	}
 
@@ -233,7 +233,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	pQ, err := rnr.PreparerQueryFunc(l)
 	if err != nil {
-		l.Warn("Failed preparer config func >%v<", err)
+		l.Warn("failed preparer config func >%v<", err)
 		return err
 	}
 
@@ -432,19 +432,19 @@ func (rnr *Runner) PreparerRepository(l logger.Logger) (preparer.Repository, err
 
 	p, err := prepare.NewRepositoryPreparer(l)
 	if err != nil {
-		l.Warn("Failed new prepare >%v<", err)
+		l.Warn("failed new prepare >%v<", err)
 		return nil, err
 	}
 
 	db, err := rnr.Store.GetDb()
 	if err != nil {
-		l.Warn("Failed getting database handle >%v<", err)
+		l.Warn("failed getting database handle >%v<", err)
 		return nil, err
 	}
 
 	err = p.Init(db)
 	if err != nil {
-		l.Warn("Failed preparer init >%v<", err)
+		l.Warn("failed preparer init >%v<", err)
 		return nil, err
 	}
 

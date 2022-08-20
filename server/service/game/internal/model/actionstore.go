@@ -47,11 +47,11 @@ func (m *Model) CreateActionRec(rec *record.Action) error {
 
 	l := m.Logger("CreateActionRec")
 
-	l.Debug("Creating dungeon action rec >%#v<", rec)
+	l.Debug("Creating dungeon action record >%#v<", rec)
 
 	r := m.ActionRepository()
 
-	err := m.ValidateActionRec(rec)
+	err := m.validateActionRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -65,11 +65,11 @@ func (m *Model) UpdateActionRec(rec *record.Action) error {
 
 	l := m.Logger("UpdateActionRec")
 
-	l.Debug("Updating dungeon action rec >%#v<", rec)
+	l.Debug("Updating dungeon action record >%#v<", rec)
 
 	r := m.ActionRepository()
 
-	err := m.ValidateActionRec(rec)
+	err := m.validateActionRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -92,7 +92,7 @@ func (m *Model) DeleteActionRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteActionRec(recID)
+	err := m.validateDeleteActionRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -115,7 +115,7 @@ func (m *Model) RemoveActionRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteActionRec(recID)
+	err := m.validateDeleteActionRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

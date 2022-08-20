@@ -215,7 +215,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 	err := r.CreateOne(dungeonInstanceRec)
 	if err != nil {
-		l.Warn("Failed creating dungeon instance record >%v<", err)
+		l.Warn("failed creating dungeon instance record >%v<", err)
 		return nil, err
 	}
 
@@ -227,7 +227,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 		nil, false,
 	)
 	if err != nil {
-		l.Warn("Failed getting locations records >%v<", err)
+		l.Warn("failed getting locations records >%v<", err)
 		return nil, err
 	}
 
@@ -238,7 +238,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 		}
 		err := m.CreateLocationInstanceRec(locationInstanceRec)
 		if err != nil {
-			l.Warn("Failed creating location instance record >%v<", err)
+			l.Warn("failed creating location instance record >%v<", err)
 			return nil, err
 		}
 		locationInstanceRecs = append(locationInstanceRecs, locationInstanceRec)
@@ -249,7 +249,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 	// Resolve location instance direction IDs
 	locationInstanceRecs, err = m.resolveLocationInstanceDirectionIdentifiers(locationMap, locationInstanceRecs)
 	if err != nil {
-		l.Warn("Failed resolving location instance direction identifiers >%v<", err)
+		l.Warn("failed resolving location instance direction identifiers >%v<", err)
 		return nil, err
 	}
 
@@ -257,7 +257,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 	for _, locationInstanceRec := range locationInstanceRecs {
 		err := m.UpdateLocationInstanceRec(locationInstanceRec)
 		if err != nil {
-			l.Warn("Failed updating location instance record >%v<", err)
+			l.Warn("failed updating location instance record >%v<", err)
 			return nil, err
 		}
 
@@ -269,7 +269,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 			nil, false,
 		)
 		if err != nil {
-			l.Warn("Failed getting location monster records >%v<", err)
+			l.Warn("failed getting location monster records >%v<", err)
 			return nil, err
 		}
 
@@ -277,7 +277,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 		for _, locationObjectRec := range locationObjectRecs {
 			objectRec, err := m.GetObjectRec(locationObjectRec.ObjectID, false)
 			if err != nil {
-				l.Warn("Failed getting object record >%v<", err)
+				l.Warn("failed getting object record >%v<", err)
 				return nil, err
 			}
 
@@ -289,7 +289,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 			err = m.CreateObjectInstanceRec(objectInstanceRec)
 			if err != nil {
-				l.Warn("Failed creating location object instance record >%v<", err)
+				l.Warn("failed creating location object instance record >%v<", err)
 				return nil, err
 			}
 
@@ -305,7 +305,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 			nil, false,
 		)
 		if err != nil {
-			l.Warn("Failed getting location monster records >%v<", err)
+			l.Warn("failed getting location monster records >%v<", err)
 			return nil, err
 		}
 
@@ -313,7 +313,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 		for _, monsterLocationRec := range locationMonsterRecs {
 			monsterRec, err := m.GetMonsterRec(monsterLocationRec.MonsterID, false)
 			if err != nil {
-				l.Warn("Failed getting monster record >%v<", err)
+				l.Warn("failed getting monster record >%v<", err)
 				return nil, err
 			}
 
@@ -333,7 +333,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 			err = m.CreateMonsterInstanceRec(monsterInstanceRec)
 			if err != nil {
-				l.Warn("Failed creating monster instance record >%v<", err)
+				l.Warn("failed creating monster instance record >%v<", err)
 				return nil, err
 			}
 
@@ -346,7 +346,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 				}, nil, false,
 			)
 			if err != nil {
-				l.Warn("Failed getting monster object records >%v<", err)
+				l.Warn("failed getting monster object records >%v<", err)
 				return nil, err
 			}
 
@@ -362,7 +362,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 				err := m.CreateObjectInstanceRec(objectInstanceRec)
 				if err != nil {
-					l.Warn("Failed creating monster object instance record >%v<", err)
+					l.Warn("failed creating monster object instance record >%v<", err)
 					return nil, err
 				}
 

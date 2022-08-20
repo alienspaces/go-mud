@@ -94,7 +94,7 @@ func getPostgresDB(c configurer.Configurer, l logger.Logger) (*sqlx.DB, error) {
 
 	d, err := sqlx.Connect("postgres", cs)
 	if err != nil {
-		l.Warn("Failed to db connect >%v<", err)
+		l.Warn("failed to db connect >%v<", err)
 		return nil, err
 	}
 

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_sqlFromParamsAndOperators(t *testing.T) {
+func Test_FromParamsAndOperators(t *testing.T) {
 
 	type testCase struct {
 		name         string
@@ -51,7 +51,7 @@ func Test_sqlFromParamsAndOperators(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Logf("Running test >%s<", tc.name)
-			resultString, resultParams, err := FromParamsAndOperators(tc.initialSQL, tc.params, tc.operators)
+			resultString, resultParams, err := FromParamsAndOperators("", tc.initialSQL, tc.params, tc.operators)
 			require.Equal(t, tc.expectString, resultString, "Result string equals expected")
 			require.Equal(t, tc.expectParams, resultParams, "Result params equals expected")
 			require.Equal(t, tc.expectError, err != nil, "Result error equals expected")

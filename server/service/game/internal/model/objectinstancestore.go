@@ -82,11 +82,11 @@ func (m *Model) CreateObjectInstanceRec(rec *record.ObjectInstance) error {
 
 	l := m.Logger("CreateObjectInstanceRec")
 
-	l.Warn("Creating object instance record >%#v<", rec)
+	l.Debug("Creating object instance record >%#v<", rec)
 
 	r := m.ObjectInstanceRepository()
 
-	err := m.ValidateObjectInstanceRec(rec)
+	err := m.validateObjectInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -104,7 +104,7 @@ func (m *Model) UpdateObjectInstanceRec(rec *record.ObjectInstance) error {
 
 	r := m.ObjectInstanceRepository()
 
-	err := m.ValidateObjectInstanceRec(rec)
+	err := m.validateObjectInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -127,7 +127,7 @@ func (m *Model) DeleteObjectInstanceRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteObjectInstanceRec(recID)
+	err := m.validateDeleteObjectInstanceRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -150,7 +150,7 @@ func (m *Model) RemoveObjectInstanceRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteObjectInstanceRec(recID)
+	err := m.validateDeleteObjectInstanceRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

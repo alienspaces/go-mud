@@ -27,7 +27,7 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 			Log:     l,
 			Tx:      tx,
 			Prepare: p,
-
+			Alias:   "dic",
 			Config: query.Config{
 				Name: QueryName,
 			},
@@ -104,7 +104,7 @@ WITH "dungeon_capacity" AS (
         di.dungeon_id AS dungeon_id,
         count(ci.id)  AS dungeon_instance_character_count
     FROM dungeon_instance di
-    JOIN character_instance ci 
+    LEFT JOIN character_instance ci 
         ON ci.dungeon_instance_id = di.id        
     GROUP BY di.id        
 )

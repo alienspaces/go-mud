@@ -47,7 +47,7 @@ func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 
 	l := m.Logger("CreateMonsterRec")
 
-	l.Debug("Creating dungeon monster rec >%#v<", rec)
+	l.Debug("Creating dungeon monster record >%#v<", rec)
 
 	r := m.MonsterRepository()
 
@@ -57,7 +57,7 @@ func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
 	rec.Coins = defaultCoins
 
-	err := m.ValidateMonsterRec(rec)
+	err := m.validateMonsterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -71,11 +71,11 @@ func (m *Model) UpdateMonsterRec(rec *record.Monster) error {
 
 	l := m.Logger("UpdateMonsterRec")
 
-	l.Debug("Updating dungeon monster rec >%#v<", rec)
+	l.Debug("Updating dungeon monster record >%#v<", rec)
 
 	r := m.MonsterRepository()
 
-	err := m.ValidateMonsterRec(rec)
+	err := m.validateMonsterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -98,7 +98,7 @@ func (m *Model) DeleteMonsterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteMonsterRec(recID)
+	err := m.validateDeleteMonsterRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -121,7 +121,7 @@ func (m *Model) RemoveMonsterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteMonsterRec(recID)
+	err := m.validateDeleteMonsterRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

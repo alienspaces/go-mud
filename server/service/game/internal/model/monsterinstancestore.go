@@ -82,11 +82,11 @@ func (m *Model) CreateMonsterInstanceRec(rec *record.MonsterInstance) error {
 
 	l := m.Logger("CreateMonsterInstanceRec")
 
-	l.Debug("Creating monster rec >%#v<", rec)
+	l.Debug("Creating monster record >%#v<", rec)
 
 	r := m.MonsterInstanceRepository()
 
-	err := m.ValidateMonsterInstanceRec(rec)
+	err := m.validateMonsterInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -100,11 +100,11 @@ func (m *Model) UpdateMonsterInstanceRec(rec *record.MonsterInstance) error {
 
 	l := m.Logger("UpdateMonsterInstanceRec")
 
-	l.Debug("Updating monster rec >%#v<", rec)
+	l.Debug("Updating monster record >%#v<", rec)
 
 	r := m.MonsterInstanceRepository()
 
-	err := m.ValidateMonsterInstanceRec(rec)
+	err := m.validateMonsterInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -127,7 +127,7 @@ func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteMonsterInstanceRec(recID)
+	err := m.validateDeleteMonsterInstanceRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -150,7 +150,7 @@ func (m *Model) RemoveMonsterInstanceRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteMonsterInstanceRec(recID)
+	err := m.validateDeleteMonsterInstanceRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

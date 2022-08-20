@@ -67,7 +67,7 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 
 	m, err := model.NewModel(rnr.Config, l, rnr.Store)
 	if err != nil {
-		l.Warn("Failed new model >%v<", err)
+		l.Warn("failed new model >%v<", err)
 		return nil, err
 	}
 

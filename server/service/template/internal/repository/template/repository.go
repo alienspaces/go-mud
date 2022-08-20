@@ -44,14 +44,14 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 
 	err := r.Init()
 	if err != nil {
-		l.Warn("Failed new repository >%v<", err)
+		l.Warn("failed new repository >%v<", err)
 		return nil, err
 	}
 
 	// prepare
 	err = p.Prepare(r, preparer.ExcludePreparation{})
 	if err != nil {
-		l.Warn("Failed preparing repository >%v<", err)
+		l.Warn("failed preparing repository >%v<", err)
 		return nil, err
 	}
 

@@ -17,6 +17,7 @@ type Query struct {
 	Log     logger.Logger
 	Tx      *sqlx.Tx
 	Prepare preparer.Query
+	Alias   string
 }
 
 type Config struct {
@@ -65,17 +66,17 @@ func (q *Query) GetRows(params map[string]interface{}, operators map[string]stri
 	tx := q.Tx
 
 	// params
-	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Prepare.SQL(), params, operators)
+	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Alias, q.Prepare.SQL(), params, operators)
 	if err != nil {
 		l.Warn("failed generating query >%v<", err)
 		return nil, err
 	}
 
-	l.Debug("Resulting SQL >%s< Params >%#v<", querySQL, queryParams)
+	l.Debug("** Resulting SQL >%s< Params >%#v<", querySQL, queryParams)
 
 	rows, err := tx.NamedQuery(querySQL, queryParams)
 	if err != nil {
-		l.Warn("Failed querying rows >%v<", err)
+		l.Warn("failed querying rows >%v<", err)
 		return nil, err
 	}
 

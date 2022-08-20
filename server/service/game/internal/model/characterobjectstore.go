@@ -47,11 +47,11 @@ func (m *Model) CreateCharacterObjectRec(rec *record.CharacterObject) error {
 
 	l := m.Logger("CreateCharacterObjectRec")
 
-	l.Debug("Creating dungeon character rec >%#v<", rec)
+	l.Debug("Creating dungeon character record >%#v<", rec)
 
 	r := m.CharacterObjectRepository()
 
-	err := m.ValidateCharacterObjectRec(rec)
+	err := m.validateCharacterObjectRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -65,11 +65,11 @@ func (m *Model) UpdateCharacterObjectRec(rec *record.CharacterObject) error {
 
 	l := m.Logger("UpdateCharacterObjectRec")
 
-	l.Debug("Updating dungeon character rec >%#v<", rec)
+	l.Debug("Updating dungeon character record >%#v<", rec)
 
 	r := m.CharacterObjectRepository()
 
-	err := m.ValidateCharacterObjectRec(rec)
+	err := m.validateCharacterObjectRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -92,7 +92,7 @@ func (m *Model) DeleteCharacterObjectRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteCharacterObjectRec(recID)
+	err := m.validateDeleteCharacterObjectRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -115,7 +115,7 @@ func (m *Model) RemoveCharacterObjectRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteCharacterObjectRec(recID)
+	err := m.validateDeleteCharacterObjectRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

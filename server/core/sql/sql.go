@@ -43,6 +43,7 @@ const (
 
 // FromParamsAndOperators -
 func FromParamsAndOperators(
+	alias string,
 	initialSQL string,
 	params map[string]interface{},
 	operators map[string]string) (string, map[string]interface{}, error) {
@@ -59,7 +60,11 @@ func FromParamsAndOperators(
 
 		operator, found := operators[param]
 		if !found {
-			sqlStmt += fmt.Sprintf("AND %s", param)
+			if alias != "" {
+				sqlStmt += fmt.Sprintf("AND %s.%s", alias, param)
+			} else {
+				sqlStmt += fmt.Sprintf("AND %s", param)
+			}
 
 			switch v := val.(type) {
 			case []string:

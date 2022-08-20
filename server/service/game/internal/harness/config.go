@@ -14,8 +14,9 @@ type DataConfig struct {
 
 // DungeonConfig -
 type DungeonConfig struct {
-	Record         record.Dungeon
-	LocationConfig []LocationConfig
+	Record                record.Dungeon
+	LocationConfig        []LocationConfig
+	DungeonInstanceConfig []DungeonInstanceConfig
 }
 
 // ObjectConfig -
@@ -38,9 +39,8 @@ type MonsterObjectConfig struct {
 
 // CharacterConfig -
 type CharacterConfig struct {
-	Record                 record.Character
-	CharacterObjectConfig  []CharacterObjectConfig
-	CharacterDungeonConfig *CharacterDungeonConfig
+	Record                record.Character
+	CharacterObjectConfig []CharacterObjectConfig
 }
 
 // CharacterObjectConfig -
@@ -48,14 +48,6 @@ type CharacterObjectConfig struct {
 	Record record.CharacterObject
 	// ObjectName is used to resolve the object identifier of the resulting record
 	ObjectName string
-}
-
-// CharacterDungeonConfig creates a character instances inside a new or existing
-// dungeon instance.
-type CharacterDungeonConfig struct {
-	// DungeonName is used to resolve the dungeon identifier of the dungeon instance
-	// a character instance should be created in.
-	DungeonName string
 }
 
 // LocationConfig -
@@ -92,14 +84,19 @@ type LocationObjectConfig struct {
 	ObjectName string
 }
 
-// TODO: ???? What was I thinking here, next time give some background..
-/// - Change this to TurnConfig that contains a list of ActionConfig
-// definitions for character and monster instances to perform
+// DungeonInstanceConfig -
+type DungeonInstanceConfig struct {
+	CharacterInstanceConfig []CharacterInstanceConfig
+	ActionConfig            []ActionConfig
+}
+
+// CharacterInstanceConfig -
+type CharacterInstanceConfig struct {
+	Name string
+}
 
 // ActionConfig -
 type ActionConfig struct {
-	// XxxxName is used to resolve the required character or
-	// monster instance identifier of the action record
 	CharacterName string
 	MonsterName   string
 	Command       string

@@ -47,11 +47,11 @@ func (m *Model) CreateLocationMonsterRec(rec *record.LocationMonster) error {
 
 	l := m.Logger("CreateLocationMonsterRec")
 
-	l.Debug("Creating dungeon location rec >%#v<", rec)
+	l.Debug("Creating dungeon location record >%#v<", rec)
 
 	r := m.LocationMonsterRepository()
 
-	err := m.ValidateLocationMonsterRec(rec)
+	err := m.validateLocationMonsterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -65,11 +65,11 @@ func (m *Model) UpdateLocationMonsterRec(rec *record.LocationMonster) error {
 
 	l := m.Logger("UpdateLocationMonsterRec")
 
-	l.Debug("Updating dungeon location rec >%#v<", rec)
+	l.Debug("Updating dungeon location record >%#v<", rec)
 
 	r := m.LocationMonsterRepository()
 
-	err := m.ValidateLocationMonsterRec(rec)
+	err := m.validateLocationMonsterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -92,7 +92,7 @@ func (m *Model) DeleteLocationMonsterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteLocationMonsterRec(recID)
+	err := m.validateDeleteLocationMonsterRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -115,7 +115,7 @@ func (m *Model) RemoveLocationMonsterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteLocationMonsterRec(recID)
+	err := m.validateDeleteLocationMonsterRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

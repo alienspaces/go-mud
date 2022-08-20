@@ -13,10 +13,8 @@ type CharacterInstanceRecordSet struct {
 	ObjectInstanceRecs   []*record.ObjectInstance
 }
 
-// TODO: Possibly optimise by making this function return a DungeonInstanceViewRecordSet
-
 // CharacterEnterDungeon -
-func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonInstanceRecordSet, error) {
+func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*CharacterInstanceRecordSet, error) {
 	l := m.Logger("CharacterEnterDungeon")
 
 	dungeonInstance, err := m.GetAvailableDungeonInstanceViewRecordSet(dungeonID)
@@ -33,9 +31,10 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonIn
 
 	// Find an entrance
 	characterEntered := false
+	characterInstanceRecordSet := &CharacterInstanceRecordSet{}
 	for _, locationInstanceRec := range dungeonInstance.LocationInstanceViewRecs {
 		if locationInstanceRec.IsDefault {
-			_, err := m.CreateCharacterInstance(locationInstanceRec.ID, characterID)
+			characterInstanceRecordSet, err = m.CreateCharacterInstance(locationInstanceRec.ID, characterID)
 			if err != nil {
 				l.Warn("failed creating character instance >%v<", err)
 				return nil, err
@@ -50,8 +49,7 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*DungeonIn
 		return nil, fmt.Errorf(msg)
 	}
 
-	// TODO: Optimise by just "adding" the CharacterInstanceViewRecordSet to the DungeonInstanceViewRecordSet
-	return m.GetDungeonInstanceRecordSet(dungeonInstance.DungeonInstanceViewRec.ID)
+	return characterInstanceRecordSet, nil
 }
 
 // CharacterExitDungeon -

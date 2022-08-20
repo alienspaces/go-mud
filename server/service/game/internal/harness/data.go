@@ -431,6 +431,15 @@ func (d *Data) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceRecordSet) {
 	}
 }
 
+func (d *Data) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSet) {
+
+	d.AddCharacterInstanceRec(rs.CharacterInstanceRec)
+
+	for idx := range rs.ObjectInstanceRecs {
+		d.AddObjectInstanceRec(rs.ObjectInstanceRecs[idx])
+	}
+}
+
 func (d *Data) GetDungeonInstanceRecByName(dungeonInstanceName string) (*record.DungeonInstance, error) {
 
 	for _, rec := range d.DungeonInstanceRecs {
@@ -511,4 +520,9 @@ func (d *teardownData) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceReco
 	d.ObjectInstanceRecs = append(d.ObjectInstanceRecs, rs.ObjectInstanceRecs...)
 	d.MonsterInstanceRecs = append(d.MonsterInstanceRecs, rs.MonsterInstanceRecs...)
 	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rs.CharacterInstanceRecs...)
+}
+
+func (d *teardownData) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSet) {
+	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rs.CharacterInstanceRec)
+	d.ObjectInstanceRecs = append(d.ObjectInstanceRecs, rs.ObjectInstanceRecs...)
 }

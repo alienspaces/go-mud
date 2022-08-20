@@ -47,13 +47,13 @@ func (m *Model) CreateActionCharacterRec(rec *record.ActionCharacter) error {
 
 	l := m.Logger("CreateActionCharacterRec")
 
-	l.Debug("Creating dungeon action character rec >%#v<", rec)
+	l.Debug("Creating dungeon action character record >%#v<", rec)
 
 	r := m.ActionCharacterRepository()
 
-	err := m.ValidateActionCharacterRec(rec)
+	err := m.validateActionCharacterRec(rec)
 	if err != nil {
-		l.Warn("Failed model validation >%v<", err)
+		l.Warn("failed model validation >%v<", err)
 		return err
 	}
 
@@ -65,13 +65,13 @@ func (m *Model) UpdateActionCharacterRec(rec *record.ActionCharacter) error {
 
 	l := m.Logger("UpdateActionCharacterRec")
 
-	l.Debug("Updating dungeon action character rec >%#v<", rec)
+	l.Debug("Updating dungeon action character record >%#v<", rec)
 
 	r := m.ActionCharacterRepository()
 
-	err := m.ValidateActionCharacterRec(rec)
+	err := m.validateActionCharacterRec(rec)
 	if err != nil {
-		l.Warn("Failed model validation >%v<", err)
+		l.Warn("failed model validation >%v<", err)
 		return err
 	}
 
@@ -92,9 +92,9 @@ func (m *Model) DeleteActionCharacterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteActionCharacterRec(recID)
+	err := m.validateDeleteActionCharacterRec(recID)
 	if err != nil {
-		l.Warn("Failed model validation >%v<", err)
+		l.Warn("failed model validation >%v<", err)
 		return err
 	}
 
@@ -115,9 +115,9 @@ func (m *Model) RemoveActionCharacterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteActionCharacterRec(recID)
+	err := m.validateDeleteActionCharacterRec(recID)
 	if err != nil {
-		l.Warn("Failed model validation >%v<", err)
+		l.Warn("failed model validation >%v<", err)
 		return err
 	}
 

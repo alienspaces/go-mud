@@ -165,7 +165,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 
@@ -244,7 +244,7 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 

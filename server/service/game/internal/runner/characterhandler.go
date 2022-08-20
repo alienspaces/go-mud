@@ -153,7 +153,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	rec, err := m.(*model.Model).GetCharacterRec(characterID, false)
 	if err != nil {
-		l.Warn("Failed getting character record >%v<", err)
+		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -187,7 +187,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 
@@ -213,7 +213,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 
 	recs, err = m.(*model.Model).GetCharacterRecs(params, nil, false)
 	if err != nil {
-		l.Warn("Failed getting dungeon character records >%v<", err)
+		l.Warn("failed getting dungeon character records >%v<", err)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -240,7 +240,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 
@@ -294,7 +294,7 @@ func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request,
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 
@@ -361,7 +361,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 

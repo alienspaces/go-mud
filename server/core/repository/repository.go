@@ -104,7 +104,7 @@ func (r *Repository) GetOneRec(recordID string, rec interface{}, forUpdate bool)
 
 	err := stmt.QueryRowx(recordID).StructScan(rec)
 	if err != nil {
-		l.Warn("Failed executing query >%v<", err)
+		l.Warn("failed executing query >%v<", err)
 		l.Warn("SQL: >%s<", p.GetOneSQL(r))
 		l.Warn("recordID: >%v<", recordID)
 
@@ -130,7 +130,7 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 	querySQL := p.GetManySQL(r)
 
 	// params
-	querySQL, queryParams, err := coresql.FromParamsAndOperators(querySQL, params, operators)
+	querySQL, queryParams, err := coresql.FromParamsAndOperators("", querySQL, params, operators)
 	if err != nil {
 		l.Debug("Failed generating query >%v<", err)
 		return nil, err
@@ -144,7 +144,7 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 
 	rows, err = tx.NamedQuery(querySQL, queryParams)
 	if err != nil {
-		l.Warn("Failed querying rows >%v<", err)
+		l.Warn("failed querying rows >%v<", err)
 		return nil, err
 	}
 
@@ -166,7 +166,7 @@ func (r *Repository) CreateOneRec(rec interface{}) error {
 
 	err := stmt.QueryRowx(rec).StructScan(rec)
 	if err != nil {
-		l.Warn("Failed executing create >%v<", err)
+		l.Warn("failed executing create >%v<", err)
 		return err
 	}
 
@@ -188,7 +188,7 @@ func (r *Repository) UpdateOneRec(rec interface{}) error {
 
 	err := stmt.QueryRowx(rec).StructScan(rec)
 	if err != nil {
-		l.Warn("Failed executing update >%v<", err)
+		l.Warn("failed executing update >%v<", err)
 		return err
 	}
 
@@ -219,14 +219,14 @@ func (r *Repository) deleteOneRec(recordID string) error {
 
 	res, err := stmt.Exec(params)
 	if err != nil {
-		l.Warn("Failed executing delete >%v<", err)
+		l.Warn("failed executing delete >%v<", err)
 		return err
 	}
 
 	// rows affected
 	raf, err := res.RowsAffected()
 	if err != nil {
-		l.Warn("Failed executing rows affected >%v<", err)
+		l.Warn("failed executing rows affected >%v<", err)
 		return err
 	}
 
@@ -263,14 +263,14 @@ func (r *Repository) removeOneRec(recordID string) error {
 
 	res, err := stmt.Exec(params)
 	if err != nil {
-		l.Warn("Failed executing remove >%v<", err)
+		l.Warn("failed executing remove >%v<", err)
 		return err
 	}
 
 	// rows affected
 	raf, err := res.RowsAffected()
 	if err != nil {
-		l.Warn("Failed executing rows affected >%v<", err)
+		l.Warn("failed executing rows affected >%v<", err)
 		return err
 	}
 

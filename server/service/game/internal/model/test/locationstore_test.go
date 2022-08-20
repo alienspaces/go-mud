@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
-
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
@@ -39,8 +38,9 @@ func TestCreateLocationRec(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.Location {
 				return &record.Location{
-					DungeonID: data.DungeonRecs[0].ID,
-					Name:      gofakeit.StreetName() + gofakeit.Name(),
+					DungeonID:   data.DungeonRecs[0].ID,
+					Name:        gofakeit.StreetName() + gofakeit.Name(),
+					Description: gofakeit.StreetName() + gofakeit.Name(),
 				}
 			},
 			err: false,
@@ -49,8 +49,9 @@ func TestCreateLocationRec(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.Location {
 				rec := &record.Location{
-					DungeonID: data.DungeonRecs[0].ID,
-					Name:      gofakeit.StreetName() + gofakeit.Name(),
+					DungeonID:   data.DungeonRecs[0].ID,
+					Name:        gofakeit.StreetName() + gofakeit.Name(),
+					Description: gofakeit.StreetName() + gofakeit.Name(),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

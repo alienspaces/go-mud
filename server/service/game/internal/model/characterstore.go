@@ -51,7 +51,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
 	l := m.Logger("CreateCharacterRec")
 
-	l.Debug("Creating dungeon character rec >%#v<", rec)
+	l.Debug("Creating dungeon character record >%#v<", rec)
 
 	r := m.CharacterRepository()
 
@@ -61,7 +61,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
 	rec.Coins = defaultCoins
 
-	err := m.ValidateCharacterRec(rec)
+	err := m.validateCharacterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -75,11 +75,11 @@ func (m *Model) UpdateCharacterRec(rec *record.Character) error {
 
 	l := m.Logger("UpdateCharacterRec")
 
-	l.Debug("Updating dungeon character rec >%#v<", rec)
+	l.Debug("Updating dungeon character record >%#v<", rec)
 
 	r := m.CharacterRepository()
 
-	err := m.ValidateCharacterRec(rec)
+	err := m.validateCharacterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -102,7 +102,7 @@ func (m *Model) DeleteCharacterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteCharacterRec(recID)
+	err := m.validateDeleteCharacterRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -125,7 +125,7 @@ func (m *Model) RemoveCharacterRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteCharacterRec(recID)
+	err := m.validateDeleteCharacterRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

@@ -6,8 +6,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// ValidateActionMonsterRec - validates creating and updating a game record
-func (m *Model) ValidateActionMonsterRec(rec *record.ActionMonster) error {
+// validateActionMonsterRec - validates creating and updating a game record
+func (m *Model) validateActionMonsterRec(rec *record.ActionMonster) error {
 
 	if rec.RecordType == "" {
 		return fmt.Errorf("failed validation, RecordType is empty")
@@ -43,8 +43,8 @@ func (m *Model) ValidateActionMonsterRec(rec *record.ActionMonster) error {
 	return nil
 }
 
-// ValidateDeleteActionMonsterRec - validates it is okay to delete a game record
-func (m *Model) ValidateDeleteActionMonsterRec(recID string) error {
+// validateDeleteActionMonsterRec - validates it is okay to delete a game record
+func (m *Model) validateDeleteActionMonsterRec(recID string) error {
 
 	return nil
 }

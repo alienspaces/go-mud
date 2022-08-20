@@ -4,14 +4,14 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// ValidateActionRec - validates creating and updating a game record
-func (m *Model) ValidateActionRec(rec *record.Action) error {
+// validateActionRec - validates creating and updating a game record
+func (m *Model) validateActionRec(rec *record.Action) error {
 
 	return nil
 }
 
-// ValidateDeleteActionRec - validates it is okay to delete a game record
-func (m *Model) ValidateDeleteActionRec(recID string) error {
+// validateDeleteActionRec - validates it is okay to delete a game record
+func (m *Model) validateDeleteActionRec(recID string) error {
 
 	return nil
 }

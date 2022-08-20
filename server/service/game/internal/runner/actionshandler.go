@@ -118,7 +118,7 @@ func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 

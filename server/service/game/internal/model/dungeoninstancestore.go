@@ -82,11 +82,11 @@ func (m *Model) CreateDungeonInstanceRec(rec *record.DungeonInstance) error {
 
 	l := m.Logger("CreateDungeonInstanceRec")
 
-	l.Debug("Creating dungeon rec >%#v<", rec)
+	l.Debug("Creating dungeon record >%#v<", rec)
 
 	r := m.DungeonInstanceRepository()
 
-	err := m.ValidateDungeonInstanceRec(rec)
+	err := m.validateDungeonInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -100,11 +100,11 @@ func (m *Model) UpdateDungeonInstanceRec(rec *record.DungeonInstance) error {
 
 	l := m.Logger("UpdateDungeonInstanceRec")
 
-	l.Debug("Updating dungeon rec >%#v<", rec)
+	l.Debug("Updating dungeon record >%#v<", rec)
 
 	r := m.DungeonInstanceRepository()
 
-	err := m.ValidateDungeonInstanceRec(rec)
+	err := m.validateDungeonInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -127,7 +127,7 @@ func (m *Model) DeleteDungeonInstanceRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteDungeonInstanceRec(recID)
+	err := m.validateDeleteDungeonInstanceRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -150,7 +150,7 @@ func (m *Model) RemoveDungeonInstanceRec(recID string) error {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	err := m.ValidateDeleteDungeonInstanceRec(recID)
+	err := m.validateDeleteDungeonInstanceRec(recID)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

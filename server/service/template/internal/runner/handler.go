@@ -86,7 +86,7 @@ func (rnr *Runner) GetTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 
@@ -143,7 +143,7 @@ func (rnr *Runner) PostTemplatesHandler(w http.ResponseWriter, r *http.Request, 
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 
@@ -210,7 +210,7 @@ func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 
 	err = server.WriteResponse(l, w, res)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Warn("failed writing response >%v<", err)
 		return err
 	}
 

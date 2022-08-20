@@ -31,7 +31,7 @@ func (m *Model) resolveAction(
 
 	resolved, err := m.resolveCommand(sentence)
 	if err != nil {
-		l.Warn("Failed resolving command >%v<", err)
+		l.Warn("failed resolving command >%v<", err)
 		return nil, err
 	}
 
@@ -52,11 +52,11 @@ func (m *Model) resolveAction(
 
 	dungeonActionRec, err := resolveFunc(resolved.Sentence, characterInstanceViewRec, locationInstanceRecordSet)
 	if err != nil {
-		l.Warn("Failed resolver function for command >%s< >%v<", resolved.Command, err)
+		l.Warn("failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
 	}
 
-	l.Debug("Resolved dungeon action rec >%#v<", dungeonActionRec)
+	l.Debug("Resolved dungeon action record >%#v<", dungeonActionRec)
 
 	return dungeonActionRec, nil
 }
@@ -102,7 +102,7 @@ func (m *Model) resolveMoveAction(sentence string, characterInstanceViewRec *rec
 	if sentence != "" {
 		targetLocationInstanceID, targetLocationDirection, err = m.resolveSentenceLocationDirection(sentence, records.LocationInstanceViewRec)
 		if err != nil {
-			l.Warn("Failed to resolve sentence location direction >%v<", err)
+			l.Warn("failed to resolve sentence location direction >%v<", err)
 			return nil, err
 		}
 	}
@@ -142,14 +142,14 @@ func (m *Model) resolveLookAction(
 	if sentence != "" {
 		targetLocationInstanceID, targetLocationDirection, err = m.resolveSentenceLocationDirection(sentence, locationRecordSet.LocationInstanceViewRec)
 		if err != nil {
-			l.Warn("Failed to resolve sentence location direction >%v<", err)
+			l.Warn("failed to resolve sentence location direction >%v<", err)
 			return nil, err
 		}
 
 		if targetLocationInstanceID == "" {
 			dungeonObjectRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectInstanceViewRecs)
 			if err != nil {
-				l.Warn("Failed to resolve sentence object >%v<", err)
+				l.Warn("failed to resolve sentence object >%v<", err)
 				return nil, err
 			}
 			if dungeonObjectRec != nil {
@@ -160,7 +160,7 @@ func (m *Model) resolveLookAction(
 		if targetLocationInstanceID == "" && targetObjectInstanceID == "" {
 			dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, locationRecordSet.MonsterInstanceViewRecs)
 			if err != nil {
-				l.Warn("Failed to resolve sentence monster >%v<", err)
+				l.Warn("failed to resolve sentence monster >%v<", err)
 				return nil, err
 			}
 			if dungeonMonsterRec != nil {
@@ -171,7 +171,7 @@ func (m *Model) resolveLookAction(
 		if targetLocationInstanceID == "" && targetObjectInstanceID == "" && targetMonsterInstanceID == "" {
 			characterInstanceViewRec, err := m.resolveSentenceCharacter(sentence, locationRecordSet.CharacterInstanceViewRecs)
 			if err != nil {
-				l.Warn("Failed to resolve sentence character >%v<", err)
+				l.Warn("failed to resolve sentence character >%v<", err)
 				return nil, err
 			}
 			if characterInstanceViewRec != nil {
@@ -211,19 +211,19 @@ func (m *Model) resolveStashAction(sentence string, characterInstanceViewRec *re
 		// Find object in room
 		objectInstanceRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectInstanceViewRecs)
 		if err != nil {
-			l.Warn("Failed to get location object from sentence >%v<", err)
+			l.Warn("failed to get location object from sentence >%v<", err)
 			return nil, err
 		}
 		if objectInstanceRec == nil {
 			// Find object equipped on character
 			objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceViewRec.ID)
 			if err != nil {
-				l.Warn("Failed to get character equipped objects >%v<", err)
+				l.Warn("failed to get character equipped objects >%v<", err)
 				return nil, err
 			}
 			objectInstanceRec, err = m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 			if err != nil {
-				l.Warn("Failed to get character object from sentence >%v<", err)
+				l.Warn("failed to get character object from sentence >%v<", err)
 				return nil, err
 			}
 		}
@@ -254,19 +254,19 @@ func (m *Model) resolveEquipAction(sentence string, characterInstanceViewRec *re
 		// Find object in room
 		dungeonObjectViewRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectInstanceViewRecs)
 		if err != nil {
-			l.Warn("Failed to get location object from sentence >%v<", err)
+			l.Warn("failed to get location object from sentence >%v<", err)
 			return nil, err
 		}
 		if dungeonObjectViewRec == nil {
 			// Find object stashed on character
 			objectInstanceViewRecs, err := m.GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceViewRec.ID)
 			if err != nil {
-				l.Warn("Failed to get character stashed objects >%v<", err)
+				l.Warn("failed to get character stashed objects >%v<", err)
 				return nil, err
 			}
 			dungeonObjectViewRec, err = m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 			if err != nil {
-				l.Warn("Failed to get character object from sentence >%v<", err)
+				l.Warn("failed to get character object from sentence >%v<", err)
 				return nil, err
 			}
 		}
@@ -298,12 +298,12 @@ func (m *Model) resolveDropAction(sentence string, characterInstanceViewRec *rec
 		l.Debug("Finding object stashed on character")
 		objectInstanceViewRecs, err := m.GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceViewRec.ID)
 		if err != nil {
-			l.Warn("Failed to get character stashed objects >%v<", err)
+			l.Warn("failed to get character stashed objects >%v<", err)
 			return nil, err
 		}
 		dungeonObjectRec, err := m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 		if err != nil {
-			l.Warn("Failed to get character object from sentence >%v<", err)
+			l.Warn("failed to get character object from sentence >%v<", err)
 			return nil, err
 		}
 		l.Debug("Found object >%v< stashed on character", dungeonObjectRec)
@@ -312,12 +312,12 @@ func (m *Model) resolveDropAction(sentence string, characterInstanceViewRec *rec
 			l.Debug("Finding object equipped on character")
 			objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceViewRec.ID)
 			if err != nil {
-				l.Warn("Failed to get character equipped objects >%v<", err)
+				l.Warn("failed to get character equipped objects >%v<", err)
 				return nil, err
 			}
 			dungeonObjectRec, err = m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 			if err != nil {
-				l.Warn("Failed to get character object from sentence >%v<", err)
+				l.Warn("failed to get character object from sentence >%v<", err)
 				return nil, err
 			}
 			l.Debug("Found object >%v< equipped on character", dungeonObjectRec)
