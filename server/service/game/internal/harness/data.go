@@ -402,6 +402,21 @@ func (d *Data) AddCharacterInstanceRec(rec *record.CharacterInstance) {
 	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rec)
 }
 
+func (d *Data) GetCharacterInstanceRecByName(name string) (*record.CharacterInstance, error) {
+
+	for _, ciRec := range d.CharacterInstanceRecs {
+		cRec, err := d.GetCharacterRecByID(ciRec.CharacterID)
+		if err != nil {
+			return nil, err
+		}
+		if cRec.Name == name {
+			return ciRec, nil
+		}
+	}
+
+	return nil, fmt.Errorf("failed getting character instance with name >%s<", name)
+}
+
 // Dungeon Instance
 func (d *Data) AddDungeonInstanceRec(rec *record.DungeonInstance) {
 	for idx := range d.DungeonInstanceRecs {
@@ -440,19 +455,19 @@ func (d *Data) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSe
 	}
 }
 
-func (d *Data) GetDungeonInstanceRecByName(dungeonInstanceName string) (*record.DungeonInstance, error) {
+func (d *Data) GetDungeonInstanceRecByName(name string) (*record.DungeonInstance, error) {
 
 	for _, rec := range d.DungeonInstanceRecs {
 		dungeonRec, err := d.GetDungeonRecByID(rec.DungeonID)
 		if err != nil {
 			return nil, err
 		}
-		if dungeonRec.Name == dungeonInstanceName {
+		if dungeonRec.Name == name {
 			return rec, nil
 		}
 	}
 
-	return nil, fmt.Errorf("failed getting dungeon instance with name >%s<", dungeonInstanceName)
+	return nil, fmt.Errorf("failed getting dungeon instance with name >%s<", name)
 }
 
 // Location Instance

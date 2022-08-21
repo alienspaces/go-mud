@@ -253,16 +253,15 @@ func (t *Testing) createDungeonInstance(dungeonID string) (*model.DungeonInstanc
 	return dungeonInstanceRecordSet, nil
 }
 
-// TODO: Character actions are tied to dungeon instances
-// func (t *Testing) createCharacterActionRec(dungeonID, dungeonCharacterID, sentence string) (*record.ActionRecordSet, error) {
+func (t *Testing) createCharacterActionRec(dungeonInstanceID, characterInstanceID, sentence string) (*record.ActionRecordSet, error) {
 
-// 	t.Log.Debug("Creating dungeon action for character ID >%s< sentence >%s<", dungeonCharacterID, sentence)
+	t.Log.Debug("Creating action for dungeon instance ID >%s< character instance ID >%s< sentence >%s<", dungeonInstanceID, characterInstanceID, sentence)
 
-// 	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessCharacterAction(dungeonID, dungeonCharacterID, sentence)
-// 	if err != nil {
-// 		t.Log.Warn("Failed creating dungeon character action record >%v<", err)
-// 		return nil, err
-// 	}
+	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
+	if err != nil {
+		t.Log.Warn("Failed creating character action record >%v<", err)
+		return nil, err
+	}
 
-// 	return dungeonActionRecordSet, nil
-// }
+	return dungeonActionRecordSet, nil
+}

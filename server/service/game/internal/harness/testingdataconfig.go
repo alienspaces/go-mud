@@ -192,6 +192,12 @@ var DefaultDataConfig = DataConfig{
 							Name: "Barricade",
 						},
 					},
+					ActionConfig: []ActionConfig{
+						{
+							CharacterName: "Barricade",
+							Command:       "look",
+						},
+					},
 				},
 			},
 		},
