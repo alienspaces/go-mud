@@ -39,9 +39,10 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.Action {
 				return &record.Action{
-					DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
-					LocationInstanceID:  data.LocationInstanceRecs[0].ID,
-					CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					DungeonInstanceID:                 data.DungeonInstanceRecs[0].ID,
+					LocationInstanceID:                data.LocationInstanceRecs[0].ID,
+					CharacterInstanceID:               nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					ResolvedTargetCharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
 				}
 			},
 			err: false,
@@ -50,9 +51,10 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.Action {
 				rec := &record.Action{
-					DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
-					LocationInstanceID:  data.LocationInstanceRecs[0].ID,
-					CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					DungeonInstanceID:                 data.DungeonInstanceRecs[0].ID,
+					LocationInstanceID:                data.LocationInstanceRecs[0].ID,
+					CharacterInstanceID:               nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					ResolvedTargetCharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
