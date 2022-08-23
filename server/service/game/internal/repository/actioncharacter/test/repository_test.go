@@ -38,16 +38,16 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.ActionCharacter {
 				return &record.ActionCharacter{
-					RecordType:         record.ActionCharacterRecordTypeOccupant,
-					ActionID:    data.ActionRecs[0].ID,
-					LocationID:  data.LocationRecs[0].ID,
-					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
-					Name:               data.DungeonCharacterRecs[0].Name,
-					Strength:           data.DungeonCharacterRecs[0].Strength,
-					Dexterity:          data.DungeonCharacterRecs[0].Dexterity,
-					Intelligence:       data.DungeonCharacterRecs[0].Intelligence,
-					Health:             data.DungeonCharacterRecs[0].Health,
-					Fatigue:            data.DungeonCharacterRecs[0].Fatigue,
+					RecordType:          record.ActionCharacterRecordTypeOccupant,
+					ActionID:            data.ActionRecs[0].ID,
+					LocationInstanceID:  data.LocationInstanceRecs[0].ID,
+					CharacterInstanceID: data.CharacterInstanceRecs[0].ID,
+					Name:                data.CharacterRecs[0].Name,
+					Strength:            data.CharacterRecs[0].Strength,
+					Dexterity:           data.CharacterRecs[0].Dexterity,
+					Intelligence:        data.CharacterRecs[0].Intelligence,
+					Health:              data.CharacterRecs[0].Health,
+					Fatigue:             data.CharacterRecs[0].Fatigue,
 				}
 			},
 			err: false,
@@ -56,16 +56,16 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.ActionCharacter {
 				rec := &record.ActionCharacter{
-					RecordType:         record.ActionCharacterRecordTypeOccupant,
-					ActionID:    data.ActionRecs[0].ID,
-					LocationID:  data.LocationRecs[0].ID,
-					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
-					Name:               data.DungeonCharacterRecs[0].Name,
-					Strength:           data.DungeonCharacterRecs[0].Strength,
-					Dexterity:          data.DungeonCharacterRecs[0].Dexterity,
-					Intelligence:       data.DungeonCharacterRecs[0].Intelligence,
-					Health:             data.DungeonCharacterRecs[0].Health,
-					Fatigue:            data.DungeonCharacterRecs[0].Fatigue,
+					RecordType:          record.ActionCharacterRecordTypeOccupant,
+					ActionID:            data.ActionRecs[0].ID,
+					LocationInstanceID:  data.LocationInstanceRecs[0].ID,
+					CharacterInstanceID: data.CharacterInstanceRecs[0].ID,
+					Name:                data.CharacterRecs[0].Name,
+					Strength:            data.CharacterRecs[0].Strength,
+					Dexterity:           data.CharacterRecs[0].Dexterity,
+					Intelligence:        data.CharacterRecs[0].Intelligence,
+					Health:              data.CharacterRecs[0].Health,
+					Fatigue:             data.CharacterRecs[0].Fatigue,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
