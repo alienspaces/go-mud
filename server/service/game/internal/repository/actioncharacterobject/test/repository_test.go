@@ -38,12 +38,12 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.ActionCharacterObject {
 				return &record.ActionCharacterObject{
-					ActionID:    data.ActionRecs[0].ID,
-					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
-					DungeonObjectID:    data.DungeonObjectRecs[0].ID,
-					Name:               data.DungeonObjectRecs[0].Name,
-					IsEquipped:         true,
-					IsStashed:          false,
+					ActionID:            data.ActionRecs[0].ID,
+					CharacterInstanceID: data.CharacterInstanceRecs[0].ID,
+					ObjectInstanceID:    data.ObjectInstanceRecs[0].ID,
+					Name:                data.ObjectRecs[0].Name,
+					IsEquipped:          true,
+					IsStashed:           false,
 				}
 			},
 			err: false,
@@ -52,12 +52,12 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.ActionCharacterObject {
 				rec := &record.ActionCharacterObject{
-					ActionID:    data.ActionRecs[0].ID,
-					DungeonCharacterID: data.DungeonCharacterRecs[0].ID,
-					DungeonObjectID:    data.DungeonObjectRecs[0].ID,
-					Name:               data.DungeonObjectRecs[0].Name,
-					IsEquipped:         true,
-					IsStashed:          false,
+					ActionID:            data.ActionRecs[0].ID,
+					CharacterInstanceID: data.CharacterInstanceRecs[0].ID,
+					ObjectInstanceID:    data.ObjectInstanceRecs[0].ID,
+					Name:                data.ObjectRecs[0].Name,
+					IsEquipped:          true,
+					IsStashed:           false,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
