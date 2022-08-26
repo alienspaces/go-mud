@@ -6,6 +6,7 @@ package test
 import (
 	"testing"
 
+	"github.com/brianvoe/gofakeit"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
@@ -37,14 +38,18 @@ func TestCreateOne(t *testing.T) {
 		{
 			name: "Without ID",
 			rec: func() *record.Dungeon {
-				return &record.Dungeon{}
+				return &record.Dungeon{
+					Name: gofakeit.Name(),
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
 			rec: func() *record.Dungeon {
-				rec := &record.Dungeon{}
+				rec := &record.Dungeon{
+					Name: gofakeit.Name(),
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -57,7 +62,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -86,7 +91,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 

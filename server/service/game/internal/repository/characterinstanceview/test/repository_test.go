@@ -35,7 +35,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.CharacterInstance[0].ID
+				return h.Data.CharacterInstanceRecs[0].ID
 			},
 			err: false,
 		},
@@ -67,7 +67,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonCharacterRepository()
+			r := h.Model.(*model.Model).CharacterInstanceViewRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)

@@ -42,16 +42,26 @@ type teardownData struct {
 }
 
 func (d *teardownData) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceRecordSet) {
-	d.DungeonInstanceRecs = append(d.DungeonInstanceRecs, rs.DungeonInstanceRec)
-	d.LocationInstanceRecs = append(d.LocationInstanceRecs, rs.LocationInstanceRecs...)
-	d.ObjectInstanceRecs = append(d.ObjectInstanceRecs, rs.ObjectInstanceRecs...)
-	d.MonsterInstanceRecs = append(d.MonsterInstanceRecs, rs.MonsterInstanceRecs...)
-	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rs.CharacterInstanceRecs...)
+	d.AddDungeonInstanceRec(rs.DungeonInstanceRec)
+	for idx := range rs.LocationInstanceRecs {
+		d.AddLocationInstanceRec(rs.LocationInstanceRecs[idx])
+	}
+	for idx := range rs.ObjectInstanceRecs {
+		d.AddObjectInstanceRec(rs.ObjectInstanceRecs[idx])
+	}
+	for idx := range rs.MonsterInstanceRecs {
+		d.AddMonsterInstanceRec(rs.MonsterInstanceRecs[idx])
+	}
+	for idx := range rs.CharacterInstanceRecs {
+		d.AddCharacterInstanceRec(rs.CharacterInstanceRecs[idx])
+	}
 }
 
 func (d *teardownData) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSet) {
-	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rs.CharacterInstanceRec)
-	d.ObjectInstanceRecs = append(d.ObjectInstanceRecs, rs.ObjectInstanceRecs...)
+	d.AddCharacterInstanceRec(rs.CharacterInstanceRec)
+	for idx := range rs.ObjectInstanceRecs {
+		d.AddObjectInstanceRec(rs.ObjectInstanceRecs[idx])
+	}
 }
 
 func (d *teardownData) AddObjectRec(rec *record.Object) {

@@ -11,6 +11,10 @@ func (t *Testing) createObjectRec(objectConfig ObjectConfig) (*record.Object, er
 
 	rec := objectConfig.Record
 
+	if rec.Name == "" {
+		rec.Name = gofakeit.Name()
+	}
+
 	t.Log.Debug("Creating object record >%#v<", rec)
 
 	err := t.Model.(*model.Model).CreateObjectRec(&rec)
@@ -127,6 +131,10 @@ func (t *Testing) createCharacterObjectRec(data *Data, characterRec *record.Char
 func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon, error) {
 
 	rec := dungeonConfig.Record
+
+	if rec.Name == "" {
+		rec.Name = gofakeit.Name()
+	}
 
 	t.Log.Debug("Creating dungeon record >%#v<", rec)
 

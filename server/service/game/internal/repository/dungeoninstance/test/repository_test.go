@@ -18,7 +18,11 @@ import (
 func TestCreateOne(t *testing.T) {
 
 	// harness
-	config := harness.DataConfig{}
+	config := harness.DataConfig{
+		DungeonConfig: []harness.DungeonConfig{
+			{},
+		},
+	}
 
 	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
@@ -37,14 +41,18 @@ func TestCreateOne(t *testing.T) {
 		{
 			name: "Without ID",
 			rec: func() *record.DungeonInstance {
-				return &record.DungeonInstance{}
+				return &record.DungeonInstance{
+					DungeonID: h.Data.DungeonRecs[0].ID,
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
 			rec: func() *record.DungeonInstance {
-				rec := &record.DungeonInstance{}
+				rec := &record.DungeonInstance{
+					DungeonID: h.Data.DungeonRecs[0].ID,
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -57,7 +65,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -72,7 +80,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonRepository()
+			r := h.Model.(*model.Model).DungeonInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -86,7 +94,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -96,7 +104,9 @@ func TestGetOne(t *testing.T) {
 	config := harness.DataConfig{
 		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.DungeonInstance{},
+				DungeonInstanceConfig: []harness.DungeonInstanceConfig{
+					{},
+				},
 			},
 		},
 	}
@@ -135,7 +145,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -150,7 +160,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonRepository()
+			r := h.Model.(*model.Model).DungeonInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -163,7 +173,7 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -173,7 +183,9 @@ func TestUpdateOne(t *testing.T) {
 	config := harness.DataConfig{
 		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.DungeonInstance{},
+				DungeonInstanceConfig: []harness.DungeonInstanceConfig{
+					{},
+				},
 			},
 		},
 	}
@@ -197,14 +209,14 @@ func TestUpdateOne(t *testing.T) {
 		{
 			name: "With ID",
 			rec: func() *record.DungeonInstance {
-				return h.Data.DungeonRecs[0]
+				return h.Data.DungeonInstanceRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
 			rec: func() *record.DungeonInstance {
-				rec := h.Data.DungeonRecs[0]
+				rec := h.Data.DungeonInstanceRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -216,7 +228,7 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -231,7 +243,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonRepository()
+			r := h.Model.(*model.Model).DungeonInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -245,7 +257,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -255,7 +267,9 @@ func TestDeleteOne(t *testing.T) {
 	config := harness.DataConfig{
 		DungeonConfig: []harness.DungeonConfig{
 			{
-				Record: record.DungeonInstance{},
+				DungeonInstanceConfig: []harness.DungeonInstanceConfig{
+					{},
+				},
 			},
 		},
 	}
@@ -294,7 +308,7 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -309,7 +323,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonRepository()
+			r := h.Model.(*model.Model).DungeonInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())
@@ -324,6 +338,6 @@ func TestDeleteOne(t *testing.T) {
 			require.Nil(t, rec, "GetOne does not return record")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }

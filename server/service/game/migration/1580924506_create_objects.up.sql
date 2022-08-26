@@ -6,7 +6,10 @@ CREATE TABLE "dungeon" (
   "description" text NOT NULL,
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "dungeon_name_ck" CHECK (
+    char_length("name") BETWEEN 1 AND 256
+  )
 );
 COMMENT ON TABLE "dungeon" IS 'A dungeon is a set of locations that contain objects and monsters.';
 
@@ -22,13 +25,13 @@ CREATE TABLE "object" (
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
   CONSTRAINT "object_name_ck" CHECK (
-    char_length("name") > 0
+    char_length("name") BETWEEN 1 AND 256
   ),
   CONSTRAINT "object_description_ck" CHECK (
-    char_length("description") > 0
+    char_length("description") BETWEEN 1 AND 512
   ),
   CONSTRAINT "object_description_detailed_ck" CHECK (
-    char_length("description_detailed") > 0
+    char_length("description_detailed") BETWEEN 1 AND 1024
   )
 );
 COMMENT ON TABLE "object" IS 'An object can be used, equipped, stashed or dropped.';
@@ -53,10 +56,10 @@ CREATE TABLE "monster" (
   "deleted_at" timestamp WITH TIME ZONE,
   CONSTRAINT "monster_name_uq" UNIQUE("name"),
   CONSTRAINT "monster_name_ck" CHECK (
-    char_length("name") > 0
+    char_length("name") BETWEEN 1 AND 256
   ),
   CONSTRAINT "monster_description_ck" CHECK (
-    char_length("description") > 0
+    char_length("description") BETWEEN 1 AND 512
   )
 );
 COMMENT ON TABLE "monster" IS 'A monster can move, attack, converse with characters and interact objects.';
@@ -94,7 +97,10 @@ CREATE TABLE "character" (
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "character_name_uq" UNIQUE ("name")
+  CONSTRAINT "character_name_uq" UNIQUE ("name"),
+  CONSTRAINT "character_name_ck" CHECK (
+    char_length("name") BETWEEN 1 AND 256
+  )
 );
 COMMENT ON TABLE "monster" IS 'A character is controlled by a player and can move, attack, converse with monsters and interact with objects.';
 

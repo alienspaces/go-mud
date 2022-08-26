@@ -77,7 +77,7 @@ func (t *Testing) CreateData() error {
 	data := &Data{}
 	teardownData := teardownData{}
 
-	// Create object records
+	// Objects
 	for _, objectConfig := range t.DataConfig.ObjectConfig {
 		objectRec, err := t.createObjectRec(objectConfig)
 		if err != nil {
@@ -89,7 +89,7 @@ func (t *Testing) CreateData() error {
 		teardownData.AddObjectRec(objectRec)
 	}
 
-	// Create monster records
+	// Monsters
 	for _, monsterConfig := range t.DataConfig.MonsterConfig {
 		monsterRec, err := t.createMonsterRec(monsterConfig)
 		if err != nil {
@@ -109,6 +109,32 @@ func (t *Testing) CreateData() error {
 			l.Debug("+ Created monster object record ID >%s< monster ID >%s< object ID", monsterObjectRec.ID, monsterObjectRec.MonsterID, monsterObjectRec.ObjectID)
 			data.AddMonsterObjectRec(monsterObjectRec)
 			teardownData.AddMonsterObjectRec(monsterObjectRec)
+		}
+	}
+
+	// Characters
+	for _, characterConfig := range t.DataConfig.CharacterConfig {
+
+		characterRec, err := t.createCharacterRec(characterConfig)
+		if err != nil {
+			l.Warn("failed creating character record >%v<", err)
+			return err
+		}
+
+		l.Debug("+ Created character record ID >%s< Name >%s<", characterRec.ID, characterRec.Name)
+		data.AddCharacterRec(characterRec)
+		teardownData.AddCharacterRec(characterRec)
+
+		for _, characterObjectConfig := range characterConfig.CharacterObjectConfig {
+			characterObjectRec, err := t.createCharacterObjectRec(data, characterRec, characterObjectConfig)
+			if err != nil {
+				l.Warn("failed creating character object record >%v<", err)
+				return err
+			}
+
+			l.Debug("+ Created character object record ID >%s< character ID >%s< object ID >%s<", characterObjectRec.ID, characterObjectRec.CharacterID, characterObjectRec.ObjectID)
+			data.AddCharacterObjectRec(characterObjectRec)
+			teardownData.AddCharacterObjectRec(characterObjectRec)
 		}
 	}
 
@@ -180,43 +206,8 @@ func (t *Testing) CreateData() error {
 				return err
 			}
 		}
-	}
 
-	// Characters
-	for _, characterConfig := range t.DataConfig.CharacterConfig {
-
-		characterRec, err := t.createCharacterRec(characterConfig)
-		if err != nil {
-			l.Warn("failed creating character record >%v<", err)
-			return err
-		}
-
-		l.Debug("+ Created character record ID >%s< Name >%s<", characterRec.ID, characterRec.Name)
-		data.AddCharacterRec(characterRec)
-		teardownData.AddCharacterRec(characterRec)
-
-		for _, characterObjectConfig := range characterConfig.CharacterObjectConfig {
-			characterObjectRec, err := t.createCharacterObjectRec(data, characterRec, characterObjectConfig)
-			if err != nil {
-				l.Warn("failed creating character object record >%v<", err)
-				return err
-			}
-
-			l.Debug("+ Created character object record ID >%s< character ID >%s< object ID >%s<", characterObjectRec.ID, characterObjectRec.CharacterID, characterObjectRec.ObjectID)
-			data.AddCharacterObjectRec(characterObjectRec)
-			teardownData.AddCharacterObjectRec(characterObjectRec)
-		}
-	}
-
-	// Dungeon Instance
-	for _, dungeonConfig := range t.DataConfig.DungeonConfig {
-
-		dungeonRec, err := data.GetDungeonRecByName(dungeonConfig.Record.Name)
-		if err != nil {
-			l.Warn("failed getting dungeon record >%v<", err)
-			return err
-		}
-
+		// Dungeon Instances
 		for _, dungeonInstanceConfig := range dungeonConfig.DungeonInstanceConfig {
 			dungeonInstanceRecordSet, err := t.createDungeonInstance(dungeonRec.ID)
 			if err != nil {
@@ -227,6 +218,7 @@ func (t *Testing) CreateData() error {
 			data.AddDungeonInstanceRecordSet(dungeonInstanceRecordSet)
 			teardownData.AddDungeonInstanceRecordSet(dungeonInstanceRecordSet)
 
+			// Character Instances
 			for _, characterInstanceConfig := range dungeonInstanceConfig.CharacterInstanceConfig {
 				characterRec, err := data.GetCharacterRecByName(characterInstanceConfig.Name)
 				if err != nil {
@@ -247,6 +239,7 @@ func (t *Testing) CreateData() error {
 				teardownData.AddCharacterInstanceRecordSet(characterInstanceRecordSet)
 			}
 
+			// Actions
 			for _, actionConfig := range dungeonInstanceConfig.ActionConfig {
 
 				// Character action
