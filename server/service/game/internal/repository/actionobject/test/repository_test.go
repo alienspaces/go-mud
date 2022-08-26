@@ -38,12 +38,12 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.ActionObject {
 				return &record.ActionObject{
-					RecordType:        record.ActionObjectRecordTypeOccupant,
-					ActionID:   data.ActionRecs[0].ID,
-					LocationID: data.LocationRecs[0].ID,
-					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
-					Name:              data.DungeonObjectRecs[0].Name,
-					Description:       data.DungeonObjectRecs[0].Description,
+					RecordType:         record.ActionObjectRecordTypeOccupant,
+					ActionID:           data.ActionRecs[0].ID,
+					LocationInstanceID: data.LocationInstanceRecs[0].ID,
+					ObjectInstanceID:   data.ObjectInstanceRecs[0].ID,
+					Name:               data.ObjectRecs[0].Name,
+					Description:        data.ObjectRecs[0].Description,
 				}
 			},
 			err: false,
@@ -52,12 +52,12 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.ActionObject {
 				rec := &record.ActionObject{
-					RecordType:        record.ActionObjectRecordTypeOccupant,
-					ActionID:   data.ActionRecs[0].ID,
-					LocationID: data.LocationRecs[0].ID,
-					DungeonObjectID:   data.DungeonObjectRecs[0].ID,
-					Name:              data.DungeonObjectRecs[0].Name,
-					Description:       data.DungeonObjectRecs[0].Description,
+					RecordType:         record.ActionObjectRecordTypeOccupant,
+					ActionID:           data.ActionRecs[0].ID,
+					LocationInstanceID: data.LocationInstanceRecs[0].ID,
+					ObjectInstanceID:   data.ObjectInstanceRecs[0].ID,
+					Name:               data.ObjectRecs[0].Name,
+					Description:        data.ObjectRecs[0].Description,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

@@ -48,6 +48,13 @@ var DefaultDataConfig = DataConfig{
 				DescriptionDetailed: "A large vial of ogre blood.",
 			},
 		},
+		{
+			Record: record.Object{
+				Name:                "Stone Mace",
+				Description:         "A stone mace.",
+				DescriptionDetailed: "A stone mace.",
+			},
+		},
 	},
 	MonsterConfig: []MonsterConfig{
 		{
@@ -198,8 +205,8 @@ var DefaultDataConfig = DataConfig{
 							Command:       "look",
 						},
 						{
-							MonsterName: "Angry Goblin",
-							Command:     "look silver key",
+							MonsterName: "Grumpy Dwarf",
+							Command:     "look",
 						},
 					},
 				},

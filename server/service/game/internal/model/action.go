@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -58,22 +57,12 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("(before) Dungeon action record command >%s<", actionRec.ResolvedCommand)
-	l.Info("(before) Dungeon action record LocationInstanceID >%s<", actionRec.LocationInstanceID)
-	l.Info("(before) Dungeon action record CharacterInstanceID >%s<", nullstring.ToString(actionRec.CharacterInstanceID))
-	l.Info("(before) Dungeon action record MonsterInstanceID >%s<", nullstring.ToString(actionRec.MonsterInstanceID))
-
 	// Perform the submitted character action
 	actionRec, err = m.performAction(characterInstanceViewRec, nil, actionRec, locationInstanceRecordSet)
 	if err != nil {
 		l.Warn("failed performing character action >%v<", err)
 		return nil, err
 	}
-
-	l.Info("(after) Dungeon action record command >%s<", actionRec.ResolvedCommand)
-	l.Info("(after) Dungeon action record LocationInstanceID >%s<", actionRec.LocationInstanceID)
-	l.Info("(after) Dungeon action record CharacterInstanceID >%s<", nullstring.ToString(actionRec.CharacterInstanceID))
-	l.Info("(after) Dungeon action record MonsterInstanceID >%s<", nullstring.ToString(actionRec.MonsterInstanceID))
 
 	// Create the resulting action event record
 	err = m.CreateActionRec(actionRec)
@@ -673,24 +662,12 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	l.Info("(before) Dungeon action record command >%s<", actionRec.ResolvedCommand)
-	l.Info("(before) Dungeon action record LocationInstanceID >%s<", actionRec.LocationInstanceID)
-	l.Info("(before) Dungeon action record MonsterInstanceID >%s<", nullstring.ToString(actionRec.MonsterInstanceID))
-	l.Info("(before) Dungeon action record MonsterInstanceID >%s<", nullstring.ToString(actionRec.MonsterInstanceID))
-
 	// Perform the submitted monster action
 	actionRec, err = m.performAction(nil, monsterInstanceViewRec, actionRec, locationInstanceRecordSet)
 	if err != nil {
 		l.Warn("failed performing monster action >%v<", err)
 		return nil, err
 	}
-
-	// BWW
-
-	l.Info("(after) Dungeon action record command >%s<", actionRec.ResolvedCommand)
-	l.Info("(after) Dungeon action record LocationInstanceID >%s<", actionRec.LocationInstanceID)
-	l.Info("(after) Dungeon action record MonsterInstanceID >%s<", nullstring.ToString(actionRec.MonsterInstanceID))
-	l.Info("(after) Dungeon action record CharacterInstanceID >%s<", nullstring.ToString(actionRec.CharacterInstanceID))
 
 	// Create the resulting action event record
 	err = m.CreateActionRec(actionRec)

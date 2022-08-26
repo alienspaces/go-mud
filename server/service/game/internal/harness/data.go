@@ -152,6 +152,7 @@ func (d *Data) GetCharacterRecByName(characterName string) (*record.Character, e
 	return nil, fmt.Errorf("failed getting character by Name >%s<", characterName)
 }
 
+// CharacterObject
 func (d *Data) AddCharacterObjectRec(rec *record.CharacterObject) {
 	for idx := range d.CharacterObjectRecs {
 		if d.CharacterObjectRecs[idx].ID == rec.ID {
@@ -211,7 +212,7 @@ func (d *Data) GetLocationRecByID(locationID string) (*record.Location, error) {
 	return nil, fmt.Errorf("unknown location ID >%s<", locationID)
 }
 
-// Location Object
+// LocationObject
 func (d *Data) AddLocationObjectRec(rec *record.LocationObject) {
 	for idx := range d.LocationObjectRecs {
 		if d.LocationObjectRecs[idx].ID == rec.ID {
@@ -222,6 +223,7 @@ func (d *Data) AddLocationObjectRec(rec *record.LocationObject) {
 	d.LocationObjectRecs = append(d.LocationObjectRecs, rec)
 }
 
+// LocationMonster
 func (d *Data) AddLocationMonsterRec(rec *record.LocationMonster) {
 	for idx := range d.LocationMonsterRecs {
 		if d.LocationMonsterRecs[idx].ID == rec.ID {
@@ -232,7 +234,7 @@ func (d *Data) AddLocationMonsterRec(rec *record.LocationMonster) {
 	d.LocationMonsterRecs = append(d.LocationMonsterRecs, rec)
 }
 
-// Object Instance
+// ObjectInstance
 func (d *Data) AddObjectInstanceRec(rec *record.ObjectInstance) {
 	for idx := range d.ObjectInstanceRecs {
 		if d.ObjectInstanceRecs[idx].ID == rec.ID {
@@ -257,7 +259,6 @@ func (d *Data) GetObjectInstanceRecByName(name string) (*record.ObjectInstance, 
 }
 
 func (d *Data) GetObjectInstanceRecsByLocationInstanceID(locationInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.LocationInstanceID) == locationInstanceID {
@@ -268,7 +269,6 @@ func (d *Data) GetObjectInstanceRecsByLocationInstanceID(locationInstanceID stri
 }
 
 func (d *Data) GetObjectInstanceRecsByCharacterInstanceID(characterInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.CharacterInstanceID) == characterInstanceID {
@@ -279,7 +279,6 @@ func (d *Data) GetObjectInstanceRecsByCharacterInstanceID(characterInstanceID st
 }
 
 func (d *Data) GetEquippedObjectInstanceRecsByCharacterInstanceID(characterInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.CharacterInstanceID) == characterInstanceID &&
@@ -291,7 +290,6 @@ func (d *Data) GetEquippedObjectInstanceRecsByCharacterInstanceID(characterInsta
 }
 
 func (d *Data) GetStashedObjectInstanceRecsByCharacterInstanceID(characterInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.CharacterInstanceID) == characterInstanceID &&
@@ -303,7 +301,6 @@ func (d *Data) GetStashedObjectInstanceRecsByCharacterInstanceID(characterInstan
 }
 
 func (d *Data) GetObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.MonsterInstanceID) == monsterInstanceID {
@@ -314,7 +311,6 @@ func (d *Data) GetObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string
 }
 
 func (d *Data) GetEquippedObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.MonsterInstanceID) == monsterInstanceID &&
@@ -326,7 +322,6 @@ func (d *Data) GetEquippedObjectInstanceRecsByMonsterInstanceID(monsterInstanceI
 }
 
 func (d *Data) GetStashedObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
 		if nullstring.ToString(rec.MonsterInstanceID) == monsterInstanceID &&
@@ -339,7 +334,6 @@ func (d *Data) GetStashedObjectInstanceRecsByMonsterInstanceID(monsterInstanceID
 
 // TODO: Experimental, can potentially use generics here?
 func (d *Data) GetMatchingObjectInstanceRecs(mrec *record.ObjectInstance) []*record.ObjectInstance {
-
 	recs := []*record.ObjectInstance{}
 	matched := false
 	for _, rec := range d.ObjectInstanceRecs {
@@ -380,7 +374,7 @@ func (d *Data) GetMatchingObjectInstanceRecs(mrec *record.ObjectInstance) []*rec
 	return recs
 }
 
-// Monster Instance
+// MonsterInstance
 func (d *Data) AddMonsterInstanceRec(rec *record.MonsterInstance) {
 	for idx := range d.MonsterInstanceRecs {
 		if d.MonsterInstanceRecs[idx].ID == rec.ID {
@@ -392,7 +386,6 @@ func (d *Data) AddMonsterInstanceRec(rec *record.MonsterInstance) {
 }
 
 func (d *Data) GetMonsterInstanceRecByName(name string) (*record.MonsterInstance, error) {
-
 	for _, ciRec := range d.MonsterInstanceRecs {
 		cRec, err := d.GetMonsterRecByID(ciRec.MonsterID)
 		if err != nil {
@@ -402,11 +395,10 @@ func (d *Data) GetMonsterInstanceRecByName(name string) (*record.MonsterInstance
 			return ciRec, nil
 		}
 	}
-
 	return nil, fmt.Errorf("failed getting character instance with name >%s<", name)
 }
 
-// Character Instance
+// CharacterInstance
 func (d *Data) AddCharacterInstanceRec(rec *record.CharacterInstance) {
 	for idx := range d.CharacterInstanceRecs {
 		if d.CharacterInstanceRecs[idx].ID == rec.ID {
@@ -418,7 +410,6 @@ func (d *Data) AddCharacterInstanceRec(rec *record.CharacterInstance) {
 }
 
 func (d *Data) GetCharacterInstanceRecByName(name string) (*record.CharacterInstance, error) {
-
 	for _, ciRec := range d.CharacterInstanceRecs {
 		cRec, err := d.GetCharacterRecByID(ciRec.CharacterID)
 		if err != nil {
@@ -428,11 +419,10 @@ func (d *Data) GetCharacterInstanceRecByName(name string) (*record.CharacterInst
 			return ciRec, nil
 		}
 	}
-
 	return nil, fmt.Errorf("failed getting character instance with name >%s<", name)
 }
 
-// Dungeon Instance
+// DungeonInstance
 func (d *Data) AddDungeonInstanceRec(rec *record.DungeonInstance) {
 	for idx := range d.DungeonInstanceRecs {
 		if d.DungeonInstanceRecs[idx].ID == rec.ID {
@@ -443,6 +433,20 @@ func (d *Data) AddDungeonInstanceRec(rec *record.DungeonInstance) {
 	d.DungeonInstanceRecs = append(d.DungeonInstanceRecs, rec)
 }
 
+func (d *Data) GetDungeonInstanceRecByName(name string) (*record.DungeonInstance, error) {
+	for _, rec := range d.DungeonInstanceRecs {
+		dungeonRec, err := d.GetDungeonRecByID(rec.DungeonID)
+		if err != nil {
+			return nil, err
+		}
+		if dungeonRec.Name == name {
+			return rec, nil
+		}
+	}
+	return nil, fmt.Errorf("failed getting dungeon instance with name >%s<", name)
+}
+
+// DungeonInstanceRecordSet
 func (d *Data) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceRecordSet) {
 
 	d.AddDungeonInstanceRec(rs.DungeonInstanceRec)
@@ -461,6 +465,7 @@ func (d *Data) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceRecordSet) {
 	}
 }
 
+// CharacterInstanceRecordSet
 func (d *Data) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSet) {
 
 	d.AddCharacterInstanceRec(rs.CharacterInstanceRec)
@@ -470,22 +475,7 @@ func (d *Data) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSe
 	}
 }
 
-func (d *Data) GetDungeonInstanceRecByName(name string) (*record.DungeonInstance, error) {
-
-	for _, rec := range d.DungeonInstanceRecs {
-		dungeonRec, err := d.GetDungeonRecByID(rec.DungeonID)
-		if err != nil {
-			return nil, err
-		}
-		if dungeonRec.Name == name {
-			return rec, nil
-		}
-	}
-
-	return nil, fmt.Errorf("failed getting dungeon instance with name >%s<", name)
-}
-
-// Location Instance
+// LocationInstance
 func (d *Data) AddLocationInstanceRec(rec *record.LocationInstance) {
 	for idx := range d.LocationInstanceRecs {
 		if d.LocationInstanceRecs[idx].ID == rec.ID {
@@ -509,50 +499,136 @@ func (d *Data) GetLocationInstanceRecByName(name string) (*record.LocationInstan
 	return nil, nil
 }
 
-// teardownData -
-type teardownData struct {
-	// Object
-	ObjectRecs []record.Object
-
-	// Monster
-	MonsterRecs       []record.Monster
-	MonsterObjectRecs []record.MonsterObject
-
-	// Character
-	CharacterRecs       []record.Character
-	CharacterObjectRecs []record.CharacterObject
-
-	// Dungeon
-	DungeonRecs         []record.Dungeon
-	LocationRecs        []record.Location
-	LocationObjectRecs  []record.LocationObject
-	LocationMonsterRecs []record.LocationMonster
-
-	// Dungeon Instance
-	DungeonInstanceRecs   []*record.DungeonInstance
-	LocationInstanceRecs  []*record.LocationInstance
-	CharacterInstanceRecs []*record.CharacterInstance
-	MonsterInstanceRecs   []*record.MonsterInstance
-	ObjectInstanceRecs    []*record.ObjectInstance
-
-	// Action
-	ActionRecs                []*record.Action
-	ActionCharacterRecs       []*record.ActionCharacter
-	ActionCharacterObjectRecs []*record.ActionCharacterObject
-	ActionMonsterRecs         []*record.ActionMonster
-	ActionMonsterObjectRecs   []*record.ActionMonsterObject
-	ActionObjectRecs          []*record.ActionObject
+// Action
+func (d *Data) AddActionRec(rec *record.Action) {
+	for idx := range d.ActionRecs {
+		if d.ActionRecs[idx].ID == rec.ID {
+			d.ActionRecs[idx] = rec
+			return
+		}
+	}
+	d.ActionRecs = append(d.ActionRecs, rec)
 }
 
-func (d *teardownData) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceRecordSet) {
-	d.DungeonInstanceRecs = append(d.DungeonInstanceRecs, rs.DungeonInstanceRec)
-	d.LocationInstanceRecs = append(d.LocationInstanceRecs, rs.LocationInstanceRecs...)
-	d.ObjectInstanceRecs = append(d.ObjectInstanceRecs, rs.ObjectInstanceRecs...)
-	d.MonsterInstanceRecs = append(d.MonsterInstanceRecs, rs.MonsterInstanceRecs...)
-	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rs.CharacterInstanceRecs...)
+// ActionCharacter
+func (d *Data) AddActionCharacterRec(rec *record.ActionCharacter) {
+	for idx := range d.ActionCharacterRecs {
+		if d.ActionCharacterRecs[idx].ID == rec.ID {
+			d.ActionCharacterRecs[idx] = rec
+			return
+		}
+	}
+	d.ActionCharacterRecs = append(d.ActionCharacterRecs, rec)
 }
 
-func (d *teardownData) AddCharacterInstanceRecordSet(rs *model.CharacterInstanceRecordSet) {
-	d.CharacterInstanceRecs = append(d.CharacterInstanceRecs, rs.CharacterInstanceRec)
-	d.ObjectInstanceRecs = append(d.ObjectInstanceRecs, rs.ObjectInstanceRecs...)
+// ActionCharacterObject
+func (d *Data) AddActionCharacterObjectRec(rec *record.ActionCharacterObject) {
+	for idx := range d.ActionCharacterObjectRecs {
+		if d.ActionCharacterObjectRecs[idx].ID == rec.ID {
+			d.ActionCharacterObjectRecs[idx] = rec
+			return
+		}
+	}
+	d.ActionCharacterObjectRecs = append(d.ActionCharacterObjectRecs, rec)
+}
+
+// ActionMonster
+func (d *Data) AddActionMonsterRec(rec *record.ActionMonster) {
+	for idx := range d.ActionMonsterRecs {
+		if d.ActionMonsterRecs[idx].ID == rec.ID {
+			d.ActionMonsterRecs[idx] = rec
+			return
+		}
+	}
+	d.ActionMonsterRecs = append(d.ActionMonsterRecs, rec)
+}
+
+// ActionMonsterObject
+func (d *Data) AddActionMonsterObjectRec(rec *record.ActionMonsterObject) {
+	for idx := range d.ActionMonsterObjectRecs {
+		if d.ActionMonsterObjectRecs[idx].ID == rec.ID {
+			d.ActionMonsterObjectRecs[idx] = rec
+			return
+		}
+	}
+	d.ActionMonsterObjectRecs = append(d.ActionMonsterObjectRecs, rec)
+}
+
+// ActionObject
+func (d *Data) AddActionObjectRec(rec *record.ActionObject) {
+	for idx := range d.ActionObjectRecs {
+		if d.ActionObjectRecs[idx].ID == rec.ID {
+			d.ActionObjectRecs[idx] = rec
+			return
+		}
+	}
+	d.ActionObjectRecs = append(d.ActionObjectRecs, rec)
+}
+
+func (d *Data) AddActionLocationRecordSet(alrs *record.ActionLocationRecordSet) {
+
+	for _, rec := range alrs.ActionCharacterRecs {
+		d.AddActionCharacterRec(rec)
+	}
+	for _, rec := range alrs.ActionMonsterRecs {
+		d.AddActionMonsterRec(rec)
+	}
+	for _, rec := range alrs.ActionObjectRecs {
+		d.AddActionObjectRec(rec)
+	}
+}
+
+func (d *Data) AddActionRecordSet(rs *record.ActionRecordSet) {
+
+	d.AddActionRec(rs.ActionRec)
+
+	// Source
+	if rs.ActionCharacterRec != nil {
+		d.AddActionCharacterRec(rs.ActionCharacterRec)
+		for idx := range rs.ActionCharacterObjectRecs {
+			d.AddActionCharacterObjectRec(rs.ActionCharacterObjectRecs[idx])
+		}
+	}
+	if rs.ActionMonsterRec != nil {
+		d.AddActionMonsterRec(rs.ActionMonsterRec)
+		for idx := range rs.ActionMonsterObjectRecs {
+			d.AddActionMonsterObjectRec(rs.ActionMonsterObjectRecs[idx])
+		}
+	}
+
+	// Current location
+	if rs.CurrentLocation != nil {
+		d.AddActionLocationRecordSet(rs.CurrentLocation)
+	}
+
+	// Target location
+	if rs.TargetLocation != nil {
+		d.AddActionLocationRecordSet(rs.TargetLocation)
+	}
+
+	// Targets
+	if rs.TargetActionCharacterRec != nil {
+		d.AddActionCharacterRec(rs.TargetActionCharacterRec)
+		for idx := range rs.TargetActionCharacterObjectRecs {
+			d.AddActionCharacterObjectRec(rs.TargetActionCharacterObjectRecs[idx])
+		}
+	}
+	if rs.TargetActionMonsterRec != nil {
+		d.AddActionMonsterRec(rs.TargetActionMonsterRec)
+		for idx := range rs.TargetActionMonsterObjectRecs {
+			d.AddActionMonsterObjectRec(rs.TargetActionMonsterObjectRecs[idx])
+		}
+	}
+	if rs.EquippedActionObjectRec != nil {
+		d.AddActionObjectRec(rs.EquippedActionObjectRec)
+	}
+	if rs.StashedActionObjectRec != nil {
+		d.AddActionObjectRec(rs.StashedActionObjectRec)
+	}
+	if rs.DroppedActionObjectRec != nil {
+		d.AddActionObjectRec(rs.DroppedActionObjectRec)
+	}
+	if rs.TargetActionObjectRec != nil {
+		d.AddActionObjectRec(rs.TargetActionObjectRec)
+	}
 }

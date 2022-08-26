@@ -80,9 +80,6 @@ var testDataConfig = harness.DataConfig{
 					ObjectName: "Dull Bronze Ring",
 				},
 			},
-			CharacterDungeonConfig: &harness.CharacterDungeonConfig{
-				DungeonName: "Cave",
-			},
 		},
 	},
 	DungeonConfig: []harness.DungeonConfig{
@@ -180,13 +177,25 @@ var testDataConfig = harness.DataConfig{
 					UpLocationName: "Dark Narrow Tunnel",
 				},
 			},
-			// TODO: Move
-			// ActionConfig: []harness.ActionConfig{
-			// 	{
-			// 		CharacterName: "Barricade",
-			// 		Command:       "look north",
-			// 	},
-			// },
+			DungeonInstanceConfig: []harness.DungeonInstanceConfig{
+				{
+					CharacterInstanceConfig: []harness.CharacterInstanceConfig{
+						{
+							Name: "Barricade",
+						},
+					},
+					ActionConfig: []harness.ActionConfig{
+						{
+							CharacterName: "Barricade",
+							Command:       "look",
+						},
+						{
+							MonsterName: "Grumpy Dwarf",
+							Command:     "look",
+						},
+					},
+				},
+			},
 		},
 	},
 }

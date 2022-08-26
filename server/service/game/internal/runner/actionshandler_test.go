@@ -1212,7 +1212,7 @@ func TestCreateDungeonCharacterActionHandler(t *testing.T) {
 				if method == http.MethodPost {
 					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
 					t.Logf("Adding dungeon character action ID >%s< for teardown", data.ID)
-					th.AddDungeonCharacterActionTeardownID(data.ID)
+					th.AddActionTeardownID(data.ID)
 				}
 			}
 		}

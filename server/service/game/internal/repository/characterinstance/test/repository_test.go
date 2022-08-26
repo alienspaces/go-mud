@@ -38,12 +38,12 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.CharacterInstance {
 				return &record.CharacterInstance{
-					DungeonID:    data.DungeonRecs[0].ID,
-					LocationID:   data.LocationRecs[0].ID,
-					Name:         "Legislate",
-					Strength:     10,
-					Dexterity:    10,
-					Intelligence: 10,
+					CharacterID:        data.CharacterRecs[0].ID,
+					DungeonInstanceID:  data.DungeonInstanceRecs[0].ID,
+					LocationInstanceID: data.LocationInstanceRecs[0].ID,
+					Strength:           10,
+					Dexterity:          10,
+					Intelligence:       10,
 				}
 			},
 			err: false,
@@ -52,12 +52,12 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.CharacterInstance {
 				rec := &record.CharacterInstance{
-					DungeonID:    data.DungeonRecs[0].ID,
-					LocationID:   data.LocationRecs[0].ID,
-					Name:         "Bolster",
-					Strength:     10,
-					Dexterity:    10,
-					Intelligence: 10,
+					CharacterID:        data.CharacterRecs[0].ID,
+					DungeonInstanceID:  data.DungeonInstanceRecs[0].ID,
+					LocationInstanceID: data.LocationInstanceRecs[0].ID,
+					Strength:           10,
+					Dexterity:          10,
+					Intelligence:       10,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -86,7 +86,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonCharacterRepository()
+			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec(h.Data)
@@ -126,7 +126,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonCharacterRecs[0].ID
+				return h.Data.CharacterInstanceRecs[0].ID
 			},
 			err: false,
 		},
@@ -158,7 +158,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonCharacterRepository()
+			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -199,14 +199,14 @@ func TestUpdateOne(t *testing.T) {
 		{
 			name: "With ID",
 			rec: func() *record.CharacterInstance {
-				return h.Data.DungeonCharacterRecs[0]
+				return h.Data.CharacterInstanceRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
 			rec: func() *record.CharacterInstance {
-				rec := h.Data.DungeonCharacterRecs[0]
+				rec := h.Data.CharacterInstanceRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -233,7 +233,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonCharacterRepository()
+			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -273,7 +273,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonCharacterRecs[0].ID
+				return h.Data.CharacterInstanceRecs[0].ID
 			},
 			err: false,
 		},
@@ -305,7 +305,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonCharacterRepository()
+			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())
