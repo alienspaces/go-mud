@@ -197,6 +197,10 @@ var DefaultDataConfig = DataConfig{
 							CharacterName: "Barricade",
 							Command:       "look",
 						},
+						{
+							MonsterName: "Angry Goblin",
+							Command:     "look silver key",
+						},
 					},
 				},
 			},

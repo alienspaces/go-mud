@@ -265,3 +265,16 @@ func (t *Testing) createCharacterActionRec(dungeonInstanceID, characterInstanceI
 
 	return dungeonActionRecordSet, nil
 }
+
+func (t *Testing) createMonsterActionRec(dungeonInstanceID, monsterInstanceID, sentence string) (*record.ActionRecordSet, error) {
+
+	t.Log.Debug("Creating action for dungeon instance ID >%s< monster instance ID >%s< sentence >%s<", dungeonInstanceID, monsterInstanceID, sentence)
+
+	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessMonsterAction(dungeonInstanceID, monsterInstanceID, sentence)
+	if err != nil {
+		t.Log.Warn("Failed creating monster action record >%v<", err)
+		return nil, err
+	}
+
+	return dungeonActionRecordSet, nil
+}

@@ -391,6 +391,21 @@ func (d *Data) AddMonsterInstanceRec(rec *record.MonsterInstance) {
 	d.MonsterInstanceRecs = append(d.MonsterInstanceRecs, rec)
 }
 
+func (d *Data) GetMonsterInstanceRecByName(name string) (*record.MonsterInstance, error) {
+
+	for _, ciRec := range d.MonsterInstanceRecs {
+		cRec, err := d.GetMonsterRecByID(ciRec.MonsterID)
+		if err != nil {
+			return nil, err
+		}
+		if cRec.Name == name {
+			return ciRec, nil
+		}
+	}
+
+	return nil, fmt.Errorf("failed getting character instance with name >%s<", name)
+}
+
 // Character Instance
 func (d *Data) AddCharacterInstanceRec(rec *record.CharacterInstance) {
 	for idx := range d.CharacterInstanceRecs {

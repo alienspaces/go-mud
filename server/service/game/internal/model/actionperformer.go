@@ -5,14 +5,22 @@ import (
 	"fmt"
 
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/mapper"
-
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-type characterActionFunc func(characterInstanceViewRec *record.CharacterInstanceView, actionRec *record.Action, locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error)
+// TODO: Determine whether we need to pass the character/monster instance view
+// record around everywhere or whether a more specific PerformerArgs definition
+// (like ResolverArgs) would clean this up.
 
-func (m *Model) performCharacterAction(
+type characterActionFunc func(
 	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
+	actionRec *record.Action,
+	locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error)
+
+func (m *Model) performAction(
+	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
@@ -35,7 +43,7 @@ func (m *Model) performCharacterAction(
 	}
 
 	var err error
-	actionRec, err = actionFunc(characterInstanceViewRec, actionRec, locationInstanceRecordSet)
+	actionRec, err = actionFunc(characterInstanceViewRec, monsterInstanceViewRec, actionRec, locationInstanceRecordSet)
 	if err != nil {
 		l.Warn("failed performing action >%s< >%v<", actionRec.ResolvedCommand, err)
 		return nil, err
@@ -48,6 +56,7 @@ func (m *Model) performCharacterAction(
 
 func (m *Model) performActionMove(
 	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
@@ -74,7 +83,22 @@ func (m *Model) performActionMove(
 		actionRec.LocationInstanceID = actionRec.ResolvedTargetLocationInstanceID.String
 	} else if actionRec.MonsterInstanceID.Valid {
 		// Monster move direction
-		return nil, fmt.Errorf("moving monster instances is currently not supported")
+		monsterInstanceRec, err := mapper.MonsterInstanceViewToMonsterInstance(l, monsterInstanceViewRec)
+		if err != nil {
+			l.Warn("failed mapping monster instance view to monster instance >%v<", err)
+			return nil, err
+		}
+
+		monsterInstanceRec.LocationInstanceID = actionRec.ResolvedTargetLocationInstanceID.String
+
+		err = m.UpdateMonsterInstanceRec(monsterInstanceRec)
+		if err != nil {
+			l.Warn("failed updated dungeon monster instance record >%v<", err)
+			return nil, err
+		}
+
+		// Update dungeon action record
+		actionRec.LocationInstanceID = actionRec.ResolvedTargetLocationInstanceID.String
 	}
 
 	return actionRec, nil
@@ -82,6 +106,7 @@ func (m *Model) performActionMove(
 
 func (m *Model) performActionLook(
 	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
@@ -110,6 +135,7 @@ func (m *Model) performActionLook(
 
 func (m *Model) performActionStash(
 	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
@@ -144,7 +170,29 @@ func (m *Model) performActionStash(
 
 	} else if actionRec.MonsterInstanceID.Valid {
 		// Monster stash object
-		return nil, fmt.Errorf("monster instances stashing objects is currently not supported")
+		objectInstanceID := actionRec.ResolvedStashedObjectInstanceID.String
+		if objectInstanceID == "" {
+			msg := "resolved stashed dungeon object instance ID is empty, cannot stash object"
+			l.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		if err != nil {
+			l.Warn("failed getting dungeon object instance record >%v<", err)
+			return nil, err
+		}
+
+		objectInstanceRec.LocationInstanceID = sql.NullString{}
+		objectInstanceRec.MonsterInstanceID = actionRec.MonsterInstanceID
+		objectInstanceRec.IsStashed = true
+		objectInstanceRec.IsEquipped = false
+
+		err = m.UpdateObjectInstanceRec(objectInstanceRec)
+		if err != nil {
+			l.Warn("failed updating dungeon object instance record >%v<", err)
+			return nil, err
+		}
 	}
 
 	return actionRec, nil
@@ -152,6 +200,7 @@ func (m *Model) performActionStash(
 
 func (m *Model) performActionEquip(
 	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
@@ -186,7 +235,29 @@ func (m *Model) performActionEquip(
 
 	} else if actionRec.MonsterInstanceID.Valid {
 		// Monster equip object
-		return nil, fmt.Errorf("monster instances equipping objects is currently not supported")
+		objectInstanceID := actionRec.ResolvedEquippedObjectInstanceID.String
+		if objectInstanceID == "" {
+			msg := "resolved equipped dungeon object instance ID is empty, cannot equipe object"
+			l.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		if err != nil {
+			l.Warn("failed getting dungeon object instance record >%v<", err)
+			return nil, err
+		}
+
+		objectInstanceRec.LocationInstanceID = sql.NullString{}
+		objectInstanceRec.MonsterInstanceID = actionRec.MonsterInstanceID
+		objectInstanceRec.IsEquipped = true
+		objectInstanceRec.IsStashed = false
+
+		err = m.UpdateObjectInstanceRec(objectInstanceRec)
+		if err != nil {
+			l.Warn("failed updating dungeon object instance record >%v<", err)
+			return nil, err
+		}
 	}
 
 	return actionRec, nil
@@ -194,6 +265,7 @@ func (m *Model) performActionEquip(
 
 func (m *Model) performActionDrop(
 	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
@@ -233,7 +305,34 @@ func (m *Model) performActionDrop(
 
 	} else if actionRec.MonsterInstanceID.Valid {
 		// Monster drop object
-		return nil, fmt.Errorf("monster instances dropping objects is currently not supported")
+		objectInstanceID := actionRec.ResolvedDroppedObjectInstanceID.String
+		if objectInstanceID == "" {
+			msg := "resolved dropped dungeon object instance ID is empty, cannot drop object"
+			l.Warn(msg)
+			return nil, fmt.Errorf(msg)
+		}
+
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		if err != nil {
+			l.Warn("failed getting dungeon object instance record >%v<", err)
+			return nil, err
+		}
+
+		objectInstanceRec.LocationInstanceID = sql.NullString{
+			String: actionRec.LocationInstanceID,
+			Valid:  true,
+		}
+		objectInstanceRec.MonsterInstanceID = sql.NullString{}
+		objectInstanceRec.IsStashed = false
+		objectInstanceRec.IsEquipped = false
+
+		l.Debug("Updating dropped object instance >%#v<", objectInstanceRec)
+
+		err = m.UpdateObjectInstanceRec(objectInstanceRec)
+		if err != nil {
+			l.Warn("failed updating dungeon object instance record >%v<", err)
+			return nil, err
+		}
 	}
 
 	return actionRec, nil

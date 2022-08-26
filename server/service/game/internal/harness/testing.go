@@ -334,6 +334,91 @@ func (t *Testing) CreateData() error {
 						teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.TargetActionObjectRec)
 					}
 				}
+				if actionConfig.MonsterName != "" {
+					ciRec, err := data.GetMonsterInstanceRecByName(actionConfig.MonsterName)
+					if err != nil {
+						l.Warn("failed getting action config monster name >%s< >%v<", actionConfig.MonsterName, err)
+						return err
+					}
+					actionRecordSet, err := t.createMonsterActionRec(ciRec.DungeonInstanceID, ciRec.ID, actionConfig.Command)
+					if err != nil {
+						l.Warn("failed creating monster action record >%v<", err)
+						return err
+					}
+
+					data.ActionRecs = append(data.ActionRecs, actionRecordSet.ActionRec)
+					teardownData.ActionRecs = append(teardownData.ActionRecs, actionRecordSet.ActionRec)
+
+					// Source
+					if actionRecordSet.ActionCharacterRec != nil {
+						data.ActionCharacterRecs = append(data.ActionCharacterRecs, actionRecordSet.ActionCharacterRec)
+						teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, actionRecordSet.ActionCharacterRec)
+
+						data.ActionCharacterObjectRecs = append(data.ActionCharacterObjectRecs, actionRecordSet.ActionCharacterObjectRecs...)
+						teardownData.ActionCharacterObjectRecs = append(teardownData.ActionCharacterObjectRecs, actionRecordSet.ActionCharacterObjectRecs...)
+					}
+					if actionRecordSet.ActionMonsterRec != nil {
+						data.ActionMonsterRecs = append(data.ActionMonsterRecs, actionRecordSet.ActionMonsterRec)
+						teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, actionRecordSet.ActionMonsterRec)
+
+						data.ActionMonsterObjectRecs = append(data.ActionMonsterObjectRecs, actionRecordSet.ActionMonsterObjectRecs...)
+						teardownData.ActionMonsterObjectRecs = append(teardownData.ActionMonsterObjectRecs, actionRecordSet.ActionMonsterObjectRecs...)
+					}
+
+					// Current location
+					t.Log.Info("Dungeon action record set current location >%#v<", actionRecordSet.CurrentLocation)
+					if actionRecordSet.CurrentLocation != nil {
+						dungeonActionLocationRecordSet := actionRecordSet.CurrentLocation
+						data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+						data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+						data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+
+						teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+						teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+						teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+					}
+
+					// Target location
+					t.Log.Info("Dungeon action record set target location >%#v<", actionRecordSet.TargetLocation)
+					if actionRecordSet.TargetLocation != nil {
+						dungeonActionLocationRecordSet := actionRecordSet.TargetLocation
+						data.ActionCharacterRecs = append(data.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+						data.ActionMonsterRecs = append(data.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+						data.ActionObjectRecs = append(data.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+
+						teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, dungeonActionLocationRecordSet.ActionCharacterRecs...)
+						teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, dungeonActionLocationRecordSet.ActionMonsterRecs...)
+						teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, dungeonActionLocationRecordSet.ActionObjectRecs...)
+					}
+
+					// Targets
+					if actionRecordSet.TargetActionCharacterRec != nil {
+						data.ActionCharacterRecs = append(data.ActionCharacterRecs, actionRecordSet.TargetActionCharacterRec)
+						teardownData.ActionCharacterRecs = append(teardownData.ActionCharacterRecs, actionRecordSet.TargetActionCharacterRec)
+
+						data.ActionCharacterObjectRecs = append(data.ActionCharacterObjectRecs, actionRecordSet.TargetActionCharacterObjectRecs...)
+						teardownData.ActionCharacterObjectRecs = append(teardownData.ActionCharacterObjectRecs, actionRecordSet.TargetActionCharacterObjectRecs...)
+					}
+					if actionRecordSet.TargetActionMonsterRec != nil {
+						data.ActionMonsterRecs = append(data.ActionMonsterRecs, actionRecordSet.TargetActionMonsterRec)
+						teardownData.ActionMonsterRecs = append(teardownData.ActionMonsterRecs, actionRecordSet.TargetActionMonsterRec)
+
+						data.ActionMonsterObjectRecs = append(data.ActionMonsterObjectRecs, actionRecordSet.TargetActionMonsterObjectRecs...)
+						teardownData.ActionMonsterObjectRecs = append(teardownData.ActionMonsterObjectRecs, actionRecordSet.TargetActionMonsterObjectRecs...)
+					}
+					if actionRecordSet.EquippedActionObjectRec != nil {
+						data.ActionObjectRecs = append(data.ActionObjectRecs, actionRecordSet.EquippedActionObjectRec)
+						teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.EquippedActionObjectRec)
+					}
+					if actionRecordSet.StashedActionObjectRec != nil {
+						data.ActionObjectRecs = append(data.ActionObjectRecs, actionRecordSet.StashedActionObjectRec)
+						teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.StashedActionObjectRec)
+					}
+					if actionRecordSet.TargetActionObjectRec != nil {
+						data.ActionObjectRecs = append(data.ActionObjectRecs, actionRecordSet.TargetActionObjectRec)
+						teardownData.ActionObjectRecs = append(teardownData.ActionObjectRecs, actionRecordSet.TargetActionObjectRec)
+					}
+				}
 			}
 		}
 	}

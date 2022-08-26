@@ -8,6 +8,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
+// TODO - Support character and monster actions
+
 var dungeonActionResolvedCommands []string = []string{
 	record.ActionCommandMove,
 	record.ActionCommandLook,
@@ -17,6 +19,18 @@ var dungeonActionResolvedCommands []string = []string{
 	// record.ActionCommandAttack,
 }
 
+type EntityType string
+
+const EntityTypeMonster EntityType = "monster"
+const EntityTypeCharacter EntityType = "character"
+
+type ResolverArgs struct {
+	DungeonInstanceID  string
+	LocationInstanceID string
+	EntityType         EntityType
+	EntityInstanceID   string
+}
+
 type ResolverSentence struct {
 	Command  string
 	Sentence string
@@ -24,7 +38,7 @@ type ResolverSentence struct {
 
 func (m *Model) resolveAction(
 	sentence string,
-	characterInstanceViewRec *record.CharacterInstanceView,
+	args *ResolverArgs,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
 
 	l := m.Logger("resolveAction")
@@ -35,7 +49,7 @@ func (m *Model) resolveAction(
 		return nil, err
 	}
 
-	resolveFuncs := map[string]func(sentence string, characterInstanceViewRec *record.CharacterInstanceView, locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error){
+	resolveFuncs := map[string]func(sentence string, args *ResolverArgs, locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error){
 		record.ActionCommandMove:  m.resolveMoveAction,
 		record.ActionCommandLook:  m.resolveLookAction,
 		record.ActionCommandStash: m.resolveStashAction,
@@ -50,7 +64,7 @@ func (m *Model) resolveAction(
 		return nil, fmt.Errorf(msg)
 	}
 
-	dungeonActionRec, err := resolveFunc(resolved.Sentence, characterInstanceViewRec, locationInstanceRecordSet)
+	dungeonActionRec, err := resolveFunc(resolved.Sentence, args, locationInstanceRecordSet)
 	if err != nil {
 		l.Warn("failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
@@ -91,7 +105,7 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	return &resolved, nil
 }
 
-func (m *Model) resolveMoveAction(sentence string, characterInstanceViewRec *record.CharacterInstanceView, records *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs, records *record.LocationInstanceViewRecordSet) (*record.Action, error) {
 
 	l := m.Logger("resolveMoveAction")
 
@@ -113,21 +127,26 @@ func (m *Model) resolveMoveAction(sentence string, characterInstanceViewRec *rec
 		return nil, fmt.Errorf(msg)
 	}
 
-	dungeonActionRecord := record.Action{
-		DungeonInstanceID:                characterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID:               characterInstanceViewRec.LocationInstanceID,
-		CharacterInstanceID:              nullstring.FromString(characterInstanceViewRec.ID),
+	dungeonActionRec := record.Action{
+		DungeonInstanceID:                args.DungeonInstanceID,
+		LocationInstanceID:               args.LocationInstanceID,
 		ResolvedCommand:                  "move",
 		ResolvedTargetLocationDirection:  nullstring.FromString(targetLocationDirection),
 		ResolvedTargetLocationInstanceID: nullstring.FromString(targetLocationInstanceID),
 	}
 
-	return &dungeonActionRecord, nil
+	if args.EntityType == EntityTypeCharacter {
+		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	} else if args.EntityType == EntityTypeMonster {
+		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	}
+
+	return &dungeonActionRec, nil
 }
 
 func (m *Model) resolveLookAction(
 	sentence string,
-	characterInstanceViewRec *record.CharacterInstanceView,
+	args *ResolverArgs,
 	locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
 
 	l := m.Logger("resolveLookAction")
@@ -157,7 +176,7 @@ func (m *Model) resolveLookAction(
 			}
 		}
 
-		if targetLocationInstanceID == "" && targetObjectInstanceID == "" {
+		if targetLocationInstanceID == "" && targetObjectInstanceID == "" && targetCharacterInstanceID == "" {
 			dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, locationRecordSet.MonsterInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to resolve sentence monster >%v<", err)
@@ -186,10 +205,9 @@ func (m *Model) resolveLookAction(
 		targetLocationDirection = ""
 	}
 
-	dungeonActionRecord := record.Action{
-		DungeonInstanceID:                 characterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID:                characterInstanceViewRec.LocationInstanceID,
-		CharacterInstanceID:               nullstring.FromString(characterInstanceViewRec.ID),
+	dungeonActionRec := record.Action{
+		DungeonInstanceID:                 args.DungeonInstanceID,
+		LocationInstanceID:                args.LocationInstanceID,
 		ResolvedCommand:                   "look",
 		ResolvedTargetObjectInstanceID:    nullstring.FromString(targetObjectInstanceID),
 		ResolvedTargetMonsterInstanceID:   nullstring.FromString(targetMonsterInstanceID),
@@ -198,10 +216,16 @@ func (m *Model) resolveLookAction(
 		ResolvedTargetLocationInstanceID:  nullstring.FromString(targetLocationInstanceID),
 	}
 
-	return &dungeonActionRecord, nil
+	if args.EntityType == EntityTypeCharacter {
+		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	} else if args.EntityType == EntityTypeMonster {
+		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	}
+
+	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveStashAction(sentence string, characterInstanceViewRec *record.CharacterInstanceView, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveStashAction(sentence string, args *ResolverArgs, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
 
 	l := m.Logger("resolveStashAction")
 
@@ -215,12 +239,24 @@ func (m *Model) resolveStashAction(sentence string, characterInstanceViewRec *re
 			return nil, err
 		}
 		if objectInstanceRec == nil {
-			// Find object equipped on character
-			objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceViewRec.ID)
-			if err != nil {
-				l.Warn("failed to get character equipped objects >%v<", err)
-				return nil, err
+
+			var objectInstanceViewRecs []*record.ObjectInstanceView
+			if args.EntityType == EntityTypeCharacter {
+				// Find object equipped on character
+				objectInstanceViewRecs, err = m.GetCharacterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
+				if err != nil {
+					l.Warn("failed to get character equipped objects >%v<", err)
+					return nil, err
+				}
+			} else if args.EntityType == EntityTypeMonster {
+				// Find object equipped on monster
+				objectInstanceViewRecs, err = m.GetMonsterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
+				if err != nil {
+					l.Warn("failed to get character equipped objects >%v<", err)
+					return nil, err
+				}
 			}
+
 			objectInstanceRec, err = m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to get character object from sentence >%v<", err)
@@ -233,18 +269,23 @@ func (m *Model) resolveStashAction(sentence string, characterInstanceViewRec *re
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:               characterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID:              characterInstanceViewRec.LocationInstanceID,
-		CharacterInstanceID:             nullstring.FromString(characterInstanceViewRec.ID),
+		DungeonInstanceID:               args.DungeonInstanceID,
+		LocationInstanceID:              args.LocationInstanceID,
 		ResolvedCommand:                 "stash",
 		ResolvedTargetObjectInstanceID:  nullstring.FromString(stashedObjectInstanceID),
 		ResolvedStashedObjectInstanceID: nullstring.FromString(stashedObjectInstanceID),
 	}
 
+	if args.EntityType == EntityTypeCharacter {
+		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	} else if args.EntityType == EntityTypeMonster {
+		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	}
+
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveEquipAction(sentence string, characterInstanceViewRec *record.CharacterInstanceView, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
 
 	l := m.Logger("resolveEquipAction")
 
@@ -258,12 +299,24 @@ func (m *Model) resolveEquipAction(sentence string, characterInstanceViewRec *re
 			return nil, err
 		}
 		if dungeonObjectViewRec == nil {
-			// Find object stashed on character
-			objectInstanceViewRecs, err := m.GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceViewRec.ID)
-			if err != nil {
-				l.Warn("failed to get character stashed objects >%v<", err)
-				return nil, err
+
+			var objectInstanceViewRecs []*record.ObjectInstanceView
+			if args.EntityType == EntityTypeCharacter {
+				// Find object equipped on character
+				objectInstanceViewRecs, err = m.GetCharacterInstanceStashedObjectInstanceViewRecs(args.EntityInstanceID)
+				if err != nil {
+					l.Warn("failed to get character equipped objects >%v<", err)
+					return nil, err
+				}
+			} else if args.EntityType == EntityTypeMonster {
+				// Find object equipped on monster
+				objectInstanceViewRecs, err = m.GetMonsterInstanceStashedObjectInstanceViewRecs(args.EntityInstanceID)
+				if err != nil {
+					l.Warn("failed to get character equipped objects >%v<", err)
+					return nil, err
+				}
 			}
+
 			dungeonObjectViewRec, err = m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to get character object from sentence >%v<", err)
@@ -276,45 +329,74 @@ func (m *Model) resolveEquipAction(sentence string, characterInstanceViewRec *re
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:                characterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID:               characterInstanceViewRec.LocationInstanceID,
-		CharacterInstanceID:              nullstring.FromString(characterInstanceViewRec.ID),
+		DungeonInstanceID:                args.DungeonInstanceID,
+		LocationInstanceID:               args.LocationInstanceID,
 		ResolvedCommand:                  "equip",
 		ResolvedTargetObjectInstanceID:   nullstring.FromString(equippedObjectInstanceID),
 		ResolvedEquippedObjectInstanceID: nullstring.FromString(equippedObjectInstanceID),
 	}
 
+	if args.EntityType == EntityTypeCharacter {
+		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	} else if args.EntityType == EntityTypeMonster {
+		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	}
+
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveDropAction(sentence string, characterInstanceViewRec *record.CharacterInstanceView, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveDropAction(sentence string, args *ResolverArgs, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
 
 	l := m.Logger("resolveDropAction")
 
 	var droppedObjectInstanceID string
 
 	if sentence != "" {
-		// Find object stashed on character
-		l.Debug("Finding object stashed on character")
-		objectInstanceViewRecs, err := m.GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceViewRec.ID)
-		if err != nil {
-			l.Warn("failed to get character stashed objects >%v<", err)
-			return nil, err
+
+		var err error
+		var objectInstanceViewRecs []*record.ObjectInstanceView
+		if args.EntityType == EntityTypeCharacter {
+			// Find object equipped on character
+			objectInstanceViewRecs, err = m.GetCharacterInstanceStashedObjectInstanceViewRecs(args.EntityInstanceID)
+			if err != nil {
+				l.Warn("failed to get character equipped objects >%v<", err)
+				return nil, err
+			}
+		} else if args.EntityType == EntityTypeMonster {
+			// Find object equipped on monster
+			objectInstanceViewRecs, err = m.GetMonsterInstanceStashedObjectInstanceViewRecs(args.EntityInstanceID)
+			if err != nil {
+				l.Warn("failed to get character equipped objects >%v<", err)
+				return nil, err
+			}
 		}
+
 		dungeonObjectRec, err := m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 		if err != nil {
 			l.Warn("failed to get character object from sentence >%v<", err)
 			return nil, err
 		}
+
 		l.Debug("Found object >%v< stashed on character", dungeonObjectRec)
+
 		if dungeonObjectRec == nil {
-			// Find object equipped on character
-			l.Debug("Finding object equipped on character")
-			objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceViewRec.ID)
-			if err != nil {
-				l.Warn("failed to get character equipped objects >%v<", err)
-				return nil, err
+
+			if args.EntityType == EntityTypeCharacter {
+				// Find object equipped on character
+				objectInstanceViewRecs, err = m.GetCharacterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
+				if err != nil {
+					l.Warn("failed to get character equipped objects >%v<", err)
+					return nil, err
+				}
+			} else if args.EntityType == EntityTypeMonster {
+				// Find object equipped on monster
+				objectInstanceViewRecs, err = m.GetMonsterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
+				if err != nil {
+					l.Warn("failed to get character equipped objects >%v<", err)
+					return nil, err
+				}
 			}
+
 			dungeonObjectRec, err = m.getObjectFromSentence(sentence, objectInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to get character object from sentence >%v<", err)
@@ -322,18 +404,24 @@ func (m *Model) resolveDropAction(sentence string, characterInstanceViewRec *rec
 			}
 			l.Debug("Found object >%v< equipped on character", dungeonObjectRec)
 		}
+
 		if dungeonObjectRec != nil {
 			droppedObjectInstanceID = dungeonObjectRec.ID
 		}
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:               characterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID:              characterInstanceViewRec.LocationInstanceID,
-		CharacterInstanceID:             nullstring.FromString(characterInstanceViewRec.ID),
+		DungeonInstanceID:               args.DungeonInstanceID,
+		LocationInstanceID:              args.LocationInstanceID,
 		ResolvedCommand:                 "drop",
 		ResolvedTargetObjectInstanceID:  nullstring.FromString(droppedObjectInstanceID),
 		ResolvedDroppedObjectInstanceID: nullstring.FromString(droppedObjectInstanceID),
+	}
+
+	if args.EntityType == EntityTypeCharacter {
+		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	} else if args.EntityType == EntityTypeMonster {
+		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil
