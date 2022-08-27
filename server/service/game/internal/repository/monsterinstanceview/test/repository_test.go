@@ -52,7 +52,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -67,7 +67,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonMonsterRepository()
+			r := h.Model.(*model.Model).MonsterInstanceViewRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -80,6 +80,6 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }

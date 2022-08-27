@@ -39,9 +39,9 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.LocationInstance {
 				return &record.LocationInstance{
-					DungeonID:       data.DungeonRecs[0].ID,
-					Name:            "Dirt Road",
-					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
+					LocationID:              data.LocationRecs[0].ID,
+					DungeonInstanceID:       data.DungeonInstanceRecs[0].ID,
+					NorthLocationInstanceID: nullstring.FromString(data.LocationInstanceRecs[0].ID),
 				}
 			},
 			err: false,
@@ -50,9 +50,9 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.LocationInstance {
 				rec := &record.LocationInstance{
-					DungeonID:       data.DungeonRecs[0].ID,
-					Name:            "Dusty Road",
-					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
+					LocationID:              data.LocationRecs[0].ID,
+					DungeonInstanceID:       data.DungeonInstanceRecs[0].ID,
+					NorthLocationInstanceID: nullstring.FromString(data.LocationInstanceRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -66,7 +66,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -81,7 +81,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).LocationRepository()
+			r := h.Model.(*model.Model).LocationInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec(h.Data)
@@ -95,7 +95,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -121,7 +121,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.LocationRecs[0].ID
+				return h.Data.LocationInstanceRecs[0].ID
 			},
 			err: false,
 		},
@@ -138,7 +138,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -153,7 +153,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).LocationRepository()
+			r := h.Model.(*model.Model).LocationInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -166,7 +166,7 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -194,14 +194,14 @@ func TestUpdateOne(t *testing.T) {
 		{
 			name: "With ID",
 			rec: func() *record.LocationInstance {
-				return h.Data.LocationRecs[0]
+				return h.Data.LocationInstanceRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
 			rec: func() *record.LocationInstance {
-				rec := h.Data.LocationRecs[0]
+				rec := h.Data.LocationInstanceRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -213,7 +213,7 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -228,7 +228,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).LocationRepository()
+			r := h.Model.(*model.Model).LocationInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -242,7 +242,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -268,7 +268,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.LocationRecs[0].ID
+				return h.Data.LocationInstanceRecs[0].ID
 			},
 			err: false,
 		},
@@ -285,7 +285,7 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -300,7 +300,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).LocationRepository()
+			r := h.Model.(*model.Model).LocationInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())
@@ -315,6 +315,6 @@ func TestDeleteOne(t *testing.T) {
 			require.Nil(t, rec, "GetOne does not return record")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }

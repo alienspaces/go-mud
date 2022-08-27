@@ -6,11 +6,10 @@ package test
 import (
 	"testing"
 
-	"gitlab.com/alienspaces/go-mud/server/core/store"
-
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
@@ -40,8 +39,9 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.Location {
 				return &record.Location{
-					DungeonID:              data.DungeonRecs[0].ID,
-					Name:                   "Dirt Road",
+					DungeonID:       data.DungeonRecs[0].ID,
+					Name:            "Dirt Road",
+					Description:     "A dirt road",
 					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
 				}
 			},
@@ -51,8 +51,9 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.Location {
 				rec := &record.Location{
-					DungeonID:              data.DungeonRecs[0].ID,
-					Name:                   "Dusty Road",
+					DungeonID:       data.DungeonRecs[0].ID,
+					Name:            "Dusty Road",
+					Description:     "A dusty road",
 					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
@@ -67,7 +68,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -96,7 +97,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -139,7 +140,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -167,7 +168,7 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -214,7 +215,7 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -243,7 +244,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -286,7 +287,7 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -316,6 +317,6 @@ func TestDeleteOne(t *testing.T) {
 			require.Nil(t, rec, "GetOne does not return record")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }

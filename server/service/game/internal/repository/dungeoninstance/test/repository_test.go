@@ -128,7 +128,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonRecs[0].ID
+				return h.Data.DungeonInstanceRecs[0].ID
 			},
 			err: false,
 		},
@@ -291,7 +291,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonRecs[0].ID
+				return h.Data.DungeonInstanceRecs[0].ID
 			},
 			err: false,
 		},

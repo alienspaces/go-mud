@@ -31,33 +31,31 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.DungeonMonster
+		rec  func(data harness.Data) *record.Monster
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.DungeonMonster {
-				return &record.DungeonMonster{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[2].ID,
-					Name:              "Grey Troll",
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.Monster {
+				return &record.Monster{
+					Name:         "Grey Troll",
+					Description:  "An ugly grey troll",
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.DungeonMonster {
-				rec := &record.DungeonMonster{
-					DungeonID:         data.DungeonRecs[0].ID,
-					LocationID: data.LocationRecs[2].ID,
-					Name:              "Wounded Troglodyte",
-					Strength:          10,
-					Dexterity:         10,
-					Intelligence:      10,
+			rec: func(data harness.Data) *record.Monster {
+				rec := &record.Monster{
+					Name:         "Grey Troll",
+					Description:  "An ugly grey troll",
+					Strength:     10,
+					Dexterity:    10,
+					Intelligence: 10,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
@@ -71,7 +69,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -86,7 +84,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonMonsterRepository()
+			r := h.Model.(*model.Model).MonsterRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec(h.Data)
@@ -100,7 +98,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -126,7 +124,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonMonsterRecs[0].ID
+				return h.Data.MonsterRecs[0].ID
 			},
 			err: false,
 		},
@@ -143,7 +141,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -158,7 +156,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonMonsterRepository()
+			r := h.Model.(*model.Model).MonsterRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -171,7 +169,7 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -193,20 +191,20 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.DungeonMonster
+		rec  func() *record.Monster
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.DungeonMonster {
-				return h.Data.DungeonMonsterRecs[0]
+			rec: func() *record.Monster {
+				return h.Data.MonsterRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.DungeonMonster {
-				rec := h.Data.DungeonMonsterRecs[0]
+			rec: func() *record.Monster {
+				rec := h.Data.MonsterRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -218,7 +216,7 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -233,7 +231,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonMonsterRepository()
+			r := h.Model.(*model.Model).MonsterRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -247,7 +245,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -273,7 +271,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.DungeonMonsterRecs[0].ID
+				return h.Data.MonsterRecs[0].ID
 			},
 			err: false,
 		},
@@ -290,7 +288,7 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -305,7 +303,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).DungeonMonsterRepository()
+			r := h.Model.(*model.Model).MonsterRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())
@@ -320,6 +318,6 @@ func TestDeleteOne(t *testing.T) {
 			require.Nil(t, rec, "GetOne does not return record")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }

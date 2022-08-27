@@ -68,7 +68,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -97,7 +97,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -140,7 +140,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -168,7 +168,7 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -216,7 +216,7 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -245,7 +245,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -288,7 +288,7 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -318,6 +318,6 @@ func TestDeleteOne(t *testing.T) {
 			require.Nil(t, rec, "GetOne does not return record")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
