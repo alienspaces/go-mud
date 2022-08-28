@@ -269,7 +269,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.LocationRecs[0].ID
+				return h.Data.LocationObjectRecs[0].ID
 			},
 			err: false,
 		},
