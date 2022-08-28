@@ -90,7 +90,7 @@ type HandlerConfig struct {
 	DocumentationConfig DocumentationConfig
 }
 
-// TODO: Refactor servers to use the following structure
+// ServerHandlerConfig provides API endpoint configuration
 type ServerHandlerConfig map[RequestPath]map[RequestMethod]HandlerConfig
 
 type DocumentTag string

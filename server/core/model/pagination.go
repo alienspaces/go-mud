@@ -75,14 +75,14 @@ func resolveOffset(params map[string]interface{}, operators map[string]string, p
 	return params, operators, nil
 }
 
-// TODO sorting collection endpoint will be resolved in future story
+// TODO (core) support sorting collection endpoint
 func resolveSortOrder(params map[string]interface{}, operators map[string]string) (map[string]interface{}, map[string]string) {
 	operators[coresql.OperatorOrderByDescending] = DefaultOrderDescendingColumn
 	return params, operators
 }
 
-// extractParam extracts the value associated with the key and removes the key, mutating the params map.
-// The map value is expected to be a string slice.
+// extractParam extracts the value associated with the key and removes the key, mutating
+// the params map. The map value is expected to be a string slice.
 func extractParam(params map[string]interface{}, key string, defaultValue string) (map[string]interface{}, int, error) {
 	value, ok := params[key]
 	if !ok {

@@ -28,7 +28,7 @@ cd $SERVICE_BASE_PATH || exit
 SERVICE_NAMES=(game)
 cd - || exit
 
-# TODO: The client test job depends on a server build with the same
+# TODO: (ci) The client test job depends on a server build with the same
 # commit sha as the current client commit so we need to "force" a 
 # build. Perhaps the client should always just use "latest" for testing..
 FORCE_BUILD=1

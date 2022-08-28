@@ -9,6 +9,8 @@ import (
 
 	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // GenerateHandlerDocumentation - generates documentation based on handler configuration
@@ -236,7 +238,7 @@ func (rnr *Runner) appendAPIDocumentationURL(b *strings.Builder) {
 }
 
 func appendMessageConfig(b *strings.Builder, cfg MessageConfig) {
-	fmt.Fprintf(b, "<h4 id='%s'>%s %s</h4>", strings.ToLower(string(cfg.Name)), strings.Title(string(cfg.Subject)), strings.Title(string(cfg.Event)))
+	fmt.Fprintf(b, "<h4 id='%s'>%s %s</h4>", strings.ToLower(string(cfg.Name)), cases.Title(language.Und).String(string(cfg.Subject)), cases.Title(language.Und).String(string(cfg.Event)))
 	fmt.Fprintf(b, "<div class='params'>\n")
 	fmt.Fprintf(b, "<div class='params-label'>Topic - </div><div class='params-value'>%s</div>", cfg.Topic)
 	fmt.Fprintf(b, "</div>\n")

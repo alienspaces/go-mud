@@ -7,7 +7,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO: Possibly hang methods off this structs to add, remove records etc
 type DungeonInstanceRecordSet struct {
 	DungeonInstanceRec    *record.DungeonInstance
 	LocationInstanceRecs  []*record.LocationInstance
@@ -16,7 +15,6 @@ type DungeonInstanceRecordSet struct {
 	CharacterInstanceRecs []*record.CharacterInstance
 }
 
-// TODO: Possibly hang methods off this structs to add, remove records etc
 type DungeonInstanceViewRecordSet struct {
 	DungeonInstanceViewRec    *record.DungeonInstanceView
 	LocationInstanceViewRecs  []*record.LocationInstanceView
@@ -385,7 +383,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 // DeleteDungeonInstance -
 func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) error {
 
-	// TODO: Impelement deleting a dungeon instance. Do things like check
+	// TODO: (game) Impelement deleting a dungeon instance. Do things like check
 	// there are no character instances left inside etc..
 
 	return nil

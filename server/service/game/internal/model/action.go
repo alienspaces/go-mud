@@ -6,7 +6,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO: Dry out/refactor ProcessCharacterAction and ProcessMonsterAction
+// TODO: (game) Dry out/refactor ProcessCharacterAction and ProcessMonsterAction
 
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
@@ -73,7 +73,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 
 	l.Info("Created action record ID >%s<", actionRec.ID)
 
-	// TODO: Maybe don't need to do this... Get the updated character record
+	// TODO: (game) Maybe don't need to do this... Get the updated character record
 	characterInstanceViewRec, err = m.GetCharacterInstanceViewRec(characterInstanceID)
 	if err != nil {
 		l.Warn("failed getting character record after performing action >%v<", err)
@@ -156,7 +156,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	// TODO: What is this for, can we use a location instance view record?
+	// TODO: (game) What is this for, can we use a location instance view record?
 	currentLocationRecordSet := record.ActionLocationRecordSet{
 		LocationInstanceViewRec: locationInstanceViewRec,
 		ActionCharacterRecs:     []*record.ActionCharacter{},
@@ -678,7 +678,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 
 	l.Info("Created action record ID >%s<", actionRec.ID)
 
-	// TODO: Maybe don't need to do this... Get the updated monster record
+	// TODO: (game) Maybe don't need to do this... Get the updated monster record
 	monsterInstanceViewRec, err = m.GetMonsterInstanceViewRec(monsterInstanceID)
 	if err != nil {
 		l.Warn("failed getting monster record after performing action >%v<", err)
@@ -761,7 +761,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	// TODO: What is this for, can we use a location instance view record?
+	// TODO: (game) What is this for, can we use a location instance view record?
 	currentLocationRecordSet := record.ActionLocationRecordSet{
 		LocationInstanceViewRec: locationInstanceViewRec,
 		ActionCharacterRecs:     []*record.ActionCharacter{},

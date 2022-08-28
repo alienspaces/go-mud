@@ -44,7 +44,7 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
         List<dynamic> data = decoded['data'];
         log.fine('Decoded response $data');
         if (data.length > 1) {
-          // TODO: Add support for multiple dungeon actions in response
+          // TODO: (client) Add support for multiple dungeon actions in response
           log.warning('Unexpected number of records returned');
           throw RecordCountException('Unexpected number of records returned');
         }

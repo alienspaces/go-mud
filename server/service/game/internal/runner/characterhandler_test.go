@@ -15,7 +15,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
-func TestCreateCharacterHandler(t *testing.T) {
+func TestPostCharacterHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()

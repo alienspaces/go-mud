@@ -396,7 +396,7 @@ func actionLocationToResponseLocation(recordSet *record.ActionLocationRecordSet)
 	return data, nil
 }
 
-// TODO: This might evolve to being its own lifeform so should potentially be
+// TODO: (game) This might evolve to being its own lifeform so should potentially be
 // pulled out of this mapper and into its own package.
 
 // dungeonActionToNarrative -

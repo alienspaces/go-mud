@@ -48,7 +48,7 @@ func (svc *Server) Init() error {
 // Run -
 func (svc *Server) Run(args map[string]interface{}) error {
 
-	// TODO:
+	// TODO: (core)
 	// - alerting on errors
 	// - retries on start up
 	// - reload  on config changes

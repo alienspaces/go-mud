@@ -106,7 +106,7 @@ function generate_repo {
 
     echo "Generating repo ${REPO_CC} in service ${SERVICE_CC}"
 
-    # TODO: Actually generate a repository from the template service eh?
+    # TODO: (script) Actually generate a repository from the template service eh?
 }
 
 # command (repo, service)

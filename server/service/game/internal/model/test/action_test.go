@@ -31,7 +31,7 @@ func TestProcessCharacterAction(t *testing.T) {
 	// harness commit data
 	th.CommitData = true
 
-	// TODO: Add current location checks
+	// TODO: (game) Add current location assertions
 
 	tests := []struct {
 		name                  string
@@ -1013,7 +1013,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					require.Equal(t, xrslt.TargetLocation.LocationInstanceViewRec.Name, rslt.TargetLocation.LocationInstanceViewRec.Name, "TargetLocation.LocationInstanceViewRec equals expected")
 				}
 
-				// TODO: Compare items, monsters and characters
+				// TODO: (game) Compare items, monsters and characters
 
 			} else {
 				require.Nil(t, rslt.TargetLocation, "TargetLocation is nil")

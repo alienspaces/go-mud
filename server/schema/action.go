@@ -81,7 +81,7 @@ type ActionCharacter struct {
 	// performing the action so that stashed objects are not
 	// exposed to all players
 	StashedObjects []ActionObject `json:"stashed_objects,omitempty"`
-	// TODO: Add effects currently applied
+	// TODO: (game) Add effects currently applied
 }
 
 type ActionLocationMonster struct {
@@ -115,7 +115,7 @@ type ActionMonster struct {
 	// performing the action so that stashed objects are not
 	// exposed to all players
 	StashedObjects []ActionObject `json:"stashed_objects,omitempty"`
-	// TODO: Add effects currently applied
+	// TODO: (game) Add effects currently applied
 }
 
 type ActionLocationObject struct {
@@ -127,5 +127,5 @@ type ActionObject struct {
 	Description string `json:"description"`
 	IsStashed   bool   `json:"is_stashed"`
 	IsEquipped  bool   `json:"is_equipped"`
-	// TODO: Add effects that are applied
+	// TODO: (game) Add effects that are applied
 }

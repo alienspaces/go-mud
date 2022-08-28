@@ -67,7 +67,7 @@ void submitAction(BuildContext context) async {
   );
   dungeonCommandCubit.unselectAll();
 
-  // TODO: Loop this using a timer allowing animations to complete
+  // TODO: (client) Loop this using a timer allowing animations to complete
   var moreActions = dungeonActionCubit.playAction();
   log.fine('++ More actions >$moreActions<');
 }

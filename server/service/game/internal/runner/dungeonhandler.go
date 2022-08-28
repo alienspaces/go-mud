@@ -107,6 +107,8 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 
 // GetDungeonHandler -
 func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "GetDungeonHandler")
+	l.Info("** Get dungeon handler **")
 
 	var recs []*record.Dungeon
 	var err error
@@ -171,6 +173,9 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 // GetDungeonsHandler -
 func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "GetDungeonsHandler")
+	l.Info("** Get dungeons handler **")
+
 	var recs []*record.Dungeon
 	var err error
 
@@ -217,8 +222,12 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 	return nil
 }
 
+// TODO: (game) Perhaps entering and exiting a dungeon should be an action?
+
 // EnterDungeonHandler -
 func (rnr *Runner) EnterDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "EnterDungeonHandler")
+	l.Info("** Enter dungeon handler **")
 
 	// Path parameters
 	id := pp.ByName("dungeon_id")

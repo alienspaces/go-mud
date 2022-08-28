@@ -8,8 +8,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO - Support character and monster actions
-
 var dungeonActionResolvedCommands []string = []string{
 	record.ActionCommandMove,
 	record.ActionCommandLook,

@@ -7,7 +7,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO: Possibly hang methods off this structs to add, remove records etc
 type CharacterInstanceRecordSet struct {
 	CharacterInstanceRec *record.CharacterInstance
 	ObjectInstanceRecs   []*record.ObjectInstance
@@ -56,7 +55,7 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*Character
 func (m *Model) CharacterExitDungeon(characterID string) error {
 	l := m.Logger("CharacterExitDungeon")
 
-	// TODO: Implement exiting a dungeon instance..
+	// TODO: (game) Implement exiting a dungeon instance..
 	l.Warn("Not implemented")
 
 	return nil

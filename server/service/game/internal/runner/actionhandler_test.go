@@ -15,7 +15,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
-func TestCreateDungeonCharacterActionHandler(t *testing.T) {
+func TestPostActionHandler(t *testing.T) {
 
 	// Test harness
 	th, err := NewTestHarness()

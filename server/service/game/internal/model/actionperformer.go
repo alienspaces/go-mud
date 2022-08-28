@@ -8,7 +8,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO: Determine whether we need to pass the character/monster instance view
+// TODO: (game) Determine whether we need to pass the character/monster instance view
 // record around everywhere or whether a more specific PerformerArgs definition
 // (like ResolverArgs) would clean this up.
 
@@ -113,7 +113,7 @@ func (m *Model) performActionLook(
 
 	l := m.Logger("performActionLook")
 
-	// TODO: Register the number of times the character has looked at any other
+	// TODO: (game) Register the number of times the character has looked at any other
 	// location, object, monster of character. Looking at anything multiple times
 	// should result in additional information within X turns.
 

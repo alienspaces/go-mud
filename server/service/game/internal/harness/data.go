@@ -332,7 +332,7 @@ func (d *Data) GetStashedObjectInstanceRecsByMonsterInstanceID(monsterInstanceID
 	return recs
 }
 
-// TODO: Experimental, can potentially use generics here?
+// TODO: (game) Experimental, can potentially use generics here?
 func (d *Data) GetMatchingObjectInstanceRecs(mrec *record.ObjectInstance) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	matched := false

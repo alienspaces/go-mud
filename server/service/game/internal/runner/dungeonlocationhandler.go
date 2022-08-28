@@ -33,12 +33,12 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[server.HandlerConfigKey]s
 				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeonlocation",
+						Location: "schema/docs/location",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeonlocation",
+							Location: "schema/docs/location",
 							Name:     "data.schema.json",
 						},
 					},
@@ -59,12 +59,12 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[server.HandlerConfigKey]s
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeonlocation",
+						Location: "schema/docs/location",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeonlocation",
+							Location: "schema/docs/location",
 							Name:     "data.schema.json",
 						},
 					},
@@ -174,6 +174,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 // GetDungeonLocationsHandler -
 func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l.Info("** Get locations handler **")
 
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
@@ -185,8 +186,9 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
-
 	}
+
+	l.Info("Getting dungeon ID >%s<", dungeonID)
 
 	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
 	if err != nil {

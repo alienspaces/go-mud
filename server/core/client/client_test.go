@@ -29,7 +29,6 @@ type clientTestCase struct {
 	path        string
 	params      map[string]string
 	requestData *requestData
-	expectURL   string
 	serverFunc  func(rw http.ResponseWriter, req *http.Request)
 	expectErr   bool
 }
@@ -226,7 +225,7 @@ func TestRetryRequest(t *testing.T) {
 			},
 			expectErr: true,
 		},
-		// TODO delete method not yet supported in core/client/client.go
+		// TODO (core) delete method not yet supported in core/client/client.go
 		//{
 		//	name:   "Delete resource OK",
 		//	method: http.MethodDelete,
@@ -302,7 +301,6 @@ func TestRetryRequest(t *testing.T) {
 				if tc.requestData != nil {
 					err = cl.Create(tc.path, tc.params, tc.requestData, resp)
 				} else {
-					// for reqData to be in nil in Create, the interface type must be null
 					err = cl.Create(tc.path, tc.params, nil, resp)
 				}
 				testRequest(t, tc, "Post", resp, err)
@@ -310,10 +308,8 @@ func TestRetryRequest(t *testing.T) {
 				if tc.requestData != nil {
 					err = cl.Update(tc.path, tc.params, tc.requestData, resp)
 				} else {
-					// for reqData to be in nil in Update, the interface type must be null
 					err = cl.Update(tc.path, tc.params, nil, resp)
 				}
-				err = cl.Update(tc.path, tc.params, tc.requestData, resp)
 				testRequest(t, tc, "Update", resp, err)
 			} else if tc.method == http.MethodDelete {
 				err = cl.Delete(tc.path, tc.params, resp)

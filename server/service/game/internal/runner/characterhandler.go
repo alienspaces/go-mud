@@ -80,7 +80,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 		postCharacter: {
 			Method:      http.MethodPost,
 			Path:        "/api/v1/characters",
-			HandlerFunc: rnr.PostCharactersHandler,
+			HandlerFunc: rnr.PostCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenTypePublic,
@@ -115,7 +115,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 				Description: "Create a character.",
 			},
 		},
-		// TODO: Complete schema validation and implementation
+		// TODO: (game) Complete schema validation and implementation
 		putCharacter: {
 			Method:           http.MethodPut,
 			Path:             "/api/v1/characters",
@@ -131,7 +131,8 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 
 // GetCharacterHandler -
 func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l.Info("** Get dungeons handler **")
+	l = Logger(l, "GetCharacterHandler")
+	l.Info("** Get character handler **")
 
 	var recs []*record.Character
 	var err error
@@ -196,7 +197,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 // GetCharactersHandler -
 func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
+	l = Logger(l, "GetCharactersHandler")
 	l.Info("** Get characters handler **")
 
 	var recs []*record.Character
@@ -247,10 +248,10 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 	return nil
 }
 
-// PostCharactersHandler -
-func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
-	l.Info("** Post characters handler **")
+// PostCharacterHandler -
+func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "PostCharacterHandler")
+	l.Info("** Post character handler **")
 
 	req := schema.CharacterRequest{}
 	err := server.ReadRequest(l, r, &req)
@@ -303,11 +304,21 @@ func (rnr *Runner) PostCharactersHandler(w http.ResponseWriter, r *http.Request,
 
 // PutCharactersHandler -
 func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
-	l.Info("** Put characters handler **")
+	l = Logger(l, "PutCharacterHandler")
+	l.Info("** Put character handler **")
 
 	// Path parameters
 	id := pp.ByName("character_id")
+
+	if id == "" {
+		err := coreerror.NewNotFoundError("character", id)
+		server.WriteError(l, w, err)
+		return err
+	} else if !m.(*model.Model).IsUUID(id) {
+		err := coreerror.NewPathParamError("character_id", id)
+		server.WriteError(l, w, err)
+		return err
+	}
 
 	l.Info("Updating character ID >%s<", id)
 

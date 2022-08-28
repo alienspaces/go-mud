@@ -6,6 +6,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
@@ -25,7 +26,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 		postAction: {
 			Method:      http.MethodPost,
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
-			HandlerFunc: rnr.PostDungeonCharacterActionsHandler,
+			HandlerFunc: rnr.PostActionHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
@@ -60,18 +61,70 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 	})
 }
 
-// PostDungeonCharacterActionsHandler -
-func (rnr *Runner) PostDungeonCharacterActionsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-
-	l.Info("** Post characters handler ** p >%#v< m >#%v<", pp, m)
+// PostActionHandler -
+func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "PostActionHandler")
+	l.Info("** Post action handler **")
 
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
 
+	if dungeonID == "" {
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		server.WriteError(l, w, err)
+		return err
+	} else if !m.(*model.Model).IsUUID(dungeonID) {
+		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	if characterID == "" {
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
+	} else if !m.(*model.Model).IsUUID(characterID) {
+		err := coreerror.NewPathParamError("character_id", characterID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	l.Info("Getting dungeon record ID >%s<", dungeonID)
+
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	if err != nil {
+		l.Warn("failed getting dungeon record >%v<", err)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	// Resource not found
+	if dungeonRec == nil {
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	l.Info("Getting character record ID >%s<", characterID)
+
+	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, false)
+	if err != nil {
+		l.Warn("failed getting character record >%v<", err)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	// Resource not found
+	if characterRec == nil {
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
 	req := schema.ActionRequest{}
 
-	err := server.ReadRequest(l, r, &req)
+	err = server.ReadRequest(l, r, &req)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
