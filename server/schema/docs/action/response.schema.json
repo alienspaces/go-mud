@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeonaction/response.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/action/response.schema.json",
   "title": "Dungeon Action Main",
   "type": "object",
   "required": ["data"],
@@ -8,7 +8,7 @@
     "data": {
       "type": "array",
       "items": { 
-        "$ref": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeonaction/data.schema.json" 
+        "$ref": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/action/data.schema.json" 
       }
     }
   }

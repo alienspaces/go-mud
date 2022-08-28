@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeonaction/create.request.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/action/create.request.schema.json",
   "title": "Create Dungeon Action",
   "type": "object",
   "properties": {

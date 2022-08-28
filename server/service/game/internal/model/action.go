@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -54,7 +55,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	actionRec, err := m.resolveAction(sentence, args, locationInstanceRecordSet)
 	if err != nil {
 		l.Warn("failed resolving character action >%v<", err)
-		return nil, err
+		return nil, coreerror.NewInvalidError("sentence", fmt.Sprintf("sentence >%s< could not be resolved", sentence))
 	}
 
 	// Perform the submitted character action

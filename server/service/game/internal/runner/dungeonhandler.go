@@ -121,7 +121,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamError("dungeon_id", id)
+		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", id)
 		server.WriteError(l, w, err)
 		return err
 
@@ -237,7 +237,7 @@ func (rnr *Runner) EnterDungeonHandler(w http.ResponseWriter, r *http.Request, p
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamError("dungeon_id", id)
+		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", id)
 		server.WriteError(l, w, err)
 		return err
 

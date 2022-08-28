@@ -145,7 +145,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("character_id", characterID)
+		err := coreerror.NewPathParamInvalidTypeError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -315,7 +315,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamError("character_id", id)
+		err := coreerror.NewPathParamInvalidTypeError("character_id", id)
 		server.WriteError(l, w, err)
 		return err
 	}

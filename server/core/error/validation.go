@@ -23,7 +23,7 @@ func CreateRegistry(et ValidationErrorType, fields []string) Registry {
 	errorCollection := Registry{}
 
 	for _, f := range fields {
-		errCode := CreateErrorCode(et, f)
+		errCode := createErrorCode(et, f)
 		message := fmt.Sprintf("The property '%s' is %s.", f, et)
 
 		var e Error
@@ -42,7 +42,7 @@ func CreateLinkedRegistry(et ValidationErrorType, linkedFields []LinkedFields) R
 	errorCollection := Registry{}
 
 	for _, f := range linkedFields {
-		errCode := CreateErrorCode(et, f.LinkedField)
+		errCode := createErrorCode(et, f.LinkedField)
 		message := fmt.Sprintf("The combination of %s and %s is %s.", f.FieldA, f.FieldB, et)
 
 		var e Error

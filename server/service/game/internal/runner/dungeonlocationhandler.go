@@ -91,7 +91,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 
@@ -103,7 +103,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(locationID) {
-		err := coreerror.NewPathParamError("location_id", locationID)
+		err := coreerror.NewPathParamInvalidTypeError("location_id", locationID)
 		server.WriteError(l, w, err)
 		return err
 
@@ -183,7 +183,7 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}

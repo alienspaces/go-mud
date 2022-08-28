@@ -28,6 +28,9 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
 			HandlerFunc: rnr.PostActionHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/docs/action",
@@ -47,7 +50,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/docs/action",
 							Name:     "data.schema.json",
 						},
 					},
@@ -75,7 +78,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -85,7 +88,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("character_id", characterID)
+		err := coreerror.NewPathParamInvalidTypeError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -130,11 +133,50 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 		return err
 	}
 
-	req.Data.Sentence = strings.ToLower(req.Data.Sentence)
+	sentence := strings.ToLower(req.Data.Sentence)
 
-	l.Info("Creating dungeon character action >%s<", req.Data.Sentence)
+	l.Info("Verifying character instance for dungeon_id >%s< character_id >%s<", dungeonID, characterID)
 
-	dungeonActionRecordSet, err := m.(*model.Model).ProcessCharacterAction(dungeonID, characterID, req.Data.Sentence)
+	characterInstanceRecs, err := m.(*model.Model).GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"character_id": characterID,
+		}, nil, false,
+	)
+	if err != nil {
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	if len(characterInstanceRecs) == 0 {
+		err := coreerror.NewPathParamInvalidError("character_id", characterID, "character has not entered a dungeon")
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	if len(characterInstanceRecs) > 1 {
+		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
+		err := coreerror.NewInternalError()
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	characterInstanceRec := characterInstanceRecs[0]
+
+	dungeonInstanceRec, err := m.(*model.Model).GetDungeonInstanceRec(characterInstanceRec.DungeonInstanceID, false)
+	if err != nil {
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	if dungeonInstanceRec == nil {
+		err := coreerror.NewPathParamInvalidError("dungeon_id", dungeonID, "dungeon does not exists")
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	l.Info("Creating dungeon character action >%s<", sentence)
+
+	dungeonActionRecordSet, err := m.(*model.Model).ProcessCharacterAction(dungeonInstanceRec.ID, characterInstanceRec.ID, sentence)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

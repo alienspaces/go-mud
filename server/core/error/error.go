@@ -3,7 +3,6 @@ package error
 import (
 	"errors"
 	"fmt"
-	"strings"
 )
 
 type Code string
@@ -31,31 +30,9 @@ func (e Error) Error() string {
 	return e.Message
 }
 
-// Registry is a map of error codes to errors
-type Registry map[Code]Error
-
-// Merge merges another error collection with this error collection returning a new error collection
-func (c Registry) Merge(a Registry) Registry {
-	for k, v := range c {
-		a[k] = v
-	}
-	return a
-}
-
-type SchemaValidationError struct {
-	DataPath string `json:"dataPath"`
-	Message  string `json:"message"`
-}
-
-func (sve SchemaValidationError) GetField() string {
-	field := strings.Split(sve.DataPath, ".")
-	lastField := field[len(field)-1]
-	return lastField
-}
-
-func IsError(e error) bool {
+func IsError(err error) bool {
 	var errorPtr Error
-	return errors.As(e, &errorPtr)
+	return errors.As(err, &errorPtr)
 }
 
 func HasErrorCode(err error, c Code) bool {
@@ -67,19 +44,19 @@ func HasErrorCode(err error, c Code) bool {
 	return e.ErrorCode == c
 }
 
-func ToError(e error) (Error, error) {
-	if e == nil {
+func ToError(err error) (Error, error) {
+	if err == nil {
 		return Error{}, fmt.Errorf("err is nil when converting to coreerror.Error type")
 	}
 
-	var err Error
-	if !errors.As(e, &err) {
-		return Error{}, fmt.Errorf("failed to convert to coreerror.Error type >%v<", e)
+	var errorPtr Error
+	if !errors.As(err, &errorPtr) {
+		return Error{}, fmt.Errorf("failed to convert to coreerror.Error type >%v<", err)
 	}
 
-	if len(err.SchemaValidationErrors) == 0 {
-		err.SchemaValidationErrors = nil
+	if len(errorPtr.SchemaValidationErrors) == 0 {
+		errorPtr.SchemaValidationErrors = nil
 	}
 
-	return err, nil
+	return errorPtr, nil
 }
