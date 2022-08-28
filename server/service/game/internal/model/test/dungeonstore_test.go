@@ -3,8 +3,10 @@ package test
 // NOTE: model tests are run is the public space to avoid cyclic dependencies
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/brianvoe/gofakeit"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
@@ -36,14 +38,18 @@ func TestCreateDungeonRec(t *testing.T) {
 		{
 			name: "Without ID",
 			rec: func() *record.Dungeon {
-				return &record.Dungeon{}
+				return &record.Dungeon{
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
 			rec: func() *record.Dungeon {
-				rec := &record.Dungeon{}
+				rec := &record.Dungeon{
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec

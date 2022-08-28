@@ -4,6 +4,7 @@ package test
 // able to use common setup and teardown tooling for all repositories
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
@@ -39,7 +40,7 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func() *record.Dungeon {
 				return &record.Dungeon{
-					Name: gofakeit.Name(),
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
 				}
 			},
 			err: false,
@@ -48,7 +49,7 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func() *record.Dungeon {
 				rec := &record.Dungeon{
-					Name: gofakeit.Name(),
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

@@ -83,14 +83,7 @@ func (rnr *Runner) Router(router *httprouter.Router) error {
 // Middleware - default MiddlewareFunc, override this function for custom middleware
 func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-		lc, err := l.NewInstance()
-		if err != nil {
-			lc.Warn("Failed new log instance >%v<", err)
-			WriteSystemError(l, w, err)
-			return err
-		}
-
-		return h(w, r, pp, qp, lc, m)
+		return h(w, r, pp, qp, l, m)
 	}
 
 	return handle, nil
@@ -229,8 +222,14 @@ func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h Handle) (httprouter.Han
 
 	// wrap everything in a httprouter Handler
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
+		l, err := rnr.Log.NewInstance()
+		if err != nil {
+			WriteSystemError(rnr.Log, w, err)
+			return
+		}
+
 		// delegate
-		h(w, r, pp, nil, rnr.Log, nil)
+		h(w, r, pp, nil, l, nil)
 	}
 
 	return handle, nil
