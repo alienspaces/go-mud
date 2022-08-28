@@ -43,8 +43,6 @@ func (cli *CLI) Init() error {
 	if err != nil {
 		return err
 	}
-
-	// TODO: alerting, retries
 	return cli.Runner.Init(cli.Store)
 }
 

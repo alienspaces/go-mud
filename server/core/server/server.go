@@ -40,8 +40,6 @@ func (svc *Server) Init() error {
 	if err != nil {
 		return err
 	}
-
-	// TODO: alerting, retries
 	return svc.Runner.Init(svc.Store)
 }
 
