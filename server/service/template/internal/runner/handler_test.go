@@ -16,6 +16,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/auth"
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/schema"
+	"gitlab.com/alienspaces/go-mud/server/service/template/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/harness"
 )
 
@@ -24,6 +25,15 @@ func TestTemplateHandler(t *testing.T) {
 	// Test harness
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
+
+	c, l, s, err := dependencies.Default()
+	require.NoError(t, err, "NewDefaultDependencies returns without error")
+
+	rnr, err := NewRunner(c, l)
+	require.NoError(t, err, "NewRunner returns without error")
+
+	err = rnr.Init(s)
+	require.NoError(t, err, "Runner init returns without error")
 
 	type TestCase struct {
 		name           string
@@ -242,11 +252,6 @@ func TestTemplateHandler(t *testing.T) {
 		t.Logf("Running test >%s<", tc.name)
 
 		func() {
-			rnr := NewRunner()
-
-			err = rnr.Init(th.Store)
-			require.NoError(t, err, "Runner init returns without error")
-
 			err = th.Setup()
 			require.NoError(t, err, "Test data setup returns without error")
 			defer func() {
