@@ -17,7 +17,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	r := runner.NewRunner()
+	r, err := runner.NewRunner(c, l)
+	if err != nil {
+		fmt.Printf("Failed new runner >%v<", err)
+		os.Exit(0)
+	}
 
 	svc, err := server.NewServer(c, l, s, r)
 	if err != nil {
