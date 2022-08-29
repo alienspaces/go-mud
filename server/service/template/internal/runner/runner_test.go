@@ -21,12 +21,12 @@ func NewTestHarness() (*harness.Testing, error) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	if err != nil {
 		return nil, err
 	}
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	if err != nil {
 		return nil, err
 	}
