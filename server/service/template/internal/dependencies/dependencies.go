@@ -8,7 +8,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/store"
 )
 
-// func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
 func Default() (*config.Config, *log.Log, *store.Store, error) {
 
 	// Configurer
@@ -30,6 +29,9 @@ func Default() (*config.Config, *log.Log, *store.Store, error) {
 		"APP_SERVER_DB_NAME",
 		"APP_SERVER_DB_USER",
 		"APP_SERVER_DB_PASSWORD",
+		"APP_SERVER_DB_MAX_OPEN_CONNECTIONS",
+		"APP_SERVER_DB_MAX_IDLE_CONNECTIONS",
+		"APP_SERVER_DB_MAX_IDLE_TIME_MINS",
 		// schema
 		"APP_SERVER_SCHEMA_PATH",
 		// jwt signing key
@@ -58,13 +60,4 @@ func Default() (*config.Config, *log.Log, *store.Store, error) {
 	}
 
 	return c, l, s, nil
-
-	// // Modeller
-	// m, err := model.NewModel(c, l, s)
-	// if err != nil {
-	// 	fmt.Printf("failed new model >%v<", err)
-	// 	return nil, nil, nil, nil, err
-	// }
-
-	// return c, l, s, m, nil
 }
