@@ -96,8 +96,6 @@ func (rnr *Runner) GetTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 // PostTemplatesHandler -
 func (rnr *Runner) PostTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 
-	l.Info("** Post templates handler ** p >%#v< m >#%v<", pp, m)
-
 	// Path parameters
 	id := pp.ByName("template_id")
 

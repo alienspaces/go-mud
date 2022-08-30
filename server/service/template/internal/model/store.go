@@ -51,6 +51,8 @@ func (m *Model) CreateTemplateRec(rec *record.Template) error {
 		return err
 	}
 
+	m.Log.Info("Created template record >%#v<", rec)
+
 	return r.CreateOne(rec)
 }
 

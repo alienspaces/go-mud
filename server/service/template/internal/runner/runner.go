@@ -66,7 +66,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 			HandlerFunc: r.GetTemplatesHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypeJWT,
+					server.AuthenTypePublic,
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -80,7 +80,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 			HandlerFunc: r.GetTemplatesHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypeJWT,
+					server.AuthenTypePublic,
 				},
 			},
 			DocumentationConfig: server.DocumentationConfig{
@@ -94,7 +94,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 			HandlerFunc: r.PostTemplatesHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypeJWT,
+					server.AuthenTypePublic,
 				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
@@ -120,7 +120,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 			HandlerFunc: r.PostTemplatesHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypeJWT,
+					server.AuthenTypePublic,
 				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
@@ -146,7 +146,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 			HandlerFunc: r.PutTemplatesHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypeJWT,
+					server.AuthenTypePublic,
 				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{

@@ -64,7 +64,7 @@ func TestTemplateHandler(t *testing.T) {
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -96,7 +96,7 @@ func TestTemplateHandler(t *testing.T) {
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -114,11 +114,11 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "POST - Create without ID",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[postTemplate]
+				return rnr.HandlerConfig[postTemplates]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -133,11 +133,11 @@ func TestTemplateHandler(t *testing.T) {
 		{
 			name: "POST - Create with ID",
 			config: func(rnr *Runner) server.HandlerConfig {
-				return rnr.HandlerConfig[postTemplates]
+				return rnr.HandlerConfig[postTemplate]
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -172,7 +172,7 @@ func TestTemplateHandler(t *testing.T) {
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -209,7 +209,7 @@ func TestTemplateHandler(t *testing.T) {
 			},
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -233,7 +233,7 @@ func TestTemplateHandler(t *testing.T) {
 			name: "PUT - Update missing data",
 			requestHeaders: func(data harness.Data) map[string]string {
 				headers := map[string]string{
-					"Authorization": "Bearer " + validAuthToken(),
+					"X-Authorization": "Bearer " + validAuthToken(),
 				}
 				return headers
 			},
@@ -251,7 +251,7 @@ func TestTemplateHandler(t *testing.T) {
 
 		t.Logf("Running test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 			err = th.Setup()
 			require.NoError(t, err, "Test data setup returns without error")
 			defer func() {
@@ -374,6 +374,6 @@ func TestTemplateHandler(t *testing.T) {
 					require.False(t, res.Data[0].UpdatedAt.IsZero(), "UpdatedAt is not zero")
 				}
 			}
-		}()
+		})
 	}
 }
