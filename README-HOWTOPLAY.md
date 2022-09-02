@@ -136,3 +136,20 @@ _Example_:
 ```text
 loot Angry Kobold
 ```
+
+### Speech Actions
+
+📝 [Issue-5](https://gitlab.com/alienspaces/go-mud/-/issues/5)
+
+Characters and monsters should be able to say things to each other in the current room. Saying something without specifying another character or monster can be heard by everyone in the room. Saying something to a character or monster can be only heard by the character or monster being spoken to.
+
+_Example_:
+
+```text
+say Legislate look north
+say Dirty Goblin King hello
+```
+
+The user interface should provide a `Say` button which then presents a set of words that can be used to form a sentence along with a button to say the sentence, a button to delete the most recent word and a button to cancel saying anything at all.
+
+Pressing the say button once will then wait for the user to click a monster or character before displaying a set of words. Pressing the say button twice immediately displays a set of words. Pressing the say button three times or pressing any other action button will reset the say button back to its unpressed state.
