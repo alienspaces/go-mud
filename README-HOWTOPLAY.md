@@ -66,7 +66,7 @@ A character may `stash` an object that is currently equipped or at the character
 
 A character may `drop` any item that is currently equipped or stashed in their backpack. If there is not enough room at the character's current location to drop the object, dropping the object will fail.
 
-**Syntax Examples:**
+_Example_:
 
 ```text
 equip sword
@@ -74,35 +74,65 @@ stash gold hammer
 drop dragon tongue
 ```
 
-### Loot Actions
+### Attack and Defend Actions
 
-📝 _Unimplemented_
+📝 [Issue-2](https://gitlab.com/alienspaces/go-mud/-/issues/3)
 
-A character may `loot` any other monster or character that has reached it's demise at the current location. All looted items will be automatically stashed. Objects that could not be looted due to the character running out of room in thier backpack will remain on the corpse. Once a monster or character has been completely looted, they disappear.
+A character equipped with a melee weapon can attack any target if the target is in the same room. A character equipped with two weapons, one in each hand, can specify which weapon to use.
 
-
-### Use Actions
-
-📝 _Unimplemented_
-
-A character may attempt to `use` any object that is equipped, stashed or in their current location. Some items may only be used when equipped or stashed.
-
-**Syntax Examples:**
-
-```text
-use sword
-use door
-```
-
-### Attack Actions
-
-📝 _Unimplemented_
-
-A character may attempt to `attack` any monster or character in the same room with any equipped object that can cause damage. By default the object in the characters main hand will be used. Otherwise you may specify the object that is held in the characters main or off hand.
-
-**Syntax Examples:**
+_Example_:
 
 ```text
 attack Grumpy Dwarf
 attack Grumpy Dwarf with Rusted Dagger
+```
+
+A character equipped with a ranged weapon attacks any target if the target is in the same room or any adjacent room.
+
+The character equipped with a melee weapon or shield spends the turn defending themselves which decreases the chance of getting hit by an opponent. A character equipped with a shield should be more effective in defending that an character who is not. A character equipped with a ranged weapon cannot defend at all.
+
+_Example_:
+
+```text
+defend
+```
+
+### Use Actions
+
+📝 [Issue-3](https://gitlab.com/alienspaces/go-mud/-/issues/3)
+
+A character that has the item stashed or equipped uses the item. The result of using an item should be detailed in the action response. 
+
+_Example_:
+
+```text
+use Potion of Healing
+```
+
+_Example Response_:
+
+`You use the Potion of Healing, replenishing 10 health.`
+
+Items should be able to be used multiple times if they support it.
+
+_Example Response_:
+
+- A potion may have 5 uses
+- A wand may be able to be used forever but needs 5 rounds to recharge
+- A door may toggle between open and closed
+
+The result of not being able to use an item should be detailed in the action response.
+
+`The Potion of Healing is empty.`
+
+### Loot Actions
+
+📝 [Issue-4](https://gitlab.com/alienspaces/go-mud/-/issues/4)
+
+A character or monster may loot any other monster or character that has reached it's demise at the current location. All looted items will be automatically stashed. Objects that could not be looted due to the character or monster running out of room in their backpack will remain on the corpse. Once a monster or character has no more objects to loot, they disappear.
+
+_Example_:
+
+```text
+loot Angry Kobold
 ```

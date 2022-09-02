@@ -8,6 +8,7 @@ import (
 )
 
 // TODO: (game) Dry out/refactor ProcessCharacterAction and ProcessMonsterAction
+// TODO: (game) Do not allow attack type commands in an entrance room
 
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
