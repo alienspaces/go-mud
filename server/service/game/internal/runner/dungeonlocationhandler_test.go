@@ -123,40 +123,41 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", testCase.Name)
 
-		t.Logf("Running test >%s<", testCase.Name)
+			testFunc := func(method string, body interface{}) {
 
-		testFunc := func(method string, body interface{}) {
+				if testCase.TestResponseCode() != http.StatusOK {
+					return
+				}
 
-			if testCase.TestResponseCode() != http.StatusOK {
-				return
-			}
+				var responseBody *schema.LocationResponse
+				if body != nil {
+					responseBody = body.(*schema.LocationResponse)
+				}
 
-			var responseBody *schema.LocationResponse
-			if body != nil {
-				responseBody = body.(*schema.LocationResponse)
-			}
+				// Validate response body
+				if testCase.expectResponseBody != nil {
+					require.NotNil(t, responseBody, "Response body is not nil")
+					require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-			// Validate response body
-			if testCase.expectResponseBody != nil {
-				require.NotNil(t, responseBody, "Response body is not nil")
-				require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
+					expectResponseBody := testCase.expectResponseBody(th.Data)
 
-				expectResponseBody := testCase.expectResponseBody(th.Data)
+					// Validate response body data
+					for idx, expectData := range expectResponseBody.Data {
+						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
-				// Validate response body data
-				for idx, expectData := range expectResponseBody.Data {
-					require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
-
-					// Validate location
-					t.Logf("Checking location name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
-					require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
-					t.Logf("Checking location description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
-					require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
+						// Validate location
+						t.Logf("Checking location name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
+						require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
+						t.Logf("Checking location description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
+						require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
+					}
 				}
 			}
-		}
 
-		RunTestCase(t, th, &testCase, testFunc)
+			RunTestCase(t, th, &testCase, testFunc)
+		})
 	}
 }

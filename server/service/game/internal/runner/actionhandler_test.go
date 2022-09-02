@@ -935,10 +935,8 @@ func TestPostActionHandler(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-
-		t.Logf("Running test >%s<", testCase.Name)
-
 		t.Run(testCase.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", testCase.Name)
 
 			testFunc := func(method string, body interface{}) {
 

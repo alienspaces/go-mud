@@ -78,37 +78,38 @@ func TestPostCharacterHandler(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", testCase.Name)
 
-		t.Logf("Running test >%s<", testCase.Name)
+			testFunc := func(method string, body interface{}) {
 
-		testFunc := func(method string, body interface{}) {
+				if testCase.TestResponseCode() != http.StatusOK {
+					return
+				}
 
-			if testCase.TestResponseCode() != http.StatusOK {
-				return
-			}
+				var responseBody *schema.CharacterResponse
+				if body != nil {
+					responseBody = body.(*schema.CharacterResponse)
+				}
 
-			var responseBody *schema.CharacterResponse
-			if body != nil {
-				responseBody = body.(*schema.CharacterResponse)
-			}
+				// Validate response body
+				if testCase.expectResponseBody != nil {
+					require.NotNil(t, responseBody, "Response body is not nil")
+					require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
+				}
 
-			// Validate response body
-			if testCase.expectResponseBody != nil {
-				require.NotNil(t, responseBody, "Response body is not nil")
-				require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
-			}
-
-			for _, data := range responseBody.Data {
-				require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
-				if method == http.MethodPost {
-					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
-					t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
-					th.AddCharacterTeardownID(data.ID)
+				for _, data := range responseBody.Data {
+					require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
+					if method == http.MethodPost {
+						require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
+						t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
+						th.AddCharacterTeardownID(data.ID)
+					}
 				}
 			}
-		}
 
-		RunTestCase(t, th, &testCase, testFunc)
+			RunTestCase(t, th, &testCase, testFunc)
+		})
 	}
 }
 

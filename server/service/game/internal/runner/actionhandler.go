@@ -176,7 +176,11 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	l.Info("Creating dungeon character action >%s<", sentence)
 
-	dungeonActionRecordSet, err := m.(*model.Model).ProcessCharacterAction(dungeonInstanceRec.ID, characterInstanceRec.ID, sentence)
+	dungeonActionRecordSet, err := m.(*model.Model).ProcessCharacterAction(
+		dungeonInstanceRec.ID,
+		characterInstanceRec.ID,
+		sentence,
+	)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
