@@ -18,26 +18,13 @@ Characters are controlled with actions that are simple sentences.
 
 Character can `move` from one location to another location using the `move [direction]` action.
 
-**Syntax Examples:**
+_Example_:
 
 ```text
 move north
 move southwest
 move up
 ```
-
-Possible directions:
-
-- north
-- northeast
-- east
-- southeast
-- south
-- southwest
-- west
-- northwest
-- up
-- down
 
 ### Look Actions
 
@@ -47,18 +34,17 @@ When a character looks at an object that is not in their possession a brief desc
 
 When a character looks a direction a brief description of the location will be provided. To get a more detailed view of a location a character must move to that location.
 
-**Syntax Examples:**
+_Example_:
 
 ```text
 look
 look north
 look chest
 look goblin
+look down
 ```
 
 ### Equip, Stash and Drop Actions
-
-📝 _Partly Implemented_
 
 A character may `equip` an object that is stashed in their backpack or at the current location. Any item that is currently equipped where the newly equipped item would normally be equipped, will be automatically stashed if there is enough room in the character's backpack. If there is not enough room in a character's backback to stash an already equipped object, equipping the new object will fail.
 
@@ -146,6 +132,7 @@ Characters and monsters should be able to say things to each other in the curren
 _Example_:
 
 ```text
+say hello
 say Legislate look north
 say Dirty Goblin King hello
 ```
