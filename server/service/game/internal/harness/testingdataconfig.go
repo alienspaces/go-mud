@@ -15,6 +15,13 @@ var DefaultDataConfig = DataConfig{
 		},
 		{
 			Record: record.Object{
+				Name:                "Rusted Helmet",
+				Description:         "A rusted helmet.",
+				DescriptionDetailed: "A rusted helmet pitted with dents.",
+			},
+		},
+		{
+			Record: record.Object{
 				Name:                "Silver Key",
 				Description:         "A silver key.",
 				DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
@@ -105,6 +112,19 @@ var DefaultDataConfig = DataConfig{
 				},
 			},
 		},
+		{
+			Record: record.Character{
+				Name: "Legislate",
+			},
+			CharacterObjectConfig: []CharacterObjectConfig{
+				{
+					Record: record.CharacterObject{
+						IsEquipped: true,
+					},
+					ObjectName: "Stone Mace",
+				},
+			},
+		},
 	},
 	DungeonConfig: []DungeonConfig{
 		{
@@ -145,7 +165,7 @@ var DefaultDataConfig = DataConfig{
 					},
 					LocationObjectConfig: []LocationObjectConfig{
 						{
-							ObjectName: "Silver Key",
+							ObjectName: "Rusted Helmet",
 						},
 					},
 				},

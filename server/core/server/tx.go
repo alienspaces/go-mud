@@ -13,6 +13,7 @@ import (
 func (rnr *Runner) Tx(h Handle) (Handle, error) {
 
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) error {
+		l = Logger(l, "Tx")
 
 		// NOTE: The modeller is created and initialised with every request instead of
 		// creating and assigning to a runner struct "Model" property at start up.
@@ -20,7 +21,7 @@ func (rnr *Runner) Tx(h Handle) (Handle, error) {
 		// function which is running in a goroutine. Otherwise accessing the "Model"
 		// property would require locking and block simultaneous requests.
 
-		l.Info("** Tx ** initialising database transaction")
+		l.Info("Initialising database transaction")
 
 		m, err := rnr.InitModeller(l)
 		if err != nil {
@@ -31,7 +32,7 @@ func (rnr *Runner) Tx(h Handle) (Handle, error) {
 
 		err = h(w, r, pp, qp, l, m)
 		if err != nil {
-			l.Warn("** Tx ** rolling back database transaction")
+			l.Info("Rolling back database transaction")
 
 			if err := m.Rollback(); err != nil {
 				l.Warn("failed Tx rollback >%v<", err)
@@ -40,7 +41,7 @@ func (rnr *Runner) Tx(h Handle) (Handle, error) {
 			return err
 		}
 
-		l.Info("** Tx ** committing database transaction")
+		l.Info("Committing database transaction")
 
 		err = m.Commit()
 		if err != nil {

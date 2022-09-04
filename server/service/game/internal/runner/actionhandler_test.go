@@ -48,9 +48,12 @@ func TestPostActionHandler(t *testing.T) {
 	}
 
 	testCaseRequestPathParams := func(data harness.Data) map[string]string {
+		dRec, _ := data.GetDungeonRecByName("cave")
+		cRec, _ := data.GetCharacterRecByName("barricade")
+
 		params := map[string]string{
-			":dungeon_id":   data.DungeonRecs[0].ID,
-			":character_id": data.CharacterRecs[0].ID,
+			":dungeon_id":   dRec.ID,
+			":character_id": cRec.ID,
 		}
 		return params
 	}
@@ -81,51 +84,60 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				loRec, _ := data.GetObjectRecByName("rusted sword")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks", data.CharacterRecs[0].Name),
+							Narrative: fmt.Sprintf("%s looks", cRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -136,22 +148,22 @@ func TestPostActionHandler(t *testing.T) {
 							TargetCharacter: nil,
 							TargetMonster:   nil,
 							TargetLocation: &schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
@@ -180,51 +192,60 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave tunnel")
+				loRec, _ := data.GetObjectRecByName("rusted helmet")
+				lmRec, _ := data.GetMonsterRecByName("angry goblin")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "move",
-							Narrative: fmt.Sprintf("%s moves north", data.CharacterRecs[0].Name),
+							Narrative: fmt.Sprintf("%s moves north", cRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[1].Name,
-								Description: data.LocationRecs[1].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north", "south", "northwest"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[1].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[1].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -235,23 +256,23 @@ func TestPostActionHandler(t *testing.T) {
 							TargetCharacter: nil,
 							TargetMonster:   nil,
 							TargetLocation: &schema.ActionLocation{
-								Name:        data.LocationRecs[1].Name,
-								Description: data.LocationRecs[1].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Direction:   "north",
 								Directions:  []string{"north", "south", "northwest"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[1].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[1].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
@@ -280,51 +301,63 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				loRec, _ := data.GetObjectRecByName("rusted sword")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				tlRec, _ := data.GetLocationRecByName("cave tunnel")
+				tloRec, _ := data.GetObjectRecByName("rusted helmet")
+				tlmRec, _ := data.GetMonsterRecByName("angry goblin")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks north", data.CharacterRecs[0].Name),
+							Narrative: fmt.Sprintf("%s looks north", cRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -335,18 +368,18 @@ func TestPostActionHandler(t *testing.T) {
 							TargetCharacter: nil,
 							TargetMonster:   nil,
 							TargetLocation: &schema.ActionLocation{
-								Name:        data.LocationRecs[1].Name,
-								Description: data.LocationRecs[1].Description,
+								Name:        tlRec.Name,
+								Description: tlRec.Description,
 								Direction:   "north",
 								Directions:  []string{"north", "south", "northwest"},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[1].Name,
+										Name: tlmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[1].Name,
+										Name: tloRec.Name,
 									},
 								},
 							},
@@ -375,51 +408,61 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				loRec, _ := data.GetObjectRecByName("rusted sword")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks %s", data.CharacterRecs[0].Name, data.ObjectRecs[0].Name),
+							Narrative: fmt.Sprintf("%s looks %s", cRec.Name, loRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -427,8 +470,8 @@ func TestPostActionHandler(t *testing.T) {
 							EquippedObject: nil,
 							StashedObject:  nil,
 							TargetObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[0].Name,
-								Description: data.ObjectRecs[0].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 							},
 							TargetCharacter: nil,
 							TargetMonster:   nil,
@@ -458,51 +501,63 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				loRec, _ := data.GetObjectRecByName("rusted sword")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				tmiRec, _ := data.GetMonsterInstanceRecByName("grumpy dwarf")
+				tmeoRec, _ := data.GetObjectRecByName("bone dagger")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks %s", data.CharacterRecs[0].Name, data.MonsterRecs[0].Name),
+							Narrative: fmt.Sprintf("%s looks %s", cRec.Name, tmRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -512,20 +567,20 @@ func TestPostActionHandler(t *testing.T) {
 							TargetObject:    nil,
 							TargetCharacter: nil,
 							TargetMonster: &schema.ActionMonster{
-								Name:                data.MonsterRecs[0].Name,
-								Strength:            data.MonsterRecs[0].Strength,
-								Dexterity:           data.MonsterRecs[0].Dexterity,
-								Intelligence:        data.MonsterRecs[0].Intelligence,
-								Health:              data.MonsterRecs[0].Health,
-								Fatigue:             data.MonsterRecs[0].Fatigue,
-								CurrentStrength:     data.MonsterRecs[0].Strength,
-								CurrentDexterity:    data.MonsterRecs[0].Dexterity,
-								CurrentIntelligence: data.MonsterRecs[0].Intelligence,
-								CurrentHealth:       data.MonsterRecs[0].Health,
-								CurrentFatigue:      data.MonsterRecs[0].Fatigue,
+								Name:                tmRec.Name,
+								Strength:            tmRec.Strength,
+								Dexterity:           tmRec.Dexterity,
+								Intelligence:        tmRec.Intelligence,
+								Health:              tmRec.Health,
+								Fatigue:             tmRec.Fatigue,
+								CurrentStrength:     tmiRec.Strength,
+								CurrentDexterity:    tmiRec.Dexterity,
+								CurrentIntelligence: tmiRec.Intelligence,
+								CurrentHealth:       tmiRec.Health,
+								CurrentFatigue:      tmiRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[4].Name,
+										Name: tmeoRec.Name,
 									},
 								},
 							},
@@ -555,51 +610,63 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				loRec, _ := data.GetObjectRecByName("rusted sword")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				tcRec, _ := data.GetCharacterRecByName("barricade")
+				tciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				tceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "look",
-							Narrative: fmt.Sprintf("%s looks %s", data.CharacterRecs[0].Name, data.CharacterRecs[0].Name),
+							Narrative: fmt.Sprintf("%s looks %s", cRec.Name, tcRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -608,20 +675,20 @@ func TestPostActionHandler(t *testing.T) {
 							StashedObject:  nil,
 							TargetObject:   nil,
 							TargetCharacter: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                tcRec.Name,
+								Strength:            tcRec.Strength,
+								Dexterity:           tcRec.Dexterity,
+								Intelligence:        tcRec.Intelligence,
+								Health:              tcRec.Health,
+								Fatigue:             tcRec.Fatigue,
+								CurrentStrength:     tciRec.Strength,
+								CurrentDexterity:    tciRec.Dexterity,
+								CurrentIntelligence: tciRec.Intelligence,
+								CurrentHealth:       tciRec.Health,
+								CurrentFatigue:      tciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: tceoRec.Name,
 									},
 								},
 							},
@@ -652,65 +719,74 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "stash",
-							Narrative: fmt.Sprintf("%s stashes %s", data.CharacterRecs[0].Name, data.ObjectRecs[0].Name),
+							Narrative: fmt.Sprintf("%s stashes %s", cRec.Name, toRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: toRec.Name,
 									},
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
 							Monster:        nil,
 							EquippedObject: nil,
 							StashedObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[0].Name,
-								Description: data.ObjectRecs[0].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 								IsEquipped:  false,
 								IsStashed:   true,
 							},
 							DroppedObject: nil,
 							TargetObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[0].Name,
-								Description: data.ObjectRecs[0].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 								IsEquipped:  false,
 								IsStashed:   true,
 							},
@@ -742,65 +818,74 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "equip",
-							Narrative: fmt.Sprintf("%s equips %s", data.CharacterRecs[0].Name, data.ObjectRecs[0].Name),
+							Narrative: fmt.Sprintf("%s equips %s", cRec.Name, toRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: toRec.Name,
 									},
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: ceoRec.Name,
 									},
 								},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
 							Monster: nil,
 							EquippedObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[0].Name,
-								Description: data.ObjectRecs[0].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 								IsEquipped:  true,
 								IsStashed:   false,
 							},
 							StashedObject: nil,
 							DroppedObject: nil,
 							TargetObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[0].Name,
-								Description: data.ObjectRecs[0].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 								IsEquipped:  true,
 								IsStashed:   false,
 							},
@@ -832,50 +917,59 @@ func TestPostActionHandler(t *testing.T) {
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
+
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
+				loRec, _ := data.GetObjectRecByName("rusted sword")
+				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				toRec, _ := data.GetObjectRecByName("dull bronze ring")
+
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
 						{
 							Command:   "drop",
-							Narrative: fmt.Sprintf("%s drops %s", data.CharacterRecs[0].Name, data.ObjectRecs[2].Name),
+							Narrative: fmt.Sprintf("%s drops %s", cRec.Name, toRec.Name),
 							Location: schema.ActionLocation{
-								Name:        data.LocationRecs[0].Name,
-								Description: data.LocationRecs[0].Description,
+								Name:        lRec.Name,
+								Description: lRec.Description,
 								Directions:  []string{"north"},
 								Characters: []schema.ActionLocationCharacter{
 									{
-										Name: data.CharacterRecs[0].Name,
+										Name: cRec.Name,
 									},
 								},
 								Monsters: []schema.ActionLocationMonster{
 									{
-										Name: data.MonsterRecs[0].Name,
+										Name: lmRec.Name,
 									},
 								},
 								Objects: []schema.ActionLocationObject{
 									{
-										Name: data.ObjectRecs[0].Name,
+										Name: loRec.Name,
 									},
 									{
-										Name: data.ObjectRecs[2].Name,
+										Name: toRec.Name,
 									},
 								},
 							},
 							Character: &schema.ActionCharacter{
-								Name:                data.CharacterRecs[0].Name,
-								Strength:            data.CharacterRecs[0].Strength,
-								Dexterity:           data.CharacterRecs[0].Dexterity,
-								Intelligence:        data.CharacterRecs[0].Intelligence,
-								Health:              data.CharacterRecs[0].Health,
-								Fatigue:             data.CharacterRecs[0].Fatigue,
-								CurrentStrength:     data.CharacterRecs[0].Strength,
-								CurrentDexterity:    data.CharacterRecs[0].Dexterity,
-								CurrentIntelligence: data.CharacterRecs[0].Intelligence,
-								CurrentHealth:       data.CharacterRecs[0].Health,
-								CurrentFatigue:      data.CharacterRecs[0].Fatigue,
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
 								EquippedObjects:     []schema.ActionObject{},
 								StashedObjects: []schema.ActionObject{
 									{
-										Name: data.ObjectRecs[3].Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
@@ -883,14 +977,14 @@ func TestPostActionHandler(t *testing.T) {
 							EquippedObject: nil,
 							StashedObject:  nil,
 							DroppedObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[2].Name,
-								Description: data.ObjectRecs[2].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 								IsEquipped:  false,
 								IsStashed:   false,
 							},
 							TargetObject: &schema.ActionObject{
-								Name:        data.ObjectRecs[2].Name,
-								Description: data.ObjectRecs[2].Description,
+								Name:        toRec.Name,
+								Description: toRec.Description,
 								IsEquipped:  false,
 								IsStashed:   false,
 							},

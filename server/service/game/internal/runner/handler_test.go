@@ -19,9 +19,11 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
 )
 
+// TestCaser is the interface required by the RunTestCase function
 type TestCaser interface {
 	TestName() string
 	TestHandlerConfig(rnr *Runner) server.HandlerConfig
+	TestDataConfig() *harness.DataConfig
 	TestRequestHeaders(data harness.Data) map[string]string
 	TestRequestPathParams(data harness.Data) map[string]string
 	TestRequestQueryParams(data harness.Data) map[string]string
@@ -30,10 +32,12 @@ type TestCaser interface {
 	TestResponseCode() int
 }
 
+// TestCase is the base test case class for all tests cases to extend
 type TestCase struct {
 	Skip               bool
 	Name               string
 	HandlerConfig      func(rnr *Runner) server.HandlerConfig
+	DataConfig         func() *harness.DataConfig
 	RequestHeaders     func(data harness.Data) map[string]string
 	RequestPathParams  func(data harness.Data) map[string]string
 	RequestQueryParams func(data harness.Data) map[string]string
@@ -50,27 +54,38 @@ func (t *TestCase) TestName() string {
 }
 
 func (t *TestCase) TestHandlerConfig(rnr *Runner) server.HandlerConfig {
-	return t.HandlerConfig(rnr)
+	if t.HandlerConfig != nil {
+		return t.HandlerConfig(rnr)
+	}
+	return server.HandlerConfig{}
+}
+
+func (t *TestCase) TestDataConfig() *harness.DataConfig {
+	if t.DataConfig != nil {
+		return t.DataConfig()
+	}
+	return nil
 }
 
 func (t *TestCase) TestRequestHeaders(data harness.Data) map[string]string {
-	return t.RequestHeaders(data)
+	if t.RequestHeaders != nil {
+		return t.RequestHeaders(data)
+	}
+	return nil
 }
 
 func (t *TestCase) TestRequestPathParams(data harness.Data) map[string]string {
-	pp := map[string]string{}
 	if t.RequestPathParams != nil {
-		pp = t.RequestPathParams(data)
+		return t.RequestPathParams(data)
 	}
-	return pp
+	return nil
 }
 
 func (t *TestCase) TestRequestQueryParams(data harness.Data) map[string]string {
-	qp := map[string]string{}
 	if t.RequestQueryParams != nil {
-		qp = t.RequestQueryParams(data)
+		return t.RequestQueryParams(data)
 	}
-	return qp
+	return nil
 }
 
 func (t *TestCase) TestRequestBody(data harness.Data) interface{} {
@@ -102,6 +117,12 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	err = rnr.Init(th.Store)
 	require.NoError(t, err, "Runner init returns without error")
 
+	// Data config
+	dataConfig := tc.TestDataConfig()
+	if dataConfig != nil {
+		th.DataConfig = *dataConfig
+	}
+
 	err = th.Setup()
 	require.NoError(t, err, "Test data setup returns without error")
 	defer func() {
@@ -109,37 +130,37 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		require.NoError(t, err, "Test data teardown returns without error")
 	}()
 
-	// config
-	cfg := tc.TestHandlerConfig(rnr)
+	// Handler config
+	handlerConfig := tc.TestHandlerConfig(rnr)
 
-	// handler
-	h, _ := rnr.DefaultMiddleware(cfg, cfg.HandlerFunc)
+	// Handler
+	h, _ := rnr.DefaultMiddleware(handlerConfig, handlerConfig.HandlerFunc)
 
-	// router
+	// Router
 	rtr := httprouter.New()
 
-	switch cfg.Method {
+	switch handlerConfig.Method {
 	case http.MethodGet:
-		rtr.GET(cfg.Path, h)
+		rtr.GET(handlerConfig.Path, h)
 	case http.MethodPost:
-		rtr.POST(cfg.Path, h)
+		rtr.POST(handlerConfig.Path, h)
 	case http.MethodPut:
-		rtr.PUT(cfg.Path, h)
+		rtr.PUT(handlerConfig.Path, h)
 	case http.MethodDelete:
-		rtr.DELETE(cfg.Path, h)
+		rtr.DELETE(handlerConfig.Path, h)
 	default:
 		//
 	}
 
-	// request params
+	// Request params
 	requestParams := tc.TestRequestPathParams(th.Data)
 
-	requestPath := cfg.Path
+	requestPath := handlerConfig.Path
 	for paramKey, paramValue := range requestParams {
 		requestPath = strings.Replace(requestPath, paramKey, paramValue, 1)
 	}
 
-	// query params
+	// Query params
 	queryParams := tc.TestRequestQueryParams(th.Data)
 
 	if len(queryParams) > 0 {
@@ -154,9 +175,8 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 			requestPath = fmt.Sprintf("%s%s=%s", requestPath, paramKey, url.QueryEscape(paramValue))
 		}
 	}
-	t.Logf("> Resulting requestPath >%s<", requestPath)
 
-	// request data
+	// Request data
 	data := tc.TestRequestBody(th.Data)
 
 	var req *http.Request
@@ -165,30 +185,30 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		jsonData, err := json.Marshal(data)
 		require.NoError(t, err, "Marshal returns without error")
 
-		req, err = http.NewRequest(cfg.Method, requestPath, bytes.NewBuffer(jsonData))
+		req, err = http.NewRequest(handlerConfig.Method, requestPath, bytes.NewBuffer(jsonData))
 		require.NoError(t, err, "NewRequest returns without error")
 	} else {
-		req, err = http.NewRequest(cfg.Method, requestPath, nil)
+		req, err = http.NewRequest(handlerConfig.Method, requestPath, nil)
 		require.NoError(t, err, "NewRequest returns without error")
 	}
 
-	// request headers
+	// Request headers
 	requestHeaders := tc.TestRequestHeaders(th.Data)
 
 	for headerKey, headerVal := range requestHeaders {
 		req.Header.Add(headerKey, headerVal)
 	}
 
-	// recorder
+	// Recorder
 	rec := httptest.NewRecorder()
 
-	// serve
+	// Serve
 	rtr.ServeHTTP(rec, req)
 
-	// test status
+	// Test status
 	require.Equalf(t, tc.TestResponseCode(), rec.Code, "%s - Response code equals expected", tc.TestName())
 
-	// body
+	// Response body
 	responseBody, err := tc.TestResponseBody(rec.Body)
 	require.NoError(t, err, "Response body decodes without error")
 
@@ -199,10 +219,10 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		jsonData, err := json.Marshal(responseBody)
 		require.NoError(t, err, "Marshal returns without error")
 
-		result, err := jsonschema.Validate(cfg.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
+		result, err := jsonschema.Validate(handlerConfig.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
 		require.NoError(t, err, "Validates against schema without error")
 		t.Logf("Validation result errors >%+v< valid >%t<", result.Errors(), result.Valid())
 	}
 
-	tf(cfg.Method, responseBody)
+	tf(handlerConfig.Method, responseBody)
 }

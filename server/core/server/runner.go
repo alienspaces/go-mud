@@ -276,7 +276,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 	// Initialise configured routes
 	root := rnr.Config.Get("APP_SERVER_HOME")
 	for k, v := range rnr.HandlerConfig {
-		l.Info("Resolving schema location root >%s< key >%s<", root, k)
+		l.Debug("Resolving schema location root >%s< key >%s<", root, k)
 		v.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateQueryParams)
 		v.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateRequestSchema)
 		v.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateResponseSchema)

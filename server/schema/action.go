@@ -73,13 +73,24 @@ type ActionCharacter struct {
 	Fatigue             int    `json:"fatigue"`
 	CurrentHealth       int    `json:"current_health"`
 	CurrentFatigue      int    `json:"current_fatigue"`
-	// Equipped objects are always assigned for the character
-	// performing the action or a target character so that
-	// equipped objects are visible to all players
+	// Coins are only assigned for the character performing
+	// the action so that a characters coins are not visible
+	// to other players.
+	Coins int `json:"coins,omitempty"`
+	// ExperiencePoints are only assigned for the character performing
+	// the action so that a characters experience points are not visible
+	// to other players.
+	ExperiencePoints int `json:"experience_points"`
+	// ExperiencePoints are only assigned for the character performing
+	// the action so that a characters attribute points are not visible
+	// to other players.
+	AttributePoints int `json:"attribute_points"`
+	// Equipped objects are always assigned for the character performing
+	// the action or a target character so that equipped objects are
+	// visible to all players.
 	EquippedObjects []ActionObject `json:"equipped_objects,omitempty"`
-	// Stashed objects are only assigned for the character
-	// performing the action so that stashed objects are not
-	// exposed to all players
+	// Stashed objects are only assigned for the character performing
+	// the action so that stashed objects are not visible to other players.
 	StashedObjects []ActionObject `json:"stashed_objects,omitempty"`
 	// TODO: (game) Add effects currently applied
 }
@@ -107,14 +118,10 @@ type ActionMonster struct {
 	Fatigue             int    `json:"fatigue"`
 	CurrentHealth       int    `json:"current_health"`
 	CurrentFatigue      int    `json:"current_fatigue"`
-	// Equipped objects are always assigned for the monster
-	// performing the action or a target monster so that
-	// equipped objects are visible to all players
+	// Equipped objects are always assigned for the monster performing
+	// the action or a target monster so that equipped objects are
+	// visible to all players.
 	EquippedObjects []ActionObject `json:"equipped_objects,omitempty"`
-	// Stashed objects are only assigned for the monster
-	// performing the action so that stashed objects are not
-	// exposed to all players
-	StashedObjects []ActionObject `json:"stashed_objects,omitempty"`
 	// TODO: (game) Add effects currently applied
 }
 

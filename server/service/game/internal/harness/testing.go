@@ -77,6 +77,8 @@ func (t *Testing) CreateData() error {
 	data := &Data{}
 	teardownData := teardownData{}
 
+	l.Info("Creating test data")
+
 	// Objects
 	for _, objectConfig := range t.DataConfig.ObjectConfig {
 		objectRec, err := t.createObjectRec(objectConfig)
@@ -283,6 +285,8 @@ func (t *Testing) CreateData() error {
 	t.Data = *data
 	t.teardownData = teardownData
 
+	l.Info("Created test data")
+
 	return nil
 }
 
@@ -481,9 +485,11 @@ func (t *Testing) AddActionTeardownID(id string) {
 func (t *Testing) RemoveData() error {
 	l := t.Logger("RemoveData")
 
+	l.Info("Removing test data")
+
 	seen := map[string]bool{}
 
-	t.Log.Info("Removing >%d< action character object records", len(t.teardownData.ActionCharacterObjectRecs))
+	l.Info("Removing >%d< action character object records", len(t.teardownData.ActionCharacterObjectRecs))
 
 ACTION_CHARACTER_OBJECT_RECS:
 	for {
@@ -504,7 +510,7 @@ ACTION_CHARACTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< action character records", len(t.teardownData.ActionCharacterRecs))
+	l.Info("Removing >%d< action character records", len(t.teardownData.ActionCharacterRecs))
 
 ACTION_CHARACTER_RECS:
 	for {
@@ -525,7 +531,7 @@ ACTION_CHARACTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< action monster object records", len(t.teardownData.ActionMonsterObjectRecs))
+	l.Info("Removing >%d< action monster object records", len(t.teardownData.ActionMonsterObjectRecs))
 
 ACTION_MONSTER_OBJECT_RECS:
 	for {
@@ -546,7 +552,7 @@ ACTION_MONSTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< action monster records", len(t.teardownData.ActionMonsterRecs))
+	l.Info("Removing >%d< action monster records", len(t.teardownData.ActionMonsterRecs))
 
 ACTION_MONSTER_RECS:
 	for {
@@ -567,7 +573,7 @@ ACTION_MONSTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< action object records", len(t.teardownData.ActionObjectRecs))
+	l.Info("Removing >%d< action object records", len(t.teardownData.ActionObjectRecs))
 
 ACTION_OBJECT_RECS:
 	for {
@@ -588,7 +594,7 @@ ACTION_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< action records", len(t.teardownData.ActionRecs))
+	l.Info("Removing >%d< action records", len(t.teardownData.ActionRecs))
 
 ACTION_RECS:
 	for {
@@ -609,7 +615,7 @@ ACTION_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< object instance records", len(t.teardownData.ObjectInstanceRecs))
+	l.Info("Removing >%d< object instance records", len(t.teardownData.ObjectInstanceRecs))
 
 OBJECT_INSTANCE_RECS:
 	for {
@@ -630,7 +636,7 @@ OBJECT_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< monster instance records", len(t.teardownData.MonsterInstanceRecs))
+	l.Info("Removing >%d< monster instance records", len(t.teardownData.MonsterInstanceRecs))
 
 MONSTER_INSTANCE_RECS:
 	for {
@@ -651,7 +657,7 @@ MONSTER_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< character instance records", len(t.teardownData.CharacterInstanceRecs))
+	l.Info("Removing >%d< character instance records", len(t.teardownData.CharacterInstanceRecs))
 
 CHARACTER_INSTANCE_RECS:
 	for {
@@ -672,7 +678,7 @@ CHARACTER_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< location instance records", len(t.teardownData.LocationInstanceRecs))
+	l.Info("Removing >%d< location instance records", len(t.teardownData.LocationInstanceRecs))
 
 LOCATION_INSTANCE_RECS:
 	for {
@@ -693,7 +699,7 @@ LOCATION_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< dungeon instance records", len(t.teardownData.DungeonInstanceRecs))
+	l.Info("Removing >%d< dungeon instance records", len(t.teardownData.DungeonInstanceRecs))
 
 DUNGEON_INSTANCE_RECS:
 	for {
@@ -714,7 +720,7 @@ DUNGEON_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< monster object records", len(t.teardownData.MonsterObjectRecs))
+	l.Info("Removing >%d< monster object records", len(t.teardownData.MonsterObjectRecs))
 
 MONSTER_OBJECT_RECS:
 	for {
@@ -735,7 +741,7 @@ MONSTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< character object records", len(t.teardownData.CharacterObjectRecs))
+	l.Info("Removing >%d< character object records", len(t.teardownData.CharacterObjectRecs))
 
 CHARACTER_OBJECT_RECS:
 	for {
@@ -756,7 +762,7 @@ CHARACTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< location object records", len(t.teardownData.LocationObjectRecs))
+	l.Info("Removing >%d< location object records", len(t.teardownData.LocationObjectRecs))
 
 LOCATION_OBJECT_RECS:
 	for {
@@ -777,7 +783,7 @@ LOCATION_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< object records", len(t.teardownData.ObjectRecs))
+	l.Info("Removing >%d< object records", len(t.teardownData.ObjectRecs))
 
 OBJECT_RECS:
 	for {
@@ -798,7 +804,7 @@ OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< character records", len(t.teardownData.CharacterRecs))
+	l.Info("Removing >%d< character records", len(t.teardownData.CharacterRecs))
 
 CHARACTER_RECS:
 	for {
@@ -819,7 +825,7 @@ CHARACTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< location monster records", len(t.teardownData.LocationMonsterRecs))
+	l.Info("Removing >%d< location monster records", len(t.teardownData.LocationMonsterRecs))
 
 LOCATION_MONSTER_RECS:
 	for {
@@ -840,7 +846,7 @@ LOCATION_MONSTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< monster records", len(t.teardownData.MonsterRecs))
+	l.Info("Removing >%d< monster records", len(t.teardownData.MonsterRecs))
 
 MONSTER_RECS:
 	for {
@@ -861,7 +867,7 @@ MONSTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< location records", len(t.teardownData.LocationRecs))
+	l.Info("Removing >%d< location records", len(t.teardownData.LocationRecs))
 
 LOCATION_RECS:
 	for {
@@ -882,7 +888,7 @@ LOCATION_RECS:
 		seen[rec.ID] = true
 	}
 
-	t.Log.Info("Removing >%d< dungeon records", len(t.teardownData.DungeonRecs))
+	l.Info("Removing >%d< dungeon records", len(t.teardownData.DungeonRecs))
 
 DUNGEON_RECS:
 	for {
@@ -904,6 +910,8 @@ DUNGEON_RECS:
 	}
 
 	t.Data = Data{}
+
+	l.Info("Removed test data")
 
 	return nil
 }

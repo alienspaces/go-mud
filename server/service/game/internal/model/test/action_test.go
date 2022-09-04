@@ -44,16 +44,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "look current location",
 			dungeonInstanceID: func(data harness.Data) string {
-				data.GetDungeonInstanceRecByName("Cave")
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "look",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
@@ -66,31 +70,33 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				lRec, _ := data.GetLocationRecByName("cave entrance")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetLocation: &record.ActionLocationRecordSet{
 						LocationInstanceViewRec: &record.LocationInstanceView{
-							Name: data.LocationRecs[0].Name,
+							Name: lRec.Name,
 						},
 					},
 				}
@@ -100,15 +106,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "look valid direction",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "look north",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
@@ -121,31 +132,33 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
+				tlRec, _ := data.GetLocationRecByName("cave tunnel")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetLocation: &record.ActionLocationRecordSet{
 						LocationInstanceViewRec: &record.LocationInstanceView{
-							Name: data.LocationRecs[1].Name,
+							Name: tlRec.Name,
 						},
 					},
 				}
@@ -155,15 +168,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "look valid item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "look rusted sword",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				objectInstanceRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				objectInstanceRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
 				for _, objectInstanceRec := range objectInstanceRecs {
 					oRec, _ := data.GetObjectRecByID(objectInstanceRec.ObjectID)
@@ -176,33 +194,36 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+				toiRec, _ := data.GetObjectInstanceRecByName("rusted sword")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: sql.NullString{String: data.CharacterInstanceRecs[0].ID, Valid: true},
+						CharacterInstanceID: sql.NullString{String: ciRec.ID, Valid: true},
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
-						Name:        data.ObjectRecs[0].Name,
-						Description: data.ObjectRecs[0].Description,
-						IsStashed:   data.ObjectInstanceRecs[0].IsStashed,
-						IsEquipped:  data.ObjectInstanceRecs[0].IsEquipped,
+						Name:        toRec.Name,
+						Description: toRec.Description,
+						IsStashed:   toiRec.IsStashed,
+						IsEquipped:  toiRec.IsEquipped,
 					},
 				}
 			},
@@ -211,15 +232,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "look valid monster",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "look grumpy dwarf",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
@@ -245,40 +271,43 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
+				mRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				miRec, _ := data.GetMonsterInstanceRecByName("grumpy dwarf")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionMonsterRec: &record.ActionMonster{
-						Name:                data.MonsterRecs[0].Name,
-						Strength:            data.MonsterRecs[0].Strength,
-						Dexterity:           data.MonsterRecs[0].Dexterity,
-						Intelligence:        data.MonsterRecs[0].Intelligence,
-						CurrentStrength:     data.MonsterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.MonsterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.MonsterInstanceRecs[0].Intelligence,
-						Health:              data.MonsterRecs[0].Health,
-						Fatigue:             data.MonsterRecs[0].Fatigue,
-						CurrentHealth:       data.MonsterInstanceRecs[0].Health,
-						CurrentFatigue:      data.MonsterInstanceRecs[0].Fatigue,
+						Name:                mRec.Name,
+						Strength:            mRec.Strength,
+						Dexterity:           mRec.Dexterity,
+						Intelligence:        mRec.Intelligence,
+						CurrentStrength:     miRec.Strength,
+						CurrentDexterity:    miRec.Dexterity,
+						CurrentIntelligence: miRec.Intelligence,
+						Health:              mRec.Health,
+						Fatigue:             mRec.Fatigue,
+						CurrentHealth:       miRec.Health,
+						CurrentFatigue:      miRec.Fatigue,
 					},
 					TargetActionMonsterObjectRecs: amoRecs,
 				}
@@ -288,15 +317,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "look valid character",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "look barricade",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
@@ -309,7 +343,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
-				oiRecs = data.GetEquippedObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				oiRecs = data.GetEquippedObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				tacoRecs := []*record.ActionCharacterObject{}
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
@@ -322,40 +356,41 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					TargetActionCharacterObjectRecs: tacoRecs,
 				}
@@ -365,15 +400,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "stash valid location item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "stash rusted sword",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				oiRec, _ := data.GetObjectInstanceRecByName("rusted sword")
 				oiRec.IsStashed = true
 				oiRec.IsEquipped = false
@@ -393,26 +433,27 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
@@ -434,16 +475,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "stash valid equipped item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "stash dull bronze ring",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				oRec := &record.Object{}
 				for i := range oiRecs {
 					oRec, _ = data.GetObjectRecByID(oiRecs[i].ObjectID)
@@ -466,26 +511,27 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
@@ -507,15 +553,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "equip valid location item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "equip rusted sword",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				oiRec, _ := data.GetObjectInstanceRecByName("rusted sword")
 				oiRec.IsStashed = false
 				oiRec.IsEquipped = true
@@ -535,26 +586,27 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
@@ -576,16 +628,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "equip valid stashed item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "equip blood stained pouch",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				oRec := &record.Object{}
 				for i := range oiRecs {
 					oRec, _ = data.GetObjectRecByID(oiRecs[i].ObjectID)
@@ -608,26 +664,27 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
@@ -649,15 +706,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "drop valid equipped item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "drop dull bronze ring",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 
 				taoRec := &record.Object{}
 				acoRecs := []*record.ActionCharacterObject{}
@@ -676,26 +738,27 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
@@ -717,15 +780,20 @@ func TestProcessCharacterAction(t *testing.T) {
 		{
 			name: "drop valid stashed item",
 			dungeonInstanceID: func(data harness.Data) string {
-				return data.DungeonInstanceRecs[0].ID
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				return data.CharacterInstanceRecs[0].ID
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
 			},
 			sentence: "drop blood stained pouch",
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(data.CharacterInstanceRecs[0].ID)
+				cRec, _ := data.GetCharacterRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+
+				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 
 				taoRec := &record.Object{}
 				acoRecs := []*record.ActionCharacterObject{}
@@ -744,26 +812,27 @@ func TestProcessCharacterAction(t *testing.T) {
 					})
 				}
 
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
 				liRec, _ := data.GetLocationInstanceRecByName("cave entrance")
 
 				return &record.ActionRecordSet{
 					ActionRec: &record.Action{
-						DungeonInstanceID:   data.DungeonInstanceRecs[0].ID,
+						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+						CharacterInstanceID: nullstring.FromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
-						Name:                data.CharacterRecs[0].Name,
-						Strength:            data.CharacterRecs[0].Strength,
-						Dexterity:           data.CharacterRecs[0].Dexterity,
-						Intelligence:        data.CharacterRecs[0].Intelligence,
-						CurrentStrength:     data.CharacterInstanceRecs[0].Strength,
-						CurrentDexterity:    data.CharacterInstanceRecs[0].Dexterity,
-						CurrentIntelligence: data.CharacterInstanceRecs[0].Intelligence,
-						Health:              data.CharacterRecs[0].Health,
-						Fatigue:             data.CharacterRecs[0].Fatigue,
-						CurrentHealth:       data.CharacterInstanceRecs[0].Health,
-						CurrentFatigue:      data.CharacterInstanceRecs[0].Fatigue,
+						Name:                cRec.Name,
+						Strength:            cRec.Strength,
+						Dexterity:           cRec.Dexterity,
+						Intelligence:        cRec.Intelligence,
+						CurrentStrength:     ciRec.Strength,
+						CurrentDexterity:    ciRec.Dexterity,
+						CurrentIntelligence: ciRec.Intelligence,
+						Health:              cRec.Health,
+						Fatigue:             cRec.Fatigue,
+						CurrentHealth:       ciRec.Health,
+						CurrentFatigue:      ciRec.Fatigue,
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{

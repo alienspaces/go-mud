@@ -3,11 +3,74 @@ package model
 import (
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// validateCharacterInstanceRec - validates creating and updating a game record
-func (m *Model) validateCharacterInstanceRec(rec *record.CharacterInstance) error {
+// validateCreateCharacterInstanceRec - validates creating a character instance record
+func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance) error {
+	l := m.Logger("validateCreateCharacterInstanceRec")
+
+	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"character_id": rec.CharacterID,
+		},
+		nil, false)
+	if err != nil {
+		l.Warn("failed getting character instance record >%v<", err)
+		return err
+	}
+
+	if len(characterInstanceRecs) > 0 {
+		msg := fmt.Sprintf("character with ID >%s< is already inside a dungeon", rec.CharacterID)
+		l.Warn(msg)
+		err := coreerror.NewInvalidError("character_id", msg)
+		return err
+	}
+
+	err = m.validateCharacterInstanceAttributes(rec)
+	if err != nil {
+		l.Warn("failed validating character instance records >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
+// validateUpdateCharacterInstanceRec - validates updating a character instance record
+func (m *Model) validateUpdateCharacterInstanceRec(rec *record.CharacterInstance) error {
+	l := m.Logger("validateUpdateCharacterInstanceRec")
+
+	err := m.validateCharacterInstanceAttributes(rec)
+	if err != nil {
+		l.Warn("failed validating character instance records >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
+// validateDeleteCharacterInstanceRec - validates deleting a character instance record
+func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
+	l := m.Logger("validateDeleteCharacterInstanceRec")
+
+	rec, err := m.GetCharacterInstanceRec(recID, false)
+	if err != nil {
+		l.Warn("failed getting character instance record >%v<", err)
+		return err
+	}
+
+	if rec == nil {
+		msg := fmt.Sprintf("failed validation, character instance ID >%s< does not exist", recID)
+		l.Warn(msg)
+		err := coreerror.NewInvalidError("id", msg)
+		return err
+	}
+
+	return nil
+}
+
+func (m *Model) validateCharacterInstanceAttributes(rec *record.CharacterInstance) error {
 
 	// New character
 	if rec.ID == "" {
@@ -37,12 +100,6 @@ func (m *Model) validateCharacterInstanceRec(rec *record.CharacterInstance) erro
 	if rec.LocationInstanceID == "" {
 		return fmt.Errorf("failed validation, LocationInstanceID is empty")
 	}
-
-	return nil
-}
-
-// validateDeleteCharacterInstanceRec - validates it is okay to delete a game record
-func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
 
 	return nil
 }

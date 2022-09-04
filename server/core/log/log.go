@@ -149,6 +149,29 @@ func (l *Log) WithFunctionContext(value string) logger.Logger {
 	fields := map[string]interface{}{
 		"function": value,
 	}
+	if value, ok := ctxLog.fields["instance"]; ok {
+		fields["instance"] = value
+	}
+	if value, ok := ctxLog.fields["package"]; ok {
+		fields["package"] = value
+	}
+	if value, ok := ctxLog.fields["correlation-id"]; ok {
+		fields["correlation-id"] = value
+	}
+
+	ctxLog.fields = fields
+	return &ctxLog
+}
+
+// WithInstanceContext - Shallow copied logger instance with new function context and existing package context
+func (l *Log) WithInstanceContext(value string) logger.Logger {
+	ctxLog := *l
+	fields := map[string]interface{}{
+		"instance": value,
+	}
+	if value, ok := ctxLog.fields["function"]; ok {
+		fields["function"] = value
+	}
 	if value, ok := ctxLog.fields["package"]; ok {
 		fields["package"] = value
 	}
@@ -165,6 +188,9 @@ func (l *Log) WithPackageContext(value string) logger.Logger {
 	ctxLog := *l
 	fields := map[string]interface{}{
 		"package": value,
+	}
+	if value, ok := ctxLog.fields["instance"]; ok {
+		fields["instance"] = value
 	}
 	if value, ok := ctxLog.fields["function"]; ok {
 		fields["function"] = value

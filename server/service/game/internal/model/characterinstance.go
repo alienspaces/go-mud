@@ -91,6 +91,12 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 		AttributePoints:    characterRec.AttributePoints,
 	}
 
+	err = m.validateCreateCharacterInstanceRec(characterInstanceRec)
+	if err != nil {
+		l.Warn("failed validating character instance record >%v<", err)
+		return nil, err
+	}
+
 	err = m.CreateCharacterInstanceRec(characterInstanceRec)
 	if err != nil {
 		l.Warn("failed creating character instance record >%v<", err)

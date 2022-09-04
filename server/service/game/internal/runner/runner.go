@@ -51,6 +51,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	// Handler config
 	hc := r.CharacterHandlerConfig(nil)
 	hc = r.DungeonHandlerConfig(hc)
+	hc = r.DungeonCharacterHandlerConfig(hc)
 	hc = r.DungeonLocationHandlerConfig(hc)
 	hc = r.ActionHandlerConfig(hc)
 	hc = r.DocumentationHandlerConfig(hc)
@@ -62,8 +63,6 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
 // Modeller -
 func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
-
-	l.Info("** Dungeon Model **")
 
 	m, err := model.NewModel(rnr.Config, l, rnr.Store)
 	if err != nil {

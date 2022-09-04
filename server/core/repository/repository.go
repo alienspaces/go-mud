@@ -41,7 +41,8 @@ type RecordParam struct {
 
 // Init -
 func (r *Repository) Init() error {
-	r.Log.Debug("Initialising repository %s", r.TableName())
+	l := r.Logger("Init")
+	l.Debug("Initialising repository %s", r.TableName())
 
 	if r.Tx == nil {
 		return errors.New("repository Tx is nil, cannot initialise")
@@ -83,7 +84,7 @@ func (r *Repository) Attributes() []string {
 
 // GetOneRec -
 func (r *Repository) GetOneRec(recordID string, rec interface{}, forUpdate bool) error {
-	l := r.Log
+	l := r.Logger("GetOneRec")
 	tx := r.Tx
 
 	// preparer
@@ -120,7 +121,7 @@ func (r *Repository) GetOneRec(recordID string, rec interface{}, forUpdate bool)
 
 // GetManyRecs -
 func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) (rows *sqlx.Rows, err error) {
-	l := r.Log
+	l := r.Logger("GetManyRecs")
 	tx := r.Tx
 
 	// preparer
@@ -153,7 +154,7 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 
 // CreateOneRec -
 func (r *Repository) CreateOneRec(rec interface{}) error {
-	l := r.Log
+	l := r.Logger("CreateOneRec")
 	tx := r.Tx
 
 	// preparer
@@ -175,7 +176,7 @@ func (r *Repository) CreateOneRec(rec interface{}) error {
 
 // UpdateOneRec -
 func (r *Repository) UpdateOneRec(rec interface{}) error {
-	l := r.Log
+	l := r.Logger("UpdateOneRec")
 	tx := r.Tx
 
 	// preparer
@@ -201,7 +202,7 @@ func (r *Repository) DeleteOne(id string) error {
 }
 
 func (r *Repository) deleteOneRec(recordID string) error {
-	l := r.Log
+	l := r.Logger("deleteOneRec")
 	tx := r.Tx
 
 	params := map[string]interface{}{
@@ -246,7 +247,7 @@ func (r *Repository) RemoveOne(id string) error {
 }
 
 func (r *Repository) removeOneRec(recordID string) error {
-	l := r.Log
+	l := r.Logger("removeOneRec")
 	tx := r.Tx
 
 	// preparer
@@ -439,4 +440,9 @@ func (r *Repository) RemoveManySQL() string {
 DELETE FROM %s WHERE 1 = 1
 `
 	return fmt.Sprintf(sql, r.TableName())
+}
+
+// Logger -
+func (r *Repository) Logger(functionName string) logger.Logger {
+	return r.Log.WithPackageContext("core/repository").WithInstanceContext(r.TableName()).WithFunctionContext(functionName)
 }

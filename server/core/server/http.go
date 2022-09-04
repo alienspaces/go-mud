@@ -74,8 +74,9 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 
 // Router - default RouterFunc, override this function for custom routes
 func (rnr *Runner) Router(router *httprouter.Router) error {
+	l := Logger(rnr.Log, "Router")
 
-	rnr.Log.Info("** Router **")
+	l.Info("Using router")
 
 	return nil
 }
@@ -91,8 +92,9 @@ func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
 
 // Handler - default HandlerFunc, override this function for custom handler
 func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "DefaultHandlerFunc")
 
-	l.Info("** Handler **")
+	l.Info("Using default handler")
 
 	fmt.Fprint(w, "Ok!\n")
 
@@ -101,8 +103,9 @@ func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp
 
 // DefaultRouter - implements default routes based on runner configuration options
 func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
+	l := Logger(rnr.Log, "DefaultRouter")
 
-	rnr.Log.Info("** DefaultRouter **")
+	l.Info("Using default router")
 
 	r := httprouter.New()
 
@@ -122,11 +125,11 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 	// Register configured routes
 	for _, hc := range rnr.HandlerConfig {
 
-		rnr.Log.Info("** Router ** method >%s< path >%s<", hc.Method, hc.Path)
+		l.Info("Routing method >%s< path >%s<", hc.Method, hc.Path)
 
 		h, err := rnr.DefaultMiddleware(hc, hc.HandlerFunc)
 		if err != nil {
-			rnr.Log.Warn("failed registering handler >%v<", err)
+			l.Warn("failed registering handler >%v<", err)
 			return nil, err
 		}
 		switch hc.Method {
@@ -145,7 +148,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 		case http.MethodHead:
 			r.HEAD(hc.Path, h)
 		default:
-			rnr.Log.Warn("router HTTP method >%s< not supported", hc.Method)
+			l.Warn("Router HTTP method >%s< not supported", hc.Method)
 			return nil, fmt.Errorf("Router HTTP method >%s< not supported", hc.Method)
 		}
 	}
@@ -153,7 +156,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 	// server defined routes
 	err = rnr.RouterFunc(r)
 	if err != nil {
-		rnr.Log.Warn("failed router >%v<", err)
+		l.Warn("Failed router >%v<", err)
 		return nil, err
 	}
 
@@ -162,73 +165,79 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 
 // DefaultMiddleware - implements middlewares based on runner configuration
 func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h Handle) (httprouter.Handle, error) {
+	l := Logger(rnr.Log, "DefaultMiddleware")
 
-	rnr.Log.Info("** DefaultMiddleware **")
+	l.Info("Using default middleware")
 
-	// validate body data
+	// NOTE: The order matters here. Different middleware will not be able to function
+	// unless prior middleware have run successfully.
+
+	// Validate body data
 	h, err := rnr.Validate(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding validate middleware >%v<", err)
+		l.Warn("failed adding validate middleware >%v<", err)
 		return nil, err
 	}
 
-	// request body data
+	// Request body data
 	h, err = rnr.Data(h)
 	if err != nil {
-		rnr.Log.Warn("failed adding data middleware >%v<", err)
+		l.Warn("failed adding data middleware >%v<", err)
 		return nil, err
 	}
 
 	h, err = rnr.Audit(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding audit middleware >%v<", err)
+		l.Warn("failed adding audit middleware >%v<", err)
 		return nil, err
 	}
 
-	// authz
+	// Authz
 	h, err = rnr.Authz(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding authz middleware >%v<", err)
+		l.Warn("failed adding authz middleware >%v<", err)
 		return nil, err
 	}
 
-	// authen
+	// Authen
 	h, err = rnr.Authen(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding authen middleware >%v<", err)
+		l.Warn("failed adding authen middleware >%v<", err)
 		return nil, err
 	}
 
-	// tx
+	// Tx
 	h, err = rnr.Tx(h)
 	if err != nil {
-		rnr.Log.Warn("failed adding tx middleware >%v<", err)
+		l.Warn("failed adding tx middleware >%v<", err)
 		return nil, err
 	}
 
-	// correlation
+	// Correlation
 	h, err = rnr.Correlation(h)
 	if err != nil {
-		rnr.Log.Warn("failed adding correlation middleware >%v<", err)
+		l.Warn("failed adding correlation middleware >%v<", err)
 		return nil, err
 	}
 
-	// server defined routes
+	// Server defined routes
 	h, err = rnr.MiddlewareFunc(h)
 	if err != nil {
-		rnr.Log.Warn("failed middleware >%v<", err)
+		l.Warn("failed middleware >%v<", err)
 		return nil, err
 	}
 
-	// wrap everything in a httprouter Handler
+	// Wrap everything in a httprouter Handler
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
-		l, err := rnr.Log.NewInstance()
+
+		// New logger instance per request
+		l, err := l.NewInstance()
 		if err != nil {
 			WriteSystemError(rnr.Log, w, err)
 			return
 		}
 
-		// delegate
+		// Delegate
 		h(w, r, pp, nil, l, nil)
 	}
 
@@ -272,8 +281,10 @@ func ReadXMLRequest(l logger.Logger, r *http.Request, s interface{}) (*string, e
 
 // WriteResponse -
 func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, options ...WriteResponseOption) error {
+	l = Logger(l, "WriteResponse")
+
 	status := http.StatusOK
-	l.Info("write response status >%d<", status)
+	l.Info("Write response status >%d<", status)
 
 	// content type json
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -291,8 +302,10 @@ func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, option
 }
 
 func WriteXMLResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
+	l = Logger(l, "WriteXMLResponse")
+
 	status := http.StatusOK
-	l.Info("write response status >%d<", status)
+	l.Info("Write response status >%d<", status)
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 

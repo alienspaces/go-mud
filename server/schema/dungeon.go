@@ -24,3 +24,25 @@ type DungeonData struct {
 	CreatedAt   time.Time `json:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
+
+// DungeonEnterRequest
+type DungeonEnterRequest struct {
+	Request
+	Data DungeonEnterData `json:"data"`
+}
+
+// DungeonEnterData
+type DungeonEnterData struct {
+	CharacterID string `json:"character_id,omitempty"`
+}
+
+// DungeonExitRequest
+type DungeonExitRequest struct {
+	Request
+	Data DungeonExitData `json:"data"`
+}
+
+// DungeonExitData
+type DungeonExitData struct {
+	CharacterID string `json:"character_id,omitempty"`
+}

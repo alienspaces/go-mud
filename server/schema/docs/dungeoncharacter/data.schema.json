@@ -1,13 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/characterinstance/data.schema.json",
-  "title": "Character Instance Data",
-  "description": "Character instance data",
+  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeoncharacter/data.schema.json",
+  "title": "Dungeon Character Data",
+  "description": "Dungeon character data",
   "type": "object",
   "required": [
     "id",
-    "character_id",
-    "location_instance_id",
+    "dungeon_id",
+    "dungeon_name",
+    "dungeon_description",
+    "location_id",
+    "location_name",
+    "location_description",
     "name",
     "strength",
     "dexterity",
@@ -29,13 +33,25 @@
       "type": "string",
       "format": "uuid"
     },
-    "character_id": {
+    "dungeon_id": {
       "type": "string",
       "format": "uuid"
     },
-    "location_instance_id": {
+    "dungeon_name": {
+      "type": "string"
+    },
+    "dungeon_description": {
+      "type": "string"
+    },
+    "location_id": {
       "type": "string",
       "format": "uuid"
+    },
+    "location_name": {
+      "type": "string"
+    },
+    "location_description": {
+      "type": "string"
     },
     "name": {
       "type": "string"

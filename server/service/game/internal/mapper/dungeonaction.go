@@ -252,23 +252,15 @@ func dungeonMonsterToResponseMonster(
 		Fatigue:             dungeonMonsterRec.Fatigue,
 		CurrentHealth:       dungeonMonsterRec.CurrentHealth,
 		CurrentFatigue:      dungeonMonsterRec.CurrentFatigue,
-		StashedObjects:      []schema.ActionObject{},
 		EquippedObjects:     []schema.ActionObject{},
 	}
 
+	// NOTE: We only ever provide a monsters equipped objects and never provide
+	// a monsters stashed objects.
 	for _, objectRec := range objectRecs {
 		if objectRec.IsEquipped {
 			l.Debug("Adding monster equipped object >%#v<", objectRec)
 			data.EquippedObjects = append(data.EquippedObjects, schema.ActionObject{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
-			})
-			continue
-		}
-		if objectRec.IsStashed {
-			l.Debug("Adding monster stashed object >%#v<", objectRec)
-			data.StashedObjects = append(data.StashedObjects, schema.ActionObject{
 				Name:       objectRec.Name,
 				IsEquipped: objectRec.IsEquipped,
 				IsStashed:  objectRec.IsStashed,

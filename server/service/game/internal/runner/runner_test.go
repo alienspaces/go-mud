@@ -11,20 +11,24 @@ import (
 
 func NewTestHarness() (*harness.Testing, error) {
 
-	// harness
+	// Default test harness data configuration
 	config := harness.DefaultDataConfig
 
+	// Default dependencies
 	c, l, s, err := dependencies.Default()
 	if err != nil {
 		return nil, err
 	}
 
+	// Test harness
 	h, err := harness.NewTesting(c, l, s, config)
 	if err != nil {
 		return nil, err
 	}
 
-	// harness commit data
+	// For handler testst the test harness needs to commit data as the handler
+	// creates a new database transaction. Data created as a result of a test
+	// case bust be specifically added to the test harness to be torn down.
 	h.CommitData = true
 
 	return h, nil

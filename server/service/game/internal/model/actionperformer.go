@@ -24,7 +24,6 @@ func (m *Model) performAction(
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
-
 	l := m.Logger("performCharacterAction")
 
 	actionFuncs := map[string]characterActionFunc{
@@ -42,10 +41,12 @@ func (m *Model) performAction(
 		return nil, fmt.Errorf(msg)
 	}
 
+	l.Info("Performing action resolved command >%s<", actionRec.ResolvedCommand)
+
 	var err error
 	actionRec, err = actionFunc(characterInstanceViewRec, monsterInstanceViewRec, actionRec, locationInstanceRecordSet)
 	if err != nil {
-		l.Warn("failed performing action >%s< >%v<", actionRec.ResolvedCommand, err)
+		l.Warn("failed performing action >%v<", err)
 		return nil, err
 	}
 

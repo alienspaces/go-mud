@@ -24,7 +24,7 @@ func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.C
 
 	l := m.Logger("GetCharacterInstanceRec")
 
-	l.Debug("Getting character instance record ID >%s<", recID)
+	l.Warn("** Getting character instance record ID >%s<", recID)
 
 	r := m.CharacterInstanceRepository()
 
@@ -86,7 +86,7 @@ func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error 
 
 	characterRepo := m.CharacterInstanceRepository()
 
-	err := m.validateCharacterInstanceRec(rec)
+	err := m.validateCreateCharacterInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -104,7 +104,7 @@ func (m *Model) UpdateCharacterInstanceRec(rec *record.CharacterInstance) error 
 
 	r := m.CharacterInstanceRepository()
 
-	err := m.validateCharacterInstanceRec(rec)
+	err := m.validateUpdateCharacterInstanceRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

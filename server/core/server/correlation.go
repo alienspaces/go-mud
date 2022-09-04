@@ -15,11 +15,11 @@ import (
 func (rnr *Runner) Correlation(h Handle) (Handle, error) {
 
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) error {
+		l = Logger(l, "Correlation")
 
 		correlationID := r.Header.Get("X-Correlation-ID")
 		if correlationID == "" {
 			correlationID = uuid.New().String()
-			l.Debug("Generated correlation ID >%s<", correlationID)
 		}
 
 		ctx := r.Context()
@@ -28,8 +28,8 @@ func (rnr *Runner) Correlation(h Handle) (Handle, error) {
 
 		l.Context("correlation-id", correlationID)
 
-		// NOTE: Log every request here at info log level
-		l.Info("(correlation) request method >%s< path >%s<", r.Method, r.RequestURI)
+		// TODO: Implement a trace/telemetry middleware to log all requests and their non-sensitive information
+		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)
 
 		return h(w, r, pp, nil, l, nil)
 	}
