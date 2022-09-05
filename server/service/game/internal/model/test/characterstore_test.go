@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
-
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 

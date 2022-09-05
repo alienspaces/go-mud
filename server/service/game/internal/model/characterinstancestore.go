@@ -24,7 +24,7 @@ func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.C
 
 	l := m.Logger("GetCharacterInstanceRec")
 
-	l.Warn("** Getting character instance record ID >%s<", recID)
+	l.Debug("Getting character instance record ID >%s<", recID)
 
 	r := m.CharacterInstanceRepository()
 

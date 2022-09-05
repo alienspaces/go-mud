@@ -23,6 +23,9 @@ func (rnr *Runner) Tx(h Handle) (Handle, error) {
 
 		l.Info("Initialising database transaction")
 
+		// Force a transaction rollback
+		xTxRollback := r.Header.Get("X-Tx-Rollback")
+
 		m, err := rnr.InitModeller(l)
 		if err != nil {
 			l.Error("failed initialising database transaction, cannot authen >%v<", err)
@@ -31,7 +34,7 @@ func (rnr *Runner) Tx(h Handle) (Handle, error) {
 		}
 
 		err = h(w, r, pp, qp, l, m)
-		if err != nil {
+		if err != nil || xTxRollback == "true" {
 			l.Info("Rolling back database transaction")
 
 			if err := m.Rollback(); err != nil {

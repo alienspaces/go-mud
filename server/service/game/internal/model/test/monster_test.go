@@ -15,7 +15,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-func TestGetCharacterEquippedObjectRecs(t *testing.T) {
+func TestGetMonsterEquippedObjectRecs(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -30,19 +30,19 @@ func TestGetCharacterEquippedObjectRecs(t *testing.T) {
 	th.CommitData = true
 
 	tests := []struct {
-		name               string
-		dungeonCharacterID func(data harness.Data) string
-		expectObjectRecs   func(data harness.Data) []*record.Object
-		expectError        bool
+		name             string
+		dungeonMonsterID func(data harness.Data) string
+		expectObjectRecs func(data harness.Data) []*record.Object
+		expectError      bool
 	}{
 		{
 			name: "Returns expected equipped objects",
-			dungeonCharacterID: func(data harness.Data) string {
-				cRec, _ := data.GetCharacterRecByName("barricade")
+			dungeonMonsterID: func(data harness.Data) string {
+				cRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				return cRec.ID
 			},
 			expectObjectRecs: func(data harness.Data) []*record.Object {
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				ceoRec, _ := data.GetObjectRecByName("bone dagger")
 				return []*record.Object{
 					&record.Object{
 						Record: repository.Record{
@@ -75,14 +75,14 @@ func TestGetCharacterEquippedObjectRecs(t *testing.T) {
 			err = th.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			dungeonCharacterID := tc.dungeonCharacterID(th.Data)
+			dungeonMonsterID := tc.dungeonMonsterID(th.Data)
 
-			recs, err := th.Model.(*model.Model).GetCharacterEquippedObjectRecs(dungeonCharacterID)
+			recs, err := th.Model.(*model.Model).GetMonsterEquippedObjectRecs(dungeonMonsterID)
 			if tc.expectError == true {
-				require.Error(t, err, "GetCharacterEquippedObjectRecs returns error")
+				require.Error(t, err, "GetMonsterEquippedObjectRecs returns error")
 				return
 			}
-			require.NoError(t, err, "GetCharacterEquippedObjectRecs returns without error")
+			require.NoError(t, err, "GetMonsterEquippedObjectRecs returns without error")
 
 			expectedRecs := tc.expectObjectRecs(th.Data)
 			if expectedRecs == nil {
@@ -90,14 +90,14 @@ func TestGetCharacterEquippedObjectRecs(t *testing.T) {
 			}
 
 			for idx, expectedRec := range expectedRecs {
-				require.Equal(t, expectedRec.ID, recs[idx].ID, "Returned character object ID equals expected")
-				require.Equal(t, expectedRec.Name, recs[idx].Name, "Returned character object Name equals expected")
+				require.Equal(t, expectedRec.ID, recs[idx].ID, "Returned monster object ID equals expected")
+				require.Equal(t, expectedRec.Name, recs[idx].Name, "Returned monster object Name equals expected")
 			}
 		})
 	}
 }
 
-func TestGetCharacterStashedObjectRecs(t *testing.T) {
+func TestGetMonsterStashedObjectRecs(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -112,19 +112,19 @@ func TestGetCharacterStashedObjectRecs(t *testing.T) {
 	th.CommitData = true
 
 	tests := []struct {
-		name               string
-		dungeonCharacterID func(data harness.Data) string
-		expectObjectRecs   func(data harness.Data) []*record.Object
-		expectError        bool
+		name             string
+		dungeonMonsterID func(data harness.Data) string
+		expectObjectRecs func(data harness.Data) []*record.Object
+		expectError      bool
 	}{
 		{
 			name: "Returns expected stashed objects",
-			dungeonCharacterID: func(data harness.Data) string {
-				cRec, _ := data.GetCharacterRecByName("barricade")
+			dungeonMonsterID: func(data harness.Data) string {
+				cRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				return cRec.ID
 			},
 			expectObjectRecs: func(data harness.Data) []*record.Object {
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
+				csoRec, _ := data.GetObjectRecByName("vial of ogre blood")
 				return []*record.Object{
 					&record.Object{
 						Record: repository.Record{
@@ -157,14 +157,14 @@ func TestGetCharacterStashedObjectRecs(t *testing.T) {
 			err = th.InitTx(nil)
 			require.NoError(t, err, "InitTx returns without error")
 
-			dungeonCharacterID := tc.dungeonCharacterID(th.Data)
+			dungeonMonsterID := tc.dungeonMonsterID(th.Data)
 
-			recs, err := th.Model.(*model.Model).GetCharacterStashedObjectRecs(dungeonCharacterID)
+			recs, err := th.Model.(*model.Model).GetMonsterStashedObjectRecs(dungeonMonsterID)
 			if tc.expectError == true {
-				require.Error(t, err, "GetCharacterStashedObjectRecs returns error")
+				require.Error(t, err, "GetMonsterStashedObjectRecs returns error")
 				return
 			}
-			require.NoError(t, err, "GetCharacterStashedObjectRecs returns without error")
+			require.NoError(t, err, "GetMonsterStashedObjectRecs returns without error")
 
 			expectedRecs := tc.expectObjectRecs(th.Data)
 			if expectedRecs == nil {
@@ -172,8 +172,8 @@ func TestGetCharacterStashedObjectRecs(t *testing.T) {
 			}
 
 			for idx, expectedRec := range expectedRecs {
-				require.Equal(t, expectedRec.ID, recs[idx].ID, "Returned character object ID equals expected")
-				require.Equal(t, expectedRec.Name, recs[idx].Name, "Returned character object Name equals expected")
+				require.Equal(t, expectedRec.ID, recs[idx].ID, "Returned monster object ID equals expected")
+				require.Equal(t, expectedRec.Name, recs[idx].Name, "Returned monster object Name equals expected")
 			}
 		})
 	}

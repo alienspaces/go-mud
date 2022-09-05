@@ -16,6 +16,7 @@ import (
 )
 
 func TestPostActionHandler(t *testing.T) {
+	t.Parallel()
 
 	// Test harness
 	th, err := NewTestHarness()
@@ -43,6 +44,7 @@ func TestPostActionHandler(t *testing.T) {
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
 			"Authorization": "Bearer " + validAuthToken(),
+			"X-Tx-Rollback": "true",
 		}
 		return headers
 	}
@@ -1360,8 +1362,6 @@ func TestPostActionHandler(t *testing.T) {
 					require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
 					if method == http.MethodPost {
 						require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
-						t.Logf("Adding dungeon character action ID >%s< for teardown", data.ID)
-						th.AddActionTeardownID(data.ID)
 					}
 				}
 			}

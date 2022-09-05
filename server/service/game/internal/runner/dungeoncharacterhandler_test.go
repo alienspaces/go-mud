@@ -41,6 +41,7 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
 			"Authorization": "Bearer " + validAuthToken(),
+			"X-Tx-Rollback": "true",
 		}
 		return headers
 	}
@@ -52,9 +53,6 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		// TODO: Implement headers that control application behvaiour. In this case we want the
-		// database transaction rolled back at the end of the request so we don't have to deal
-		// with managing adding teardown ID's to the test harness.
 		{
 			TestCase: TestCase{
 				Name:           "POST - Enter existing",
@@ -79,22 +77,20 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Logf("Running test >%s<", testCase.Name)
 
-			// TODO: Re-implement
-
-			// testFunc := func(method string, body interface{}) {
-			// 	if testCase.TestResponseCode() != http.StatusOK {
-			// 		return
-			// 	}
-			// 	var responseBody *schema.DungeonCharacterResponse
-			// 	if body != nil {
-			// 		responseBody = body.(*schema.DungeonCharacterResponse)
-			// 	}
-			// 	// Check dates and add teardown ID's
-			// 	for _, data := range responseBody.Data {
-			// 		require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
-			// 	}
-			// }
-			// RunTestCase(t, th, &testCase, testFunc)
+			testFunc := func(method string, body interface{}) {
+				if testCase.TestResponseCode() != http.StatusOK {
+					return
+				}
+				var responseBody *schema.DungeonCharacterResponse
+				if body != nil {
+					responseBody = body.(*schema.DungeonCharacterResponse)
+				}
+				// Check dates and add teardown ID's
+				for _, data := range responseBody.Data {
+					require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
+				}
+			}
+			RunTestCase(t, th, &testCase, testFunc)
 		})
 	}
 }
