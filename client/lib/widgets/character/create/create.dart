@@ -19,7 +19,7 @@ class CharacterCreateWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterCreateWidgetState createState() => _CharacterCreateWidgetState();
+  State<CharacterCreateWidget> createState() => _CharacterCreateWidgetState();
 }
 
 class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
@@ -119,7 +119,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     final log = getLogger('CharacterCreateWidget');
     log.fine('Building..');
 
-    InputDecoration _fieldDecoration(String hintText) {
+    InputDecoration fieldDecoration(String hintText) {
       return InputDecoration(
         border: const OutlineInputBorder(),
         hintText: hintText,
@@ -213,7 +213,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
               child: TextFormField(
                 controller: characterNameController,
                 autofocus: true,
-                decoration: _fieldDecoration('Character Name'),
+                decoration: fieldDecoration('Character Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter character name';

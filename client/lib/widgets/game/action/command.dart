@@ -9,7 +9,7 @@ class GameActionCommandWidget extends StatefulWidget {
   const GameActionCommandWidget({Key? key}) : super(key: key);
 
   @override
-  _GameActionCommandWidgetState createState() =>
+  State<GameActionCommandWidget> createState() =>
       _GameActionCommandWidgetState();
 }
 

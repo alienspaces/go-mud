@@ -14,7 +14,7 @@ class HomeContainerWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _HomeContainerWidgetState createState() => _HomeContainerWidgetState();
+  State<HomeContainerWidget> createState() => _HomeContainerWidgetState();
 }
 
 class _HomeContainerWidgetState extends State<HomeContainerWidget> {

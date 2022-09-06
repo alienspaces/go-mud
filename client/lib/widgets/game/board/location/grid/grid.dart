@@ -31,7 +31,7 @@ class GameLocationGridWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameLocationGridWidgetState createState() => _GameLocationGridWidgetState();
+  State<GameLocationGridWidget> createState() => _GameLocationGridWidgetState();
 }
 
 typedef DungeonGridMemberFunction = Widget Function(

@@ -12,7 +12,7 @@ class GameEquippedWidget extends StatefulWidget {
   const GameEquippedWidget({Key? key}) : super(key: key);
 
   @override
-  _GameEquippedWidgetState createState() => _GameEquippedWidgetState();
+  State<GameEquippedWidget> createState() => _GameEquippedWidgetState();
 }
 
 class _GameEquippedWidgetState extends State<GameEquippedWidget> {

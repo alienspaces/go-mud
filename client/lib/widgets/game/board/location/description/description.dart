@@ -17,7 +17,7 @@ class GameLocationDescriptionWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _GameLocationDescriptionWidgetState createState() =>
+  State<GameLocationDescriptionWidget> createState() =>
       _GameLocationDescriptionWidgetState();
 }
 

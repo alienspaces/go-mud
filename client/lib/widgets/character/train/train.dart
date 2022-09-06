@@ -17,7 +17,7 @@ class CharacterTrainWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterTrainWidgetState createState() => _CharacterTrainWidgetState();
+  State<CharacterTrainWidget> createState() => _CharacterTrainWidgetState();
 }
 
 class _CharacterTrainWidgetState extends State<CharacterTrainWidget> {

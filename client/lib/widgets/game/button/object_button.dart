@@ -12,7 +12,7 @@ class ObjectButtonWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ObjectButtonWidgetState createState() => _ObjectButtonWidgetState();
+  State<ObjectButtonWidget> createState() => _ObjectButtonWidgetState();
 }
 
 class _ObjectButtonWidgetState extends State<ObjectButtonWidget> {

@@ -18,7 +18,7 @@ class GameWidget extends StatefulWidget {
   const GameWidget({Key? key}) : super(key: key);
 
   @override
-  _GameWidgetState createState() => _GameWidgetState();
+  State<GameWidget> createState() => _GameWidgetState();
 }
 
 class _GameWidgetState extends State<GameWidget> {

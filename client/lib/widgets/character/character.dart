@@ -17,7 +17,7 @@ class CharacterContainerWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterContainerWidgetState createState() =>
+  State<CharacterContainerWidget> createState() =>
       _CharacterContainerWidgetState();
 }
 

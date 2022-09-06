@@ -16,7 +16,7 @@ class Navigation extends StatefulWidget {
   const Navigation({Key? key}) : super(key: key);
 
   @override
-  _NavigationState createState() => _NavigationState();
+  State<Navigation> createState() => _NavigationState();
 }
 
 typedef NavigationCallback = void Function(BuildContext context);

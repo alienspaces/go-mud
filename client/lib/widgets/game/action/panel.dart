@@ -13,7 +13,7 @@ class GameActionPanelWidget extends StatefulWidget {
   const GameActionPanelWidget({Key? key}) : super(key: key);
 
   @override
-  _GameActionPanelWidgetState createState() => _GameActionPanelWidgetState();
+  State<GameActionPanelWidget> createState() => _GameActionPanelWidgetState();
 }
 
 double gridMemberWidth = 0;
@@ -62,7 +62,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
           _submitAction(context);
         },
         style: ElevatedButton.styleFrom(
-          primary: Colors.green,
+          backgroundColor: Colors.green,
         ),
         child: const Text('Play'),
       ),

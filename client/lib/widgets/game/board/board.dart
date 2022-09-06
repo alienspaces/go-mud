@@ -9,6 +9,7 @@ import 'package:go_mud_client/widgets/game/board/stashed_board.dart';
 import 'package:go_mud_client/widgets/game/board/location_board.dart';
 
 enum BoardButtonType { location, equipped, stashed }
+
 Map<BoardButtonType, String> boardButtonLabels = {
   BoardButtonType.location: 'L',
   BoardButtonType.equipped: 'E',
@@ -24,7 +25,7 @@ class GameBoardWidget extends StatefulWidget {
   const GameBoardWidget({Key? key}) : super(key: key);
 
   @override
-  _GameBoardWidgetState createState() => _GameBoardWidgetState();
+  State<GameBoardWidget> createState() => _GameBoardWidgetState();
 }
 
 class _GameBoardWidgetState extends State<GameBoardWidget> {

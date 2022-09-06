@@ -76,9 +76,9 @@ Widget _buildLink(
     child: ElevatedButton(
       onPressed: navigateFunc,
       style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.secondary,
-        onPrimary: Theme.of(context).colorScheme.onSecondary,
-        onSurface: Theme.of(context).colorScheme.onSecondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        foregroundColor: Theme.of(context).colorScheme.onSecondary,
+        disabledForegroundColor: Theme.of(context).colorScheme.onSecondary,
       ),
       child: Text(
         label,

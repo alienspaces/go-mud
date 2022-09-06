@@ -10,7 +10,7 @@ class GameLocationDescriptionContainerWidget extends StatefulWidget {
   const GameLocationDescriptionContainerWidget({Key? key}) : super(key: key);
 
   @override
-  _GameLocationDescriptionContainerWidgetState createState() =>
+  State<GameLocationDescriptionContainerWidget> createState() =>
       _GameLocationDescriptionContainerWidgetState();
 }
 

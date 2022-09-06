@@ -37,14 +37,15 @@ dependencies:
   # (Business Logic Component) design pattern. Built to be used
   # with the bloc state management package.
   # https://pub.dev/packages/flutter_bloc
-  flutter_bloc: ^7.2.0
+  flutter_bloc: ^8.1.1
+  bloc: ^8.1.0
 
   # A Dart package that helps to implement value based equality without
   # needing to explicitly override == and hashCode.
   equatable: ^2.0.3
 
   # Load environment variables from a `.env` file.
-  dotenv: 3.0.0
+  dotenv: 4.0.1
 
   # Provides APIs for debugging and error logging. This library introduces
   # abstractions similar to those used in other languages, such as the
@@ -56,6 +57,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+  # Annotations used to express developer intentions that can't otherwise 
+  # be deduced by statically analyzing source code.
+  meta: ^1.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,7 +70,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

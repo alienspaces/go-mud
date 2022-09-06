@@ -38,10 +38,10 @@ void displayObjectCard(
           content: content,
           actions: <Widget>[
             TextButton(
-              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: const Text('Close'),
             ),
           ],
         ),

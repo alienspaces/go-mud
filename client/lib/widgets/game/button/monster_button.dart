@@ -12,7 +12,7 @@ class MonsterButtonWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MonsterButtonWidgetState createState() => _MonsterButtonWidgetState();
+  State<MonsterButtonWidget> createState() => _MonsterButtonWidgetState();
 }
 
 class _MonsterButtonWidgetState extends State<MonsterButtonWidget> {

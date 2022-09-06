@@ -26,17 +26,17 @@ class GameCardWidget extends StatelessWidget {
           if (dungeonActionRecord.command == 'look') {
             if (dungeonActionRecord.targetCharacter != null) {
               log.fine('Registering look character dialogue');
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 displayCharacterCard(context, dungeonActionRecord);
               });
             } else if (dungeonActionRecord.targetMonster != null) {
               log.fine('Registering look monster dialogue');
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 displayMonsterCard(context, dungeonActionRecord);
               });
             } else if (dungeonActionRecord.targetObject != null) {
               log.fine('Registering look object dialogue');
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 displayObjectCard(context, dungeonActionRecord);
               });
             }

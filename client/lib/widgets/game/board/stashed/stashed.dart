@@ -12,7 +12,7 @@ class GameStashedWidget extends StatefulWidget {
   const GameStashedWidget({Key? key}) : super(key: key);
 
   @override
-  _GameStashedWidgetState createState() => _GameStashedWidgetState();
+  State<GameStashedWidget> createState() => _GameStashedWidgetState();
 }
 
 class _GameStashedWidgetState extends State<GameStashedWidget> {
