@@ -21,22 +21,34 @@ func (rnr *Runner) DocumentationHandlerConfig(hc map[server.HandlerConfigKey]ser
 
 	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
 		getDocumentationRoot: {
-			Method:           http.MethodGet,
-			Path:             "/",
-			HandlerFunc:      rnr.GetDocumentationHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/",
+			HandlerFunc: rnr.GetDocumentationHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
+			},
 		},
 		getDocumentationAPI: {
-			Method:           http.MethodGet,
-			Path:             "/api",
-			HandlerFunc:      rnr.GetDocumentationHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/api",
+			HandlerFunc: rnr.GetDocumentationHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
+			},
 		},
 		getDocumentationAPIV1: {
-			Method:           http.MethodGet,
-			Path:             "/api/v1",
-			HandlerFunc:      rnr.GetDocumentationHandler,
-			MiddlewareConfig: server.MiddlewareConfig{},
+			Method:      http.MethodGet,
+			Path:        "/api/v1",
+			HandlerFunc: rnr.GetDocumentationHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenTypePublic,
+				},
+			},
 		},
 	})
 }

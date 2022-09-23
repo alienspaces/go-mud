@@ -11,16 +11,12 @@ part 'character_record.dart';
 
 abstract class CharacterRepositoryInterface {
   Future<CharacterRecord?> createOne(
-    String dungeonID,
     CreateCharacterRecord record,
   );
   Future<CharacterRecord?> getOne(
-    String dungeonID,
     String characterID,
   );
-  Future<List<CharacterRecord>> getMany(
-    String dungeonID,
-  );
+  Future<List<CharacterRecord>> getMany();
 }
 
 class CharacterRepository implements CharacterRepositoryInterface {
@@ -30,18 +26,17 @@ class CharacterRepository implements CharacterRepositoryInterface {
   CharacterRepository({required this.config, required this.api});
 
   @override
-  Future<CharacterRecord?> createOne(
-      String dungeonID, CreateCharacterRecord createRecord) async {
+  Future<CharacterRecord?> createOne(CreateCharacterRecord createRecord) async {
     final log = getLogger('CharacterRepository');
     log.info('Creating character ${createRecord.name}');
 
     var response = await api.createCharacter(
-      dungeonID,
       name: createRecord.name,
       strength: createRecord.strength,
       dexterity: createRecord.dexterity,
       intelligence: createRecord.intelligence,
     );
+
     log.info('APIResponse body ${response.body}');
     log.info('APIResponse error ${response.error}');
 
@@ -70,11 +65,10 @@ class CharacterRepository implements CharacterRepositoryInterface {
   }
 
   @override
-  Future<CharacterRecord?> getOne(String dungeonID, String characterID) async {
+  Future<CharacterRecord?> getOne(String characterID) async {
     final log = getLogger('CharacterRepository');
 
     var response = await api.getCharacter(
-      dungeonID,
       characterID,
     );
     if (response.error != null) {
@@ -102,10 +96,10 @@ class CharacterRepository implements CharacterRepositoryInterface {
   }
 
   @override
-  Future<List<CharacterRecord>> getMany(String dungeonID) async {
+  Future<List<CharacterRecord>> getMany() async {
     final log = getLogger('CharacterRepository');
 
-    var response = await api.getCharacters(dungeonID);
+    var response = await api.getCharacters();
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');
       RepositoryException exception = resolveApiException(response.error!);

@@ -3,11 +3,8 @@ package server
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
-	"sort"
 	"strings"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -175,7 +172,6 @@ func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, 
 
 		appendSummary(&b, config)
 
-		queryParams := config.MiddlewareConfig.ValidateQueryParams
 		querySchemaMain, querySchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateQueryParams)
 		if err != nil {
 			return nil, err
@@ -188,39 +184,11 @@ func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, 
 		}
 		appendSchemaWithReferences(&b, count, requestSchemaMain, requestSchemaReferences, "Request Body Schema")
 
-		responseSchemaLoc := config.MiddlewareConfig.ValidateResponseSchema.Main.GetFilePath()
-		authenTypes := ToAuthenticationSet(config.MiddlewareConfig.AuthenTypes...)
-		if _, ok := authenTypes[AuthenTypeAPIKey]; ok {
-			xAuthorizationSchema, err := rnr.loadSchema(responseSchemaLoc, "x-authorization.request.header.schema.json")
-			if err != nil {
-				return nil, err
-			}
-			appendHeaderSchema(&b, count, xAuthorizationSchema, "Request Header Schema")
-		}
-
 		responseSchemaMain, responseSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateResponseSchema)
 		if err != nil {
 			return nil, err
 		}
 		appendSchemaWithReferences(&b, count, responseSchemaMain, responseSchemaReferences, "Response Body Schema")
-
-		if !queryParams.IsEmpty() {
-			headerSchema, err := rnr.loadSchema(responseSchemaLoc, "x-pagination.response.header.schema.json")
-			if err != nil {
-				return nil, err
-			}
-			appendHeaderSchema(&b, count, headerSchema, "Response Header Schema")
-		}
-
-		errorSchema, err := rnr.loadSchema(responseSchemaLoc, "error.schema.json")
-		if err != nil {
-			return nil, err
-		}
-		if errorSchema != nil {
-			appendErrorSchema(&b, count, errorSchema)
-		}
-
-		appendErrorCodeDocumentation(&b, count, config)
 	}
 
 	fmt.Fprintf(&b, "<div class='footer'></div>")
@@ -287,38 +255,6 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 	return mainSchema, referenceSchemas, nil
 }
 
-func (rnr *Runner) loadSchema(schemaLoc string, schemaName string) ([]byte, error) {
-	var schema []byte
-
-	if schemaName == "" {
-		return schema, nil
-	}
-
-	schemaFilename := fmt.Sprintf("%s/%s", schemaLoc, schemaName)
-	schema, err := ioutil.ReadFile(schemaFilename)
-	if err != nil {
-		return schema, err
-	}
-
-	return schema, nil
-}
-
-func appendHeaderSchema(b *strings.Builder, count int, headerSchemaContent []byte, schemaLabel string) {
-	if headerSchemaContent == nil {
-		return
-	}
-
-	schemaLabelID := strings.Join(strings.Split(strings.ToLower(schemaLabel), " "), "-")
-
-	fmt.Fprintf(b, "<div class='schema'>\n")
-	fmt.Fprintf(b, "<div class='schema-label'>%s -</div>\n", schemaLabel)
-	fmt.Fprintf(b, "<div class='schema-toggle-visibility'><a href='#schema-%s-%d' class='toggle-visibility'>show / hide</a></div>", schemaLabelID, count)
-	fmt.Fprintf(b, "</span>\n</div>\n")
-	fmt.Fprintf(b, "<div id='schema-%s-%d' style='display: none'>\n", schemaLabelID, count)
-	fmt.Fprintf(b, "<pre class='schema-data'>%s</pre>\n", string(headerSchemaContent))
-	fmt.Fprintf(b, "</div>\n")
-}
-
 func appendSchemaWithReferences(b *strings.Builder, count int, schemaMainContent []byte, schemaReferenceContents [][]byte, schemaLabel string) {
 	if len(schemaMainContent) == 0 {
 		return
@@ -338,103 +274,6 @@ func appendSchemaWithReferences(b *strings.Builder, count int, schemaMainContent
 		fmt.Fprintf(b, "<pre class='schema-data'>%s</pre>\n", string(s))
 	}
 	fmt.Fprintf(b, "</div>\n")
-}
-
-func appendErrorSchema(b *strings.Builder, count int, errorSchemaContent []byte) {
-	fmt.Fprintf(b, "<div class='schema'>\n")
-	fmt.Fprintf(b, "<div class='schema-label'>Error Schema -</div>\n")
-	fmt.Fprintf(b, "<div class='schema-toggle-visibility'><a href='#error-schema-%d' class='toggle-visibility'>show / hide</a></div>", count)
-	fmt.Fprintf(b, "</span>\n</div>\n")
-	fmt.Fprintf(b, "<div id='error-schema-%d' style='display: none'>\n", count)
-	fmt.Fprintf(b, "<pre class='schema-data'>%s</pre>\n", string(errorSchemaContent))
-	fmt.Fprintf(b, "</div>\n")
-}
-
-func appendErrorCodeDocumentation(b *strings.Builder, count int, config HandlerConfig) {
-	errorDocs := CollectErrorDocumentation(config)
-	if len(errorDocs) == 0 {
-		return
-	}
-
-	fmt.Fprintf(b, "<div class='schema'>\n")
-	fmt.Fprintf(b, "<div class='schema-label'>Error Codes -</div>\n")
-	fmt.Fprintf(b, "<div class='schema-toggle-visibility'><a href='#error-code-documentation-%d' class='toggle-visibility'>show / hide</a></div>", count)
-	fmt.Fprintf(b, "</span>\n</div>\n")
-	fmt.Fprintf(b, "<div id='error-code-documentation-%d' style='display: none'>\n", count)
-
-	fmt.Fprintf(b, "<div class='schema-data'>\n")
-	fmt.Fprintf(b, "<table>")
-	fmt.Fprintf(b, "<tr>")
-	fmt.Fprintf(b, "<th><pre>Status Code</pre></th>")
-	fmt.Fprintf(b, "<th><pre>Error Code</pre></th>")
-	fmt.Fprintf(b, "<th><pre>Summary</pre></th>")
-	fmt.Fprintf(b, "</tr>")
-
-	for _, ed := range errorDocs {
-		fmt.Fprintf(b, "<tr>")
-		fmt.Fprintf(b, "<td><pre>%d</pre></td>", ed.HttpStatusCode)
-		fmt.Fprintf(b, "<td><pre>%s</pre></td>", ed.ErrorCode)
-		fmt.Fprintf(b, "<td><pre>%s</pre></td>", ed.Message)
-		fmt.Fprintf(b, "</tr>")
-	}
-
-	fmt.Fprintf(b, "</table>")
-	fmt.Fprintf(b, "</div>\n")
-
-	fmt.Fprintf(b, "</div>\n")
-}
-
-func CollectErrorDocumentation(config HandlerConfig) []coreerror.Error {
-	var ed []coreerror.Error
-	for _, d := range config.DocumentationConfig.ErrorRegistry {
-		ed = append(ed, d)
-	}
-
-	ed = append(ed, coreerror.GetRegistryError(coreerror.Internal))
-
-	if hasPathParam(config.Path) {
-		ed = append(ed, coreerror.GetRegistryError(coreerror.InvalidPathParam))
-		ed = append(ed, coreerror.GetRegistryError(coreerror.NotFound))
-	}
-
-	if !config.MiddlewareConfig.ValidateQueryParams.IsEmpty() {
-		ed = append(ed, coreerror.GetRegistryError(coreerror.InvalidQueryParam))
-	}
-
-	switch config.Method {
-	case http.MethodPost, http.MethodPut, http.MethodPatch:
-		ed = append(ed, coreerror.GetRegistryError(coreerror.SchemaValidation))
-		ed = append(ed, coreerror.GetRegistryError(coreerror.InvalidJSON))
-	}
-
-	authenTypes := ToAuthenticationSet(config.MiddlewareConfig.AuthenTypes...)
-	if _, ok := authenTypes[AuthenTypeAPIKey]; ok {
-		ed = append(ed, coreerror.GetRegistryError(coreerror.Unauthenticated))
-		ed = append(ed, coreerror.GetRegistryError(coreerror.Unauthorized))
-	}
-
-	sort.Slice(ed, func(i, j int) bool {
-		x := ed[i]
-		y := ed[j]
-
-		if x.HttpStatusCode != y.HttpStatusCode {
-			return x.HttpStatusCode < y.HttpStatusCode
-		}
-
-		return x.ErrorCode < y.ErrorCode
-	})
-
-	return ed
-}
-
-func hasPathParam(path string) bool {
-	for _, r := range path {
-		if r == ':' {
-			return true
-		}
-	}
-
-	return false
 }
 
 func (rnr *Runner) appendBuildInfo(b *strings.Builder) {

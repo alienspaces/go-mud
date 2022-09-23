@@ -5,9 +5,8 @@ import (
 	"os"
 
 	"gitlab.com/alienspaces/go-mud/server/core/cli"
-
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/cli/runner"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
+	runner "gitlab.com/alienspaces/go-mud/server/service/game/internal/runner/cli"
 )
 
 func main() {

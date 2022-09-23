@@ -7,10 +7,10 @@ import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 
-class HomeDungeonWidget extends StatelessWidget {
+class DungeonListItemWidget extends StatelessWidget {
   final NavigationCallbacks callbacks;
   final DungeonRecord dungeonRecord;
-  const HomeDungeonWidget(
+  const DungeonListItemWidget(
       {Key? key, required this.callbacks, required this.dungeonRecord})
       : super(key: key);
 
@@ -28,7 +28,7 @@ class HomeDungeonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('HomeDungeonWidget');
+    final log = getLogger('DungeonListItemWidget');
     log.fine(
         'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 

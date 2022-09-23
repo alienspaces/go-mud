@@ -7,6 +7,7 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
 // Application page packages
 import 'package:go_mud_client/pages/home.dart';
+import 'package:go_mud_client/pages/dungeon.dart';
 import 'package:go_mud_client/pages/character.dart';
 import 'package:go_mud_client/pages/game.dart';
 
@@ -26,11 +27,13 @@ typedef NavigationCallback = void Function(BuildContext context);
 class NavigationCallbacks {
   // Add a callback for every page we need to navigate to
   final NavigationCallback openHomePage;
+  final NavigationCallback openDungeonPage;
   final NavigationCallback openCharacterPage;
   final NavigationCallback openGamePage;
 
   NavigationCallbacks({
     required this.openHomePage,
+    required this.openDungeonPage,
     required this.openCharacterPage,
     required this.openGamePage,
   });
@@ -46,6 +49,14 @@ class _NavigationState extends State<Navigation> {
     log.fine('(openHomePage) Opening home page..');
     setState(() {
       _pageList = [HomePage.pageName];
+    });
+  }
+
+  void openDungeonPage(BuildContext context) {
+    final log = getLogger('Navigation');
+    log.fine('(openDungeonPage) Opening dungeon page..');
+    setState(() {
+      _pageList = [DungeonPage.pageName];
     });
   }
 
@@ -80,6 +91,7 @@ class _NavigationState extends State<Navigation> {
 
     NavigationCallbacks callbacks = NavigationCallbacks(
       openHomePage: openHomePage,
+      openDungeonPage: openDungeonPage,
       openCharacterPage: openCharacterPage,
       openGamePage: openGamePage,
     );
@@ -89,6 +101,10 @@ class _NavigationState extends State<Navigation> {
         case HomePage.pageName:
           log.fine('Adding ${HomePage.pageName}');
           pages.add(HomePage(callbacks: callbacks));
+          break;
+        case DungeonPage.pageName:
+          log.fine('Adding ${DungeonPage.pageName}');
+          pages.add(DungeonPage(callbacks: callbacks));
           break;
         case CharacterPage.pageName:
           log.fine('Adding ${CharacterPage.pageName}');

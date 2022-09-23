@@ -6,7 +6,6 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 
 const int maxAttributes = 36;
 
@@ -47,13 +46,6 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     log.fine('Creating character dexterity >$dexterity<');
     log.fine('Creating character intelligence >$intelligence<');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    if (dungeonCubit.dungeonRecord == null) {
-      log.warning(
-          'Dungeon cubit dungeon record is null, cannot create character');
-      return;
-    }
-
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     CreateCharacterRecord createCharacterRecord = CreateCharacterRecord(
       name: characterNameController.text,
@@ -62,8 +54,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
       intelligence: intelligence,
     );
 
-    characterCubit.createCharacter(
-        dungeonCubit.dungeonRecord!.id, createCharacterRecord);
+    characterCubit.createCharacter(createCharacterRecord);
   }
 
   void _incrementStrength() {

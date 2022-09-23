@@ -6,7 +6,7 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/server/core/server"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/runner"
+	runner "gitlab.com/alienspaces/go-mud/server/service/game/internal/runner/server"
 )
 
 func main() {

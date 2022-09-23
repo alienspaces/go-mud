@@ -107,8 +107,7 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> createCharacter(
-    String dungeonID, {
+  Future<APIResponse> createCharacter({
     required String name,
     required int strength,
     required int dexterity,
@@ -123,10 +122,10 @@ class API {
         scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
-        path: '/api/v1/dungeons/$dungeonID/characters',
+        path: '/api/v1/characters',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
@@ -164,7 +163,7 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> getCharacter(String dungeonID, String characterID) async {
+  Future<APIResponse> getCharacter(String characterID) async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
 
@@ -174,7 +173,7 @@ class API {
         scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
-        path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
+        path: '/api/v1/characters/$characterID',
       );
 
       log.fine('URI $uri');
@@ -199,7 +198,7 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> getCharacters(String dungeonID) async {
+  Future<APIResponse> getCharacters() async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
     http.Response? response;
@@ -208,7 +207,7 @@ class API {
         scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
-        path: '/api/v1/dungeons/$dungeonID/characters',
+        path: '/api/v1/characters',
       );
 
       log.fine('URI $uri');

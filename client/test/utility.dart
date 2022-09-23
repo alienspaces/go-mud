@@ -64,8 +64,7 @@ class MockAPI implements API {
   }
 
   @override
-  Future<APIResponse> createCharacter(
-    String dungeonID, {
+  Future<APIResponse> createCharacter({
     required String name,
     required int strength,
     required int dexterity,
@@ -75,12 +74,12 @@ class MockAPI implements API {
   }
 
   @override
-  Future<APIResponse> getCharacter(String dungeonID, String characterID) async {
+  Future<APIResponse> getCharacter(String characterID) async {
     return Future.value(APIResponse(body: ''));
   }
 
   @override
-  Future<APIResponse> getCharacters(String dungeonID) async {
+  Future<APIResponse> getCharacters() async {
     return Future.value(APIResponse(body: ''));
   }
 

@@ -11,14 +11,14 @@ void main() {
     final repository = CharacterRepository(config: getConfig(), api: getAPI());
     expect(repository, isNotNull, reason: 'CharacterRepository is not null');
 
-    final characters = await repository.getMany(testDungeonID);
+    final characters = await repository.getMany();
     expect(
       characters,
       isNotEmpty,
       reason: 'CharacterRepository getMany response is not empty',
     );
 
-    final character = await repository.getOne(testDungeonID, testCharacterID);
+    final character = await repository.getOne(testCharacterID);
     expect(
       character,
       isNotNull,

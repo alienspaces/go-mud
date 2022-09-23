@@ -37,9 +37,9 @@ class CharacterRecord extends Equatable {
   final int strength;
   final int dexterity;
   final int intelligence;
-  final int currentStrength;
-  final int currentDexterity;
-  final int currentIntelligence;
+  final int? currentStrength;
+  final int? currentDexterity;
+  final int? currentIntelligence;
   final int? health;
   final int? fatigue;
   final int? coins;
@@ -52,9 +52,9 @@ class CharacterRecord extends Equatable {
     required this.strength,
     required this.dexterity,
     required this.intelligence,
-    required this.currentStrength,
-    required this.currentDexterity,
-    required this.currentIntelligence,
+    this.currentStrength,
+    this.currentDexterity,
+    this.currentIntelligence,
     this.health,
     this.fatigue,
     this.coins,
