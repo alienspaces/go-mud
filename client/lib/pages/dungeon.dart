@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/dungeon/dungeon_container.dart';
+import 'package:go_mud_client/widgets/dungeon/dungeon.dart';
 
 class DungeonPage extends Page {
   static const String pageName = 'DungeonPage';

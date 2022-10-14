@@ -37,9 +37,6 @@ class CharacterRecord extends Equatable {
   final int strength;
   final int dexterity;
   final int intelligence;
-  final int? currentStrength;
-  final int? currentDexterity;
-  final int? currentIntelligence;
   final int? health;
   final int? fatigue;
   final int? coins;
@@ -52,9 +49,6 @@ class CharacterRecord extends Equatable {
     required this.strength,
     required this.dexterity,
     required this.intelligence,
-    this.currentStrength,
-    this.currentDexterity,
-    this.currentIntelligence,
     this.health,
     this.fatigue,
     this.coins,
@@ -68,9 +62,6 @@ class CharacterRecord extends Equatable {
         strength = json['strength'],
         dexterity = json['dexterity'],
         intelligence = json['intelligence'],
-        currentStrength = json['current_strength'],
-        currentDexterity = json['current_dexterity'],
-        currentIntelligence = json['current_intelligence'],
         health = json['health'],
         fatigue = json['fatigue'],
         coins = json['coins'],

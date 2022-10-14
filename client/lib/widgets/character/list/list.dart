@@ -4,72 +4,72 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
-import 'package:go_mud_client/widgets/dungeon/dungeon_list_item.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/widgets/character/list/list_item.dart';
 
-class DungeonListWidget extends StatefulWidget {
+class CharacterListWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
 
-  const DungeonListWidget({Key? key, required this.callbacks})
+  const CharacterListWidget({Key? key, required this.callbacks})
       : super(key: key);
 
   @override
-  State<DungeonListWidget> createState() => _DungeonListWidgetState();
+  State<CharacterListWidget> createState() => _CharacterListWidgetState();
 }
 
-class _DungeonListWidgetState extends State<DungeonListWidget> {
+class _CharacterListWidgetState extends State<CharacterListWidget> {
   @override
   void initState() {
-    final log = getLogger('DungeonListWidget');
+    final log = getLogger('CharacterListWidget');
     log.fine('Initialising state..');
 
     super.initState();
 
-    _loadDungeons(context);
+    _loadCharacters(context);
   }
 
-  void _loadDungeons(BuildContext context) {
-    final log = getLogger('DungeonListWidget');
+  void _loadCharacters(BuildContext context) {
+    final log = getLogger('CharacterListWidget');
     log.fine('Loading dungeons');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    dungeonCubit.loadDungeons();
+    final dungeonCubit = BlocProvider.of<CharacterCubit>(context);
+    dungeonCubit.loadCharacters();
   }
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('DungeonListWidget');
+    final log = getLogger('CharacterListWidget');
     log.fine('Building..');
 
-    return BlocConsumer<DungeonCubit, DungeonState>(
+    return BlocConsumer<CharacterCubit, CharacterState>(
       listener: (context, state) {
         log.fine('listener...');
       },
-      builder: (BuildContext context, DungeonState state) {
+      builder: (BuildContext context, CharacterState state) {
         log.fine('builder...');
         List<Widget> widgets = [];
 
-        if (state is DungeonStateLoaded) {
-          // Dungeon list
-          state.dungeonRecords?.forEach((dungeonRecord) {
+        if (state is CharacterStateLoaded) {
+          // Character list
+          state.characterRecords?.forEach((characterRecord) {
             log.fine('Displaying dungeon widget');
             widgets.add(
               // ignore: avoid_unnecessary_containers
               Container(
-                child: DungeonListItemWidget(
+                child: CharacterListItemWidget(
                   callbacks: widget.callbacks,
-                  dungeonRecord: dungeonRecord,
+                  characterRecord: characterRecord,
                 ),
               ),
             );
           });
-        } else if (state is DungeonStateLoadError) {
+        } else if (state is CharacterStateLoadError) {
           widgets.add(
             // ignore: avoid_unnecessary_containers
             Container(
               child: ElevatedButton(
-                onPressed: () => _loadDungeons(context),
-                child: const Text('Load Dungeons'),
+                onPressed: () => _loadCharacters(context),
+                child: const Text('Load Characters'),
               ),
             ),
           );

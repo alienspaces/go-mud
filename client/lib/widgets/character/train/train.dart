@@ -71,7 +71,7 @@ class _CharacterTrainWidgetState extends State<CharacterTrainWidget> {
                     // ignore: avoid_unnecessary_containers
                     Container(
                       child: Text(
-                        state.characterRecord.name,
+                        'Train: ${state.characterRecord.name}',
                         style: Theme.of(context).textTheme.headline5,
                       ),
                     ),

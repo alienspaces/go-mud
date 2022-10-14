@@ -9,11 +9,13 @@ import 'package:go_mud_client/logger.dart';
 part 'character_state.dart';
 
 const int maxAttributes = 36;
+const int maxCharacters = 3;
 
 class CharacterCubit extends Cubit<CharacterState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
 
+  List<CharacterRecord>? characterRecords;
   CharacterRecord? characterRecord;
 
   CharacterCubit({required this.config, required this.repositories})
@@ -24,11 +26,27 @@ class CharacterCubit extends Cubit<CharacterState> {
     emit(const CharacterStateInitial());
   }
 
+  bool canCreateCharacter() {
+    if (characterRecords == null) {
+      return true;
+    }
+    if (characterRecords != null && characterRecords!.length >= maxCharacters) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> initCreateCharacter() async {
+    if (canCreateCharacter()) {
+      emit(const CharacterStateCreate());
+    }
+  }
+
   Future<void> createCharacter(CreateCharacterRecord characterRecord) async {
     final log = getLogger('CharacterCubit');
     log.fine('Creating character $characterRecord');
 
-    emit(const CharacterStateCreating());
+    emit(const CharacterStateCreate());
 
     if (characterRecord.strength +
             characterRecord.dexterity +
@@ -56,11 +74,30 @@ class CharacterCubit extends Cubit<CharacterState> {
     if (createdCharacterRecord != null) {
       log.fine('Created character $createdCharacterRecord');
       this.characterRecord = createdCharacterRecord;
+      characterRecords ??= [];
+      characterRecords?.add(createdCharacterRecord);
       emit(CharacterStateSelected(characterRecord: createdCharacterRecord));
     }
   }
 
-  Future<void> loadCharacter(String dungeonID, String characterID) async {
+  Future<void> loadCharacters() async {
+    final log = getLogger('CharacterCubit');
+    log.fine('Loading characters...');
+    emit(const CharacterStateLoading());
+
+    List<CharacterRecord>? characterRecords;
+
+    try {
+      characterRecords = await repositories.characterRepository.getMany();
+    } catch (err) {
+      emit(const CharacterStateLoadError());
+      return;
+    }
+
+    emit(CharacterStateLoaded(characterRecords: characterRecords));
+  }
+
+  Future<void> loadCharacter(String characterID) async {
     final log = getLogger('CharacterCubit');
     log.fine('Creating character ID $characterID');
 
@@ -74,5 +111,16 @@ class CharacterCubit extends Cubit<CharacterState> {
     if (loadedCharacterRecord != null) {
       emit(CharacterStateSelected(characterRecord: loadedCharacterRecord));
     }
+  }
+
+  Future<void> selectCharacter(CharacterRecord characterRecord) async {
+    this.characterRecord = characterRecord;
+
+    emit(
+      CharacterStateLoaded(
+        characterRecords: characterRecords,
+        currentCharacterRecord: characterRecord,
+      ),
+    );
   }
 }

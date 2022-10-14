@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+// import 'package:go_mud_client/cubit/character/character_cubit.dart';
+// import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 
+// ignore: unused_element
 void _showDialogue(
     BuildContext context, String content, void Function() continueFunc) {
   Widget cancelButton = ElevatedButton(
@@ -44,15 +45,19 @@ void _showDialogue(
 void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
   final log = getLogger('Header');
 
-  _showDialogue(context, 'Exit the game?', () {
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
-    characterCubit.clearCharacter();
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    dungeonCubit.clearDungeon();
+  // Confirmation dialogue example
+  // _showDialogue(context, 'Exit the game?', () {
+  //   final characterCubit = BlocProvider.of<CharacterCubit>(context);
+  //   characterCubit.clearCharacter();
+  //   final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
+  //   dungeonCubit.clearDungeon();
 
-    log.fine('Navigating to home page...');
-    callbacks.openHomePage(context);
-  });
+  //   log.fine('Navigating to home page...');
+  //   callbacks.openHomePage(context);
+  // });
+
+  log.fine('Navigating to home page...');
+  callbacks.openHomePage(context);
 }
 
 void _navigateCharacter(BuildContext context, NavigationCallbacks callbacks) {
@@ -92,30 +97,30 @@ Widget _buildLink(
 }
 
 AppBar header(BuildContext context, NavigationCallbacks callbacks) {
-  final characterCubit = BlocProvider.of<CharacterCubit>(context);
-  final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
+  // final characterCubit = BlocProvider.of<CharacterCubit>(context);
+  // final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
 
   List<Widget> links = [];
 
-  if (characterCubit.characterRecord != null) {
-    links.add(
-      _buildLink(context, 'Home', () => _navigateHome(context, callbacks)),
-    );
-  }
+  // if (characterCubit.characterRecord != null) {
+  links.add(
+    _buildLink(context, 'Home', () => _navigateHome(context, callbacks)),
+  );
+  // }
 
-  if (characterCubit.characterRecord != null) {
-    links.add(
-      _buildLink(
-          context, 'Character', () => _navigateCharacter(context, callbacks)),
-    );
-  }
+  // if (characterCubit.characterRecord != null) {
+  links.add(
+    _buildLink(
+        context, 'Character', () => _navigateCharacter(context, callbacks)),
+  );
+  // }
 
-  if (characterCubit.characterRecord != null &&
-      dungeonCubit.dungeonRecord != null) {
-    links.add(
-      _buildLink(context, 'Dungeon', () => _navigateGame(context, callbacks)),
-    );
-  }
+  // if (characterCubit.characterRecord != null &&
+  //     dungeonCubit.dungeonRecord != null) {
+  links.add(
+    _buildLink(context, 'Dungeon', () => _navigateGame(context, callbacks)),
+  );
+  // }
 
   return AppBar(
     // ignore: avoid_unnecessary_containers

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/widgets/dungeon/dungeon_list.dart';
+import 'package:go_mud_client/widgets/dungeon/list/list.dart';
 
 class DungeonContainerWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;

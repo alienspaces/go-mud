@@ -179,7 +179,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
           ];
         }
 
-        if (state is CharacterStateInitial ||
+        if (state is CharacterStateCreate ||
             state is CharacterStateCreateError) {
           List<Widget> formWidgets = [
             // ignore: avoid_unnecessary_containers

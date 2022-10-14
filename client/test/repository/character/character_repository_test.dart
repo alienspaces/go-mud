@@ -50,24 +50,6 @@ void main() {
       reason: 'CharacterRepository getOne character.intelligence is not null',
     );
     expect(
-      character.currentStrength,
-      isNotNull,
-      reason:
-          'CharacterRepository getOne character.currentStrength is not null',
-    );
-    expect(
-      character.currentDexterity,
-      isNotNull,
-      reason:
-          'CharacterRepository getOne character.currentDexterity is not null',
-    );
-    expect(
-      character.currentIntelligence,
-      isNotNull,
-      reason:
-          'CharacterRepository getOne character.currentIntelligence is not null',
-    );
-    expect(
       character.health,
       isNotNull,
       reason: 'CharacterRepository getOne character.health is not null',
