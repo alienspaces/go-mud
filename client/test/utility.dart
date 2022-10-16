@@ -84,6 +84,28 @@ class MockAPI implements API {
   }
 
   @override
+  Future<APIResponse> createDungeonCharacter(
+    String dungeonID,
+    String characterID,
+  ) async {
+    return Future.value(APIResponse(body: ''));
+  }
+
+  @override
+  Future<APIResponse> getDungeonCharacter(
+      String dungeonID, String characterID) async {
+    return Future.value(APIResponse(body: ''));
+  }
+
+  @override
+  Future<APIResponse> deleteDungeonCharacter(
+    String dungeonID,
+    String characterID,
+  ) async {
+    return Future.value(APIResponse(body: ''));
+  }
+
+  @override
   Future<APIResponse> createDungeonAction(
     String dungeonID,
     String characterID,

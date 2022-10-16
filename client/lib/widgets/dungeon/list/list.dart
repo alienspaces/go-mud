@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/dungeon/list/list_item.dart';
 
 class DungeonListWidget extends StatefulWidget {
@@ -24,6 +25,8 @@ class _DungeonListWidgetState extends State<DungeonListWidget> {
     log.fine('Initialising state..');
 
     super.initState();
+
+    // TODO: Verify we have a current character and navigate when not.
 
     _loadDungeons(context);
   }
@@ -47,6 +50,7 @@ class _DungeonListWidgetState extends State<DungeonListWidget> {
       },
       builder: (BuildContext context, DungeonState state) {
         log.fine('builder...');
+
         List<Widget> widgets = [];
 
         if (state is DungeonStateLoaded) {

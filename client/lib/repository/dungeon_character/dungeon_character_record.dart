@@ -3,6 +3,12 @@ part of 'dungeon_character_repository.dart';
 
 class DungeonCharacterRecord extends Equatable {
   final String id;
+  final String dungeonID;
+  final String dungeonName;
+  final String dungeonDescription;
+  final String locationID;
+  final String locationName;
+  final String locationDescription;
   final String name;
   final int strength;
   final int dexterity;
@@ -20,6 +26,12 @@ class DungeonCharacterRecord extends Equatable {
 
   const DungeonCharacterRecord({
     required this.id,
+    required this.dungeonID,
+    required this.dungeonName,
+    required this.dungeonDescription,
+    required this.locationID,
+    required this.locationName,
+    required this.locationDescription,
     required this.name,
     required this.strength,
     required this.dexterity,
@@ -38,6 +50,12 @@ class DungeonCharacterRecord extends Equatable {
 
   DungeonCharacterRecord.fromJson(Map<String, dynamic> json)
       : id = json['id'],
+        dungeonID = json['dungeon_id'],
+        dungeonName = json['dungeon_name'],
+        dungeonDescription = json['dungeon_description'],
+        locationID = json['location_id'],
+        locationName = json['location_name'],
+        locationDescription = json['location_description'],
         name = json['name'],
         strength = json['strength'],
         dexterity = json['dexterity'],

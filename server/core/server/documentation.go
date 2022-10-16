@@ -83,12 +83,9 @@ func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, 
 		padding-bottom: 8px;
 	}
 	.schema-label {
-		display: inline-block;
-		width: 140px;
+		padding-right: 10px;
 	}
 	.schema-toggle-visibility {
-		display: inline-block;
-		width: 140px;
 	}
 	.schema-data {
 		background-color: #ffffff;
@@ -150,45 +147,49 @@ func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, 
 
 	rnr.appendAPIDocumentationURL(&b)
 
-	fmt.Fprintf(&b, "<h3 class='header'>Messages</h3>")
-	for count, cfg := range messageConfigs {
-		appendMessageConfig(&b, cfg)
+	if len(messageConfigs) > 0 {
+		fmt.Fprintf(&b, "<h3 class='header'>Messages</h3>")
+		for count, cfg := range messageConfigs {
+			appendMessageConfig(&b, cfg)
 
-		schemaMain, schemaData, err := rnr.loadSchemaWithReferences(cfg.ValidateSchema)
-		if err != nil {
-			return nil, err
+			schemaMain, schemaData, err := rnr.loadSchemaWithReferences(cfg.ValidateSchema)
+			if err != nil {
+				return nil, err
+			}
+
+			appendSchemaWithReferences(&b, count, schemaMain, schemaData, "Body Schema")
 		}
-
-		appendSchemaWithReferences(&b, count, schemaMain, schemaData, "Body Schema")
 	}
 
-	fmt.Fprintf(&b, "<h3 class='header'>API</h3>")
-	for count, config := range sortHandlerConfigs(handlerConfigs) {
+	if len(handlerConfigs) > 0 {
+		fmt.Fprintf(&b, "<h3 class='header'>API</h3>")
+		for count, config := range sortHandlerConfigs(handlerConfigs) {
 
-		if !config.DocumentationConfig.Document {
-			// skip documenting this endpoint
-			continue
+			if !config.DocumentationConfig.Document {
+				// skip documenting this endpoint
+				continue
+			}
+
+			appendSummary(&b, config)
+
+			querySchemaMain, querySchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateQueryParams)
+			if err != nil {
+				return nil, err
+			}
+			appendSchemaWithReferences(&b, count, querySchemaMain, querySchemaReferences, "Query Params Schema")
+
+			requestSchemaMain, requestSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateRequestSchema)
+			if err != nil {
+				return nil, err
+			}
+			appendSchemaWithReferences(&b, count, requestSchemaMain, requestSchemaReferences, "Request Body Schema")
+
+			responseSchemaMain, responseSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateResponseSchema)
+			if err != nil {
+				return nil, err
+			}
+			appendSchemaWithReferences(&b, count, responseSchemaMain, responseSchemaReferences, "Response Body Schema")
 		}
-
-		appendSummary(&b, config)
-
-		querySchemaMain, querySchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateQueryParams)
-		if err != nil {
-			return nil, err
-		}
-		appendSchemaWithReferences(&b, count, querySchemaMain, querySchemaReferences, "Query Params Schema")
-
-		requestSchemaMain, requestSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateRequestSchema)
-		if err != nil {
-			return nil, err
-		}
-		appendSchemaWithReferences(&b, count, requestSchemaMain, requestSchemaReferences, "Request Body Schema")
-
-		responseSchemaMain, responseSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateResponseSchema)
-		if err != nil {
-			return nil, err
-		}
-		appendSchemaWithReferences(&b, count, responseSchemaMain, responseSchemaReferences, "Response Body Schema")
 	}
 
 	fmt.Fprintf(&b, "<div class='footer'></div>")
@@ -262,10 +263,14 @@ func appendSchemaWithReferences(b *strings.Builder, count int, schemaMainContent
 
 	schemaLabelID := strings.Join(strings.Split(strings.ToLower(schemaLabel), " "), "-")
 
+	// fmt.Fprintf(b, "<div class='schema'>\n")
+	// fmt.Fprintf(b, "<div class='schema-label'>%s</div>\n", schemaLabel)
+	// fmt.Fprintf(b, "<div class='schema-toggle-visibility'><a href='#schema-%s-%d' class='toggle-visibility'>show / hide</a></div>", schemaLabelID, count)
+	// fmt.Fprintf(b, "</span>\n</div>\n")
 	fmt.Fprintf(b, "<div class='schema'>\n")
-	fmt.Fprintf(b, "<div class='schema-label'>%s -</div>\n", schemaLabel)
-	fmt.Fprintf(b, "<div class='schema-toggle-visibility'><a href='#schema-%s-%d' class='toggle-visibility'>show / hide</a></div>", schemaLabelID, count)
-	fmt.Fprintf(b, "</span>\n</div>\n")
+	fmt.Fprintf(b, "<span class='schema-label'>%s</span>\n", schemaLabel)
+	fmt.Fprintf(b, "<span class='schema-toggle-visibility'><a href='#schema-%s-%d' class='toggle-visibility'>show / hide</a></span>", schemaLabelID, count)
+	fmt.Fprintf(b, "</div>\n")
 	fmt.Fprintf(b, "<div id='schema-%s-%d' style='display: none'>\n", schemaLabelID, count)
 	if len(schemaMainContent) > 0 {
 		fmt.Fprintf(b, "<pre class='schema-data'>%s</pre>\n", string(schemaMainContent))

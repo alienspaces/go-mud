@@ -25,14 +25,25 @@ class CharacterCreateButtonWidget extends StatelessWidget {
     final log = getLogger('CharacterCreateButtonWidget');
     log.fine('Building..');
 
+    ButtonStyle buttonStyle = ElevatedButton.styleFrom(
+      padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+      textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
+    );
+
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
 
     if (characterCubit.canCreateCharacter()) {
       // ignore: avoid_unnecessary_containers
       return Container(
+        margin: const EdgeInsets.all(5),
+        // decoration: BoxDecoration(
+        //   border: Border.all(width: 2),
+        // ),
+        alignment: Alignment.centerRight,
         child: ElevatedButton(
-          child: const Text('Create Character'),
           onPressed: () => _initCreateCharacter(context),
+          style: buttonStyle,
+          child: const Text('Create Character'),
         ),
       );
     }

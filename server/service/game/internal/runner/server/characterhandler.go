@@ -90,12 +90,6 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 						Location: "schema/docs/character",
 						Name:     "create.request.schema.json",
 					},
-					References: []jsonschema.Schema{
-						{
-							Location: "schema/docs/character",
-							Name:     "data.schema.json",
-						},
-					},
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{

@@ -10,10 +10,18 @@ import 'package:go_mud_client/repository/repository.dart';
 part 'dungeon_character_record.dart';
 
 abstract class DungeonCharacterRepositoryInterface {
-  Future<DungeonCharacterRecord?> getOne(
+  Future<DungeonCharacterRecord?> createOne(
+    String dungeonID,
     String characterID,
   );
-  Future<List<DungeonCharacterRecord>> getMany();
+  Future<DungeonCharacterRecord?> getOne(
+    String dungeonID,
+    String characterID,
+  );
+  Future<void> deleteOne(
+    String dungeonID,
+    String characterID,
+  );
 }
 
 class DungeonCharacterRepository
@@ -24,10 +32,53 @@ class DungeonCharacterRepository
   DungeonCharacterRepository({required this.config, required this.api});
 
   @override
-  Future<DungeonCharacterRecord?> getOne(String characterID) async {
+  Future<DungeonCharacterRecord?> createOne(
+    String dungeonID,
+    String characterID,
+  ) async {
     final log = getLogger('DungeonCharacterRepository');
 
-    var response = await api.getCharacter(
+    var response = await api.createDungeonCharacter(
+      dungeonID,
+      characterID,
+    );
+
+    log.info('APIResponse body ${response.body}');
+    log.info('APIResponse error ${response.error}');
+
+    if (response.error != null) {
+      log.warning('API responded with error ${response.error}');
+      RepositoryException exception = resolveApiException(response.error!);
+      throw exception;
+    }
+
+    DungeonCharacterRecord? record;
+    String? responseBody = response.body;
+    if (responseBody != null && responseBody.isNotEmpty) {
+      Map<String, dynamic> decoded = jsonDecode(responseBody);
+      if (decoded['data'] != null) {
+        List<dynamic> data = decoded['data'];
+        log.fine('Decoded response $data');
+        if (data.length > 1) {
+          log.warning('Unexpected number of records returned');
+          throw RecordCountException('Unexpected number of records returned');
+        }
+        record = DungeonCharacterRecord.fromJson(data[0]);
+      }
+    }
+
+    return record;
+  }
+
+  @override
+  Future<DungeonCharacterRecord?> getOne(
+    String dungeonID,
+    String characterID,
+  ) async {
+    final log = getLogger('DungeonCharacterRepository');
+
+    var response = await api.getDungeonCharacter(
+      dungeonID,
       characterID,
     );
     if (response.error != null) {
@@ -55,29 +106,26 @@ class DungeonCharacterRepository
   }
 
   @override
-  Future<List<DungeonCharacterRecord>> getMany() async {
+  Future<void> deleteOne(
+    String dungeonID,
+    String characterID,
+  ) async {
     final log = getLogger('DungeonCharacterRepository');
 
-    var response = await api.getCharacters();
+    var response = await api.deleteDungeonCharacter(
+      dungeonID,
+      characterID,
+    );
+
+    log.info('APIResponse body ${response.body}');
+    log.info('APIResponse error ${response.error}');
+
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');
       RepositoryException exception = resolveApiException(response.error!);
       throw exception;
     }
 
-    List<DungeonCharacterRecord> records = [];
-    String? responseBody = response.body;
-    if (responseBody != null && responseBody.isNotEmpty) {
-      Map<String, dynamic> decoded = jsonDecode(responseBody);
-      if (decoded['data'] != null) {
-        List<dynamic> data = decoded['data'];
-        log.fine('Decoded response $data');
-        for (var element in data) {
-          records.add(DungeonCharacterRecord.fromJson(element));
-        }
-      }
-    }
-
-    return records;
+    return;
   }
 }

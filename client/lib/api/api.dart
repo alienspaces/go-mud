@@ -228,6 +228,118 @@ class API {
     return APIResponse(body: responseBody);
   }
 
+  Future<APIResponse> createDungeonCharacter(
+    String dungeonID,
+    String characterID,
+  ) async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/dungeons/$dungeonID/characters/$characterID/enter',
+      );
+
+      log.fine('URI $uri');
+
+      response = await client.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    log.fine('Response: $responseBody');
+
+    return APIResponse(body: responseBody);
+  }
+
+  Future<APIResponse> getDungeonCharacter(
+      String dungeonID, String characterID) async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
+      );
+
+      log.fine('URI $uri');
+
+      response = await client.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    log.fine('Response: $responseBody');
+
+    return APIResponse(body: responseBody);
+  }
+
+  Future<APIResponse> deleteDungeonCharacter(
+    String dungeonID,
+    String characterID,
+  ) async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/dungeons/$dungeonID/characters/$characterID/exit',
+      );
+
+      log.fine('URI $uri');
+
+      response = await client.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    log.fine('Response: $responseBody');
+
+    return APIResponse(body: responseBody);
+  }
+
   Future<APIResponse> createDungeonAction(
     String dungeonID,
     String characterID,

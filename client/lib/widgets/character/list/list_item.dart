@@ -17,20 +17,18 @@ class CharacterListItemWidget extends StatelessWidget {
   /// Sets the current character state to the provided character
   void _selectCharacter(BuildContext context, CharacterRecord characterRecord) {
     final log = getLogger('CharacterListItemWidget');
-    log.fine(
-        'Select current character ${characterRecord.id} ${characterRecord.name}');
+    log.fine('Select ${characterRecord.id} ${characterRecord.name}');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     characterCubit.selectCharacter(characterRecord);
 
-    callbacks.openCharacterPage(context);
+    callbacks.openDungeonPage(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterListItemWidget');
-    log.fine(
-        'Select current character ${characterRecord.id} ${characterRecord.name}');
+    log.fine('Display ${characterRecord.id} ${characterRecord.name}');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
@@ -44,6 +42,7 @@ class CharacterListItemWidget extends StatelessWidget {
       builder: (BuildContext context, CharacterState state) {
         // ignore: avoid_unnecessary_containers
         return Container(
+          margin: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             border: Border.all(width: 2),
           ),
@@ -51,15 +50,34 @@ class CharacterListItemWidget extends StatelessWidget {
             children: [
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(characterRecord.name,
-                    style: Theme.of(context).textTheme.headline3),
+                child: Text(
+                  characterRecord.name,
+                  style: Theme.of(context).textTheme.headline3,
+                ),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: ElevatedButton(
-                  onPressed: () => _selectCharacter(context, characterRecord),
-                  style: buttonStyle,
-                  child: const Text('Play'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      child: ElevatedButton(
+                        onPressed: () => {null},
+                        style: buttonStyle,
+                        child: const Text('Delete'),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            _selectCharacter(context, characterRecord),
+                        style: buttonStyle,
+                        child: const Text('Play'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

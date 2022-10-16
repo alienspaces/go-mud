@@ -377,6 +377,8 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 
 	l.Info("Exiting dungeon ID with character ID >%s<", dungeonID, characterID)
 
+	// TODO: Implemented exiting the dungeon
+
 	err = server.WriteResponse(l, w, nil)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)

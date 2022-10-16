@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 
 class DungeonListItemWidget extends StatelessWidget {
@@ -15,15 +16,21 @@ class DungeonListItemWidget extends StatelessWidget {
       : super(key: key);
 
   /// Sets the current dungeon state to the provided dungeon
-  void _selectDungeon(BuildContext context, DungeonRecord dungeonRecord) {
+  void _enterDungeon(
+    BuildContext context,
+    String dungeonID,
+    String characterID,
+  ) {
     final log = getLogger('HomeGameWidget');
     log.fine(
         'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    dungeonCubit.selectDungeon(dungeonRecord);
+    final dungeonCharacterCubit =
+        BlocProvider.of<DungeonCharacterCubit>(context);
 
-    callbacks.openCharacterPage(context);
+    dungeonCharacterCubit.createDungeonCharacter(dungeonID, characterID);
+
+    callbacks.openGamePage(context);
   }
 
   @override
@@ -37,36 +44,51 @@ class DungeonListItemWidget extends StatelessWidget {
       textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
     );
 
-    return BlocConsumer<DungeonCubit, DungeonState>(
-      listener: (BuildContext context, DungeonState state) {
-        //
-      },
-      builder: (BuildContext context, DungeonState state) {
-        // ignore: avoid_unnecessary_containers
-        return Container(
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(dungeonRecord.name,
-                    style: Theme.of(context).textTheme.headline3),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(dungeonRecord.description),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: ElevatedButton(
-                  onPressed: () => _selectDungeon(context, dungeonRecord),
-                  style: buttonStyle,
-                  child: const Text('Play'),
-                ),
-              ),
-            ],
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    var characterRecord = characterCubit.characterRecord;
+    if (characterRecord == null) {
+      return Container();
+    }
+
+    // ignore: avoid_unnecessary_containers
+    return Container(
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(width: 2),
+      ),
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Text(dungeonRecord.name,
+                style: Theme.of(context).textTheme.headline3),
           ),
-        );
-      },
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Text(dungeonRecord.description),
+          ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  child: ElevatedButton(
+                    onPressed: () => _enterDungeon(
+                      context,
+                      dungeonRecord.id,
+                      characterRecord.id,
+                    ),
+                    style: buttonStyle,
+                    child: const Text('Enter'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
