@@ -277,14 +277,11 @@ func TestPreparePrepare(t *testing.T) {
 
 		// Test SQL functions
 		testSQLFuncs := map[string]func(p preparable.Repository) string{
-			"GetOneSQL":     p.GetOneSQL,
-			"GetManySQL":    p.GetManySQL,
-			"CreateSQL":     p.CreateSQL,
-			"UpdateOneSQL":  p.UpdateOneSQL,
-			"DeleteOneSQL":  p.DeleteOneSQL,
-			"DeleteManySQL": p.DeleteManySQL,
-			"RemoveOneSQL":  p.RemoveOneSQL,
-			"RemoveManySQL": p.RemoveManySQL,
+			"GetOneSQL":    p.GetOneSQL,
+			"CreateSQL":    p.CreateSQL,
+			"UpdateOneSQL": p.UpdateOneSQL,
+			"DeleteOneSQL": p.DeleteOneSQL,
+			"RemoveOneSQL": p.RemoveOneSQL,
 		}
 
 		for testFuncName, testFunc := range testSQLFuncs {
@@ -292,17 +289,6 @@ func TestPreparePrepare(t *testing.T) {
 			// Expecting SQL
 			sql := testFunc(r)
 			assert.NotEmpty(t, sql, fmt.Sprintf("Function %s returns SQL", testFuncName))
-		}
-
-		testSQLFuncs = map[string]func(p preparable.Repository) string{
-			"UpdateManySQL": p.UpdateManySQL,
-		}
-
-		for testFuncName, testFunc := range testSQLFuncs {
-			t.Logf("Function %s does NOT return SQL", testFuncName)
-			// Not expecting SQL
-			sql := testFunc(r)
-			assert.Empty(t, sql, fmt.Sprintf("Function %s does not return SQL", testFuncName))
 		}
 
 		// Test Stmt functions
@@ -319,14 +305,10 @@ func TestPreparePrepare(t *testing.T) {
 
 		// Test NamedStmt functions
 		testNamedStmtFuncs := map[string]func(p preparable.Repository) *sqlx.NamedStmt{
-			"GetManyStmt":    p.GetManyStmt,
-			"CreateOneStmt":  p.CreateOneStmt,
-			"UpdateOneStmt":  p.UpdateOneStmt,
-			"UpdateManyStmt": p.UpdateManyStmt,
-			"DeleteOneStmt":  p.DeleteOneStmt,
-			"DeleteManyStmt": p.DeleteManyStmt,
-			"RemoveOneStmt":  p.RemoveOneStmt,
-			"RemoveManyStmt": p.RemoveManyStmt,
+			"CreateOneStmt": p.CreateOneStmt,
+			"UpdateOneStmt": p.UpdateOneStmt,
+			"DeleteOneStmt": p.DeleteOneStmt,
+			"RemoveOneStmt": p.RemoveOneStmt,
 		}
 
 		for testFuncName, testFunc := range testNamedStmtFuncs {
@@ -381,14 +363,10 @@ func TestPreparePrepare(t *testing.T) {
 
 		// Test NamedStmt functions
 		testNamedStmtFuncs := map[string]func(p preparable.Repository) *sqlx.NamedStmt{
-			"GetManyStmt":    p.GetManyStmt,
-			"CreateOneStmt":  p.CreateOneStmt,
-			"UpdateOneStmt":  p.UpdateOneStmt,
-			"UpdateManyStmt": p.UpdateManyStmt,
-			"DeleteOneStmt":  p.DeleteOneStmt,
-			"DeleteManyStmt": p.DeleteManyStmt,
-			"RemoveOneStmt":  p.RemoveOneStmt,
-			"RemoveManyStmt": p.RemoveManyStmt,
+			"CreateOneStmt": p.CreateOneStmt,
+			"UpdateOneStmt": p.UpdateOneStmt,
+			"DeleteOneStmt": p.DeleteOneStmt,
+			"RemoveOneStmt": p.RemoveOneStmt,
 		}
 
 		for testFuncName, testFunc := range testNamedStmtFuncs {

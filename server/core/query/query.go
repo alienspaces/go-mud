@@ -13,11 +13,11 @@ import (
 )
 
 type Query struct {
-	Config  Config
-	Log     logger.Logger
-	Tx      *sqlx.Tx
-	Prepare preparer.Query
-	Alias   string
+	Config   Config
+	Log      logger.Logger
+	Tx       *sqlx.Tx
+	Preparer preparer.Query
+	Alias    string
 }
 
 type Config struct {
@@ -34,8 +34,8 @@ func (q *Query) Init() error {
 		return errors.New("query Tx is nil, cannot initialise")
 	}
 
-	if q.Prepare == nil {
-		return errors.New("query Prepare is nil, cannot initialise")
+	if q.Preparer == nil {
+		return errors.New("query Preparer is nil, cannot initialise")
 	}
 
 	return nil
@@ -49,7 +49,7 @@ func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
 	l := q.Log
 	tx := q.Tx
 
-	stmt := q.Prepare.Stmt()
+	stmt := q.Preparer.Stmt(q)
 	stmt = tx.NamedStmt(stmt)
 
 	res, err := stmt.Exec(params)
@@ -61,18 +61,18 @@ func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
 	return res, err
 }
 
-func (q *Query) GetRows(params map[string]interface{}, operators map[string]string) (*sqlx.Rows, error) {
+func (q *Query) GetRows(sql string, params map[string]interface{}, operators map[string]string) (*sqlx.Rows, error) {
 	l := q.Log
 	tx := q.Tx
 
 	// params
-	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Alias, q.Prepare.SQL(), params, operators)
+	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Alias, sql, params, operators)
 	if err != nil {
 		l.Warn("failed generating query >%v<", err)
 		return nil, err
 	}
 
-	l.Debug("** Resulting SQL >%s< Params >%#v<", querySQL, queryParams)
+	l.Warn("SQL >%s< Params >%#v<", querySQL, queryParams)
 
 	rows, err := tx.NamedQuery(querySQL, queryParams)
 	if err != nil {

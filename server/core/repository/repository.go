@@ -124,11 +124,7 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 	l := r.Logger("GetManyRecs")
 	tx := r.Tx
 
-	// preparer
-	p := r.Prepare
-
-	// stmt
-	querySQL := p.GetManySQL(r)
+	querySQL := r.GetManySQL()
 
 	// params
 	querySQL, queryParams, err := coresql.FromParamsAndOperators("", querySQL, params, operators)
@@ -141,7 +137,7 @@ func (r *Repository) GetManyRecs(params map[string]interface{}, operators map[st
 		querySQL += "FOR UPDATE SKIP LOCKED"
 	}
 
-	l.Debug("Resulting SQL >%s< Params >%#v<", querySQL, queryParams)
+	l.Debug("SQL >%s< Params >%#v<", querySQL, queryParams)
 
 	rows, err = tx.NamedQuery(querySQL, queryParams)
 	if err != nil {
@@ -306,8 +302,7 @@ SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL FOR UPDATE SKIP LOCKED
 // GetManySQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetManySQL() string {
 	return fmt.Sprintf(`
-SELECT %s FROM %s WHERE deleted_at IS NULL
-`,
+SELECT %s FROM %s WHERE deleted_at IS NULL `,
 		commaSeparated(r.Attributes()),
 		r.TableName())
 }

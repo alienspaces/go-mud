@@ -25,12 +25,12 @@ type RemoveDataFunc func() error
 
 // Testing -
 type Testing struct {
-	Config            configurer.Configurer
-	Log               logger.Logger
-	Store             storer.Storer
-	PrepareRepository preparer.Repository
-	PrepareQuery      preparer.Query
-	Model             modeller.Modeller
+	Config             configurer.Configurer
+	Log                logger.Logger
+	Store              storer.Storer
+	RepositoryPreparer preparer.Repository
+	QueryPreparer      preparer.Query
+	Model              modeller.Modeller
 
 	// Configuration
 	CommitData bool
@@ -42,7 +42,6 @@ type Testing struct {
 	CreateDataFunc CreateDataFunc
 	RemoveDataFunc RemoveDataFunc
 
-	// Private
 	tx *sqlx.Tx
 }
 
@@ -88,13 +87,13 @@ func (t *Testing) Init() (err error) {
 	}
 
 	// preparer
-	t.PrepareRepository, err = prepare.NewRepositoryPreparer(t.Log)
+	t.RepositoryPreparer, err = prepare.NewRepositoryPreparer(t.Log)
 	if err != nil {
 		t.Log.Warn("failed new preparer >%v<", err)
 		return err
 	}
 
-	t.PrepareQuery, err = prepare.NewQueryPreparer(t.Log)
+	t.QueryPreparer, err = prepare.NewQueryPreparer(t.Log)
 	if err != nil {
 		t.Log.Warn("failed new preparer config >%v<", err)
 		return err
@@ -106,13 +105,13 @@ func (t *Testing) Init() (err error) {
 		return err
 	}
 
-	err = t.PrepareRepository.Init(db)
+	err = t.RepositoryPreparer.Init(db)
 	if err != nil {
 		t.Log.Warn("failed preparer init >%v<", err)
 		return err
 	}
 
-	err = t.PrepareQuery.Init(db)
+	err = t.QueryPreparer.Init(db)
 	if err != nil {
 		t.Log.Warn("failed preparer config init >%v<", err)
 		return err
@@ -146,7 +145,7 @@ func (t *Testing) InitTx(tx *sqlx.Tx) (err error) {
 		}
 	}
 
-	err = t.Model.Init(t.PrepareRepository, t.PrepareQuery, tx)
+	err = t.Model.Init(t.RepositoryPreparer, t.QueryPreparer, tx)
 	if err != nil {
 		t.Log.Warn("failed modeller init >%v<", err)
 		return err
@@ -155,6 +154,11 @@ func (t *Testing) InitTx(tx *sqlx.Tx) (err error) {
 	t.tx = tx
 
 	return nil
+}
+
+// Tx -
+func (t *Testing) Tx() *sqlx.Tx {
+	return t.tx
 }
 
 // CommitTx -

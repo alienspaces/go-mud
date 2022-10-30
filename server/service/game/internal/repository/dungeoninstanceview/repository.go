@@ -48,14 +48,10 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 
 	// prepare
 	err = p.Prepare(r, preparer.ExcludePreparation{
-		CreateOne:  true,
-		CreateMany: true,
-		UpdateOne:  true,
-		UpdateMany: true,
-		DeleteOne:  true,
-		DeleteMany: true,
-		RemoveOne:  true,
-		RemoveMany: true,
+		CreateOne: true,
+		UpdateOne: true,
+		DeleteOne: true,
+		RemoveOne: true,
 	})
 	if err != nil {
 		l.Warn("failed preparing repository >%v<", err)

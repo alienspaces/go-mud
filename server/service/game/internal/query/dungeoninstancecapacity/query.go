@@ -24,10 +24,10 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 
 	q := &Query{
 		query.Query{
-			Log:     l,
-			Tx:      tx,
-			Prepare: p,
-			Alias:   "dic",
+			Log:      l,
+			Tx:       tx,
+			Preparer: p,
+			Alias:    "dic",
 			Config: query.Config{
 				Name: QueryName,
 			},
@@ -40,7 +40,7 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 		return nil, err
 	}
 
-	err = q.Prepare.Prepare(q)
+	err = q.Preparer.Prepare(q)
 	if err != nil {
 		l.Error("failed preparing query >%v<", err)
 		return nil, err
@@ -66,7 +66,7 @@ func (q *Query) GetMany(
 
 	recs := q.NewRecordArray()
 
-	rows, err := q.GetRows(params, paramOperators)
+	rows, err := q.GetRows(q.SQL(), params, paramOperators)
 	if err != nil {
 		q.Log.Warn("failed query execution >%v<", err)
 		return nil, err

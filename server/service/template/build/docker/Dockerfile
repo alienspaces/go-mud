@@ -1,5 +1,5 @@
 # build image
-FROM registry.gitlab.com/alienspaces/go-mud/golang:1.18.4-alpine3.16 as builder
+FROM registry.gitlab.com/alienspaces/go-mud/golang:1.19.2-alpine3.16 as builder
 
 # enable https:// repositories
 RUN apk update \
@@ -19,20 +19,34 @@ WORKDIR $APP_SERVER_HOME/service/template
 RUN go build -o /go/bin/go-mud-template-server ./cmd/server
 RUN go build -o /go/bin/go-mud-template-cli ./cmd/cli
 
+# build database migrate
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.14.1
+
 # final image
-FROM registry.gitlab.com/alienspaces/go-mud/golang:1.18.4-alpine3.16
+FROM registry.gitlab.com/alienspaces/go-mud/postgres:13.7-alpine3.16
 
 RUN apk update \
     && apk add curl \
     && apk add bash
 
+# server and cli binaries
 COPY --from=builder /go/bin/go-mud-template-server /go/bin
 COPY --from=builder /go/bin/go-mud-template-cli /go/bin
+
+# entrypoint
 COPY --from=builder /go-mud/service/template/build/docker/entrypoint.sh .
+
+# schemas
 COPY --from=builder /go-mud/schema/docs ./schema/docs
 
-RUN pwd
-RUN ls -la
+# migration tool
+COPY --from=builder /go/bin/migrate /bin
+
+
+# migrations
+COPY --from=builder /go-mud/service/template/migration /migration
+
+EXPOSE 8084
 
 # entrypoint
 ENTRYPOINT [ "./entrypoint.sh" ]

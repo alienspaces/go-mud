@@ -43,9 +43,9 @@ CREATE TABLE test (
 
 	q := Query{
 		query.Query{
-			Log:     l,
-			Prepare: pq,
-			Tx:      nil,
+			Log:      l,
+			Preparer: pq,
+			Tx:       nil,
 		},
 	}
 
@@ -115,10 +115,10 @@ func TestQueryPrepare(t *testing.T) {
 		err = p.Prepare(q)
 		require.NoError(t, err, "Prepare returns without error")
 
-		sql := p.SQL()
-		assert.NotEmpty(t, sql, "Function query returns SQL")
+		// sql := p.SQL()
+		// assert.NotEmpty(t, sql, "Function query returns SQL")
 
-		stmt := p.Stmt()
+		stmt := p.Stmt(q)
 		assert.NotNil(t, stmt, "Function stmt returns NamedStmt")
 	}()
 
@@ -143,7 +143,7 @@ func TestQueryPrepare(t *testing.T) {
 		err = p.Init(db)
 		require.NoError(t, err, "Init preparer returns without error")
 
-		r, teardown, err := setupQuery(l, p, db)
+		q, teardown, err := setupQuery(l, p, db)
 		defer func() {
 			if teardown != nil {
 				teardown()
@@ -151,9 +151,9 @@ func TestQueryPrepare(t *testing.T) {
 		}()
 
 		require.NoError(t, err, "Init preparer returns without error")
-		require.NotNil(t, r, "Repository is not nil")
+		require.NotNil(t, q, "Query is not nil")
 
-		stmt := p.Stmt()
+		stmt := p.Stmt(q)
 		assert.Nil(t, stmt, "Function stmt returns NamedStmt")
 	}()
 }

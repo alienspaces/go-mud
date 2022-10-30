@@ -8,11 +8,8 @@ type Repository interface {
 	GetManySQL() string
 	CreateOneSQL() string
 	UpdateOneSQL() string
-	UpdateManySQL() string
 	DeleteOneSQL() string
-	DeleteManySQL() string
 	RemoveOneSQL() string
-	RemoveManySQL() string
 }
 
 type Query interface {
