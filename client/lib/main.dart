@@ -10,6 +10,7 @@ import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/theme.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
@@ -53,6 +54,14 @@ class MainApp extends StatelessWidget {
             create: (BuildContext context) =>
                 DungeonCubit(config: config, repositories: repositories),
           ),
+          BlocProvider<CharacterCubit>(
+            create: (BuildContext context) =>
+                CharacterCubit(config: config, repositories: repositories),
+          ),
+          BlocProvider<DungeonCharacterCubit>(
+            create: (BuildContext context) => DungeonCharacterCubit(
+                config: config, repositories: repositories),
+          ),
           BlocProvider<DungeonActionCubit>(
             create: (BuildContext context) =>
                 DungeonActionCubit(config: config, repositories: repositories),
@@ -60,10 +69,6 @@ class MainApp extends StatelessWidget {
           BlocProvider<DungeonCommandCubit>(
             create: (BuildContext context) =>
                 DungeonCommandCubit(config: config, repositories: repositories),
-          ),
-          BlocProvider<CharacterCubit>(
-            create: (BuildContext context) =>
-                CharacterCubit(config: config, repositories: repositories),
           ),
         ],
         child: const Navigation(),
