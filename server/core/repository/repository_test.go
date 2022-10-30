@@ -175,9 +175,7 @@ func TestPrepareable(t *testing.T) {
 		"CreateOneSQL":       r.CreateOneSQL,
 		"UpdateOneSQL":       r.UpdateOneSQL,
 		"DeleteOneSQL":       r.DeleteOneSQL,
-		"DeleteManySQL":      r.DeleteManySQL,
 		"RemoveOneSQL":       r.RemoveOneSQL,
-		"RemoveManySQL":      r.RemoveManySQL,
 	}
 
 	for testFuncName, testFunc := range testFuncs {

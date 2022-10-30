@@ -302,7 +302,8 @@ SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL FOR UPDATE SKIP LOCKED
 // GetManySQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetManySQL() string {
 	return fmt.Sprintf(`
-SELECT %s FROM %s WHERE deleted_at IS NULL `,
+SELECT %s FROM %s WHERE deleted_at IS NULL
+`,
 		commaSeparated(r.Attributes()),
 		r.TableName())
 }
