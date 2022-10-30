@@ -13,5 +13,6 @@ type Repository interface {
 }
 
 type Query interface {
+	Name() string
 	SQL() string
 }

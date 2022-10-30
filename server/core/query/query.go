@@ -26,6 +26,10 @@ type Config struct {
 
 var _ querier.Querier = &Query{}
 
+func (q *Query) Name() string {
+	return q.Config.Name
+}
+
 func (q *Query) Init() error {
 
 	q.Log.Debug("initialising query %s", q.Name())
@@ -39,10 +43,6 @@ func (q *Query) Init() error {
 	}
 
 	return nil
-}
-
-func (q *Query) Name() string {
-	return q.Config.Name
 }
 
 func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {

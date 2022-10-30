@@ -49,7 +49,7 @@ func (q *Query) Prepare(p preparable.Query) error {
 
 	// This function is called on every new Modeller initialisation (i.e., on every new DB transaction).
 	// To prevent memory leaks, we must protect against the same SQL statement being prepared multiple times.
-	if _, ok := q.prepared[p.SQL()]; ok {
+	if _, ok := q.prepared[p.Name()]; ok {
 		return nil
 	}
 
@@ -59,12 +59,12 @@ func (q *Query) Prepare(p preparable.Query) error {
 		return err
 	}
 
-	q.prepared[p.SQL()] = true
-	q.stmtList[p.SQL()] = stmt
+	q.prepared[p.Name()] = true
+	q.stmtList[p.Name()] = stmt
 
 	return nil
 }
 
 func (q *Query) Stmt(p preparable.Query) *sqlx.NamedStmt {
-	return q.stmtList[p.SQL()]
+	return q.stmtList[p.Name()]
 }
