@@ -13,44 +13,65 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   final RepositoryCollection repositories;
 
   List<DungeonCharacterRecord>? dungeonCharacterRecords;
+  DungeonCharacterRecord? dungeonCharacterRecord;
 
   DungeonCharacterCubit({required this.config, required this.repositories})
       : super(const DungeonCharacterStateInitial());
 
-  Future<void> createDungeonCharacter(
+  Future<void> enterDungeonCharacter(
       String dungeonID, String characterID) async {
     final log = getLogger('DungeonCharacterCubit');
-    log.fine('Creating dungeon ID $dungeonID character ID $characterID');
+    log.info('Entering dungeon ID $dungeonID character ID $characterID');
 
     emit(const DungeonCharacterStateCreate());
 
     DungeonCharacterRecord? createdDungeonCharacterRecord;
 
-    try {
-      createdDungeonCharacterRecord = await repositories
-          .dungeonCharacterRepository
-          .createOne(dungeonID, characterID);
-    } on RepositoryException catch (err) {
-      log.warning('Throwing character create error');
-      emit(DungeonCharacterStateCreateError(
-          dungeonID: dungeonID,
-          characterID: characterID,
-          message: err.message));
-      return;
+    dungeonCharacterRecords?.forEach((rec) {
+      log.info('Existing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
+    });
+
+    createdDungeonCharacterRecord = dungeonCharacterRecords?.firstWhere((rec) {
+      log.info('Testing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
+      if (rec.id == characterID && rec.dungeonID == dungeonID) {
+        return true;
+      }
+      return false;
+    });
+
+    if (createdDungeonCharacterRecord != null) {
+      log.info(
+          'Dungeon with character $createdDungeonCharacterRecord is already in a dungeon');
+    }
+
+    if (createdDungeonCharacterRecord == null) {
+      try {
+        createdDungeonCharacterRecord = await repositories
+            .dungeonCharacterRepository
+            .createOne(dungeonID, characterID);
+      } on RepositoryException catch (err) {
+        log.warning('Throwing dungeon character enter error');
+        emit(DungeonCharacterStateCreateError(
+            dungeonID: dungeonID,
+            characterID: characterID,
+            message: err.message));
+        return;
+      }
     }
 
     if (createdDungeonCharacterRecord != null) {
-      log.fine('Created dungeon character $createdDungeonCharacterRecord');
+      log.info('Entered dungeon with character $createdDungeonCharacterRecord');
       dungeonCharacterRecords?.add(createdDungeonCharacterRecord);
+      dungeonCharacterRecord = createdDungeonCharacterRecord;
       emit(DungeonCharacterStateCreated(
           dungeonCharacterRecord: createdDungeonCharacterRecord));
     }
   }
 
-  Future<void> deleteDungeonCharacter(
+  Future<void> exitDungeonCharacter(
       String dungeonID, String characterID) async {
     final log = getLogger('DungeonCharacterCubit');
-    log.fine('Deleting dungeon ID $dungeonID character ID $characterID');
+    log.fine('Exiting dungeon ID $dungeonID character ID $characterID');
 
     emit(const DungeonCharacterStateDelete());
 
@@ -67,7 +88,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
       emit(DungeonCharacterStateDeleteError(
           dungeonID: dungeonID,
           characterID: characterID,
-          message: 'Dungeon character record does not exist'));
+          message: 'Exiting dungeon character record does not exist'));
       return;
     }
 
@@ -75,7 +96,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
       await repositories.dungeonCharacterRepository
           .deleteOne(dungeonID, characterID);
     } on RepositoryException catch (err) {
-      log.warning('Throwing character create error');
+      log.warning('Throwing dungeon character exit error');
       emit(DungeonCharacterStateDeleteError(
           dungeonID: dungeonID,
           characterID: characterID,
@@ -83,7 +104,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
       return;
     }
 
-    log.fine('Deleted dungeon character $deletedDungeonCharacterRecord');
+    log.info('Exited dungeon character $deletedDungeonCharacterRecord');
     dungeonCharacterRecords?.remove(deletedDungeonCharacterRecord);
     emit(DungeonCharacterStateDeleted(
         dungeonCharacterRecord: deletedDungeonCharacterRecord));

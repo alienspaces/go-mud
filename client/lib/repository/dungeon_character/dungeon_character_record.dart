@@ -28,7 +28,7 @@ class DungeonCharacterRecord extends Equatable {
     required this.id,
     required this.dungeonID,
     required this.dungeonName,
-    required this.dungeonDescription,
+    required this.dungeonDescription, // TODO: Server API return description
     required this.locationID,
     required this.locationName,
     required this.locationDescription,
@@ -67,9 +67,9 @@ class DungeonCharacterRecord extends Equatable {
         fatigue = json['fatigue'],
         currentHealth = json['current_health'],
         currentFatigue = json['current_fatigue'],
-        coins = json['coins'],
-        experiencePoints = json['experiencePoints'],
-        attributePoints = json['attributePoints'];
+        coins = json['coins'] ?? 0,
+        experiencePoints = json['experiencePoints'] ?? 0,
+        attributePoints = json['attributePoints'] ?? 0;
 
   Map<String, dynamic> toJson() => {
         'id': id,

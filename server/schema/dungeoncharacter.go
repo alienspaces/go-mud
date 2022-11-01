@@ -16,7 +16,7 @@ type DungeonCharacterData struct {
 	DungeonID           string    `json:"dungeon_id,omitempty"`
 	DungeonName         string    `json:"dungeon_name,omitempty"`
 	DungeonDescription  string    `json:"dungeon_description,omitempty"`
-	LocationID          string    `json:"dungeon_location_id,omitempty"`
+	LocationID          string    `json:"location_id,omitempty"`
 	LocationName        string    `json:"location_name,omitempty"`
 	LocationDescription string    `json:"location_description,omitempty"`
 	Name                string    `json:"name"`

@@ -244,7 +244,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/enter',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.post(
         uri,
@@ -261,7 +261,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.fine('Response: $responseBody');
+    log.info('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }

@@ -129,7 +129,8 @@ var DefaultDataConfig = DataConfig{
 	DungeonConfig: []DungeonConfig{
 		{
 			Record: record.Dungeon{
-				Name: "Cave",
+				Name:        "Cave",
+				Description: "A dark and damp stone cave.",
 			},
 			LocationConfig: []LocationConfig{
 				{

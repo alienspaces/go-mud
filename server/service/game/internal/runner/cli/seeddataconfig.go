@@ -72,7 +72,8 @@ var seedDataConfig = harness.DataConfig{
 	DungeonConfig: []harness.DungeonConfig{
 		{
 			Record: record.Dungeon{
-				Name: "Cave",
+				Name:        "Cave",
+				Description: "A dark and damp stone cave.",
 			},
 			LocationConfig: []harness.LocationConfig{
 				{

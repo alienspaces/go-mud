@@ -21,14 +21,13 @@ class DungeonListItemWidget extends StatelessWidget {
     String dungeonID,
     String characterID,
   ) {
-    final log = getLogger('HomeGameWidget');
-    log.fine(
-        'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
+    final log = getLogger('DungeonListItemWidget');
+    log.info('Enter dungeon $dungeonID with character $characterID');
 
     final dungeonCharacterCubit =
         BlocProvider.of<DungeonCharacterCubit>(context);
 
-    dungeonCharacterCubit.createDungeonCharacter(dungeonID, characterID);
+    dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
 
     callbacks.openGamePage(context);
   }

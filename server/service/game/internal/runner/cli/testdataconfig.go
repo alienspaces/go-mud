@@ -88,7 +88,8 @@ var testDataConfig = harness.DataConfig{
 				Record: repository.Record{
 					ID: "55087d68-dc17-41ed-bb53-12dc636ac196",
 				},
-				Name: "Cave",
+				Name:        "Cave",
+				Description: "A dark and damp stone cave.",
 			},
 			LocationConfig: []harness.LocationConfig{
 				{
