@@ -6,9 +6,8 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/style.dart';
 
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
@@ -192,17 +191,11 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     final log = getLogger('GameLocationGridWidget');
     log.fine('Submitting move action..');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    if (dungeonCubit.dungeonRecord == null) {
+    final dungeonCharacterCubit =
+        BlocProvider.of<DungeonCharacterCubit>(context);
+    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
       log.warning(
-          'Dungeon cubit missing dungeon record, cannot initialise action');
-      return;
-    }
-
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
-    if (characterCubit.characterRecord == null) {
-      log.warning(
-          'Character cubit missing character record, cannot initialise action');
+          'Dungeon character cubit missing dungeon character record, cannot initialise action');
       return;
     }
 

@@ -20,15 +20,16 @@ class DungeonListItemWidget extends StatelessWidget {
     BuildContext context,
     String dungeonID,
     String characterID,
-  ) {
+  ) async {
     final log = getLogger('DungeonListItemWidget');
     log.info('Enter dungeon $dungeonID with character $characterID');
 
     final dungeonCharacterCubit =
         BlocProvider.of<DungeonCharacterCubit>(context);
 
-    dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
+    await dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
 
+    // ignore: use_build_context_synchronously
     callbacks.openGamePage(context);
   }
 

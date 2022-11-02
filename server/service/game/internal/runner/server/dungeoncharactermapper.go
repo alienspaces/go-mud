@@ -8,11 +8,11 @@ import (
 func (rnr *Runner) InstanceViewRecordSetToDungeonCharacterResponseData(instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
-		ID:                  instanceRecordSet.CharacterInstanceViewRec.ID,
-		DungeonID:           instanceRecordSet.DungeonInstanceViewRec.ID,
+		ID:                  instanceRecordSet.CharacterInstanceViewRec.CharacterID,
+		DungeonID:           instanceRecordSet.DungeonInstanceViewRec.DungeonID,
 		DungeonName:         instanceRecordSet.DungeonInstanceViewRec.Name,
 		DungeonDescription:  instanceRecordSet.DungeonInstanceViewRec.Description,
-		LocationID:          instanceRecordSet.LocationInstanceViewRec.ID,
+		LocationID:          instanceRecordSet.LocationInstanceViewRec.LocationID,
 		LocationName:        instanceRecordSet.LocationInstanceViewRec.Name,
 		LocationDescription: instanceRecordSet.LocationInstanceViewRec.Description,
 		Name:                instanceRecordSet.CharacterInstanceViewRec.Name,
