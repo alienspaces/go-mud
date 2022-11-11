@@ -63,49 +63,75 @@ class _GameWidgetState extends State<GameWidget> {
     final log = getLogger('Game');
     log.fine('Building..');
 
-    // ignore: avoid_unnecessary_containers
-    return Container(
-      color: Colors.purple[50],
-      // Top level game widget stack
-      child: Stack(
-        children: <Widget>[
+    return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
+      listener: (context, state) {
+        log.fine('listener...');
+      },
+      builder: (BuildContext context, DungeonCharacterState state) {
+        log.fine('builder...');
+
+        if (state is DungeonCharacterStateCreate) {
           // ignore: avoid_unnecessary_containers
-          Container(
-            child: Column(
-              children: const <Widget>[
-                // Location description
-                Expanded(
-                  flex: 3,
-                  child: GameLocationDescriptionContainerWidget(),
+          return Container(
+            child: const Text("Entering"),
+          );
+        } else if (state is DungeonCharacterStateCreateError) {
+          // ignore: avoid_unnecessary_containers
+          return Container(
+            child: const Text("Error"),
+          );
+        } else if (state is DungeonCharacterStateCreated) {
+          // ignore: avoid_unnecessary_containers
+          return Container(
+            color: Colors.purple[50],
+            // Top level game widget stack
+            child: Stack(
+              children: <Widget>[
+                // ignore: avoid_unnecessary_containers
+                Container(
+                  child: Column(
+                    children: const <Widget>[
+                      // Location description
+                      Expanded(
+                        flex: 3,
+                        child: GameLocationDescriptionContainerWidget(),
+                      ),
+                      // Game board
+                      Expanded(
+                        flex: 10,
+                        child: GameBoardWidget(),
+                      ),
+                      // Current actions
+                      Expanded(
+                        flex: 4,
+                        child: GameActionPanelWidget(),
+                      ),
+                      // Current command
+                      Expanded(
+                        flex: 1,
+                        child: GameActionCommandWidget(),
+                      ),
+                    ],
+                  ),
                 ),
-                // Game board
-                Expanded(
-                  flex: 10,
-                  child: GameBoardWidget(),
+                // ignore: avoid_unnecessary_containers
+                Container(
+                  child: const GameCardWidget(),
                 ),
-                // Current actions
-                Expanded(
-                  flex: 4,
-                  child: GameActionPanelWidget(),
-                ),
-                // Current command
-                Expanded(
-                  flex: 1,
-                  child: GameActionCommandWidget(),
-                ),
+                // ignore: avoid_unnecessary_containers
+                Container(
+                  child: const GameActionNarrativeWidget(),
+                )
               ],
             ),
-          ),
-          // ignore: avoid_unnecessary_containers
-          Container(
-            child: const GameCardWidget(),
-          ),
-          // ignore: avoid_unnecessary_containers
-          Container(
-            child: const GameActionNarrativeWidget(),
-          )
-        ],
-      ),
+          );
+        }
+
+        // ignore: avoid_unnecessary_containers
+        return Container(
+          child: const Text("Empty"),
+        );
+      },
     );
   }
 }

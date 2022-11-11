@@ -193,6 +193,11 @@ class API {
 
     String responseBody = response.body;
 
+    if (response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
+
     log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
@@ -222,6 +227,11 @@ class API {
     }
 
     String responseBody = response.body;
+
+    if (response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
 
     log.fine('Response: $responseBody');
 
@@ -263,6 +273,11 @@ class API {
 
     log.info('Response: $responseBody');
 
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
+
     return APIResponse(body: responseBody);
   }
 
@@ -296,6 +311,11 @@ class API {
     }
 
     String responseBody = response.body;
+
+    if (response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
 
     log.fine('Response: $responseBody');
 
@@ -381,6 +401,11 @@ class API {
     }
 
     String responseBody = response.body;
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
 
     log.fine('Response: $responseBody');
 
