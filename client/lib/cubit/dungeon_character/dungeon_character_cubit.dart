@@ -18,6 +18,46 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   DungeonCharacterCubit({required this.config, required this.repositories})
       : super(const DungeonCharacterStateInitial());
 
+  /// getDungeonCharacterRecordForCharacter returns a DungeonCharacterRecord if
+  /// the character is currently inside a dungeon
+  Future<DungeonCharacterRecord?> getDungeonCharacterRecord(
+      String dungeonID, String characterID) async {
+    final log = getLogger('getDungeonCharacterRecordForCharacter');
+    log.info('Searching through ${dungeonCharacterRecords?.length}');
+
+    emit(DungeonCharacterStateLoading(characterID: characterID));
+
+    // Find existing cached record
+    DungeonCharacterRecord? rec = dungeonCharacterRecords?.firstWhere((rec) {
+      log.info('Testing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
+      if (rec.id == characterID) {
+        return true;
+      }
+      return false;
+    });
+
+    if (rec != null) {
+      return rec;
+    }
+
+    try {
+      rec = await repositories.dungeonCharacterRepository
+          .getOne(dungeonID, characterID);
+    } on RepositoryException catch (err) {
+      log.warning('Throwing dungeon character load error');
+      emit(DungeonCharacterStateLoadError(
+          characterID: characterID, message: err.message));
+      return Future<DungeonCharacterRecord?>.value(null);
+    }
+
+    if (rec != null) {
+      dungeonCharacterRecords?.add(rec);
+      emit(DungeonCharacterStateLoaded(dungeonCharacterRecord: rec));
+    }
+
+    return Future<DungeonCharacterRecord?>.value(null);
+  }
+
   Future<void> enterDungeonCharacter(
       String dungeonID, String characterID) async {
     final log = getLogger('DungeonCharacterCubit');
@@ -25,38 +65,47 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
 
     emit(const DungeonCharacterStateCreate());
 
-    DungeonCharacterRecord? createdDungeonCharacterRecord;
-
     dungeonCharacterRecords?.forEach((rec) {
       log.info('Existing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
     });
 
-    createdDungeonCharacterRecord = dungeonCharacterRecords?.firstWhere((rec) {
-      log.info('Testing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
-      if (rec.id == characterID && rec.dungeonID == dungeonID) {
-        return true;
-      }
-      return false;
-    });
+    DungeonCharacterRecord? existingDungeonCharacterRecord =
+        await getDungeonCharacterRecord(dungeonID, characterID);
 
-    if (createdDungeonCharacterRecord != null) {
+    // Character already inside this dungeon
+    if (existingDungeonCharacterRecord != null &&
+        existingDungeonCharacterRecord.dungeonID == dungeonID) {
       log.info(
-          'Dungeon with character $createdDungeonCharacterRecord is already in a dungeon');
+          'Dungeon with character $existingDungeonCharacterRecord is already in this dungeon');
+      emit(DungeonCharacterStateCreated(
+          dungeonCharacterRecord: existingDungeonCharacterRecord));
+      return;
     }
 
-    if (createdDungeonCharacterRecord == null) {
-      try {
-        createdDungeonCharacterRecord = await repositories
-            .dungeonCharacterRepository
-            .createOne(dungeonID, characterID);
-      } on RepositoryException catch (err) {
-        log.warning('Throwing dungeon character enter error');
-        emit(DungeonCharacterStateCreateError(
-            dungeonID: dungeonID,
-            characterID: characterID,
-            message: err.message));
-        return;
-      }
+    // Character already inside some other dungeon
+    if (existingDungeonCharacterRecord != null) {
+      log.info(
+          'Dungeon with character $existingDungeonCharacterRecord is already in a dungeon');
+      emit(DungeonCharacterStateCreateError(
+          dungeonID: dungeonID,
+          characterID: characterID,
+          message:
+              'Dungeon with character $existingDungeonCharacterRecord is already in a dungeon'));
+      return;
+    }
+
+    DungeonCharacterRecord? createdDungeonCharacterRecord;
+    try {
+      createdDungeonCharacterRecord = await repositories
+          .dungeonCharacterRepository
+          .createOne(dungeonID, characterID);
+    } on RepositoryException catch (err) {
+      log.warning('Throwing dungeon character enter error');
+      emit(DungeonCharacterStateCreateError(
+          dungeonID: dungeonID,
+          characterID: characterID,
+          message: err.message));
+      return;
     }
 
     if (createdDungeonCharacterRecord != null) {

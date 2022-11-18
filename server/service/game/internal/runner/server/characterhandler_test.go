@@ -63,11 +63,11 @@ func TestPostCharacterHandler(t *testing.T) {
 				},
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.CharacterRequest{
-						Data: schema.CharacterData{
-							Name:         gofakeit.Name() + gofakeit.Name(),
-							Strength:     10,
-							Dexterity:    10,
-							Intelligence: 10,
+						Data: schema.DungeonCharacterData{
+							CharacterName:         gofakeit.Name() + gofakeit.Name(),
+							CharacterStrength:     10,
+							CharacterDexterity:    10,
+							CharacterIntelligence: 10,
 						},
 					}
 					return &res
@@ -100,9 +100,9 @@ func TestPostCharacterHandler(t *testing.T) {
 				}
 
 				for _, data := range responseBody.Data {
-					require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
+					require.False(t, data.CharacterCreatedAt.IsZero(), "CreatedAt is not zero")
 					if method == http.MethodPost {
-						require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
+						require.True(t, data.CharacterUpdatedAt.IsZero(), "UpdatedAt is zero")
 						// t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
 						// th.AddCharacterTeardownID(data.ID)
 					}
@@ -168,18 +168,18 @@ func TestGetCharacterHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.CharacterResponse {
 				res := schema.CharacterResponse{
-					Data: []schema.CharacterData{
+					Data: []schema.DungeonCharacterData{
 						{
-							ID:               data.CharacterRecs[0].ID,
-							Name:             data.CharacterRecs[0].Name,
-							Strength:         data.CharacterRecs[0].Strength,
-							Dexterity:        data.CharacterRecs[0].Dexterity,
-							Intelligence:     data.CharacterRecs[0].Intelligence,
-							Health:           data.CharacterRecs[0].Health,
-							Fatigue:          data.CharacterRecs[0].Fatigue,
-							Coins:            data.CharacterRecs[0].Coins,
-							ExperiencePoints: data.CharacterRecs[0].ExperiencePoints,
-							AttributePoints:  data.CharacterRecs[0].AttributePoints,
+							CharacterID:               data.CharacterRecs[0].ID,
+							CharacterName:             data.CharacterRecs[0].Name,
+							CharacterStrength:         data.CharacterRecs[0].Strength,
+							CharacterDexterity:        data.CharacterRecs[0].Dexterity,
+							CharacterIntelligence:     data.CharacterRecs[0].Intelligence,
+							CharacterHealth:           data.CharacterRecs[0].Health,
+							CharacterFatigue:          data.CharacterRecs[0].Fatigue,
+							CharacterCoins:            data.CharacterRecs[0].Coins,
+							CharacterExperiencePoints: data.CharacterRecs[0].ExperiencePoints,
+							CharacterAttributePoints:  data.CharacterRecs[0].AttributePoints,
 						},
 					},
 				}
@@ -212,18 +212,18 @@ func TestGetCharacterHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.CharacterResponse {
 				res := schema.CharacterResponse{
-					Data: []schema.CharacterData{
+					Data: []schema.DungeonCharacterData{
 						{
-							ID:               data.CharacterRecs[0].ID,
-							Name:             data.CharacterRecs[0].Name,
-							Strength:         data.CharacterRecs[0].Strength,
-							Dexterity:        data.CharacterRecs[0].Dexterity,
-							Intelligence:     data.CharacterRecs[0].Intelligence,
-							Health:           data.CharacterRecs[0].Health,
-							Fatigue:          data.CharacterRecs[0].Fatigue,
-							Coins:            data.CharacterRecs[0].Coins,
-							ExperiencePoints: data.CharacterRecs[0].ExperiencePoints,
-							AttributePoints:  data.CharacterRecs[0].AttributePoints,
+							CharacterID:               data.CharacterRecs[0].ID,
+							CharacterName:             data.CharacterRecs[0].Name,
+							CharacterStrength:         data.CharacterRecs[0].Strength,
+							CharacterDexterity:        data.CharacterRecs[0].Dexterity,
+							CharacterIntelligence:     data.CharacterRecs[0].Intelligence,
+							CharacterHealth:           data.CharacterRecs[0].Health,
+							CharacterFatigue:          data.CharacterRecs[0].Fatigue,
+							CharacterCoins:            data.CharacterRecs[0].Coins,
+							CharacterExperiencePoints: data.CharacterRecs[0].ExperiencePoints,
+							CharacterAttributePoints:  data.CharacterRecs[0].AttributePoints,
 						},
 					},
 				}
@@ -309,34 +309,34 @@ func TestGetCharacterHandler(t *testing.T) {
 					require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 					// Validate character
-					t.Logf("Checking character name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
-					require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
-					t.Logf("Checking character strength >%d< >%d<", expectData.Strength, responseBody.Data[idx].Strength)
-					require.Equal(t, expectData.Strength, responseBody.Data[idx].Strength)
-					t.Logf("Checking character dexterity >%d< >%d<", expectData.Dexterity, responseBody.Data[idx].Dexterity)
-					require.Equal(t, expectData.Dexterity, responseBody.Data[idx].Dexterity)
-					t.Logf("Checking character intelligence >%d< >%d<", expectData.Intelligence, responseBody.Data[idx].Intelligence)
-					require.Equal(t, expectData.Intelligence, responseBody.Data[idx].Intelligence)
+					t.Logf("Checking character name >%s< >%s<", expectData.CharacterName, responseBody.Data[idx].CharacterName)
+					require.Equal(t, expectData.CharacterName, responseBody.Data[idx].CharacterName)
+					t.Logf("Checking character strength >%d< >%d<", expectData.CharacterStrength, responseBody.Data[idx].CharacterStrength)
+					require.Equal(t, expectData.CharacterStrength, responseBody.Data[idx].CharacterStrength)
+					t.Logf("Checking character dexterity >%d< >%d<", expectData.CharacterDexterity, responseBody.Data[idx].CharacterDexterity)
+					require.Equal(t, expectData.CharacterDexterity, responseBody.Data[idx].CharacterDexterity)
+					t.Logf("Checking character intelligence >%d< >%d<", expectData.CharacterIntelligence, responseBody.Data[idx].CharacterIntelligence)
+					require.Equal(t, expectData.CharacterIntelligence, responseBody.Data[idx].CharacterIntelligence)
 
-					t.Logf("Checking character health >%d< >%d<", expectData.Health, responseBody.Data[idx].Health)
-					require.Equal(t, expectData.Health, responseBody.Data[idx].Health)
-					t.Logf("Checking character fatigue >%d< >%d<", expectData.Fatigue, responseBody.Data[idx].Fatigue)
-					require.Equal(t, expectData.Fatigue, responseBody.Data[idx].Fatigue)
+					t.Logf("Checking character health >%d< >%d<", expectData.CharacterHealth, responseBody.Data[idx].CharacterHealth)
+					require.Equal(t, expectData.CharacterHealth, responseBody.Data[idx].CharacterHealth)
+					t.Logf("Checking character fatigue >%d< >%d<", expectData.CharacterFatigue, responseBody.Data[idx].CharacterFatigue)
+					require.Equal(t, expectData.CharacterFatigue, responseBody.Data[idx].CharacterFatigue)
 
-					t.Logf("Checking character coins >%d< >%d<", expectData.Coins, responseBody.Data[idx].Coins)
-					require.Equal(t, expectData.Coins, responseBody.Data[idx].Coins)
-					t.Logf("Checking character experience points >%d< >%d<", expectData.ExperiencePoints, responseBody.Data[idx].ExperiencePoints)
-					require.Equal(t, expectData.ExperiencePoints, responseBody.Data[idx].ExperiencePoints)
-					t.Logf("Checking character attribute points >%d< >%d<", expectData.AttributePoints, responseBody.Data[idx].AttributePoints)
-					require.Equal(t, expectData.AttributePoints, responseBody.Data[idx].AttributePoints)
+					t.Logf("Checking character coins >%d< >%d<", expectData.CharacterCoins, responseBody.Data[idx].CharacterCoins)
+					require.Equal(t, expectData.CharacterCoins, responseBody.Data[idx].CharacterCoins)
+					t.Logf("Checking character experience points >%d< >%d<", expectData.CharacterExperiencePoints, responseBody.Data[idx].CharacterExperiencePoints)
+					require.Equal(t, expectData.CharacterExperiencePoints, responseBody.Data[idx].CharacterExperiencePoints)
+					t.Logf("Checking character attribute points >%d< >%d<", expectData.CharacterAttributePoints, responseBody.Data[idx].CharacterAttributePoints)
+					require.Equal(t, expectData.CharacterAttributePoints, responseBody.Data[idx].CharacterAttributePoints)
 				}
 			}
 
 			// Check dates and add teardown ID's
 			for _, data := range responseBody.Data {
-				require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
+				require.False(t, data.CharacterCreatedAt.IsZero(), "CreatedAt is not zero")
 				if method == http.MethodPost {
-					require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
+					require.True(t, data.CharacterUpdatedAt.IsZero(), "UpdatedAt is zero")
 				}
 			}
 		}

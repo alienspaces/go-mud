@@ -5,47 +5,50 @@
   "description": "Dungeon action data",
   "type": "object",
   "required": [
-    "id",
-    "command",
-    "location",
-    "created_at"
+    "action_id",
+    "action_command",
+    "action_location",
+    "action_created_at"
   ],
   "properties": {
-    "id": {
+    "action_id": {
       "type": "string",
       "format": "uuid"
     },
-    "command": {
+    "action_command": {
       "type": "string"
     },
-    "location": {
+    "action_narrative": {
+      "type": "string"
+    },
+    "action_location": {
       "$ref": "#/$defs/action_location"
     },
-    "character": {
+    "action_character": {
       "$ref": "#/$defs/action_character"
     },
-    "monster": {
+    "action_monster": {
       "$ref": "#/$defs/action_monster"
     },
-    "equipped_object": {
+    "action_equipped_object": {
       "$ref": "#/$defs/action_object"
     },
-    "stashed_object": {
+    "action_stashed_object": {
       "$ref": "#/$defs/action_object"
     },
-    "target_object": {
+    "action_target_object": {
       "$ref": "#/$defs/action_object"
     },
-    "target_character": {
+    "action_target_character": {
       "$ref": "#/$defs/action_character"
     },
-    "target_monster": {
+    "action_target_monster": {
       "$ref": "#/$defs/action_monster"
     },
-    "target_location": {
+    "action_target_location": {
       "$ref": "#/$defs/action_location"
     },
-    "created_at": {
+    "action_created_at": {
       "type": "string",
       "format": "date-time"
     }

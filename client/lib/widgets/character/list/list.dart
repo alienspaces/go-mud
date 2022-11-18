@@ -52,7 +52,10 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
         if (state is CharacterStateLoaded) {
           // Character list
           state.characterRecords?.forEach((characterRecord) {
-            log.fine('Displaying dungeon widget');
+            log.info([
+              'Displaying character list item widget',
+              characterRecord.name,
+            ]);
             widgets.add(
               // ignore: avoid_unnecessary_containers
               Container(

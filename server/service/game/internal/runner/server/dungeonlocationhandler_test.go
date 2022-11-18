@@ -75,9 +75,9 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 				res := schema.LocationResponse{
 					Data: []schema.LocationData{
 						{
-							ID:          data.LocationRecs[0].ID,
-							Name:        data.LocationRecs[0].Name,
-							Description: data.LocationRecs[0].Description,
+							LocationID:          data.LocationRecs[0].ID,
+							LocationName:        data.LocationRecs[0].Name,
+							LocationDescription: data.LocationRecs[0].Description,
 						},
 					},
 				}
@@ -149,10 +149,10 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Validate location
-						t.Logf("Checking location name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
-						require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
-						t.Logf("Checking location description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
-						require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
+						t.Logf("Checking location name >%s< >%s<", expectData.LocationName, responseBody.Data[idx].LocationName)
+						require.Equal(t, expectData.LocationName, responseBody.Data[idx].LocationName)
+						t.Logf("Checking location description >%s< >%s<", expectData.LocationDescription, responseBody.Data[idx].LocationDescription)
+						require.Equal(t, expectData.LocationDescription, responseBody.Data[idx].LocationDescription)
 					}
 				}
 			}

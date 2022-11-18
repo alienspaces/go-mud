@@ -5,60 +5,111 @@
   "description": "Character data",
   "type": "object",
   "required": [
-    "id",
-    "name",
-    "strength",
-    "dexterity",
-    "intelligence",
-    "health",
-    "fatigue",
-    "coins",
-    "experience_points",
-    "attribute_points",
+    "character_id",
+    "character_name",
+    "character_strength",
+    "character_dexterity",
+    "character_intelligence",
+    "character_health",
+    "character_fatigue",
+    "character_coins",
+    "character_experience_points",
+    "character_attribute_points",
     "created_at"
   ],
   "properties": {
-    "id": {
+    "dungeon_id": {
       "type": "string",
-      "format": "uuid"
+      "format": "uuid",
+      "readOnly": true
     },
-    "name": {
+    "dungeon_name": {
+      "type": "string",
+      "readOnly": true
+    },
+    "dungeon_description": {
+      "type": "string",
+      "readOnly": true
+    },
+    "location_id": {
+      "type": "string",
+      "format": "uuid",
+      "readOnly": true
+    },
+    "location_name": {
+      "type": "string",
+      "readOnly": true
+    },
+    "location_description": {
+      "type": "string",
+      "readOnly": true
+    },
+    "character_id": {
+      "type": "string",
+      "format": "uuid",
+      "readOnly": true
+    },
+    "character_name": {
       "type": "string"
     },
-    "strength": {
+    "character_strength": {
       "type": "number"
     },
-    "dexterity": {
+    "character_dexterity": {
       "type": "number"
     },
-    "intelligence": {
+    "character_intelligence": {
       "type": "number"
     },
-    "health": {
-      "type": "number"
+    "character_current_strength": {
+      "type": "number",
+      "readOnly": true
     },
-    "fatigue": {
-      "type": "number"
+    "character_current_dexterity": {
+      "type": "number",
+      "readOnly": true
     },
-    "coins": {
-      "type": "number"
+    "character_current_intelligence": {
+      "type": "number",
+      "readOnly": true
     },
-    "experience_points": {
-      "type": "number"
+    "character_health": {
+      "type": "number",
+      "readOnly": true
     },
-    "attribute_points": {
-      "type": "number"
+    "character_fatigue": {
+      "type": "number",
+      "readOnly": true
     },
-    "points": {
-      "type": "number"
+    "character_current_health": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_current_fatigue": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_coins": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_experience_points": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_attribute_points": {
+      "type": "number",
+      "readOnly": true
     },
     "created_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "readOnly": true
     },
     "updated_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "readOnly": true
     }
   }
 }

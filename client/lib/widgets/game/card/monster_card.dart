@@ -13,9 +13,9 @@ void displayMonsterCard(
 ) {
   final log = getLogger('displayMonsterCard');
 
-  log.fine(
+  log.info(
     'Rendering look monster dialogue',
-    dungeonActionRecord.targetMonster!.equippedObjects,
+    dungeonActionRecord.targetMonster!,
   );
 
   MonsterDetailedData monster = dungeonActionRecord.targetMonster!;

@@ -14,6 +14,35 @@ class DungeonCharacterStateInitial extends DungeonCharacterState {
 }
 
 @immutable
+class DungeonCharacterStateLoading extends DungeonCharacterState {
+  final String characterID;
+  const DungeonCharacterStateLoading({required this.characterID});
+
+  @override
+  List<Object> get props => [characterID];
+}
+
+@immutable
+class DungeonCharacterStateLoadError extends DungeonCharacterState {
+  final String characterID;
+  final String message;
+  const DungeonCharacterStateLoadError(
+      {required this.characterID, required this.message});
+
+  @override
+  List<Object> get props => [characterID];
+}
+
+@immutable
+class DungeonCharacterStateLoaded extends DungeonCharacterState {
+  final DungeonCharacterRecord dungeonCharacterRecord;
+  const DungeonCharacterStateLoaded({required this.dungeonCharacterRecord});
+
+  @override
+  List<Object> get props => [dungeonCharacterRecord];
+}
+
+@immutable
 class DungeonCharacterStateCreate extends DungeonCharacterState {
   const DungeonCharacterStateCreate();
 

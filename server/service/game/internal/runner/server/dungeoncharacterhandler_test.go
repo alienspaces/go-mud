@@ -87,7 +87,7 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 				}
 				// Check dates and add teardown ID's
 				for _, data := range responseBody.Data {
-					require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
+					require.False(t, data.CharacterCreatedAt.IsZero(), "CreatedAt is not zero")
 				}
 			}
 			RunTestCase(t, th, &testCase, testFunc)

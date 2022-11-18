@@ -4,23 +4,23 @@
   "title": "Dungeon Location Data",
   "description": "Dungeon location data",
   "type": "object",
-  "required": ["id", "name", "description", "created_at"],
+  "required": ["location_id", "location_name", "location_description", "location_created_at"],
   "properties": {
-    "id": {
+    "location_id": {
       "type": "string",
       "format": "uuid"
     },
-    "name": {
+    "location_name": {
       "type": "string"
     },
-    "description": {
+    "location_description": {
       "type": "string"
     },
-    "created_at": {
+    "location_created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "updated_at": {
+    "location_updated_at": {
       "type": "string",
       "format": "date-time"
     }

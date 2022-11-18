@@ -12,7 +12,7 @@
   "definitions": {
     "data": {
       "type": "object",
-      "required": ["name", "strength", "dexterity", "intelligence"],
+      "required": ["character_name", "character_strength", "character_dexterity", "character_intelligence"],
       "properties": {
         "name": {
           "type": "string"

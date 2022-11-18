@@ -74,9 +74,9 @@ func TestGetDungeonHandler(t *testing.T) {
 				res := schema.DungeonResponse{
 					Data: []schema.DungeonData{
 						{
-							ID:          data.DungeonRecs[0].ID,
-							Name:        data.DungeonRecs[0].Name,
-							Description: data.DungeonRecs[0].Description,
+							DungeonID:          data.DungeonRecs[0].ID,
+							DungeonName:        data.DungeonRecs[0].Name,
+							DungeonDescription: data.DungeonRecs[0].Description,
 						},
 					},
 				}
@@ -129,10 +129,10 @@ func TestGetDungeonHandler(t *testing.T) {
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Validate dungeon
-						t.Logf("Checking dungeon name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
-						require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
-						t.Logf("Checking dungeon description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
-						require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
+						t.Logf("Checking dungeon name >%s< >%s<", expectData.DungeonName, responseBody.Data[idx].DungeonName)
+						require.Equal(t, expectData.DungeonName, responseBody.Data[idx].DungeonName)
+						t.Logf("Checking dungeon description >%s< >%s<", expectData.DungeonDescription, responseBody.Data[idx].DungeonDescription)
+						require.Equal(t, expectData.DungeonDescription, responseBody.Data[idx].DungeonDescription)
 					}
 				}
 			}

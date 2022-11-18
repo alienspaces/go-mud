@@ -263,12 +263,12 @@ func (rnr *Runner) LocationRequestDataToRecord(data schema.LocationData, rec *re
 func (rnr *Runner) RecordToLocationResponseData(locationRec record.Location) (schema.LocationData, error) {
 
 	data := schema.LocationData{
-		ID:          locationRec.ID,
-		Name:        locationRec.Name,
-		Description: locationRec.Description,
-		Default:     locationRec.IsDefault,
-		CreatedAt:   locationRec.CreatedAt,
-		UpdatedAt:   locationRec.UpdatedAt.Time,
+		LocationID:          locationRec.ID,
+		LocationName:        locationRec.Name,
+		LocationDescription: locationRec.Description,
+		LocationDefault:     locationRec.IsDefault,
+		LocationCreatedAt:   locationRec.CreatedAt,
+		LocationUpdatedAt:   locationRec.UpdatedAt.Time,
 	}
 
 	return data, nil

@@ -208,11 +208,11 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	l.Info("Response >%#v<", res)
 	if len(res.Data) != 0 {
-		l.Info("Response character >%#v<", res.Data[0].Character)
-		l.Info("Response monster >%#v<", res.Data[0].Monster)
-		l.Info("Response target character >%#v<", res.Data[0].TargetCharacter)
-		l.Info("Response target monster >%#v<", res.Data[0].TargetMonster)
-		l.Info("Response target object >%#v<", res.Data[0].TargetObject)
+		l.Info("Response character >%#v<", res.Data[0].ActionCharacter)
+		l.Info("Response monster >%#v<", res.Data[0].ActionMonster)
+		l.Info("Response target character >%#v<", res.Data[0].ActionTargetCharacter)
+		l.Info("Response target monster >%#v<", res.Data[0].ActionTargetMonster)
+		l.Info("Response target object >%#v<", res.Data[0].ActionTargetObject)
 	}
 
 	err = server.WriteResponse(l, w, res)

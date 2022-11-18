@@ -15,11 +15,11 @@ func (rnr *Runner) DungeonRequestDataToRecord(data schema.DungeonData, rec *reco
 func (rnr *Runner) RecordToDungeonResponseData(dungeonRec record.Dungeon) (schema.DungeonData, error) {
 
 	data := schema.DungeonData{
-		ID:          dungeonRec.ID,
-		Name:        dungeonRec.Name,
-		Description: dungeonRec.Description,
-		CreatedAt:   dungeonRec.CreatedAt,
-		UpdatedAt:   dungeonRec.UpdatedAt.Time,
+		DungeonID:          dungeonRec.ID,
+		DungeonName:        dungeonRec.Name,
+		DungeonDescription: dungeonRec.Description,
+		DungeonCreatedAt:   dungeonRec.CreatedAt,
+		DungeonUpdatedAt:   dungeonRec.UpdatedAt.Time,
 	}
 
 	return data, nil

@@ -22,6 +22,8 @@ const (
 	putCharacter  server.HandlerConfigKey = "put-character"
 )
 
+// TODO: Add character instance data to all responses as there may only be a single
+// character instance.
 func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
 
 	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
@@ -163,11 +165,18 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	recs = append(recs, rec)
 
 	// Assign response properties
-	data := []schema.CharacterData{}
+	data := []schema.DungeonCharacterData{}
 	for _, rec := range recs {
 
+		instanceViewRecordSet, err := rnr.getInstanceViewRecordSetByCharacterID(l, m, characterID)
+		if err != nil {
+			l.Warn("failed getting character instance record >%v<", err)
+			server.WriteError(l, w, err)
+			return err
+		}
+
 		// Response data
-		responseData, err := rnr.RecordToCharacterResponseData(*rec)
+		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -214,11 +223,18 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// Assign response properties
-	data := []schema.CharacterData{}
+	data := []schema.DungeonCharacterData{}
 	for _, rec := range recs {
 
+		instanceViewRecordSet, err := rnr.getInstanceViewRecordSetByCharacterID(l, m, rec.ID)
+		if err != nil {
+			l.Warn("failed getting character instance record >%v<", err)
+			server.WriteError(l, w, err)
+			return err
+		}
+
 		// Response data
-		responseData, err := rnr.RecordToCharacterResponseData(*rec)
+		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -271,8 +287,15 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 		return err
 	}
 
+	instanceViewRecordSet, err := rnr.getInstanceViewRecordSetByCharacterID(l, m, rec.ID)
+	if err != nil {
+		l.Warn("failed getting character instance record >%v<", err)
+		server.WriteError(l, w, err)
+		return err
+	}
+
 	// Response data
-	responseData, err := rnr.RecordToCharacterResponseData(rec)
+	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -280,7 +303,7 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 
 	// Assign response properties
 	res := schema.CharacterResponse{
-		Data: []schema.CharacterData{
+		Data: []schema.DungeonCharacterData{
 			responseData,
 		},
 	}
@@ -350,8 +373,15 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		return err
 	}
 
+	instanceViewRecordSet, err := rnr.getInstanceViewRecordSetByCharacterID(l, m, rec.ID)
+	if err != nil {
+		l.Warn("failed getting character instance record >%v<", err)
+		server.WriteError(l, w, err)
+		return err
+	}
+
 	// Response data
-	responseData, err := rnr.RecordToCharacterResponseData(*rec)
+	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -359,7 +389,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Assign response properties
 	res := schema.CharacterResponse{
-		Data: []schema.CharacterData{
+		Data: []schema.DungeonCharacterData{
 			responseData,
 		},
 	}
@@ -374,33 +404,12 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 }
 
 // CharacterRequestDataToRecord -
-func (rnr *Runner) CharacterRequestDataToRecord(data schema.CharacterData, rec *record.Character) error {
+func (rnr *Runner) CharacterRequestDataToRecord(data schema.DungeonCharacterData, rec *record.Character) error {
 
-	rec.Name = data.Name
-	rec.Strength = data.Strength
-	rec.Dexterity = data.Dexterity
-	rec.Intelligence = data.Intelligence
+	rec.Name = data.CharacterName
+	rec.Strength = data.CharacterStrength
+	rec.Dexterity = data.CharacterDexterity
+	rec.Intelligence = data.CharacterIntelligence
 
 	return nil
-}
-
-// RecordToCharacterResponseData -
-func (rnr *Runner) RecordToCharacterResponseData(dungeonCharacterRec record.Character) (schema.CharacterData, error) {
-
-	data := schema.CharacterData{
-		ID:               dungeonCharacterRec.ID,
-		Name:             dungeonCharacterRec.Name,
-		Strength:         dungeonCharacterRec.Strength,
-		Dexterity:        dungeonCharacterRec.Dexterity,
-		Intelligence:     dungeonCharacterRec.Intelligence,
-		Health:           dungeonCharacterRec.Health,
-		Fatigue:          dungeonCharacterRec.Fatigue,
-		Coins:            dungeonCharacterRec.Coins,
-		AttributePoints:  dungeonCharacterRec.AttributePoints,
-		ExperiencePoints: dungeonCharacterRec.ExperiencePoints,
-		CreatedAt:        dungeonCharacterRec.CreatedAt,
-		UpdatedAt:        dungeonCharacterRec.UpdatedAt.Time,
-	}
-
-	return data, nil
 }
