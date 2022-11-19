@@ -41,7 +41,7 @@ func (m *Model) GetTemplateRec(recID string, forUpdate bool) (*record.Template, 
 // CreateTemplateRec -
 func (m *Model) CreateTemplateRec(rec *record.Template) error {
 
-	m.Log.Info("Creating template rec >%#v<", rec)
+	m.Log.Info("Creating template record >%#v<", rec)
 
 	r := m.TemplateRepository()
 
@@ -51,13 +51,15 @@ func (m *Model) CreateTemplateRec(rec *record.Template) error {
 		return err
 	}
 
+	m.Log.Info("Created template record >%#v<", rec)
+
 	return r.CreateOne(rec)
 }
 
 // UpdateTemplateRec -
 func (m *Model) UpdateTemplateRec(rec *record.Template) error {
 
-	m.Log.Info("Updating template rec >%#v<", rec)
+	m.Log.Info("Updating template record >%#v<", rec)
 
 	r := m.TemplateRepository()
 

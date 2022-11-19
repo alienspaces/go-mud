@@ -107,12 +107,11 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> createCharacter(
-    String dungeonID, {
-    required String name,
-    required int strength,
-    required int dexterity,
-    required int intelligence,
+  Future<APIResponse> createCharacter({
+    required String characterName,
+    required int characterStrength,
+    required int characterDexterity,
+    required int characterIntelligence,
   }) async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
@@ -123,17 +122,17 @@ class API {
         scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
-        path: '/api/v1/dungeons/$dungeonID/characters',
+        path: '/api/v1/characters',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
-          "name": name,
-          "strength": strength,
-          "dexterity": dexterity,
-          "intelligence": intelligence,
+          "character_name": characterName,
+          "character_strength": characterStrength,
+          "character_dexterity": characterDexterity,
+          "character_intelligence": characterIntelligence,
         },
       });
       log.warning('bodyData $bodyData');
@@ -164,7 +163,126 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> getCharacter(String dungeonID, String characterID) async {
+  Future<APIResponse> getCharacter(String characterID) async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/characters/$characterID',
+      );
+
+      log.fine('URI $uri');
+
+      response = await client.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    if (response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
+
+    log.fine('Response: $responseBody');
+
+    return APIResponse(body: responseBody);
+  }
+
+  Future<APIResponse> getCharacters() async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/characters',
+      );
+
+      log.fine('URI $uri');
+
+      response = await client.get(uri,
+          headers: {'Content-Type': 'application/json; charset=utf-8'});
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    if (response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
+
+    log.fine('Response: $responseBody');
+
+    return APIResponse(body: responseBody);
+  }
+
+  Future<APIResponse> createDungeonCharacter(
+    String dungeonID,
+    String characterID,
+  ) async {
+    final log = getLogger('API');
+    final client = RetryClient(http.Client());
+
+    http.Response? response;
+    try {
+      Uri uri = Uri(
+        scheme: _scheme,
+        host: _hostname,
+        port: int.parse(_port),
+        path: '/api/v1/dungeons/$dungeonID/characters/$characterID/enter',
+      );
+
+      log.info('URI $uri');
+
+      response = await client.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
+    } catch (err) {
+      log.warning('Failed: ${err.toString()}');
+      return APIResponse(error: err.toString());
+    } finally {
+      client.close();
+    }
+
+    String responseBody = response.body;
+
+    log.info('Response: $responseBody');
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
+
+    return APIResponse(body: responseBody);
+  }
+
+  Future<APIResponse> getDungeonCharacter(
+      String dungeonID, String characterID) async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
 
@@ -194,27 +312,40 @@ class API {
 
     String responseBody = response.body;
 
+    if (response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
+
     log.fine('Response: $responseBody');
 
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> getCharacters(String dungeonID) async {
+  Future<APIResponse> deleteDungeonCharacter(
+    String dungeonID,
+    String characterID,
+  ) async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
+
     http.Response? response;
     try {
       Uri uri = Uri(
         scheme: _scheme,
         host: _hostname,
         port: int.parse(_port),
-        path: '/api/v1/dungeons/$dungeonID/characters',
+        path: '/api/v1/dungeons/$dungeonID/characters/$characterID/exit',
       );
 
       log.fine('URI $uri');
 
-      response = await client.get(uri,
-          headers: {'Content-Type': 'application/json; charset=utf-8'});
+      response = await client.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
       return APIResponse(error: err.toString());
@@ -270,6 +401,11 @@ class API {
     }
 
     String responseBody = response.body;
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      log.warning('Failed: $responseBody');
+      return APIResponse(error: responseBody);
+    }
 
     log.fine('Response: $responseBody');
 

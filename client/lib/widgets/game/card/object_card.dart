@@ -21,7 +21,8 @@ void displayObjectCard(
         ),
         Expanded(
           flex: 1,
-          child: Text(dungeonActionRecord.targetObject!.description),
+          child:
+              Text(dungeonActionRecord.actionTargetObject!.objectDescription),
         ),
       ],
     ),
@@ -34,14 +35,14 @@ void displayObjectCard(
       return FractionallySizedBox(
         heightFactor: .8,
         child: AlertDialog(
-          title: Text(dungeonActionRecord.targetObject!.name),
+          title: Text(dungeonActionRecord.actionTargetObject!.objectName),
           content: content,
           actions: <Widget>[
             TextButton(
-              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: const Text('Close'),
             ),
           ],
         ),

@@ -31,12 +31,12 @@ class BoardLocationWidget extends StatelessWidget {
 
           if (dungeonActionRecord != null) {
             log.fine(
-                'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.command}');
+                'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.actionCommand}');
             widgets.add(
               GameLocationGridWidget(
                 key: UniqueKey(),
                 action: null,
-                locationData: dungeonActionRecord.location,
+                locationData: dungeonActionRecord.actionLocation,
               ),
             );
           } else {
@@ -55,13 +55,13 @@ class BoardLocationWidget extends StatelessWidget {
           var dungeonActionRecord = state.current;
 
           log.fine(
-              'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.command}');
+              'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.actionCommand}');
 
           widgets.add(
             GameLocationGridWidget(
               key: UniqueKey(),
               action: state.action,
-              locationData: dungeonActionRecord.location,
+              locationData: dungeonActionRecord.actionLocation,
             ),
           );
         }
@@ -70,16 +70,16 @@ class BoardLocationWidget extends StatelessWidget {
           var dungeonActionRecord = state.current;
 
           log.fine(
-              'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.command}');
+              'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.actionCommand}');
 
-          if (dungeonActionRecord.command == 'move') {
+          if (dungeonActionRecord.actionCommand == 'move') {
             widgets.add(
               GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideOut,
                 direction: state.direction,
                 action: state.action,
-                locationData: state.previous.location,
+                locationData: state.previous.actionLocation,
               ),
             );
             widgets.add(
@@ -88,35 +88,35 @@ class BoardLocationWidget extends StatelessWidget {
                 slide: Slide.slideIn,
                 direction: state.direction,
                 action: state.action,
-                locationData: state.current.location,
+                locationData: state.current.actionLocation,
               ),
             );
-          } else if (dungeonActionRecord.command == 'look') {
+          } else if (dungeonActionRecord.actionCommand == 'look') {
             widgets.add(
               GameLocationGridWidget(
                 key: UniqueKey(),
                 action: state.action,
-                locationData: state.current.location,
+                locationData: state.current.actionLocation,
               ),
             );
-            if (dungeonActionRecord.targetLocation != null) {
+            if (dungeonActionRecord.actionTargetLocation != null) {
               log.fine('Rendering look target location');
               widgets.add(
                 GameLocationGridLookWidget(
                   key: UniqueKey(),
                   direction: state.direction,
                   action: state.action,
-                  locationData: state.current.targetLocation!,
+                  locationData: state.current.actionTargetLocation!,
                 ),
               );
             }
           } else if (['stash', 'equip', 'drop']
-              .contains(dungeonActionRecord.command)) {
+              .contains(dungeonActionRecord.actionCommand)) {
             widgets.add(
               GameLocationGridWidget(
                 key: UniqueKey(),
                 action: state.action,
-                locationData: state.current.location,
+                locationData: state.current.actionLocation,
               ),
             );
           }

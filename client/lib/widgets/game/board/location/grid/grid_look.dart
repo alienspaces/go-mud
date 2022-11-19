@@ -18,7 +18,7 @@ class GameLocationGridLookWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameLocationGridLookWidgetState createState() =>
+  State<GameLocationGridLookWidget> createState() =>
       _GameLocationGridLookWidgetState();
 }
 
@@ -116,7 +116,7 @@ class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
       curve: Curves.linear,
     ));
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) => _controller.forward());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _controller.forward());
   }
 
   @override

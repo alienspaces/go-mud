@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -12,9 +13,10 @@ import (
 
 // Log -
 type Log struct {
-	log    zerolog.Logger
-	fields map[string]interface{}
-	Config configurer.Configurer
+	log      zerolog.Logger
+	fields   map[string]interface{}
+	Config   configurer.Configurer
+	IsPretty bool
 }
 
 var _ logger.Logger = &Log{}
@@ -63,11 +65,25 @@ func NewLogger(c configurer.Configurer) (*Log, error) {
 // Init initializes logger
 func (l *Log) Init() error {
 
-	// TODO: support different output writers primarily for testing purposes
-
-	// logger
 	l.log = zerolog.New(os.Stdout).With().Timestamp().Logger()
-	l.log = l.log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	if l.Config.Get("APP_SERVER_LOG_PRETTY") == "true" {
+		l.IsPretty = true
+	}
+
+	if l.IsPretty {
+		output := zerolog.ConsoleWriter{
+			Out: os.Stdout,
+			// The following adds colour to the value of additional log fields, a nice shade of purple actually..
+			FormatFieldValue: func(i interface{}) string {
+				if i != nil {
+					return fmt.Sprintf("\x1b[%dm%v\x1b[0m", 35, i)
+				}
+				return ""
+			},
+		}
+		l.log = l.log.Output(output)
+	}
 
 	// logger level
 	configLevel := l.Config.Get("APP_SERVER_LOG_LEVEL")
@@ -86,8 +102,6 @@ func (l *Log) Init() error {
 	default:
 		l.log = l.log.Level(zerolog.DebugLevel)
 	}
-
-	l.log.Info().Msgf("Log level config >%s< actual >%s<", configLevel, l.log.GetLevel())
 
 	return nil
 }
@@ -127,6 +141,65 @@ func (l *Log) Context(key, value string) {
 		return
 	}
 	l.fields[key] = value
+}
+
+// WithFunctionContext - Shallow copied logger instance with new function context and existing package context
+func (l *Log) WithFunctionContext(value string) logger.Logger {
+	ctxLog := *l
+	fields := map[string]interface{}{
+		"function": value,
+	}
+	if value, ok := ctxLog.fields["instance"]; ok {
+		fields["instance"] = value
+	}
+	if value, ok := ctxLog.fields["package"]; ok {
+		fields["package"] = value
+	}
+	if value, ok := ctxLog.fields["correlation-id"]; ok {
+		fields["correlation-id"] = value
+	}
+
+	ctxLog.fields = fields
+	return &ctxLog
+}
+
+// WithInstanceContext - Shallow copied logger instance with new function context and existing package context
+func (l *Log) WithInstanceContext(value string) logger.Logger {
+	ctxLog := *l
+	fields := map[string]interface{}{
+		"instance": value,
+	}
+	if value, ok := ctxLog.fields["function"]; ok {
+		fields["function"] = value
+	}
+	if value, ok := ctxLog.fields["package"]; ok {
+		fields["package"] = value
+	}
+	if value, ok := ctxLog.fields["correlation-id"]; ok {
+		fields["correlation-id"] = value
+	}
+
+	ctxLog.fields = fields
+	return &ctxLog
+}
+
+// WithPackageContext - Shallow copied logger instance with new package context and existing function context
+func (l *Log) WithPackageContext(value string) logger.Logger {
+	ctxLog := *l
+	fields := map[string]interface{}{
+		"package": value,
+	}
+	if value, ok := ctxLog.fields["instance"]; ok {
+		fields["instance"] = value
+	}
+	if value, ok := ctxLog.fields["function"]; ok {
+		fields["function"] = value
+	}
+	if value, ok := ctxLog.fields["correlation-id"]; ok {
+		fields["correlation-id"] = value
+	}
+	ctxLog.fields = fields
+	return &ctxLog
 }
 
 // Debug -

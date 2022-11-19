@@ -22,7 +22,7 @@ class GameLocationGridMoveWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameLocationGridMoveWidgetState createState() =>
+  State<GameLocationGridMoveWidget> createState() =>
       _GameLocationGridMoveWidgetState();
 }
 
@@ -101,7 +101,7 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
 
     if (widget.slide != Slide.slideNone) {
       WidgetsBinding.instance
-          ?.addPostFrameCallback((_) => _controller.forward());
+          .addPostFrameCallback((_) => _controller.forward());
     }
   }
 

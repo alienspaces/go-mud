@@ -5,34 +5,33 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// RecordToCharacterResponseData -
-func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet model.DungeonActionRecordSet) (*schema.DungeonActionResponseData, error) {
+// ActionRecordSetToActionResponse -
+func ActionRecordSetToActionResponse(l logger.Logger, actionRecordSet record.ActionRecordSet) (*schema.ActionResponseData, error) {
 
-	dungeonActionRec := dungeonActionRecordSet.ActionRec
+	dungeonActionRec := actionRecordSet.ActionRec
 
 	var err error
-	var characterData *schema.CharacterDetailedData
-	if dungeonActionRecordSet.ActionCharacterRec != nil {
+	var characterData *schema.ActionCharacter
+	if actionRecordSet.ActionCharacterRec != nil {
 		characterData, err = dungeonCharacterToResponseCharacter(
 			l,
-			dungeonActionRecordSet.ActionCharacterRec,
-			dungeonActionRecordSet.ActionCharacterObjectRecs,
+			actionRecordSet.ActionCharacterRec,
+			actionRecordSet.ActionCharacterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	var monsterData *schema.MonsterDetailedData
-	if dungeonActionRecordSet.ActionMonsterRec != nil {
+	var monsterData *schema.ActionMonster
+	if actionRecordSet.ActionMonsterRec != nil {
 		monsterData, err = dungeonMonsterToResponseMonster(
 			l,
-			dungeonActionRecordSet.ActionMonsterRec,
-			dungeonActionRecordSet.ActionMonsterObjectRecs,
+			actionRecordSet.ActionMonsterRec,
+			actionRecordSet.ActionMonsterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
@@ -40,67 +39,67 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet mod
 	}
 
 	// Current location
-	locationData, err := dungeonActionLocationToResponseLocation(dungeonActionRecordSet.CurrentLocation)
+	locationData, err := actionLocationToResponseLocation(actionRecordSet.CurrentLocation)
 	if err != nil {
 		return nil, err
 	}
 
 	// Target location
-	var targetLocationData *schema.LocationData
-	if dungeonActionRecordSet.TargetLocation != nil {
-		targetLocationData, err = dungeonActionLocationToResponseLocation(dungeonActionRecordSet.TargetLocation)
+	var targetActionLocation *schema.ActionLocation
+	if actionRecordSet.TargetLocation != nil {
+		targetActionLocation, err = actionLocationToResponseLocation(actionRecordSet.TargetLocation)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if dungeonActionRec.ResolvedTargetDungeonLocationDirection.Valid {
-		targetLocationData.Direction = dungeonActionRec.ResolvedTargetDungeonLocationDirection.String
+	if dungeonActionRec.ResolvedTargetLocationDirection.Valid {
+		targetActionLocation.LocationDirection = dungeonActionRec.ResolvedTargetLocationDirection.String
 	}
 
 	// Equipped object
-	var equippedObjectData *schema.ObjectDetailedData
-	if dungeonActionRecordSet.EquippedActionObjectRec != nil {
-		equippedObjectData, err = dungeonObjectToResponseObject(dungeonActionRecordSet.EquippedActionObjectRec)
+	var equippedActionLocationObject *schema.ActionObject
+	if actionRecordSet.EquippedActionObjectRec != nil {
+		equippedActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.EquippedActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Stashed object
-	var stashedObjectData *schema.ObjectDetailedData
-	if dungeonActionRecordSet.StashedActionObjectRec != nil {
-		stashedObjectData, err = dungeonObjectToResponseObject(dungeonActionRecordSet.StashedActionObjectRec)
+	var stashedActionLocationObject *schema.ActionObject
+	if actionRecordSet.StashedActionObjectRec != nil {
+		stashedActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.StashedActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Dropped object
-	var droppedObjectData *schema.ObjectDetailedData
-	if dungeonActionRecordSet.DroppedActionObjectRec != nil {
-		droppedObjectData, err = dungeonObjectToResponseObject(dungeonActionRecordSet.DroppedActionObjectRec)
+	var droppedActionLocationObject *schema.ActionObject
+	if actionRecordSet.DroppedActionObjectRec != nil {
+		droppedActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.DroppedActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Target object
-	var targetObjectData *schema.ObjectDetailedData
-	if dungeonActionRecordSet.TargetActionObjectRec != nil {
-		targetObjectData, err = dungeonObjectToResponseObject(dungeonActionRecordSet.TargetActionObjectRec)
+	var targetActionLocationObject *schema.ActionObject
+	if actionRecordSet.TargetActionObjectRec != nil {
+		targetActionLocationObject, err = dungeonObjectToResponseObject(actionRecordSet.TargetActionObjectRec)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Target character
-	var targetCharacterData *schema.CharacterDetailedData
-	if dungeonActionRecordSet.TargetActionCharacterRec != nil {
-		targetCharacterData, err = dungeonTargetCharacterToResponseTargetCharacter(
+	var targetActionLocationCharacter *schema.ActionCharacter
+	if actionRecordSet.TargetActionCharacterRec != nil {
+		targetActionLocationCharacter, err = dungeonTargetCharacterToResponseTargetCharacter(
 			l,
-			dungeonActionRecordSet.TargetActionCharacterRec,
-			dungeonActionRecordSet.TargetActionCharacterObjectRecs,
+			actionRecordSet.TargetActionCharacterRec,
+			actionRecordSet.TargetActionCharacterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
@@ -108,90 +107,90 @@ func ActionRecordSetToActionResponse(l logger.Logger, dungeonActionRecordSet mod
 	}
 
 	// Target monster
-	var targetMonsterData *schema.MonsterDetailedData
-	if dungeonActionRecordSet.TargetActionMonsterRec != nil {
-		targetMonsterData, err = dungeonTargetMonsterToResponseTargetMonster(
+	var targetActionLocationMonster *schema.ActionMonster
+	if actionRecordSet.TargetActionMonsterRec != nil {
+		targetActionLocationMonster, err = dungeonTargetMonsterToResponseTargetMonster(
 			l,
-			dungeonActionRecordSet.TargetActionMonsterRec,
-			dungeonActionRecordSet.TargetActionMonsterObjectRecs,
+			actionRecordSet.TargetActionMonsterRec,
+			actionRecordSet.TargetActionMonsterObjectRecs,
 		)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	narrative, err := dungeonActionToNarrative(l, dungeonActionRecordSet)
+	narrative, err := dungeonActionToNarrative(l, actionRecordSet)
 	if err != nil {
 		return nil, err
 	}
 
-	data := schema.DungeonActionResponseData{
-		ID:              dungeonActionRec.ID,
-		Command:         dungeonActionRec.ResolvedCommand,
-		Narrative:       narrative,
-		Location:        *locationData,
-		Character:       characterData,
-		Monster:         monsterData,
-		EquippedObject:  equippedObjectData,
-		StashedObject:   stashedObjectData,
-		DroppedObject:   droppedObjectData,
-		TargetObject:    targetObjectData,
-		TargetCharacter: targetCharacterData,
-		TargetMonster:   targetMonsterData,
-		TargetLocation:  targetLocationData,
-		CreatedAt:       dungeonActionRec.CreatedAt,
+	data := schema.ActionResponseData{
+		ActionID:              dungeonActionRec.ID,
+		ActionCommand:         dungeonActionRec.ResolvedCommand,
+		ActionNarrative:       narrative,
+		ActionLocation:        *locationData,
+		ActionCharacter:       characterData,
+		ActionMonster:         monsterData,
+		ActionEquippedObject:  equippedActionLocationObject,
+		ActionStashedObject:   stashedActionLocationObject,
+		ActionDroppedObject:   droppedActionLocationObject,
+		ActionTargetObject:    targetActionLocationObject,
+		ActionTargetCharacter: targetActionLocationCharacter,
+		ActionTargetMonster:   targetActionLocationMonster,
+		ActionTargetLocation:  targetActionLocation,
+		ActionCreatedAt:       dungeonActionRec.CreatedAt,
 	}
 
 	return &data, nil
 }
 
-func dungeonObjectToResponseObject(dungeonObjectRec *record.DungeonActionObject) (*schema.ObjectDetailedData, error) {
-	return &schema.ObjectDetailedData{
-		Name:        dungeonObjectRec.Name,
-		Description: dungeonObjectRec.Description,
-		IsEquipped:  dungeonObjectRec.IsEquipped,
-		IsStashed:   dungeonObjectRec.IsStashed,
+func dungeonObjectToResponseObject(dungeonObjectRec *record.ActionObject) (*schema.ActionObject, error) {
+	return &schema.ActionObject{
+		ObjectName:        dungeonObjectRec.Name,
+		ObjectDescription: dungeonObjectRec.Description,
+		ObjectIsEquipped:  dungeonObjectRec.IsEquipped,
+		ObjectIsStashed:   dungeonObjectRec.IsStashed,
 	}, nil
 }
 
 func dungeonCharacterToResponseCharacter(
 	l logger.Logger,
-	characterRec *record.DungeonActionCharacter,
-	objectRecs []*record.DungeonActionCharacterObject,
-) (*schema.CharacterDetailedData, error) {
+	characterRec *record.ActionCharacter,
+	objectRecs []*record.ActionCharacterObject,
+) (*schema.ActionCharacter, error) {
 
-	data := &schema.CharacterDetailedData{
-		Name:                characterRec.Name,
-		Strength:            characterRec.Strength,
-		Dexterity:           characterRec.Dexterity,
-		Intelligence:        characterRec.Intelligence,
-		CurrentStrength:     characterRec.CurrentStrength,
-		CurrentDexterity:    characterRec.CurrentDexterity,
-		CurrentIntelligence: characterRec.CurrentIntelligence,
-		Health:              characterRec.Health,
-		Fatigue:             characterRec.Fatigue,
-		CurrentHealth:       characterRec.CurrentHealth,
-		CurrentFatigue:      characterRec.CurrentFatigue,
-		StashedObjects:      []schema.ObjectDetailedData{},
-		EquippedObjects:     []schema.ObjectDetailedData{},
+	data := &schema.ActionCharacter{
+		CharacterName:                characterRec.Name,
+		CharacterStrength:            characterRec.Strength,
+		CharacterDexterity:           characterRec.Dexterity,
+		CharacterIntelligence:        characterRec.Intelligence,
+		CharacterCurrentStrength:     characterRec.CurrentStrength,
+		CharacterCurrentDexterity:    characterRec.CurrentDexterity,
+		CharacterCurrentIntelligence: characterRec.CurrentIntelligence,
+		CharacterHealth:              characterRec.Health,
+		CharacterFatigue:             characterRec.Fatigue,
+		CharacterCurrentHealth:       characterRec.CurrentHealth,
+		CharacterCurrentFatigue:      characterRec.CurrentFatigue,
+		CharacterStashedObjects:      []schema.ActionObject{},
+		CharacterEquippedObjects:     []schema.ActionObject{},
 	}
 
 	for _, objectRec := range objectRecs {
 		if objectRec.IsEquipped {
 			l.Debug("Adding character equipped object >%#v<", objectRec)
-			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
+			data.CharacterEquippedObjects = append(data.CharacterEquippedObjects, schema.ActionObject{
+				ObjectName:       objectRec.Name,
+				ObjectIsEquipped: objectRec.IsEquipped,
+				ObjectIsStashed:  objectRec.IsStashed,
 			})
 			continue
 		}
 		if objectRec.IsStashed {
 			l.Debug("Adding character stashed object >%#v<", objectRec)
-			data.StashedObjects = append(data.StashedObjects, schema.ObjectDetailedData{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
+			data.CharacterStashedObjects = append(data.CharacterStashedObjects, schema.ActionObject{
+				ObjectName:       objectRec.Name,
+				ObjectIsEquipped: objectRec.IsEquipped,
+				ObjectIsStashed:  objectRec.IsStashed,
 			})
 			continue
 		}
@@ -202,31 +201,31 @@ func dungeonCharacterToResponseCharacter(
 
 func dungeonTargetCharacterToResponseTargetCharacter(
 	l logger.Logger,
-	characterRec *record.DungeonActionCharacter,
-	objectRecs []*record.DungeonActionCharacterObject,
-) (*schema.CharacterDetailedData, error) {
-	data := &schema.CharacterDetailedData{
-		Name:                characterRec.Name,
-		Strength:            characterRec.Strength,
-		Dexterity:           characterRec.Dexterity,
-		Intelligence:        characterRec.Intelligence,
-		CurrentStrength:     characterRec.CurrentStrength,
-		CurrentDexterity:    characterRec.CurrentDexterity,
-		CurrentIntelligence: characterRec.CurrentIntelligence,
-		Health:              characterRec.Health,
-		Fatigue:             characterRec.Fatigue,
-		CurrentHealth:       characterRec.CurrentHealth,
-		CurrentFatigue:      characterRec.CurrentFatigue,
-		EquippedObjects:     []schema.ObjectDetailedData{},
+	characterRec *record.ActionCharacter,
+	objectRecs []*record.ActionCharacterObject,
+) (*schema.ActionCharacter, error) {
+	data := &schema.ActionCharacter{
+		CharacterName:                characterRec.Name,
+		CharacterStrength:            characterRec.Strength,
+		CharacterDexterity:           characterRec.Dexterity,
+		CharacterIntelligence:        characterRec.Intelligence,
+		CharacterCurrentStrength:     characterRec.CurrentStrength,
+		CharacterCurrentDexterity:    characterRec.CurrentDexterity,
+		CharacterCurrentIntelligence: characterRec.CurrentIntelligence,
+		CharacterHealth:              characterRec.Health,
+		CharacterFatigue:             characterRec.Fatigue,
+		CharacterCurrentHealth:       characterRec.CurrentHealth,
+		CharacterCurrentFatigue:      characterRec.CurrentFatigue,
+		CharacterEquippedObjects:     []schema.ActionObject{},
 	}
 
 	for _, objectRec := range objectRecs {
 		if objectRec.IsEquipped {
 			l.Debug("Adding target character equipped object >%#v<", objectRec)
-			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
+			data.CharacterEquippedObjects = append(data.CharacterEquippedObjects, schema.ActionObject{
+				ObjectName:       objectRec.Name,
+				ObjectIsEquipped: objectRec.IsEquipped,
+				ObjectIsStashed:  objectRec.IsStashed,
 			})
 			continue
 		}
@@ -237,42 +236,34 @@ func dungeonTargetCharacterToResponseTargetCharacter(
 
 func dungeonMonsterToResponseMonster(
 	l logger.Logger,
-	dungeonMonsterRec *record.DungeonActionMonster,
-	objectRecs []*record.DungeonActionMonsterObject,
-) (*schema.MonsterDetailedData, error) {
+	dungeonMonsterRec *record.ActionMonster,
+	objectRecs []*record.ActionMonsterObject,
+) (*schema.ActionMonster, error) {
 
-	data := &schema.MonsterDetailedData{
-		Name:                dungeonMonsterRec.Name,
-		Strength:            dungeonMonsterRec.Strength,
-		Dexterity:           dungeonMonsterRec.Dexterity,
-		Intelligence:        dungeonMonsterRec.Intelligence,
-		CurrentStrength:     dungeonMonsterRec.CurrentStrength,
-		CurrentDexterity:    dungeonMonsterRec.CurrentDexterity,
-		CurrentIntelligence: dungeonMonsterRec.CurrentIntelligence,
-		Health:              dungeonMonsterRec.Health,
-		Fatigue:             dungeonMonsterRec.Fatigue,
-		CurrentHealth:       dungeonMonsterRec.CurrentHealth,
-		CurrentFatigue:      dungeonMonsterRec.CurrentFatigue,
-		StashedObjects:      []schema.ObjectDetailedData{},
-		EquippedObjects:     []schema.ObjectDetailedData{},
+	data := &schema.ActionMonster{
+		MonsterName:                dungeonMonsterRec.Name,
+		MonsterStrength:            dungeonMonsterRec.Strength,
+		MonsterDexterity:           dungeonMonsterRec.Dexterity,
+		MonsterIntelligence:        dungeonMonsterRec.Intelligence,
+		MonsterCurrentStrength:     dungeonMonsterRec.CurrentStrength,
+		MonsterCurrentDexterity:    dungeonMonsterRec.CurrentDexterity,
+		MonsterCurrentIntelligence: dungeonMonsterRec.CurrentIntelligence,
+		MonsterHealth:              dungeonMonsterRec.Health,
+		MonsterFatigue:             dungeonMonsterRec.Fatigue,
+		MonsterCurrentHealth:       dungeonMonsterRec.CurrentHealth,
+		MonsterCurrentFatigue:      dungeonMonsterRec.CurrentFatigue,
+		MonsterEquippedObjects:     []schema.ActionObject{},
 	}
 
+	// NOTE: We only ever provide a monsters equipped objects and never provide
+	// a monsters stashed objects.
 	for _, objectRec := range objectRecs {
 		if objectRec.IsEquipped {
 			l.Debug("Adding monster equipped object >%#v<", objectRec)
-			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
-			})
-			continue
-		}
-		if objectRec.IsStashed {
-			l.Debug("Adding monster stashed object >%#v<", objectRec)
-			data.StashedObjects = append(data.StashedObjects, schema.ObjectDetailedData{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
+			data.MonsterEquippedObjects = append(data.MonsterEquippedObjects, schema.ActionObject{
+				ObjectName:       objectRec.Name,
+				ObjectIsEquipped: objectRec.IsEquipped,
+				ObjectIsStashed:  objectRec.IsStashed,
 			})
 			continue
 		}
@@ -283,30 +274,30 @@ func dungeonMonsterToResponseMonster(
 
 func dungeonTargetMonsterToResponseTargetMonster(
 	l logger.Logger,
-	monsterRec *record.DungeonActionMonster,
-	objectRecs []*record.DungeonActionMonsterObject,
-) (*schema.MonsterDetailedData, error) {
-	data := &schema.MonsterDetailedData{
-		Name:                monsterRec.Name,
-		Strength:            monsterRec.Strength,
-		Dexterity:           monsterRec.Dexterity,
-		Intelligence:        monsterRec.Intelligence,
-		CurrentStrength:     monsterRec.CurrentStrength,
-		CurrentDexterity:    monsterRec.CurrentDexterity,
-		CurrentIntelligence: monsterRec.CurrentIntelligence,
-		Health:              monsterRec.Health,
-		Fatigue:             monsterRec.Fatigue,
-		CurrentHealth:       monsterRec.CurrentHealth,
-		CurrentFatigue:      monsterRec.CurrentFatigue,
-		EquippedObjects:     []schema.ObjectDetailedData{},
+	monsterRec *record.ActionMonster,
+	objectRecs []*record.ActionMonsterObject,
+) (*schema.ActionMonster, error) {
+	data := &schema.ActionMonster{
+		MonsterName:                monsterRec.Name,
+		MonsterStrength:            monsterRec.Strength,
+		MonsterDexterity:           monsterRec.Dexterity,
+		MonsterIntelligence:        monsterRec.Intelligence,
+		MonsterCurrentStrength:     monsterRec.CurrentStrength,
+		MonsterCurrentDexterity:    monsterRec.CurrentDexterity,
+		MonsterCurrentIntelligence: monsterRec.CurrentIntelligence,
+		MonsterHealth:              monsterRec.Health,
+		MonsterFatigue:             monsterRec.Fatigue,
+		MonsterCurrentHealth:       monsterRec.CurrentHealth,
+		MonsterCurrentFatigue:      monsterRec.CurrentFatigue,
+		MonsterEquippedObjects:     []schema.ActionObject{},
 	}
 
 	for _, objectRec := range objectRecs {
 		if objectRec.IsEquipped {
-			data.EquippedObjects = append(data.EquippedObjects, schema.ObjectDetailedData{
-				Name:       objectRec.Name,
-				IsEquipped: objectRec.IsEquipped,
-				IsStashed:  objectRec.IsStashed,
+			data.MonsterEquippedObjects = append(data.MonsterEquippedObjects, schema.ActionObject{
+				ObjectName:       objectRec.Name,
+				ObjectIsEquipped: objectRec.IsEquipped,
+				ObjectIsStashed:  objectRec.IsStashed,
 			})
 			continue
 		}
@@ -315,93 +306,90 @@ func dungeonTargetMonsterToResponseTargetMonster(
 	return data, nil
 }
 
-// actionLocationToReponseLocation -
-func dungeonActionLocationToResponseLocation(recordSet *model.DungeonActionLocationRecordSet) (*schema.LocationData, error) {
+// actionLocationToResponseLocation -
+func actionLocationToResponseLocation(recordSet *record.ActionLocationRecordSet) (*schema.ActionLocation, error) {
 
-	dungeonLocationRec := recordSet.LocationRec
+	dungeonLocationRec := recordSet.LocationInstanceViewRec
 
 	directions := []string{}
-	if dungeonLocationRec.NorthDungeonLocationID.Valid {
+	if dungeonLocationRec.NorthLocationInstanceID.Valid {
 		directions = append(directions, "north")
 	}
-	if dungeonLocationRec.NortheastDungeonLocationID.Valid {
+	if dungeonLocationRec.NortheastLocationInstanceID.Valid {
 		directions = append(directions, "northeast")
 	}
-	if dungeonLocationRec.EastDungeonLocationID.Valid {
+	if dungeonLocationRec.EastLocationInstanceID.Valid {
 		directions = append(directions, "east")
 	}
-	if dungeonLocationRec.SoutheastDungeonLocationID.Valid {
+	if dungeonLocationRec.SoutheastLocationInstanceID.Valid {
 		directions = append(directions, "southeast")
 	}
-	if dungeonLocationRec.SouthDungeonLocationID.Valid {
+	if dungeonLocationRec.SouthLocationInstanceID.Valid {
 		directions = append(directions, "south")
 	}
-	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
+	if dungeonLocationRec.SouthwestLocationInstanceID.Valid {
 		directions = append(directions, "southwest")
 	}
-	if dungeonLocationRec.SouthwestDungeonLocationID.Valid {
+	if dungeonLocationRec.SouthwestLocationInstanceID.Valid {
 		directions = append(directions, "southwest")
 	}
-	if dungeonLocationRec.WestDungeonLocationID.Valid {
+	if dungeonLocationRec.WestLocationInstanceID.Valid {
 		directions = append(directions, "west")
 	}
-	if dungeonLocationRec.NorthwestDungeonLocationID.Valid {
+	if dungeonLocationRec.NorthwestLocationInstanceID.Valid {
 		directions = append(directions, "northwest")
 	}
-	if dungeonLocationRec.UpDungeonLocationID.Valid {
+	if dungeonLocationRec.UpLocationInstanceID.Valid {
 		directions = append(directions, "up")
 	}
-	if dungeonLocationRec.DownDungeonLocationID.Valid {
+	if dungeonLocationRec.DownLocationInstanceID.Valid {
 		directions = append(directions, "down")
 	}
 
-	var charactersData []schema.CharacterData
+	var charactersData []schema.ActionLocationCharacter
 	if len(recordSet.ActionCharacterRecs) > 0 {
 		for _, dungeonCharacterRec := range recordSet.ActionCharacterRecs {
 			charactersData = append(charactersData,
-				schema.CharacterData{
-					Name: dungeonCharacterRec.Name,
+				schema.ActionLocationCharacter{
+					CharacterName: dungeonCharacterRec.Name,
 				})
 		}
 	}
 
-	var monstersData []schema.MonsterData
+	var monstersData []schema.ActionLocationMonster
 	if len(recordSet.ActionMonsterRecs) > 0 {
 		for _, dungeonMonsterRec := range recordSet.ActionMonsterRecs {
 			monstersData = append(monstersData,
-				schema.MonsterData{
-					Name: dungeonMonsterRec.Name,
+				schema.ActionLocationMonster{
+					MonsterName: dungeonMonsterRec.Name,
 				})
 		}
 	}
 
-	var objectsData []schema.ObjectData
+	var objectsData []schema.ActionLocationObject
 	if len(recordSet.ActionObjectRecs) > 0 {
 		for _, dungeonObjectRec := range recordSet.ActionObjectRecs {
 			objectsData = append(objectsData,
-				schema.ObjectData{
-					Name: dungeonObjectRec.Name,
+				schema.ActionLocationObject{
+					ObjectName: dungeonObjectRec.Name,
 				})
 		}
 	}
 
-	data := &schema.LocationData{
-		Name:        dungeonLocationRec.Name,
-		Description: dungeonLocationRec.Description,
-		Directions:  directions,
-		Characters:  charactersData,
-		Monsters:    monstersData,
-		Objects:     objectsData,
+	data := &schema.ActionLocation{
+		LocationName:        dungeonLocationRec.Name,
+		LocationDescription: dungeonLocationRec.Description,
+		LocationDirections:  directions,
+		LocationCharacters:  charactersData,
+		LocationMonsters:    monstersData,
+		LocationObjects:     objectsData,
 	}
 
 	return data, nil
 }
 
-// TODO: This might evolve to being its own lifeform so should potentially be
-// pulled out of this mapper and into its own package.
-
 // dungeonActionToNarrative -
-func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet) (string, error) {
+func dungeonActionToNarrative(l logger.Logger, set record.ActionRecordSet) (string, error) {
 
 	desc := ""
 	if set.ActionCharacterRec != nil {
@@ -411,15 +399,15 @@ func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet)
 	}
 
 	switch set.ActionRec.ResolvedCommand {
-	case record.DungeonActionCommandMove:
+	case record.ActionCommandMove:
 		desc += " moves "
-	case record.DungeonActionCommandLook:
+	case record.ActionCommandLook:
 		desc += " looks "
-	case record.DungeonActionCommandStash:
+	case record.ActionCommandStash:
 		desc += " stashes "
-	case record.DungeonActionCommandEquip:
+	case record.ActionCommandEquip:
 		desc += " equips "
-	case record.DungeonActionCommandDrop:
+	case record.ActionCommandDrop:
 		desc += " drops "
 	default:
 		// no-op
@@ -432,7 +420,7 @@ func dungeonActionToNarrative(l logger.Logger, set model.DungeonActionRecordSet)
 	} else if set.TargetActionObjectRec != nil {
 		desc += set.TargetActionObjectRec.Name
 	} else if set.TargetLocation != nil {
-		desc += set.ActionRec.ResolvedTargetDungeonLocationDirection.String
+		desc += set.ActionRec.ResolvedTargetLocationDirection.String
 	}
 
 	desc = strings.TrimRight(desc, " ")

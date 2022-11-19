@@ -1,12 +1,14 @@
 package runner
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 
 	command "gitlab.com/alienspaces/go-mud/server/core/cli"
-	"gitlab.com/alienspaces/go-mud/server/core/prepare"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
 )
 
@@ -16,9 +18,23 @@ type Runner struct {
 }
 
 // NewRunner -
-func NewRunner() *Runner {
+func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
 	r := Runner{}
+
+	r.Log = l
+	if r.Log == nil {
+		msg := "logger undefined, cannot init runner"
+		r.Log.Error(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	r.Config = c
+	if r.Config == nil {
+		msg := "configurer undefined, cannot init runner"
+		r.Log.Error(msg)
+		return nil, fmt.Errorf(msg)
+	}
 
 	// https://github.com/urfave/cli/blob/master/docs/v2/manual.md
 	r.App = &cli.App{
@@ -44,10 +60,9 @@ func NewRunner() *Runner {
 		},
 	}
 
-	r.PreparerFunc = r.Preparer
 	r.ModellerFunc = r.Modeller
 
-	return &r
+	return &r, nil
 }
 
 // TestCommand -
@@ -56,20 +71,6 @@ func (rnr *Runner) TestCommand(c *cli.Context) error {
 	rnr.Log.Info("** Template Test Command **")
 
 	return nil
-}
-
-// Preparer -
-func (rnr *Runner) Preparer() (preparer.Preparer, error) {
-
-	rnr.Log.Info("** Template Preparer **")
-
-	p, err := prepare.NewPrepare(rnr.Log)
-	if err != nil {
-		rnr.Log.Warn("Failed new preparer >%v<", err)
-		return nil, err
-	}
-
-	return p, nil
 }
 
 // Modeller -

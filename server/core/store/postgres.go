@@ -2,6 +2,8 @@ package store
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // blank import intended
@@ -14,45 +16,91 @@ import (
 func getPostgresDB(c configurer.Configurer, l logger.Logger) (*sqlx.DB, error) {
 
 	dbHost := c.Get("APP_SERVER_DB_HOST")
-	dbPort := c.Get("APP_SERVER_DB_PORT")
-	dbName := c.Get("APP_SERVER_DB_NAME")
-	dbUser := c.Get("APP_SERVER_DB_USER")
-	dbPass := c.Get("APP_SERVER_DB_PASSWORD")
-
 	if dbHost == "" {
-		l.Warn("missing APP_SERVER_DB_HOST, cannot connect")
-		return nil, fmt.Errorf("missing APP_SERVER_DB_HOST, cannot connect")
+		errMsg := "missing APP_SERVER_DB_HOST, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
+	dbPort := c.Get("APP_SERVER_DB_PORT")
 	if dbPort == "" {
-		l.Warn("missing APP_SERVER_DB_PORT, cannot connect")
-		return nil, fmt.Errorf("missing APP_SERVER_DB_PORT, cannot connect")
+		errMsg := "missing APP_SERVER_DB_PORT, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
+	dbName := c.Get("APP_SERVER_DB_NAME")
 	if dbName == "" {
-		l.Warn("missing APP_SERVER_DB_NAME, cannot connect")
-		return nil, fmt.Errorf("missing APP_SERVER_DB_NAME, cannot connect")
+		errMsg := "missing APP_SERVER_DB_NAME, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
+	dbUser := c.Get("APP_SERVER_DB_USER")
 	if dbUser == "" {
-		l.Warn("missing APP_SERVER_DB_USER, cannot connect")
-		return nil, fmt.Errorf("missing APP_SERVER_DB_USER, cannot connect")
+		errMsg := "missing APP_SERVER_DB_USER, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
+	dbPass := c.Get("APP_SERVER_DB_PASSWORD")
 	if dbPass == "" {
-		l.Warn("missing APP_SERVER_DB_PASS, cannot connect")
-		return nil, fmt.Errorf("missing APP_SERVER_DB_PASS, cannot connect")
+		errMsg := "missing APP_SERVER_DB_PASSWORD, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
 	cs := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)
-
 	l.Info("Connect string %s", cs)
+
+	dbMaxOpenConnectionsStr := c.Get("APP_SERVER_DB_MAX_OPEN_CONNECTIONS")
+	if dbPass == "" {
+		errMsg := "missing APP_SERVER_DB_MAX_OPEN_CONNECTIONS, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
+	dbMaxOpenConnections, err := strconv.Atoi(dbMaxOpenConnectionsStr)
+	if err != nil {
+		errMsg := "APP_SERVER_DB_MAX_OPEN_CONNECTIONS is not int"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
+
+	dbMaxIdleConnectionsStr := c.Get("APP_SERVER_DB_MAX_IDLE_CONNECTIONS")
+	if dbPass == "" {
+		errMsg := "missing APP_SERVER_DB_MAX_IDLE_CONNECTIONS, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
+	dbMaxIdleConnections, err := strconv.Atoi(dbMaxIdleConnectionsStr)
+	if err != nil {
+		errMsg := "APP_SERVER_DB_MAX_IDLE_CONNECTIONS is not int"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
+
+	dbMaxIdleTimeMinsStr := c.Get("APP_SERVER_DB_MAX_IDLE_TIME_MINS")
+	if dbPass == "" {
+		errMsg := "missing APP_SERVER_DB_MAX_IDLE_TIME_MINS, cannot connect"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
+	dbMaxIdleTimeMins, err := strconv.Atoi(dbMaxIdleTimeMinsStr)
+	if err != nil {
+		errMsg := "APP_SERVER_DB_MAX_IDLE_TIME_MINS is not int"
+		l.Warn(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
 
 	d, err := sqlx.Connect("postgres", cs)
 	if err != nil {
-		l.Warn("Failed to db connect >%v<", err)
+		l.Warn("failed to db connect >%v<", err)
 		return nil, err
 	}
+
+	d.SetMaxOpenConns(dbMaxOpenConnections)
+	d.SetMaxIdleConns(dbMaxIdleConnections)
+	d.SetConnMaxIdleTime(time.Duration(dbMaxIdleTimeMins) * time.Minute)
 
 	return d, nil
 }

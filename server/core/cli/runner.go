@@ -6,6 +6,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	"gitlab.com/alienspaces/go-mud/server/core/prepare"
+
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
@@ -16,45 +18,38 @@ import (
 
 // Runner - implements the runnerer interface
 type Runner struct {
-	Config  configurer.Configurer
-	Log     logger.Logger
-	Store   storer.Storer
-	Prepare preparer.Preparer
-	Model   modeller.Modeller
+	Config            configurer.Configurer
+	Log               logger.Logger
+	Store             storer.Storer
+	PrepareRepository preparer.Repository
+	PrepareQuery      preparer.Query
+	Model             modeller.Modeller
 
 	// cli configuration - https://github.com/urfave/cli/blob/master/docs/v2/manual.md
 	App *cli.App
 
 	// composable functions
-	PreparerFunc func() (preparer.Preparer, error)
-	ModellerFunc func() (modeller.Modeller, error)
+	PreparerRepositoryFunc func() (preparer.Repository, error)
+	PreparerQueryFunc      func() (preparer.Query, error)
+	ModellerFunc           func() (modeller.Modeller, error)
 }
 
 // ensure we comply with the Runnerer interface
 var _ runnable.Runnable = &Runner{}
 
 // Init - override to perform custom initialization
-func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
+func (rnr *Runner) Init(s storer.Storer) error {
 
-	rnr.Log = l
 	if rnr.Log == nil {
-		msg := "failed init, logger undefined, cannot init runner"
-		return fmt.Errorf(msg)
+		return fmt.Errorf("logger is nil, cannot initialise CLI runner")
 	}
 
 	rnr.Log.Info("** Initialise **")
 
-	rnr.Config = c
-	if rnr.Config == nil {
-		msg := "failed init, configurer undefined, cannot init runner"
-		rnr.Log.Warn(msg)
-		return fmt.Errorf(msg)
-	}
-
 	// Storer
 	rnr.Store = s
 	if rnr.Store == nil {
-		msg := "failed init, storer undefined, cannot init runner"
+		msg := "storer undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
@@ -62,33 +57,40 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 	// Initialise storer
 	err := rnr.Store.Init()
 	if err != nil {
-		rnr.Log.Warn("failed store init >%v<", err)
+		rnr.Log.Warn("Failed store init >%v<", err)
 		return err
 	}
 
-	// Modeller
-	rnr.Model = m
-	if rnr.Model == nil {
-		if rnr.ModellerFunc == nil {
-			rnr.Log.Warn("warning, CLI model and modellerfunc are nil, might be broken...")
-			rnr.ModellerFunc = rnr.defaultModellerFunc
-		}
+	// Repository
+	if rnr.PreparerRepositoryFunc == nil {
+		rnr.PreparerRepositoryFunc = rnr.PreparerRepository
 	}
 
-	// Preparer
-	if rnr.PreparerFunc == nil {
-		rnr.PreparerFunc = rnr.Preparer
-	}
-
-	p, err := rnr.PreparerFunc()
+	p, err := rnr.PreparerRepositoryFunc()
 	if err != nil {
 		rnr.Log.Warn("Failed preparer func >%v<", err)
 		return err
 	}
 
-	rnr.Prepare = p
-	if rnr.Prepare == nil {
-		rnr.Log.Warn("Preparer is nil, cannot continue")
+	rnr.PrepareRepository = p
+	if rnr.PrepareRepository == nil {
+		rnr.Log.Warn("Repository is nil, cannot continue")
+		return err
+	}
+
+	if rnr.PreparerQueryFunc == nil {
+		rnr.PreparerQueryFunc = rnr.PreparerQuery
+	}
+
+	pCfg, err := rnr.PreparerQueryFunc()
+	if err != nil {
+		rnr.Log.Warn("Failed preparer config func >%v<", err)
+		return err
+	}
+
+	rnr.PrepareQuery = pCfg
+	if rnr.PrepareQuery == nil {
+		rnr.Log.Warn("Repository config is nil, cannot continue")
 		return err
 	}
 
@@ -99,10 +101,18 @@ func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Store
 	}
 
 	// Initialise preparer
-	err = rnr.Prepare.Init(db)
-	if err != nil {
+	if err = rnr.PrepareRepository.Init(db); err != nil {
 		rnr.Log.Warn("Failed preparer init >%v<", err)
 		return err
+	}
+	if err = rnr.PrepareQuery.Init(db); err != nil {
+		rnr.Log.Warn("Failed preparer config init >%v<", err)
+		return err
+	}
+
+	// Modeller
+	if rnr.ModellerFunc == nil {
+		rnr.ModellerFunc = rnr.Modeller
 	}
 
 	return nil
@@ -133,7 +143,7 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 	}
 
 	// model init
-	err = m.Init(rnr.Prepare, tx)
+	err = m.Init(rnr.PrepareRepository, rnr.PrepareQuery, tx)
 	if err != nil {
 		rnr.Log.Warn("Failed model init >%v<", err)
 		return err
@@ -160,16 +170,34 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 	return nil
 }
 
-// Preparer - default PreparerFunc does not provide a modeller
-func (rnr *Runner) Preparer() (preparer.Preparer, error) {
+func (rnr *Runner) PreparerRepository() (preparer.Repository, error) {
 
-	rnr.Log.Info("** Preparer **")
+	rnr.Log.Info("** Repository **")
 
-	return nil, nil
+	p, err := prepare.NewRepositoryPreparer(rnr.Log)
+	if err != nil {
+		rnr.Log.Warn("Failed new prepare repository >%v<", err)
+		return nil, err
+	}
+
+	return p, nil
+}
+
+func (rnr *Runner) PreparerQuery() (preparer.Query, error) {
+
+	rnr.Log.Info("** Query **")
+
+	p, err := prepare.NewQueryPreparer(rnr.Log)
+	if err != nil {
+		rnr.Log.Warn("Failed new prepare query >%v<", err)
+		return nil, err
+	}
+
+	return p, nil
 }
 
 // Modeller - default ModellerFunc does not provide a modeller
-func (rnr *Runner) defaultModellerFunc() (modeller.Modeller, error) {
+func (rnr *Runner) Modeller() (modeller.Modeller, error) {
 
 	rnr.Log.Info("** Modeller **")
 

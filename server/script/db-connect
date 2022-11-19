@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
 # Opens a psql session to the database specified in current APP environment
-# \l              - list schemas
+# \l                 - list schemas
 # \c go-mud-template - connect to schema
 
 # Environment
 source "${BASH_SOURCE%/*}"/env || exit $?
+
+# Overriding behaviour to connect directly to game database
+APP_SERVER_DB_NAME="go-mud-game"
 
 export PGPASSWORD=$APP_SERVER_DB_PASSWORD
 psql --host="$APP_SERVER_DB_HOST" \

@@ -6,7 +6,6 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 
 const int maxAttributes = 36;
 
@@ -19,7 +18,7 @@ class CharacterCreateWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterCreateWidgetState createState() => _CharacterCreateWidgetState();
+  State<CharacterCreateWidget> createState() => _CharacterCreateWidgetState();
 }
 
 class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
@@ -47,23 +46,15 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     log.fine('Creating character dexterity >$dexterity<');
     log.fine('Creating character intelligence >$intelligence<');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    if (dungeonCubit.dungeonRecord == null) {
-      log.warning(
-          'Dungeon cubit dungeon record is null, cannot create character');
-      return;
-    }
-
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     CreateCharacterRecord createCharacterRecord = CreateCharacterRecord(
-      name: characterNameController.text,
-      strength: strength,
-      dexterity: dexterity,
-      intelligence: intelligence,
+      characterName: characterNameController.text,
+      characterStrength: strength,
+      characterDexterity: dexterity,
+      characterIntelligence: intelligence,
     );
 
-    characterCubit.createCharacter(
-        dungeonCubit.dungeonRecord!.id, createCharacterRecord);
+    characterCubit.createCharacter(createCharacterRecord);
   }
 
   void _incrementStrength() {
@@ -119,7 +110,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     final log = getLogger('CharacterCreateWidget');
     log.fine('Building..');
 
-    InputDecoration _fieldDecoration(String hintText) {
+    InputDecoration fieldDecoration(String hintText) {
       return InputDecoration(
         border: const OutlineInputBorder(),
         hintText: hintText,
@@ -188,7 +179,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
           ];
         }
 
-        if (state is CharacterStateInitial ||
+        if (state is CharacterStateCreate ||
             state is CharacterStateCreateError) {
           List<Widget> formWidgets = [
             // ignore: avoid_unnecessary_containers
@@ -213,7 +204,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
               child: TextFormField(
                 controller: characterNameController,
                 autofocus: true,
-                decoration: _fieldDecoration('Character Name'),
+                decoration: fieldDecoration('Character Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter character name';

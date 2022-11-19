@@ -25,17 +25,17 @@ void main() {
       reason: 'DungeonRepository getOne response is not null',
     );
     expect(
-      dungeon!.id,
+      dungeon!.dungeonID,
       isNotNull,
       reason: 'DungeonRepository getOne dungeon.id is not null',
     );
     expect(
-      dungeon.name,
+      dungeon.dungeonName,
       isNotNull,
       reason: 'DungeonRepository getOne dungeon.name is not null',
     );
     expect(
-      dungeon.description,
+      dungeon.dungeonDescription,
       isNotNull,
       reason: 'DungeonRepository getOne dungeon.description is not null',
     );

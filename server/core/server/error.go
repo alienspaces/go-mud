@@ -1,156 +1,101 @@
 package server
 
 import (
-	"fmt"
+	"encoding/json"
+	"encoding/xml"
 	"net/http"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 )
 
-// ErrorCode -
-const (
-	ErrorCodeUnauthorized   string = "unauthorized_error"
-	ErrorDetailUnauthorized string = "request could not be authorized"
-	ErrorCodeSystem         string = "internal_error"
-	ErrorDetailSystem       string = "an internal error has occurred"
-	ErrorCodeValidation     string = "validation_error"
-	ErrorDetailValidation   string = "request contains validation errors"
-	ErrorCodeNotFound       string = "not_found"
-	ErrorDetailNotFound     string = "requested resource could not be found"
-)
+func WriteError(l logger.Logger, w http.ResponseWriter, e error) {
+	l = Logger(l, "WriteError")
 
-// WriteUnauthorizedError -
-func (rnr *Runner) WriteUnauthorizedError(l logger.Logger, w http.ResponseWriter, err error) {
-
-	l.Warn("Unauthorized error >%v<", err)
-
-	// Unauthorized error
-	res := rnr.UnauthorizedError(err)
-
-	err = rnr.WriteResponse(l, w, res)
+	eres, err := coreerror.ToError(e)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Error("System error >%v<", err)
+		err = coreerror.GetRegistryError(coreerror.Internal)
+		WriteSystemError(l, w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	status := eres.HttpStatusCode
+	w.WriteHeader(eres.HttpStatusCode)
+
+	l.Warn("Write error response status >%d<", status)
+
+	if err := json.NewEncoder(w).Encode(e); err != nil {
+		l.Error("failed writing response >%v<", err)
+		err = coreerror.GetRegistryError(coreerror.Internal)
+		WriteSystemError(l, w, err)
 		return
 	}
 }
 
-// UnauthorizedError -
-func (rnr *Runner) UnauthorizedError(err error) Response {
+func WriteNotFoundError(l logger.Logger, w http.ResponseWriter, entity string, id string) {
+	l = Logger(l, "WriteNotFoundError")
 
-	rnr.Log.Error("Error >%v<", err)
+	e := coreerror.NewNotFoundError(entity, id)
+	l.Warn("Resource not found >%v<", e)
 
-	return Response{
-		Error: &ResponseError{
-			Code:   ErrorCodeUnauthorized,
-			Detail: err.Error(),
-		},
+	WriteError(l, w, e)
+}
+
+func WriteUnavailableError(l logger.Logger, w http.ResponseWriter, err error) {
+	l = Logger(l, "WriteUnavailableError")
+
+	e := coreerror.NewUnavailableError()
+	l.Error("Service unavailable >%v< >%v<", err, e)
+
+	WriteError(l, w, e)
+}
+
+func WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
+	l = Logger(l, "WriteSystemError")
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	e, err := coreerror.ToError(err)
+	if err != nil {
+		l.Error("failed writing response >%v<", err)
+	}
+
+	status := e.HttpStatusCode
+	w.WriteHeader(e.HttpStatusCode)
+
+	l.Warn("Write error response status >%d<", status)
+
+	err = json.NewEncoder(w).Encode(e)
+	if err != nil {
+		l.Error("failed writing response >%v<", err)
 	}
 }
 
-// WriteModelError -
-func (rnr *Runner) WriteModelError(l logger.Logger, w http.ResponseWriter, err error) {
+// WriteXMLErrorResponse responds with an 200 HTTP Status Code. For Service Cloud to retry message delivery, a nack (false) should be sent instead.
+func WriteXMLErrorResponse(l logger.Logger, w http.ResponseWriter, s interface{}, err error) {
+	l = Logger(l, "WriteXMLErrorResponse")
 
-	l.Warn("Model error >%v<", err)
+	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 
-	// model error
-	res := rnr.ModelError(err)
-
-	err = rnr.WriteResponse(l, w, res)
+	e, err := coreerror.ToError(err)
 	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
+		l.Error("failed writing response >%v<", err)
+	}
+
+	status := e.HttpStatusCode
+	w.WriteHeader(e.HttpStatusCode)
+
+	l.Info("Write error response status >%d<", status)
+
+	if _, err := w.Write([]byte(xml.Header)); err != nil {
+		l.Error("failed writing response >%v<", err)
 		return
 	}
-}
 
-// ModelError -
-func (rnr *Runner) ModelError(err error) Response {
-
-	rnr.Log.Error("Error >%v<", err)
-
-	return Response{
-		Error: &ResponseError{
-			Code:   ErrorCodeValidation,
-			Detail: err.Error(),
-		},
-	}
-}
-
-// WriteSystemError -
-func (rnr *Runner) WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
-
-	l.Warn("System error >%v<", err)
-
-	// system error
-	res := rnr.SystemError(err)
-
-	err = rnr.WriteResponse(l, w, res)
-	if err != nil {
-		rnr.Log.Warn("Failed writing response >%v<", err)
-		return
-	}
-}
-
-// SystemError -
-func (rnr *Runner) SystemError(err error) Response {
-
-	rnr.Log.Error("Error >%v<", err)
-
-	// NOTE: never expose actual system error details
-	return Response{
-		Error: &ResponseError{
-			Code:   ErrorCodeSystem,
-			Detail: ErrorDetailSystem,
-		},
-	}
-}
-
-// ValidationError -
-func (rnr *Runner) ValidationError(err error) Response {
-
-	rnr.Log.Error("error >%v<", err)
-
-	if err == nil {
-		err = fmt.Errorf(ErrorDetailValidation)
-	}
-
-	return Response{
-		Error: &ResponseError{
-			Code:   ErrorCodeValidation,
-			Detail: err.Error(),
-		},
-	}
-}
-
-// WriteNotFoundError -
-func (rnr *Runner) WriteNotFoundError(l logger.Logger, w http.ResponseWriter, id string) {
-
-	err := fmt.Errorf("resource with ID >%s< not found", id)
-
-	l.Warn("Not found error >%v<", err)
-
-	// not found error
-	res := rnr.NotFoundError(err)
-
-	err = rnr.WriteResponse(l, w, res)
-	if err != nil {
-		l.Warn("Failed writing response >%v<", err)
-		return
-	}
-}
-
-// NotFoundError -
-func (rnr *Runner) NotFoundError(err error) Response {
-
-	rnr.Log.Error("Error >%v<", err)
-
-	if err == nil {
-		err = fmt.Errorf(ErrorDetailNotFound)
-	}
-
-	return Response{
-		Error: &ResponseError{
-			Code:   ErrorCodeNotFound,
-			Detail: err.Error(),
-		},
+	if err := xml.NewEncoder(w).Encode(s); err != nil {
+		l.Error("failed encoding response >%v<", err)
 	}
 }

@@ -1,17 +1,28 @@
 package prepare
 
 import (
+	"fmt"
+	"testing"
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"gitlab.com/alienspaces/go-mud/server/core/config"
+	"gitlab.com/alienspaces/go-mud/server/core/log"
+	"gitlab.com/alienspaces/go-mud/server/core/prepare"
 	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/server/core/store"
+	"gitlab.com/alienspaces/go-mud/server/core/tag"
+	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparable"
 	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
 )
 
-func setupRepository(l logger.Logger, p preparer.Preparer, db *sqlx.DB) (preparable.Preparable, func() error, error) {
+func setupRepository(l logger.Logger, p preparer.Repository, db *sqlx.DB) (preparable.Repository, func() error, error) {
 
 	sql := `
 CREATE TABLE test (
@@ -46,7 +57,8 @@ CREATE TABLE test (
 
 			// Config
 			Config: repository.Config{
-				TableName: "test",
+				TableName:  "test",
+				Attributes: tag.GetValues(Record{}, "db"),
 			},
 		},
 	}
@@ -91,7 +103,7 @@ func (r *Repository) GetMany(
 
 	recs := r.NewRecordArray()
 
-	rows, err := r.GetManyRecs(params, paramOperators)
+	rows, err := r.GetManyRecs(params, paramOperators, forUpdate)
 	if err != nil {
 		r.Log.Warn("Failed statement execution >%v<", err)
 		return nil, err
@@ -147,11 +159,6 @@ func (r *Repository) UpdateOne(rec *Record) error {
 	return nil
 }
 
-// CreateTestRecord - creates a record for testing
-func (r *Repository) CreateTestRecord(rec *Record) error {
-	return r.CreateOne(rec)
-}
-
 var createOneSQL = `
 INSERT INTO test (
 	id,
@@ -187,4 +194,185 @@ func (r *Repository) UpdateOneSQL() string {
 // OrderBy -
 func (r *Repository) OrderBy() string {
 	return "created_at desc"
+}
+
+func NewDependencies() (configurer.Configurer, logger.Logger, storer.Storer, error) {
+
+	// configurer
+	c, err := config.NewConfigWithDefaults([]config.Item{}, false)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	// logger
+	l, err := log.NewLogger(c)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	// storer
+	s, err := store.NewStore(c, l)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return c, l, s, nil
+}
+
+func TestPrepareInit(t *testing.T) {
+
+	_, l, s, err := NewDependencies()
+	require.NoError(t, err, "NewDependencies returns without error")
+
+	// new preparer
+	p, err := prepare.NewRepositoryPreparer(l)
+	require.NoError(t, err, "NewRepositoryPreparer returns without error")
+	require.NotNil(t, p, "NewRepositoryPreparer returns a preparer")
+
+	// get db
+	db, err := s.GetDb()
+	require.NoError(t, err, "GetDb returns without error")
+
+	// init preparer
+	err = p.Init(db)
+	require.NoError(t, err, "Init preparer returns without error")
+}
+
+func TestPreparePrepare(t *testing.T) {
+
+	// NOTE: Following tests are testing function calls with a successfully
+	// prepared "preparable" thing
+
+	// run the following tests within a function, so we can utilise
+	// a deferred function to teardown any database setup
+	func() {
+		_, l, s, err := NewDependencies()
+		require.NoError(t, err, "NewDependencies returns without error")
+
+		// new preparer
+		p, err := prepare.NewRepositoryPreparer(l)
+		require.NoError(t, err, "NewRepositoryPreparer returns without error")
+		require.NotNil(t, p, "NewRepositoryPreparer returns a preparer")
+
+		// get db
+		db, err := s.GetDb()
+		require.NoError(t, err, "GetDb returns without error")
+
+		// init preparer
+		err = p.Init(db)
+		require.NoError(t, err, "Init preparer returns without error")
+
+		r, teardown, err := setupRepository(l, p, db)
+		defer func() {
+			if teardown != nil {
+				teardown()
+			}
+		}()
+
+		require.NoError(t, err, "Init preparer returns without error")
+		require.NotNil(t, r, "Repository is not nil")
+
+		err = p.Prepare(r, preparer.ExcludePreparation{})
+		require.NoError(t, err, "Prepare returns without error")
+
+		// Test SQL functions
+		testSQLFuncs := map[string]func(p preparable.Repository) string{
+			"GetOneSQL":    p.GetOneSQL,
+			"CreateSQL":    p.CreateSQL,
+			"UpdateOneSQL": p.UpdateOneSQL,
+			"DeleteOneSQL": p.DeleteOneSQL,
+			"RemoveOneSQL": p.RemoveOneSQL,
+		}
+
+		for testFuncName, testFunc := range testSQLFuncs {
+			t.Logf("Function %s returns SQL", testFuncName)
+			// Expecting SQL
+			sql := testFunc(r)
+			assert.NotEmpty(t, sql, fmt.Sprintf("Function %s returns SQL", testFuncName))
+		}
+
+		// Test Stmt functions
+		testStmtFuncs := map[string]func(p preparable.Repository) *sqlx.Stmt{
+			"GetOneStmt":          p.GetOneStmt,
+			"GetOneForUpdateStmt": p.GetOneForUpdateStmt,
+		}
+
+		for testFuncName, testFunc := range testStmtFuncs {
+			t.Logf("Function %s returns stmt", testFuncName)
+			stmt := testFunc(r)
+			assert.NotNil(t, stmt, fmt.Sprintf("Function %s returns Stmt", testFuncName))
+		}
+
+		// Test NamedStmt functions
+		testNamedStmtFuncs := map[string]func(p preparable.Repository) *sqlx.NamedStmt{
+			"CreateOneStmt": p.CreateOneStmt,
+			"UpdateOneStmt": p.UpdateOneStmt,
+			"DeleteOneStmt": p.DeleteOneStmt,
+			"RemoveOneStmt": p.RemoveOneStmt,
+		}
+
+		for testFuncName, testFunc := range testNamedStmtFuncs {
+			t.Logf("Function %s returns stmt", testFuncName)
+			stmt := testFunc(r)
+			assert.NotNil(t, stmt, fmt.Sprintf("Function %s returns NamedStmt", testFuncName))
+		}
+	}()
+
+	// NOTE: Following tests are testing function calls with an unprepared "preparable" thing
+
+	// run the following tests within a function to we can utilise
+	// a deferred function to teardown any database setup
+	func() {
+		_, l, s, err := NewDependencies()
+		require.NoError(t, err, "NewDependencies returns without error")
+
+		// new preparer
+		p, err := prepare.NewRepositoryPreparer(l)
+		require.NoError(t, err, "NewRepositoryPreparer returns without error")
+		require.NotNil(t, p, "NewRepositoryPreparer returns a preparer")
+
+		// get db
+		db, err := s.GetDb()
+		require.NoError(t, err, "GetDb returns without error")
+
+		// init preparer
+		err = p.Init(db)
+		require.NoError(t, err, "Init preparer returns without error")
+
+		r, teardown, err := setupRepository(l, p, db)
+		defer func() {
+			if teardown != nil {
+				teardown()
+			}
+		}()
+
+		require.NoError(t, err, "Init preparer returns without error")
+		require.NotNil(t, r, "Repository is not nil")
+
+		// Test Stmt functions
+		testStmtFuncs := map[string]func(p preparable.Repository) *sqlx.Stmt{
+			"GetOneStmt":          p.GetOneStmt,
+			"GetOneForUpdateStmt": p.GetOneForUpdateStmt,
+		}
+
+		for testFuncName, testFunc := range testStmtFuncs {
+			t.Logf("Function %s returns stmt", testFuncName)
+			stmt := testFunc(r)
+			assert.Nil(t, stmt, fmt.Sprintf("Function %s returns Stmt", testFuncName))
+		}
+
+		// Test NamedStmt functions
+		testNamedStmtFuncs := map[string]func(p preparable.Repository) *sqlx.NamedStmt{
+			"CreateOneStmt": p.CreateOneStmt,
+			"UpdateOneStmt": p.UpdateOneStmt,
+			"DeleteOneStmt": p.DeleteOneStmt,
+			"RemoveOneStmt": p.RemoveOneStmt,
+		}
+
+		for testFuncName, testFunc := range testNamedStmtFuncs {
+			t.Logf("Function %s returns stmt", testFuncName)
+			stmt := testFunc(r)
+			assert.Nil(t, stmt, fmt.Sprintf("Function %s returns NamedStmt", testFuncName))
+		}
+	}()
 }

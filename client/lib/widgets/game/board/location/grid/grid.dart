@@ -6,9 +6,8 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/style.dart';
 
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
@@ -31,7 +30,7 @@ class GameLocationGridWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GameLocationGridWidgetState createState() => _GameLocationGridWidgetState();
+  State<GameLocationGridWidget> createState() => _GameLocationGridWidgetState();
 }
 
 typedef DungeonGridMemberFunction = Widget Function(
@@ -107,7 +106,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Direction widget
   Widget _directionWidget(
       BuildContext context, LocationData locationData, String direction) {
-    if (!locationData.directions.contains(direction)) {
+    if (!locationData.locationDirections.contains(direction)) {
       return _emptyWidget('${directionLabelMap[direction]}');
     }
 
@@ -192,17 +191,11 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     final log = getLogger('GameLocationGridWidget');
     log.fine('Submitting move action..');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    if (dungeonCubit.dungeonRecord == null) {
+    final dungeonCharacterCubit =
+        BlocProvider.of<DungeonCharacterCubit>(context);
+    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
       log.warning(
-          'Dungeon cubit missing dungeon record, cannot initialise action');
-      return;
-    }
-
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
-    if (characterCubit.characterRecord == null) {
-      log.warning(
-          'Character cubit missing character record, cannot initialise action');
+          'Dungeon character cubit missing dungeon character record, cannot initialise action');
       return;
     }
 

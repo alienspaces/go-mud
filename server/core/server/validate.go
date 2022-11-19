@@ -1,276 +1,179 @@
 package server
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 
-	"gitlab.com/alienspaces/go-mud/server/core/schema"
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
-// pathParamCache - path, method, []string
-var pathParamCache map[string]map[string]map[string]ValidatePathParam
-
-// queryParamCache - path, method, []string
-var queryParamCache map[string]map[string][]string
-
-var schemaValidator *schema.Validator
-
 // Validate -
-func (rnr *Runner) Validate(hc HandlerConfig, h HandlerFunc) (HandlerFunc, error) {
+func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 
-	rnr.Log.Info("** Validate ** cache query param lists")
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, _ map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+		l = Logger(l, "Validate")
 
-	// cache query parameter lists
-	err := rnr.validateCacheQueryParams(hc)
-	if err != nil {
-		rnr.Log.Warn("Failed caching query param list >%v<", err)
-		return nil, err
-	}
+		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)
 
-	rnr.Log.Info("** Validate ** cache schemas")
-
-	// Cache path parameter validations
-	err = rnr.validateCachePathParams(hc)
-	if err != nil {
-		rnr.Log.Warn("Failed caching path param list >%v<", err)
-		return nil, err
-	}
-
-	// Validation schema configuration
-	schemaConfig := schema.Config{
-		Location:   hc.MiddlewareConfig.ValidateSchemaLocation,
-		Main:       hc.MiddlewareConfig.ValidateSchemaRequestMain,
-		References: hc.MiddlewareConfig.ValidateSchemaRequestReferences,
-	}
-
-	// Load configured schemas
-	if hc.MiddlewareConfig.ValidateSchemaLocation != "" && hc.MiddlewareConfig.ValidateSchemaRequestMain != "" {
-		err = rnr.validateCacheSchemas(schemaConfig)
+		qp, err := validateQueryParameters(l, r.URL.Query(), hc.MiddlewareConfig.ValidateQueryParams)
 		if err != nil {
-			rnr.Log.Warn("Failed loading schemas >%v<", err)
-			return nil, err
-		}
-	}
-
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, _ map[string]interface{}, l logger.Logger, m modeller.Modeller) {
-
-		l.Debug("** Validate ** request URI >%s< method >%s<", r.RequestURI, r.Method)
-
-		// validate path parameters
-		err := rnr.validatePathParameters(l, hc.Path, r, pp)
-		if err != nil {
-			rnr.WriteResponse(l, w, rnr.ValidationError(err))
-			return
+			WriteError(l, w, coreerror.ProcessQueryParamError(err))
+			return err
 		}
 
-		// validate query parameters
-		qp, err := rnr.validateQueryParameters(l, hc.Path, r)
-		if err != nil {
-			rnr.WriteResponse(l, w, rnr.ValidationError(err))
-			return
-		}
-
-		// only validate requests where the method provides data
-		if r.Method != http.MethodPost && r.Method != http.MethodPut {
+		if r.Method != http.MethodPost && r.Method != http.MethodPut && r.Method != http.MethodPatch {
 			l.Debug("Skipping validation of URI >%s< method >%s<", r.RequestURI, r.Method)
-
-			// delegate request
-			h(w, r, pp, qp, l, m)
-			return
+			return h(w, r, pp, qp, l, m)
 		}
 
-		if hc.MiddlewareConfig.ValidateSchemaLocation != "" && hc.MiddlewareConfig.ValidateSchemaRequestMain != "" {
-			if schemaValidator == nil {
-				rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("schema validator not available, cannot validate")))
-				return
+		requestSchema := hc.MiddlewareConfig.ValidateRequestSchema
+		schemaMain := requestSchema.Main
+		if schemaMain.Name == "" || schemaMain.Location == "" {
+			l.Debug("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
+			return h(w, r, pp, qp, l, m)
+		}
+
+		data := r.Context().Value(ctxKeyData)
+
+		l.Info("Validation schemas >%#v<", requestSchema)
+		l.Info("Validation data >%s<", data)
+
+		result, err := jsonschema.Validate(requestSchema, data)
+		if err != nil {
+			l.Warn("failed validation >%v<", err)
+
+			var jsonSyntaxError *json.SyntaxError
+			if errors.As(err, &jsonSyntaxError) || errors.Is(err, io.ErrUnexpectedEOF) {
+				WriteError(l, w, coreerror.NewInvalidBodyError(""))
+			} else if errors.Is(err, io.EOF) {
+				WriteError(l, w, coreerror.NewInvalidBodyError("Request body is empty."))
+			} else {
+				WriteSystemError(l, w, err)
 			}
+
+			return err
 		}
 
-		if !schemaValidator.SchemaCached(schemaConfig) {
-			l.Info("Not validating URI >%s< method >%s<", r.RequestURI, r.Method)
-
-			// delegate request
-			h(w, r, pp, qp, l, m)
-			return
+		if !result.Valid() {
+			err := coreerror.NewSchemaValidationError(result.Errors())
+			l.Warn("failed validation >%#v<", err)
+			WriteError(l, w, err)
+			return err
 		}
 
-		// data from context
-		data := r.Context().Value(ContextKeyData)
-
-		l.Debug("Data >%s<", data)
-		switch data := data.(type) {
-		case string:
-			err = schemaValidator.Validate(
-				schemaConfig,
-				data,
-			)
-			if err != nil {
-				rnr.WriteResponse(l, w, rnr.ValidationError(err))
-				return
-			}
-		case nil:
-			l.Warn("Data is nil")
-			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("Data is nil")))
-			return
-		default:
-			l.Warn("Data type unsupported")
-			rnr.WriteResponse(l, w, rnr.SystemError(fmt.Errorf("Data is nil")))
-			return
-		}
-
-		// delegate request
-		h(w, r, pp, qp, l, m)
+		return h(w, r, pp, qp, l, m)
 	}
 
 	return handle, nil
 }
 
-// validatePathParameters - validate path parameters
-func (rnr *Runner) validatePathParameters(l logger.Logger, path string, r *http.Request, pp httprouter.Params) error {
-
-	if len(pathParamCache) == 0 {
-		l.Debug("Handler method >%s< path >%s< not configured with path param validations", r.Method, path)
-		return nil
-	}
-
-	// Request context may be used to validate path parameter values
-	ctx := r.Context()
-
-	// Cached path parameter validation configuration
-	params := pathParamCache[path][r.Method]
-
-VALIDATE_PARAMS:
-	for pathParamName, pathParamConfig := range params {
-		// Provided path parameters
-		for _, pathParam := range pp {
-			if pathParam.Key == pathParamName {
-				if pathParamConfig.MatchIdentity {
-					identityValue, err := rnr.getContextIdentityValue(ctx, pathParam.Key)
-					if err != nil {
-						l.Warn("Failed getting context identity value >%s< >%v<", pathParam.Key, err)
-						return err
-					}
-					if identityValue != pathParam.Value {
-						msg := fmt.Sprintf("Mismatched path param value >%v< versus identity value >%v<", pathParam.Value, identityValue)
-						l.Warn(msg)
-						return fmt.Errorf(msg)
-					}
-					l.Info("Matched path param config name >%s< value >%v< with identity value >%v<", pathParamName, pathParam.Value, identityValue)
-					continue VALIDATE_PARAMS
-				}
-			}
-		}
-		msg := fmt.Sprintf("Path param name >%s< not found in params", pathParamName)
-		l.Warn(msg)
-		return fmt.Errorf(msg)
-	}
-
-	return nil
-}
-
-// validateQueryParameters - validate query parameters
-func (rnr *Runner) validateQueryParameters(l logger.Logger, path string, r *http.Request) (map[string]interface{}, error) {
-
-	if len(queryParamCache) == 0 {
-		l.Debug("Handler method >%s< path >%s< not configured with query params list", r.Method, path)
+// validateQueryParameters validates any provided parameters
+func validateQueryParameters(l logger.Logger, q url.Values, paramSchema jsonschema.SchemaWithReferences) (map[string]interface{}, error) {
+	if len(q) == 0 {
 		return nil, nil
 	}
 
-	// Query parameters
-	q := r.URL.Query()
+	if paramSchema.IsEmpty() {
+		for k := range q {
+			return nil, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< not allowed.", k))
+		}
+	}
 
-	// Valid query parameters
+	qJSON := queryParamsToJSON(q)
+	result, err := jsonschema.Validate(paramSchema, qJSON)
+	if err != nil {
+		l.Warn("failed validate query params due to schema validation logic >%v<", err)
+		return nil, err
+	}
+
+	if !result.Valid() {
+		err := coreerror.NewSchemaValidationError(result.Errors())
+		l.Warn("failed validate query params >%#v<", err)
+		return nil, err
+	}
+
+	l.Info("all parameters okay")
+
+	return buildQueryParams(q), nil
+}
+
+func queryParamsToJSON(q url.Values) string {
+	if len(q) == 0 {
+		return ""
+	}
+
+	jsonBuilder := strings.Builder{}
+	jsonBuilder.WriteString("{")
+
+	for k, v := range q {
+		jsonBuilder.WriteString(parseKey(k))
+		jsonBuilder.WriteString(":")
+
+		switch len(v) {
+		case 0:
+			jsonBuilder.WriteString(`""`)
+		case 1:
+			jsonBuilder.WriteString(parseValue(v[0]))
+		default:
+			arr := "["
+
+			for _, v := range v {
+				arr += parseValue(v)
+				arr += ","
+			}
+
+			arr = arr[0 : len(arr)-1] // remove extra comma
+			arr += "]"
+			jsonBuilder.WriteString(arr)
+		}
+
+		jsonBuilder.WriteString(",")
+	}
+
+	qpJSON := jsonBuilder.String()
+	qpJSON = qpJSON[0 : len(qpJSON)-1] // remove extra comma
+	qpJSON += "}"
+	return qpJSON
+}
+
+func parseKey(k string) string {
+	return `"` + k + `"`
+}
+
+func parseValue(v string) string {
+	i, err := strconv.Atoi(v)
+	if err != nil {
+		return fmt.Sprintf("%#v", v)
+	}
+
+	return fmt.Sprintf("%#v", i)
+}
+
+func buildQueryParams(q url.Values) map[string]interface{} {
+	if len(q) == 0 {
+		return nil
+	}
+
 	qp := map[string]interface{}{}
 
-	// Cached allowed query parameter names
-	params := queryParamCache[path][r.Method]
-
-	for paramName, paramValue := range q {
-		l.Info("Checking parameter >%s< >%s<", paramName, paramValue)
-
-		found := false
-		for _, param := range params {
-			if paramName == param {
-				found = true
-			}
+	for key, value := range q {
+		if len(value) == 0 {
+			continue
 		}
-		if !found {
-			msg := fmt.Sprintf("Parameter >%s< not allowed", paramName)
-			l.Warn(msg)
-			return nil, fmt.Errorf(msg)
-		}
-		qp[paramName] = paramValue
+
+		qp[key] = value
 	}
 
-	l.Info("All parameters okay")
-
-	return qp, nil
-}
-
-// validateCachePathParams -
-func (rnr *Runner) validateCachePathParams(hc HandlerConfig) error {
-
-	if len(hc.MiddlewareConfig.ValidatePathParams) == 0 {
-		rnr.Log.Info("Handler method >%s< path >%s< not configured with path params list", hc.Method, hc.Path)
-		return nil
-	}
-
-	rnr.Log.Info("Handler method >%s< path >%s< has path param validations >%#v<", hc.Method, hc.Path, hc.MiddlewareConfig.ValidatePathParams)
-
-	if pathParamCache == nil {
-		pathParamCache = map[string]map[string]map[string]ValidatePathParam{}
-	}
-	if pathParamCache[hc.Path] == nil {
-		pathParamCache[hc.Path] = make(map[string]map[string]ValidatePathParam)
-	}
-	pathParamCache[hc.Path][hc.Method] = hc.MiddlewareConfig.ValidatePathParams
-
-	return nil
-}
-
-// validateCacheQueryParams -
-func (rnr *Runner) validateCacheQueryParams(hc HandlerConfig) error {
-
-	if len(hc.MiddlewareConfig.ValidateQueryParams) == 0 {
-		rnr.Log.Info("Handler method >%s< path >%s< not configured with query params list", hc.Method, hc.Path)
-		return nil
-	}
-
-	rnr.Log.Info("Handler method >%s< path >%s< has query params list >%#v<", hc.Method, hc.Path, hc.MiddlewareConfig.ValidateQueryParams)
-
-	if queryParamCache == nil {
-		queryParamCache = map[string]map[string][]string{}
-	}
-	if queryParamCache[hc.Path] == nil {
-		queryParamCache[hc.Path] = make(map[string][]string)
-	}
-	queryParamCache[hc.Path][hc.Method] = hc.MiddlewareConfig.ValidateQueryParams
-
-	return nil
-}
-
-// validateCacheSchemas - load validation JSON schemas
-func (rnr *Runner) validateCacheSchemas(schemaConfig schema.Config) error {
-
-	if schemaValidator == nil {
-		rnr.Log.Info("Schema validator is nil, creating new schema validator")
-		var err error
-		schemaValidator, err = schema.NewValidator(rnr.Config, rnr.Log)
-		if err != nil {
-			rnr.Log.Warn("Failed new schema validator >%v<", err)
-			return err
-		}
-	}
-
-	_, err := schemaValidator.LoadSchema(schemaConfig)
-	if err != nil {
-		rnr.Log.Warn("Failed loading schema >%v<", err)
-		return err
-	}
-
-	return nil
+	return qp
 }

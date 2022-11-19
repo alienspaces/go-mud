@@ -3,27 +3,27 @@
 # Update gitlab container registry with dependent images
 docker login registry.gitlab.com -u alienspaces@gmail.com -p "$GITLAB_PERSONAL_TOKEN"
 
-IMAGE="docker:19.03.12"
+IMAGE="docker:20.10.17"
 docker pull $IMAGE
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
 
-IMAGE="docker:19.03.12-dind"
+IMAGE="docker:20.10.17-dind"
 docker pull $IMAGE
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
 
-IMAGE="golang:1.17.2-alpine3.14"
+IMAGE="golang:1.19.2-alpine3.16"
 docker pull $IMAGE || exit $?
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
 
-IMAGE="postgres:12.7-alpine3.14"
+IMAGE="postgres:13.7-alpine3.16"
 docker pull $IMAGE || exit $?
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
 
-IMAGE="cirrusci/flutter:2.8.1"
+IMAGE="cirrusci/flutter:3.3.0"
 docker pull $IMAGE
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE

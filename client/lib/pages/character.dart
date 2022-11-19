@@ -50,7 +50,7 @@ class CharacterScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterScreenState createState() => _CharacterScreenState();
+  State<CharacterScreen> createState() => _CharacterScreenState();
 }
 
 class _CharacterScreenState extends State<CharacterScreen> {

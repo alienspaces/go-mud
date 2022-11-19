@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
-// GenerateHandlerDocumentation - generates documentationbased on handler configuration
-func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
+// GenerateHandlerDocumentation - generates documentation based on handler configuration
+func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, handlerConfigs []HandlerConfig) ([]byte, error) {
 
 	rnr.Log.Info("** Generate Handler Documentation **")
 
@@ -23,6 +27,15 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 	h2 {
 		color: #504ecc;
 	}
+	h3 {
+		color: DarkSlateGray;
+	}
+	th {
+		text-align: left;
+	}
+	th, td {
+		padding: 2px;
+	}
 	.header {
 		padding-top: 10px;
 		padding-bottom: 2px;
@@ -30,7 +43,7 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 	.path-method {
 		color: #629153;
 	}
-	.description {
+	.summary {
 		margin-left: 20px;
 		margin-right: 20px;
 		padding-bottom: 8px;
@@ -44,7 +57,10 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 		display: inline-block;
 		width: 140px;
 	}
-	.params-toggle {
+	.params-value {
+		display: inline-block;
+	}
+	.params-toggle-visibility {
 		display: inline-block;
 		width: 140px;
 	}
@@ -67,12 +83,9 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 		padding-bottom: 8px;
 	}
 	.schema-label {
-		display: inline-block;
-		width: 140px;
+		padding-right: 10px;
 	}
-	.schema-toggle {
-		display: inline-block;
-		width: 140px;
+	.schema-toggle-visibility {
 	}
 	.schema-data {
 		background-color: #ffffff;
@@ -80,7 +93,7 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 		margin-left: 20px;
 		margin-right: 20px;
 	}
-	.toggle {
+	.toggle-visibility {
 		font-style: italic;
 		font-size: small;
 	}
@@ -95,13 +108,11 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 		elem.style.display = 'block';
 	};
 
-	// Hide an element
 	var hide = function (elem) {
 		elem.style.display = 'none';
 	};
 
-	// Toggle element visibility
-	var toggle = function (elem) {
+	var toggleVisibility = function (elem) {
 
 		// If the element is visible, hide it
 		if (window.getComputedStyle(elem).display === 'block') {
@@ -109,25 +120,20 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 			return;
 		}
 
-		// Otherwise, show it
 		show(elem);
 	};
 
-	// Listen for click events
 	document.addEventListener('click', function (event) {
 
 		// Make sure clicked element is our toggle
-		if (!event.target.classList.contains('toggle')) return;
+		if (!event.target.classList.contains('toggle-visibility')) return;
 
-		// Prevent default link behaviour
 		event.preventDefault();
 
-		// Get the content
 		var content = document.querySelector(event.target.hash);
 		if (!content) return;
 
-		// Toggle the content
-		toggle(content);
+		toggleVisibility(content);
 
 	}, false);
 </script>
@@ -135,134 +141,55 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 <body>
 	`)
 
-	fmt.Fprintf(&b, "<div class='header'><h2>API Documentation</h2></div>")
+	fmt.Fprintf(&b, "<div class='header'><h2>Schema Documentation</h2></div>")
 
-	for count, config := range rnr.HandlerConfig {
+	rnr.appendBuildInfo(&b)
 
-		// Skip documenting this endpoint
-		if !config.DocumentationConfig.Document {
-			continue
+	rnr.appendAPIDocumentationURL(&b)
+
+	if len(messageConfigs) > 0 {
+		fmt.Fprintf(&b, "<h3 class='header'>Messages</h3>")
+		for count, cfg := range messageConfigs {
+			appendMessageConfig(&b, cfg)
+
+			schemaMain, schemaData, err := rnr.loadSchemaWithReferences(cfg.ValidateSchema)
+			if err != nil {
+				return nil, err
+			}
+
+			appendSchemaWithReferences(&b, count, schemaMain, schemaData, "Body Schema")
 		}
+	}
 
-		rnr.Log.Info("Processing handler documentation path >%s: %s<", config.Method, config.Path)
+	if len(handlerConfigs) > 0 {
+		fmt.Fprintf(&b, "<h3 class='header'>API</h3>")
+		for count, config := range sortHandlerConfigs(handlerConfigs) {
 
-		var requestSchemaMainContent []byte
-		var requestSchemaDataContent []byte
-		var responseSchemaMainContent []byte
-		var responseSchemaDataContent []byte
-		var err error
-
-		schemaPath := rnr.Config.Get("APP_SERVER_SCHEMA_PATH")
-		schemaLoc := config.MiddlewareConfig.ValidateSchemaLocation
-		if schemaLoc != "" {
-
-			// Request schema
-			requestSchemaMain := config.MiddlewareConfig.ValidateSchemaRequestMain
-			if requestSchemaMain != "" {
-
-				filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, requestSchemaMain)
-
-				rnr.Log.Info("Request schema main content filename >%s<", filename)
-
-				requestSchemaMainContent, err = ioutil.ReadFile(filename)
-				if err != nil {
-					return nil, err
-				}
-
-				schemaReferences := config.MiddlewareConfig.ValidateSchemaRequestReferences
-				for _, schemaReference := range schemaReferences {
-
-					filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaReference)
-
-					rnr.Log.Info("Request schema reference content filename >%s<", filename)
-
-					requestSchemaDataContent, err = ioutil.ReadFile(filename)
-					if err != nil {
-						return nil, err
-					}
-				}
+			if !config.DocumentationConfig.Document {
+				// skip documenting this endpoint
+				continue
 			}
 
-			// Response schema
-			responseSchemaMain := config.MiddlewareConfig.ValidateSchemaResponseMain
-			if responseSchemaMain != "" {
+			appendSummary(&b, config)
 
-				filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, responseSchemaMain)
-
-				rnr.Log.Info("Response schema main content filename >%s<", filename)
-
-				responseSchemaMainContent, err = ioutil.ReadFile(filename)
-				if err != nil {
-					return nil, err
-				}
-
-				schemaReferences := config.MiddlewareConfig.ValidateSchemaResponseReferences
-				for _, schemaReference := range schemaReferences {
-
-					filename := fmt.Sprintf("%s/%s/%s", schemaPath, schemaLoc, schemaReference)
-
-					rnr.Log.Info("Response schema reference content filename >%s<", filename)
-
-					responseSchemaDataContent, err = ioutil.ReadFile(filename)
-					if err != nil {
-						return nil, err
-					}
-				}
+			querySchemaMain, querySchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateQueryParams)
+			if err != nil {
+				return nil, err
 			}
+			appendSchemaWithReferences(&b, count, querySchemaMain, querySchemaReferences, "Query Params Schema")
+
+			requestSchemaMain, requestSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateRequestSchema)
+			if err != nil {
+				return nil, err
+			}
+			appendSchemaWithReferences(&b, count, requestSchemaMain, requestSchemaReferences, "Request Body Schema")
+
+			responseSchemaMain, responseSchemaReferences, err := rnr.loadSchemaWithReferences(config.MiddlewareConfig.ValidateResponseSchema)
+			if err != nil {
+				return nil, err
+			}
+			appendSchemaWithReferences(&b, count, responseSchemaMain, responseSchemaReferences, "Response Body Schema")
 		}
-
-		// Description
-		fmt.Fprintf(&b, "<div class='path'><h4><span class='path-method'>%s</span> - <span class='path=url'>%s</span></h4></div>", config.Method, config.Path)
-		if config.DocumentationConfig.Description != "" {
-			fmt.Fprintf(&b, "<div class='description'>%s</div>", config.DocumentationConfig.Description)
-		}
-
-		// Query parameters
-		queryParams := config.MiddlewareConfig.ValidateQueryParams
-		if len(queryParams) != 0 {
-			fmt.Fprintf(&b, "<div class='params'>\n")
-			fmt.Fprintf(&b, "<div class='params-label'>Query Parameters -</div>\n")
-			fmt.Fprintf(&b, "<div class='params-toggle'><a href='#params-%d' class='toggle'>show / hide</a></div>", count)
-			fmt.Fprintf(&b, "</div>\n")
-			fmt.Fprintf(&b, "<div id='params-%d' class='params-list' style='display: none'>\n", count)
-			for _, param := range queryParams {
-				fmt.Fprintf(&b, "<span class='param'>%s</span>\n", param)
-			}
-			fmt.Fprintf(&b, "</div>\n")
-		}
-
-		// Request schema
-		if requestSchemaMainContent != nil || requestSchemaDataContent != nil {
-			fmt.Fprintf(&b, "<div class='schema'>\n")
-			fmt.Fprintf(&b, "<div class='schema-label'>Request schema -</div>\n")
-			fmt.Fprintf(&b, "<div class='schema-toggle'><a href='#request-schema-%d' class='toggle'>show / hide</a></div>", count)
-			fmt.Fprintf(&b, "</span>\n</div>\n")
-			fmt.Fprintf(&b, "<div id='request-schema-%d' style='display: none'>\n", count)
-			if requestSchemaMainContent != nil {
-				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(requestSchemaMainContent))
-			}
-			if requestSchemaDataContent != nil {
-				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(requestSchemaDataContent))
-			}
-			fmt.Fprintf(&b, "</div>\n")
-		}
-
-		// Response schema
-		if responseSchemaMainContent != nil || responseSchemaDataContent != nil {
-			fmt.Fprintf(&b, "<div class='schema'>\n")
-			fmt.Fprintf(&b, "<div class='schema-label'>Response schema -</div>\n")
-			fmt.Fprintf(&b, "<div class='schema-toggle'><a href='#response-schema-%d' class='toggle'>show / hide</a></div>", count)
-			fmt.Fprintf(&b, "</span>\n</div>\n")
-			fmt.Fprintf(&b, "<div id='response-schema-%d' style='display: none'>\n", count)
-			if responseSchemaMainContent != nil {
-				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(responseSchemaMainContent))
-			}
-			if responseSchemaDataContent != nil {
-				fmt.Fprintf(&b, "<pre class='schema-data'>%s</pre>\n", string(responseSchemaDataContent))
-			}
-			fmt.Fprintf(&b, "</div>\n")
-		}
-
 	}
 
 	fmt.Fprintf(&b, "<div class='footer'></div>")
@@ -271,4 +198,98 @@ func (rnr *Runner) GenerateHandlerDocumentation() ([]byte, error) {
 		`)
 
 	return []byte(b.String()), nil
+}
+
+func (rnr *Runner) appendAPIDocumentationURL(b *strings.Builder) {
+	if appHost := rnr.Config.Get("APP_HOST"); appHost != "" {
+		fmt.Fprintf(b, "<div class='header'><a href='%s/'>View API Documentation</a></div>", appHost)
+	}
+}
+
+func appendMessageConfig(b *strings.Builder, cfg MessageConfig) {
+	fmt.Fprintf(b, "<h4 id='%s'>%s %s</h4>", strings.ToLower(string(cfg.Name)), cases.Title(language.Und).String(string(cfg.Subject)), cases.Title(language.Und).String(string(cfg.Event)))
+	fmt.Fprintf(b, "<div class='params'>\n")
+	fmt.Fprintf(b, "<div class='params-label'>Topic - </div><div class='params-value'>%s</div>", cfg.Topic)
+	fmt.Fprintf(b, "</div>\n")
+	fmt.Fprintf(b, "<div class='params'>\n")
+	fmt.Fprintf(b, "<div class='params-label'>Subject - </div><div class='params-value'>%s</div>", cfg.Subject)
+	fmt.Fprintf(b, "</div>\n")
+	fmt.Fprintf(b, "<div class='params'>\n")
+	fmt.Fprintf(b, "<div class='params-label'>Event - </div><div class='params-value'>%s</div>", cfg.Event)
+	fmt.Fprintf(b, "</div>\n")
+}
+
+func appendSummary(b *strings.Builder, config HandlerConfig) {
+	fmt.Fprintf(b, "<div id='%s' class='path'><h4><span class='path-method'>%s</span> - <span class='path=url'>%s</span></h4></div>", strings.ToLower(config.Name), config.Method, config.Path)
+	if config.DocumentationConfig.Summary != "" {
+		fmt.Fprintf(b, "<div class='summary'>%s</div>", config.DocumentationConfig.Summary)
+	}
+}
+
+func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (mainSchema []byte, referenceSchemas [][]byte, err error) {
+	if s.IsEmpty() {
+		return mainSchema, referenceSchemas, nil
+	}
+
+	mainSchemaPath := s.Main.GetFileName()
+
+	rnr.Log.Debug("schema main content path >%s<", mainSchemaPath)
+
+	mainSchema, err = ioutil.ReadFile(mainSchemaPath)
+	if err != nil {
+		return mainSchema, referenceSchemas, err
+	}
+
+	for _, schemaReference := range s.References {
+
+		path := schemaReference.GetFileName()
+
+		rnr.Log.Debug("schema reference content path >%s<", path)
+
+		ds, err := ioutil.ReadFile(path)
+		if err != nil {
+			return mainSchema, referenceSchemas, err
+		}
+		referenceSchemas = append(referenceSchemas, ds)
+	}
+
+	return mainSchema, referenceSchemas, nil
+}
+
+func appendSchemaWithReferences(b *strings.Builder, count int, schemaMainContent []byte, schemaReferenceContents [][]byte, schemaLabel string) {
+	if len(schemaMainContent) == 0 {
+		return
+	}
+
+	schemaLabelID := strings.Join(strings.Split(strings.ToLower(schemaLabel), " "), "-")
+
+	// fmt.Fprintf(b, "<div class='schema'>\n")
+	// fmt.Fprintf(b, "<div class='schema-label'>%s</div>\n", schemaLabel)
+	// fmt.Fprintf(b, "<div class='schema-toggle-visibility'><a href='#schema-%s-%d' class='toggle-visibility'>show / hide</a></div>", schemaLabelID, count)
+	// fmt.Fprintf(b, "</span>\n</div>\n")
+	fmt.Fprintf(b, "<div class='schema'>\n")
+	fmt.Fprintf(b, "<span class='schema-label'>%s</span>\n", schemaLabel)
+	fmt.Fprintf(b, "<span class='schema-toggle-visibility'><a href='#schema-%s-%d' class='toggle-visibility'>show / hide</a></span>", schemaLabelID, count)
+	fmt.Fprintf(b, "</div>\n")
+	fmt.Fprintf(b, "<div id='schema-%s-%d' style='display: none'>\n", schemaLabelID, count)
+	if len(schemaMainContent) > 0 {
+		fmt.Fprintf(b, "<pre class='schema-data'>%s</pre>\n", string(schemaMainContent))
+	}
+	for _, s := range schemaReferenceContents {
+		fmt.Fprintf(b, "<pre class='schema-data'>%s</pre>\n", string(s))
+	}
+	fmt.Fprintf(b, "</div>\n")
+}
+
+func (rnr *Runner) appendBuildInfo(b *strings.Builder) {
+	appImageBranch := rnr.Config.Get("APP_IMAGE_TAG_FEATURE_BRANCH")
+	appImageSHA := rnr.Config.Get("APP_IMAGE_TAG_SHA")
+
+	if appImageBranch != "" && appImageSHA != "" {
+		fmt.Fprintf(b, "<div class='header'><h4>Branch: %s</h4><h4>SHA: %s</h4></div>", appImageBranch, appImageSHA)
+	} else if appImageBranch != "" {
+		fmt.Fprintf(b, "<div class='header'><h4>Branch: %s</h4></div>", appImageBranch)
+	} else if appImageSHA != "" {
+		fmt.Fprintf(b, "<div class='header'><h4>SHA: %s</h4></div>", appImageSHA)
+	}
 }

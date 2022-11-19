@@ -4,23 +4,23 @@
   "title": "Dungeon Data",
   "description": "Dungeon data",
   "type": "object",
-  "required": ["id", "name", "description", "created_at"],
+  "required": ["dungeon_id", "dungeon_name", "dungeon_description", "dungeon_created_at"],
   "properties": {
-    "id": {
+    "dungeon_id": {
       "type": "string",
       "format": "uuid"
     },
-    "name": {
+    "dungeon_name": {
       "type": "string"
     },
-    "description": {
+    "dungeon_description": {
       "type": "string"
     },
-    "created_at": {
+    "dungeon_created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "updated_at": {
+    "dungeon_updated_at": {
       "type": "string",
       "format": "date-time"
     }

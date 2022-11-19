@@ -3,8 +3,10 @@ package test
 // NOTE: model tests are run is the public space to avoid cyclic dependencies
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/brianvoe/gofakeit"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
@@ -19,10 +21,10 @@ func TestCreateDungeonRec(t *testing.T) {
 	// harness
 	config := harness.DataConfig{}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -36,14 +38,18 @@ func TestCreateDungeonRec(t *testing.T) {
 		{
 			name: "Without ID",
 			rec: func() *record.Dungeon {
-				return &record.Dungeon{}
+				return &record.Dungeon{
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
 			rec: func() *record.Dungeon {
-				rec := &record.Dungeon{}
+				rec := &record.Dungeon{
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -96,10 +102,10 @@ func TestGetDungeonRec(t *testing.T) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -169,10 +175,10 @@ func TestUpdateDungeonRec(t *testing.T) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -247,10 +253,10 @@ func TestDeleteDungeonRec(t *testing.T) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data

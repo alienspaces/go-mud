@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -11,28 +12,26 @@ import (
 )
 
 // Correlation -
-func (rnr *Runner) Correlation(h HandlerFunc) (HandlerFunc, error) {
+func (rnr *Runner) Correlation(h Handle) (Handle, error) {
 
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) {
-
-		lc, err := l.NewInstance()
-		if err != nil {
-			rnr.Log.Warn("Failed new log instance >%v<", err)
-			http.Error(w, "Server Error", http.StatusInternalServerError)
-			return
-		}
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) error {
+		l = Logger(l, "Correlation")
 
 		correlationID := r.Header.Get("X-Correlation-ID")
 		if correlationID == "" {
 			correlationID = uuid.New().String()
-			lc.Debug("Generated correlation ID >%s<", correlationID)
 		}
-		lc.Context("correlation-id", correlationID)
 
-		// NOTE: Log every request here at info log level
-		lc.Info("Request Method >%s< Path >%s<", r.Method, r.RequestURI)
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, ctxKeyCorrelationID, correlationID)
+		r = r.WithContext(ctx)
 
-		h(w, r, pp, nil, lc, nil)
+		l.Context("correlation-id", correlationID)
+
+		// TODO: Implement a trace/telemetry middleware to log all requests and their non-sensitive information
+		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)
+
+		return h(w, r, pp, nil, l, nil)
 	}
 
 	return handle, nil

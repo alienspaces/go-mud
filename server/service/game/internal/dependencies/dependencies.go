@@ -6,16 +6,15 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/config"
 	"gitlab.com/alienspaces/go-mud/server/core/log"
 	"gitlab.com/alienspaces/go-mud/server/core/store"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 )
 
-func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
+func Default() (*config.Config, *log.Log, *store.Store, error) {
 
 	// Configurer
 	c, err := config.NewConfig(nil, false)
 	if err != nil {
 		fmt.Printf("failed new config >%v<", err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	configVars := []string{
@@ -24,12 +23,16 @@ func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
 		"APP_SERVER_PORT",
 		// logger
 		"APP_SERVER_LOG_LEVEL",
+		"APP_SERVER_LOG_PRETTY",
 		// database
 		"APP_SERVER_DB_HOST",
 		"APP_SERVER_DB_PORT",
 		"APP_SERVER_DB_NAME",
 		"APP_SERVER_DB_USER",
 		"APP_SERVER_DB_PASSWORD",
+		"APP_SERVER_DB_MAX_OPEN_CONNECTIONS",
+		"APP_SERVER_DB_MAX_IDLE_CONNECTIONS",
+		"APP_SERVER_DB_MAX_IDLE_TIME_MINS",
 		// schema
 		"APP_SERVER_SCHEMA_PATH",
 		// jwt signing key
@@ -39,7 +42,7 @@ func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
 		err := c.Add(key, true)
 		if err != nil {
 			fmt.Printf("failed adding config item >%v<", err)
-			return nil, nil, nil, nil, err
+			return nil, nil, nil, err
 		}
 	}
 
@@ -47,22 +50,15 @@ func Default() (*config.Config, *log.Log, *store.Store, *model.Model, error) {
 	l, err := log.NewLogger(c)
 	if err != nil {
 		fmt.Printf("failed new logger >%v<", err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// Storer
 	s, err := store.NewStore(c, l)
 	if err != nil {
 		fmt.Printf("failed new store >%v<", err)
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	// Modeller
-	m, err := model.NewModel(c, l, s)
-	if err != nil {
-		fmt.Printf("failed new model >%v<", err)
-		return nil, nil, nil, nil, err
-	}
-
-	return c, l, s, m, nil
+	return c, l, s, nil
 }

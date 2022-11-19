@@ -6,10 +6,13 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"sort"
 	"syscall"
 
 	"github.com/julienschmidt/httprouter"
 
+	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/server/core/prepare"
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
@@ -26,112 +29,135 @@ const (
 	ConfigKeyValidateMainSchema string = "validateMainSchema"
 	// ConfigKeyValidateReferenceSchemas - Schema referenced from the main schema
 	ConfigKeyValidateReferenceSchemas string = "validateReferenceSchemas"
-
-	// AuthTypeJWT -
-	AuthTypeJWT string = "jwt"
 )
 
-// ensure we comply with the Runnerer interface
-var _ runnable.Runnable = &Runner{}
-
-// HandlerFunc - custom service handle
-type HandlerFunc func(w http.ResponseWriter, r *http.Request, pathParams httprouter.Params, queryParams map[string]interface{}, l logger.Logger, m modeller.Modeller)
+// Handle - custom service handle
+type Handle func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error
 
 // Runner - implements the runnerer interface
 type Runner struct {
-	Config  configurer.Configurer
-	Log     logger.Logger
-	Store   storer.Storer
-	Prepare preparer.Preparer
-	Model   modeller.Modeller
+	Config            configurer.Configurer
+	Log               logger.Logger
+	Store             storer.Storer
+	PrepareRepository preparer.Repository
+	PrepareQuery      preparer.Query
 
 	// configuration for routes, handlers and middleware
-	HandlerConfig []HandlerConfig
+	HandlerConfig map[HandlerConfigKey]HandlerConfig
+	MessageConfig map[Message]MessageConfig
 
 	// composable functions
-	RunHTTPFunc    func(args map[string]interface{}) error
-	RunDaemonFunc  func(args map[string]interface{}) error
-	RouterFunc     func(router *httprouter.Router) error
-	MiddlewareFunc func(h HandlerFunc) (HandlerFunc, error)
-	// HandlerFunc    func(w http.ResponseWriter, r *http.Request, pathParams httprouter.Params, queryParams map[string]interface{}, l logger.Logger, m modeller.Modeller)
-	HandlerFunc  HandlerFunc
-	PreparerFunc func(l logger.Logger) (preparer.Preparer, error)
-	ModellerFunc func(l logger.Logger) (modeller.Modeller, error)
+	RunHTTPFunc            func(args map[string]interface{}) error
+	RunDaemonFunc          func(args map[string]interface{}) error
+	RouterFunc             func(router *httprouter.Router) error
+	MiddlewareFunc         func(h Handle) (Handle, error)
+	HandlerFunc            Handle
+	PreparerRepositoryFunc func(l logger.Logger) (preparer.Repository, error)
+	PreparerQueryFunc      func(l logger.Logger) (preparer.Query, error)
+	ModellerFunc           func(l logger.Logger) (modeller.Modeller, error)
+
+	AuthenticateByAPIKeyFunc            func(m modeller.Modeller, l logger.Logger, apiKey string) (Authentication, error)
+	GetAuthorizationsByHashedAPIKeyFunc func(modeller.Modeller, logger.Logger, Authentication) (Authentication, error)
+	SetAuditConfigFunc                  func(m modeller.Modeller, l logger.Logger, requesterType string, requesterID string, requestID string) error
 }
 
-// MiddlewareConfig provides configuration for middlewares.
-//
-// AuthTypes - Supported authentication types.
-//
-// AuthRequiredAllRoles - All of these roles must exist within the list of roles found in authenticated claims.
-//
-// AuthRequiredAnyRole - Any of these roles must exist within the list of roles found in authenticated claims.
-//
-// AuthRequiredAllIdentities - All of these identity keys must have a defined value within the list of identity keys found in authenticated claims.
-//
-// AuthRequiredAnyIdentity - Any of these identity keys must have a defined value within the list of identity keys found in authenticated claims.
-//
-// ValidateSchemaLocation - Location of JSON schemas for this endpoint relative to `APP_SERVER_SCHEMA_PATH`.
-//
-// ValidateSchemaRequestMain - The name of the main JSON schema document to load for this endpoint.
-//
-// ValidateSchemaRequestReferences - A list of additional JSON schema reference documents to load for this endpoint.
-//
-// ValidatePathParams - Rules for validating path parameters
-//
-// ValidateQueryParams - A whitelist of allowed query parameters.
-//
-type MiddlewareConfig struct {
-
-	// AuthTypes - What auth types are supported by this endpoint
-	AuthTypes []string
-	// AuthRequireAllRoles - Require all of these roles to access this endpoint
-	AuthRequireAllRoles []string
-	// AuthRequireAnyRole - Require any of these roles to access this endpoint
-	AuthRequireAnyRole []string
-	// AuthRequireAllIdentities - Required all of these identities to be defined to access this endpoint
-	AuthRequireAllIdentities []string
-	// AuthRequireAnyIdentity - Required any of these identities to be defined to access this endpoint
-	AuthRequireAnyIdentity []string
-
-	// Validate Schema - JSON schema validation
-	ValidateSchemaLocation           string
-	ValidateSchemaRequestMain        string
-	ValidateSchemaRequestReferences  []string
-	ValidateSchemaResponse           bool
-	ValidateSchemaResponseMain       string
-	ValidateSchemaResponseReferences []string
-
-	// ValidatePathParams - Rules for validating path parameters
-	ValidatePathParams map[string]ValidatePathParam
-
-	// ValidateQueryParams - A whitelist of allowed query parameters
-	ValidateQueryParams []string
+type Authentication struct {
+	IsValid      bool
+	HashedAPIKey string
+	Roles        map[string]struct{}
+	Permissions  map[string]struct{}
 }
+
+var _ runnable.Runnable = &Runner{}
+
+type RequestPath string
+type RequestMethod string
+type HandlerConfigKey string
 
 // HandlerConfig - configuration for routes, handlers and middleware
 type HandlerConfig struct {
+	Name string
 	// Method - The HTTP method
 	Method string
 	// Path - The HTTP request URI including :parameter placeholders
-	Path string
+	Path             string
+	DocumentTagGroup DocumentTagGroupEndpoint
 	// HandlerFunc - Function to handle requests for this method and path
-	HandlerFunc func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller)
+	HandlerFunc Handle
 	// MiddlewareConfig -
 	MiddlewareConfig MiddlewareConfig
 	// DocumentationConfig -
 	DocumentationConfig DocumentationConfig
 }
 
-// ValidatePathParam - Rules for validating a path parameter
-type ValidatePathParam struct {
-	MatchIdentity bool
+// ServerHandlerConfig provides API endpoint configuration
+type ServerHandlerConfig map[RequestPath]map[RequestMethod]HandlerConfig
+
+type DocumentTag string
+type DocumentTagGroup string
+
+// DocumentTagGroupEndpoint is used to group endpoints related to the same resource
+type DocumentTagGroupEndpoint struct {
+	ResourceName DocumentTagGroup `json:"name"`
+	Description  string           `json:"description"`
+	DocumentTags []DocumentTag    `json:"tags"`
+}
+
+type AuthenticationType string
+
+const (
+	AuthenTypePublic AuthenticationType = "Public"
+	AuthenTypeAPIKey AuthenticationType = "Key"
+	AuthenTypeJWT    AuthenticationType = "JWT"
+)
+
+type AuthorizationPermission string
+
+// MiddlewareConfig - configuration for global default middleware
+type MiddlewareConfig struct {
+	AuthenTypes            []AuthenticationType
+	AuthzPermissions       []AuthorizationPermission
+	ValidateRequestSchema  jsonschema.SchemaWithReferences
+	ValidateResponseSchema jsonschema.SchemaWithReferences
+	// ValidateQueryParams - A whitelist of allowed query parameters
+	ValidateQueryParams jsonschema.SchemaWithReferences
+}
+
+type QueryParams struct {
+	Keys   []string
+	Schema jsonschema.SchemaWithReferences
 }
 
 // DocumentationConfig - Configuration describing how to document a route
 type DocumentationConfig struct {
-	Document    bool
-	Description string
+	Document      bool
+	Summary       string // used for API doc endpoint title
+	Description   string // used for API doc endpoint description
+	ErrorRegistry coreerror.Registry
+}
+
+type Message string
+type MessageSource string
+type MessageTopic string
+type MessageSubject string
+type MessageEvent string
+
+type MessageConfig struct {
+	Summary          string
+	Name             Message
+	Source           MessageSource
+	Topic            MessageTopic
+	Subject          MessageSubject
+	Event            MessageEvent
+	ValidateSchema   jsonschema.SchemaWithReferences
+	DocumentTagGroup DocumentTagGroupSchemaModel
+}
+
+// DocumentTagGroupSchemaModel is used to group schema models related to the same resource
+type DocumentTagGroupSchemaModel struct {
+	ResourceName DocumentTagGroup `json:"name"`
+	Description  string           `json:"description"`
+	DocumentTag  DocumentTag      `json:"tag"`
 }
 
 // NOTE: Request struct definitions are located in the top level `schema` module. We might
@@ -157,101 +183,148 @@ type ResponsePagination struct {
 	Count  int `json:"page_count"`
 }
 
+// ensure we comply with the Runnerer interface
+var _ runnable.Runnable = &Runner{}
+
 // Init - override to perform custom initialization
-func (rnr *Runner) Init(c configurer.Configurer, l logger.Logger, s storer.Storer, m modeller.Modeller) error {
+func (rnr *Runner) Init(s storer.Storer) error {
+	l := Logger(rnr.Log, "Init")
 
-	rnr.Log = l
 	if rnr.Log == nil {
-		msg := "logger undefined, cannot init runner"
-		return fmt.Errorf(msg)
+		return fmt.Errorf("logger is nil, cannot initialise server runner")
 	}
 
-	rnr.Log.Debug("** Initialise **")
-
-	rnr.Config = c
-	if rnr.Config == nil {
-		msg := "configurer undefined, cannot init runner"
-		rnr.Log.Warn(msg)
-		return fmt.Errorf(msg)
-	}
+	l.Debug("** Initialise **")
 
 	rnr.Store = s
 	if rnr.Store == nil {
-		msg := "storer undefined, cannot init runner"
-		rnr.Log.Warn(msg)
+		msg := "storer is nil, cannot init runner"
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
 	// Initialise storer
 	err := rnr.Store.Init()
 	if err != nil {
-		rnr.Log.Warn("Failed store init >%v<", err)
+		l.Warn("failed store init >%v<", err)
 		return err
 	}
 
-	// Modeller
-	rnr.Model = m
-	if rnr.Model == nil {
-		if rnr.ModellerFunc == nil {
-			rnr.Log.Warn("warning, CLI model and modellerfunc are nil, might be broken...")
-			rnr.ModellerFunc = rnr.defaultModellerFunc
-		}
+	// Repository
+	if rnr.PreparerRepositoryFunc == nil {
+		rnr.PreparerRepositoryFunc = rnr.PreparerRepository
 	}
 
-	// Preparer
-	if rnr.PreparerFunc == nil {
-		rnr.PreparerFunc = rnr.defaultPreparerFunc
-	}
-
-	p, err := rnr.PreparerFunc(l)
+	pRepo, err := rnr.PreparerRepositoryFunc(l)
 	if err != nil {
-		rnr.Log.Warn("Failed preparer func >%v<", err)
+		l.Warn("failed preparer func >%v<", err)
 		return err
 	}
 
-	rnr.Prepare = p
-	if rnr.Prepare == nil {
-		rnr.Log.Warn("Preparer is nil, cannot continue")
+	rnr.PrepareRepository = pRepo
+	if rnr.PrepareRepository == nil {
+		l.Warn("PreparerRepository is nil, cannot continue")
 		return err
 	}
 
-	// Run HTTP
+	if rnr.PreparerQueryFunc == nil {
+		rnr.PreparerQueryFunc = rnr.PreparerQuery
+	}
+
+	pQ, err := rnr.PreparerQueryFunc(l)
+	if err != nil {
+		l.Warn("failed preparer config func >%v<", err)
+		return err
+	}
+
+	rnr.PrepareQuery = pQ
+	if rnr.PrepareQuery == nil {
+		l.Warn("PreparerRepository Config is nil, cannot continue")
+		return err
+	}
+
+	// run server
 	if rnr.RunHTTPFunc == nil {
 		rnr.RunHTTPFunc = rnr.RunHTTP
 	}
 
-	// Run daemon
+	// run daemon
 	if rnr.RunDaemonFunc == nil {
 		rnr.RunDaemonFunc = rnr.RunDaemon
 	}
 
-	// Modelller
+	// model
 	if rnr.ModellerFunc == nil {
-		rnr.ModellerFunc = rnr.defaultModellerFunc
+		rnr.ModellerFunc = rnr.Modeller
 	}
 
-	// HTTP router
+	// HTTP server - router
 	if rnr.RouterFunc == nil {
-		rnr.RouterFunc = rnr.defaultRouterFunc
+		rnr.RouterFunc = rnr.Router
 	}
 
-	// HTTP middleware
+	// HTTP server - middleware
 	if rnr.MiddlewareFunc == nil {
-		rnr.MiddlewareFunc = rnr.defaultMiddlewareFunc
+		rnr.MiddlewareFunc = rnr.DefaultMiddlewareFunc
 	}
 
-	// HTTP handler
+	// HTTP server - handler
 	if rnr.HandlerFunc == nil {
-		rnr.HandlerFunc = rnr.defaultHandlerFunc
+		rnr.HandlerFunc = rnr.DefaultHandlerFunc
+	}
+
+	// Initialise configured routes
+	root := rnr.Config.Get("APP_SERVER_HOME")
+	for k, v := range rnr.HandlerConfig {
+		l.Debug("Resolving schema location root >%s< key >%s<", root, k)
+		v.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateQueryParams)
+		v.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateRequestSchema)
+		v.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(root, v.MiddlewareConfig.ValidateResponseSchema)
+		rnr.HandlerConfig[k] = v
 	}
 
 	return nil
 }
 
-// TODO: Use this function from HTTP middleware Tx maybe..
+// InitModeller initialises a new database transaction returning a prepared modeller
+func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 
-// InitTx initialises a new database transaction returning a prepared modeller
-func (rnr *Runner) InitTx(l logger.Logger) (modeller.Modeller, error) {
+	// preparer
+	if rnr.PreparerRepositoryFunc == nil {
+		msg := "preparer function is nil, cannot continue, cannot initialise database transaction"
+		l.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	p, err := rnr.PreparerRepositoryFunc(l)
+	if err != nil {
+		l.Warn("failed PreparerRepositoryFunc >%v<", err)
+		return nil, err
+	}
+
+	if p == nil {
+		msg := "preparer is nil, cannot continue, cannot initialise database transaction"
+		l.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	if rnr.PreparerQueryFunc == nil {
+		msg := "preparer config function is nil, cannot continue, cannot initialise database transaction"
+		l.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	pCfg, err := rnr.PreparerQueryFunc(l)
+	if err != nil {
+		l.Warn("failed PreparerQueryFunc >%v<", err)
+		return nil, err
+	}
+
+	if pCfg == nil {
+		msg := "preparer config is nil, cannot continue, cannot initialise database transaction"
+		l.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
 
 	// NOTE: The modeller is created and initialised with every request instead of
 	// creating and assigning to a runner struct "Model" property at start up.
@@ -261,30 +334,29 @@ func (rnr *Runner) InitTx(l logger.Logger) (modeller.Modeller, error) {
 
 	// modeller
 	if rnr.ModellerFunc == nil {
-		l.Warn("Runner ModellerFunc is nil")
+		l.Warn("runner ModellerFunc is nil")
 		return nil, fmt.Errorf("ModellerFunc is nil")
 	}
 
 	m, err := rnr.ModellerFunc(l)
 	if err != nil {
-		l.Warn("Failed ModellerFunc >%v<", err)
+		l.Warn("failed ModellerFunc >%v<", err)
 		return nil, err
 	}
-
 	if m == nil {
-		l.Warn("Modeller is nil, cannot continue")
+		l.Warn("modeller is nil, cannot continue")
 		return nil, err
 	}
 
 	tx, err := rnr.Store.GetTx()
 	if err != nil {
-		l.Warn("Failed getting DB connection >%v<", err)
+		l.Warn("failed getting DB connection >%v<", err)
 		return m, err
 	}
 
-	err = m.Init(rnr.Prepare, tx)
+	err = m.Init(p, pCfg, tx)
 	if err != nil {
-		l.Warn("Failed init modeller >%v<", err)
+		l.Warn("failed init modeller >%v<", err)
 		return m, err
 	}
 
@@ -292,7 +364,7 @@ func (rnr *Runner) InitTx(l logger.Logger) (modeller.Modeller, error) {
 }
 
 // Run starts the HTTP server and daemon processes. Override to implement a custom run function.
-func (rnr *Runner) Run(args map[string]interface{}) (err error) {
+func (rnr *Runner) Run(args map[string]interface{}) error {
 
 	rnr.Log.Debug("** Run **")
 
@@ -303,8 +375,7 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 	// run HTTP server
 	go func() {
 		rnr.Log.Debug("** Running HTTP server process **")
-		err = rnr.RunHTTPFunc(args)
-		if err != nil {
+		if err := rnr.RunHTTPFunc(args); err != nil {
 			rnr.Log.Error("Failed run server >%v<", err)
 			sigChan <- syscall.SIGTERM
 		}
@@ -314,8 +385,7 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 	// run daemon server
 	go func() {
 		rnr.Log.Debug("** Running daemon process **")
-		err = rnr.RunDaemonFunc(args)
-		if err != nil {
+		if err := rnr.RunDaemonFunc(args); err != nil {
 			rnr.Log.Error("Failed run daemon >%v<", err)
 			sigChan <- syscall.SIGTERM
 		}
@@ -332,7 +402,7 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 		return b / 1024 / 1024
 	}
 
-	err = fmt.Errorf("received SIG >%v< Mem Alloc >%d MiB< TotalAlloc >%d MiB< Sys >%d MiB< NumGC >%d<",
+	err := fmt.Errorf("received SIG >%v< Mem Alloc >%d MiB< TotalAlloc >%d MiB< Sys >%d MiB< NumGC >%d<",
 		sig,
 		bToMb(m.Alloc),
 		bToMb(m.TotalAlloc),
@@ -345,50 +415,230 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 	return err
 }
 
-// Preparer - default PreparerFunc, override this function for custom prepare
-func (rnr *Runner) defaultPreparerFunc(l logger.Logger) (preparer.Preparer, error) {
+// PreparerRepository - default PreparerRepositoryFunc, override this function for custom preparer.Repository
+func (rnr *Runner) PreparerRepository(l logger.Logger) (preparer.Repository, error) {
 
-	// NOTE: We have a good generic preparer so we'll provide that here
+	// NOTE: We have a good generic preparer.Repository so we'll provide that here
 
-	l.Debug("** Preparer **")
+	l.Debug("** Repository **")
 
 	// Return the existing preparer if we already have one
-	if rnr.Prepare != nil {
+	if rnr.PrepareRepository != nil {
 		l.Debug("Returning existing preparer")
-		return rnr.Prepare, nil
+		return rnr.PrepareRepository, nil
 	}
 
 	l.Debug("Creating new preparer")
 
-	p, err := prepare.NewPrepare(l)
+	p, err := prepare.NewRepositoryPreparer(l)
 	if err != nil {
-		l.Warn("Failed new prepare >%v<", err)
+		l.Warn("failed new prepare >%v<", err)
 		return nil, err
 	}
 
 	db, err := rnr.Store.GetDb()
 	if err != nil {
-		l.Warn("Failed getting database handle >%v<", err)
+		l.Warn("failed getting database handle >%v<", err)
 		return nil, err
 	}
 
 	err = p.Init(db)
 	if err != nil {
-		l.Warn("Failed preparer init >%v<", err)
+		l.Warn("failed preparer init >%v<", err)
 		return nil, err
 	}
 
-	rnr.Prepare = p
+	rnr.PrepareRepository = p
+
+	return p, nil
+}
+
+// PreparerQuery - default PreparerQueryFunc, override this function for custom preparer.Query
+func (rnr *Runner) PreparerQuery(l logger.Logger) (preparer.Query, error) {
+
+	// NOTE: We have a good generic preparer.Query so we'll provide that here
+
+	l.Debug("** Query **")
+
+	if rnr.PrepareQuery != nil {
+		l.Debug("Returning existing preparer query")
+		return rnr.PrepareQuery, nil
+	}
+
+	l.Debug("Creating new preparer query")
+
+	p, err := prepare.NewQueryPreparer(l)
+	if err != nil {
+		l.Warn("failed new prepare query >%v<", err)
+		return nil, err
+	}
+
+	db, err := rnr.Store.GetDb()
+	if err != nil {
+		l.Warn("failed getting database handle >%v<", err)
+		return nil, err
+	}
+
+	err = p.Init(db)
+	if err != nil {
+		l.Warn("failed preparer query init >%v<", err)
+		return nil, err
+	}
+
+	rnr.PrepareQuery = p
 
 	return p, nil
 }
 
 // Modeller - default ModellerFunc, override this function for custom model
-func (rnr *Runner) defaultModellerFunc(l logger.Logger) (modeller.Modeller, error) {
+func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 
 	// NOTE: A modeller is very service agnostic so there is no default generalised modeller we can provide here
 
 	l.Debug("** Modeller **")
 
 	return nil, nil
+}
+
+func (rnr *Runner) GetMessageConfigs() []MessageConfig {
+	var cfgs []MessageConfig
+	for _, cfg := range rnr.MessageConfig {
+		cfgs = append(cfgs, cfg)
+	}
+
+	return cfgs
+}
+
+func (rnr *Runner) GetHandlerConfigs() []HandlerConfig {
+	var cfgs []HandlerConfig
+	for _, cfg := range rnr.HandlerConfig {
+		cfgs = append(cfgs, cfg)
+	}
+
+	return sortHandlerConfigs(cfgs)
+}
+
+func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
+	var sorted []HandlerConfig
+	sorted = append(sorted, handlerConfigs...)
+
+	sort.Slice(sorted, func(i, j int) bool {
+		x := sorted[i]
+		y := sorted[j]
+
+		if x.Path != y.Path {
+			return x.Path < y.Path
+		}
+
+		return x.Method < y.Method
+	})
+
+	return sorted
+}
+
+func ResolveHandlerSchemaLocation(handlerConfig map[HandlerConfigKey]HandlerConfig, location string) map[HandlerConfigKey]HandlerConfig {
+	for handler, cfg := range handlerConfig {
+		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
+			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateQueryParams)
+		}
+
+		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 {
+			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateRequestSchema)
+		}
+
+		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 {
+			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateResponseSchema)
+		}
+
+		handlerConfig[handler] = cfg
+	}
+
+	return handlerConfig
+}
+
+func ResolveHandlerSchemaLocationRoot(handlerConfig map[HandlerConfigKey]HandlerConfig, root string) (map[HandlerConfigKey]HandlerConfig, error) {
+	for handler, cfg := range handlerConfig {
+		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
+			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(root, cfg.MiddlewareConfig.ValidateQueryParams)
+		}
+
+		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 {
+			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(root, cfg.MiddlewareConfig.ValidateRequestSchema)
+		}
+
+		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 {
+			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(root, cfg.MiddlewareConfig.ValidateResponseSchema)
+		}
+
+		handlerConfig[handler] = cfg
+	}
+
+	return handlerConfig, nil
+}
+
+func ResolveMessageSchemaLocation(messageConfig map[Message]MessageConfig, location string) map[Message]MessageConfig {
+	for message, cfg := range messageConfig {
+		cfg.ValidateSchema = jsonschema.ResolveSchemaLocation(location, cfg.ValidateSchema)
+
+		messageConfig[message] = cfg
+	}
+
+	return messageConfig
+}
+
+func ResolveMessageSchemaLocationRoot(messageConfig map[Message]MessageConfig, root string) (map[Message]MessageConfig, error) {
+	for messsage, cfg := range messageConfig {
+		cfg.ValidateSchema = jsonschema.ResolveSchemaLocationRoot(root, cfg.ValidateSchema)
+
+		messageConfig[messsage] = cfg
+	}
+
+	return messageConfig, nil
+}
+
+func ResolveDocumentationSummary(handlerConfig map[HandlerConfigKey]HandlerConfig) map[HandlerConfigKey]HandlerConfig {
+	for name, cfg := range handlerConfig {
+		if cfg.DocumentationConfig.Summary == "" {
+			cfg.DocumentationConfig.Summary = cfg.DocumentationConfig.Description
+		}
+
+		handlerConfig[name] = cfg
+	}
+
+	return handlerConfig
+}
+
+func ValidateAuthenticationTypes(handlerConfig map[HandlerConfigKey]HandlerConfig) error {
+	for _, cfg := range handlerConfig {
+		if len(cfg.MiddlewareConfig.AuthenTypes) == 0 {
+			return fmt.Errorf("handler >%s< with undefined authentication type", cfg.Name)
+		}
+	}
+	return nil
+}
+
+func ToAuthorizationPermissionsSet(permissions ...AuthorizationPermission) map[AuthorizationPermission]struct{} {
+	set := map[AuthorizationPermission]struct{}{}
+
+	for _, p := range permissions {
+		set[p] = struct{}{}
+	}
+
+	return set
+}
+
+func ToAuthenticationSet(authen ...AuthenticationType) map[AuthenticationType]struct{} {
+	set := map[AuthenticationType]struct{}{}
+
+	for _, p := range authen {
+		set[p] = struct{}{}
+	}
+
+	return set
+}
+
+func InvalidAuthentication() Authentication {
+	return Authentication{
+		IsValid: false,
+	}
 }

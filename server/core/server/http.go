@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"net/http"
 	"strings"
@@ -13,11 +14,21 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
 )
 
-// ContextData - data type for data context key
-type ContextData string
+type HttpMethod string
 
-// ContextKeyData - context key for payload data
-const ContextKeyData ContextData = "data"
+const (
+	HttpMethodGet     HttpMethod = http.MethodGet
+	HttpMethodHead    HttpMethod = http.MethodHead
+	HttpMethodPost    HttpMethod = http.MethodPost
+	HttpMethodPut     HttpMethod = http.MethodPut
+	HttpMethodPatch   HttpMethod = http.MethodPatch
+	HttpMethodDelete  HttpMethod = http.MethodDelete
+	HttpMethodConnect HttpMethod = http.MethodConnect
+	HttpMethodOptions HttpMethod = http.MethodOptions
+	HttpMethodTrace   HttpMethod = http.MethodTrace
+)
+
+type WriteResponseOption = func(http.ResponseWriter) error
 
 // RunHTTP - Starts the HTTP server process. Override to implement a custom HTTP server run function.
 // The server process exposes a REST API and is intended for clients to manage resources and
@@ -35,7 +46,7 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 
 	port := rnr.Config.Get("APP_SERVER_PORT")
 	if port == "" {
-		rnr.Log.Warn("Missing APP_SERVER_PORT, cannot start server")
+		rnr.Log.Warn("missing APP_SERVER_PORT, cannot start server")
 		return fmt.Errorf("missing APP_SERVER_PORT, cannot start server")
 	}
 
@@ -56,62 +67,71 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 	handler := c.Handler(router)
 
 	// serve
-	rnr.Log.Info("Server running at: http://localhost:%s", port)
+	rnr.Log.Info("server running at: http://localhost:%s", port)
 
 	return http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
 }
 
 // Router - default RouterFunc, override this function for custom routes
-func (rnr *Runner) defaultRouterFunc(router *httprouter.Router) error {
+func (rnr *Runner) Router(router *httprouter.Router) error {
+	l := Logger(rnr.Log, "Router")
 
-	rnr.Log.Info("** Router **")
+	l.Info("Using router")
 
 	return nil
 }
 
 // Middleware - default MiddlewareFunc, override this function for custom middleware
-func (rnr *Runner) defaultMiddlewareFunc(h HandlerFunc) (HandlerFunc, error) {
+func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
+	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+		return h(w, r, pp, qp, l, m)
+	}
 
-	rnr.Log.Info("** Middleware **")
-
-	return h, nil
+	return handle, nil
 }
 
 // Handler - default HandlerFunc, override this function for custom handler
-func (rnr *Runner) defaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) {
+func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+	l = Logger(l, "DefaultHandlerFunc")
 
-	l.Info("** Handler **")
+	l.Info("Using default handler")
 
 	fmt.Fprint(w, "Ok!\n")
+
+	return nil
 }
 
 // DefaultRouter - implements default routes based on runner configuration options
 func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
+	l := Logger(rnr.Log, "DefaultRouter")
 
-	rnr.Log.Info("** DefaultRouter **")
+	l.Info("Using default router")
 
-	// default routes
 	r := httprouter.New()
 
-	// default index/healthz handler
-	h, err := rnr.DefaultMiddleware(HandlerConfig{Path: "/"}, rnr.HandlerFunc)
+	// Default index handler
+	h, err := rnr.DefaultMiddleware(HandlerConfig{Path: "/", MiddlewareConfig: MiddlewareConfig{
+		AuthenTypes: []AuthenticationType{AuthenTypePublic},
+	}}, rnr.HandlerFunc)
 	if err != nil {
 		rnr.Log.Warn("failed default middleware >%v<", err)
 		return nil, err
 	}
 	r.GET("/healthz", h)
+	r.GET("/liveness", func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
+		_ = rnr.HandlerFunc(w, r, pp, nil, rnr.Log, nil)
+	})
 
-	// register configured routes
+	// Register configured routes
 	for _, hc := range rnr.HandlerConfig {
 
-		rnr.Log.Info("** Router ** method >%s< path >%s<", hc.Method, hc.Path)
+		l.Info("Routing method >%s< path >%s<", hc.Method, hc.Path)
 
 		h, err := rnr.DefaultMiddleware(hc, hc.HandlerFunc)
 		if err != nil {
-			rnr.Log.Warn("failed registering handler >%v<", err)
+			l.Warn("failed registering handler >%v<", err)
 			return nil, err
 		}
-
 		switch hc.Method {
 		case http.MethodGet:
 			r.GET(hc.Path, h)
@@ -128,15 +148,15 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 		case http.MethodHead:
 			r.HEAD(hc.Path, h)
 		default:
-			rnr.Log.Warn("Router HTTP method >%s< not supported", hc.Method)
-			return nil, fmt.Errorf("router HTTP method >%s< not supported", hc.Method)
+			l.Warn("Router HTTP method >%s< not supported", hc.Method)
+			return nil, fmt.Errorf("Router HTTP method >%s< not supported", hc.Method)
 		}
 	}
 
 	// server defined routes
 	err = rnr.RouterFunc(r)
 	if err != nil {
-		rnr.Log.Warn("failed router >%v<", err)
+		l.Warn("Failed router >%v<", err)
 		return nil, err
 	}
 
@@ -144,74 +164,90 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 }
 
 // DefaultMiddleware - implements middlewares based on runner configuration
-func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h HandlerFunc) (httprouter.Handle, error) {
+func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h Handle) (httprouter.Handle, error) {
+	l := Logger(rnr.Log, "DefaultMiddleware")
 
-	rnr.Log.Info("** DefaultMiddleware **")
+	l.Info("Using default middleware")
 
-	// tx
-	h, err := rnr.Tx(hc, h)
+	// NOTE: The order matters here. Different middleware will not be able to function
+	// unless prior middleware have run successfully.
+
+	// Validate body data
+	h, err := rnr.Validate(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding tx middleware >%v<", err)
+		l.Warn("failed adding validate middleware >%v<", err)
 		return nil, err
 	}
 
-	// validate body data
-	h, err = rnr.Validate(hc, h)
+	// Request body data
+	h, err = rnr.Data(h)
 	if err != nil {
-		rnr.Log.Warn("failed adding validate middleware >%v<", err)
+		l.Warn("failed adding data middleware >%v<", err)
 		return nil, err
 	}
 
-	// request body data
-	h, err = rnr.Data(hc, h)
+	h, err = rnr.Audit(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding data middleware >%v<", err)
+		l.Warn("failed adding audit middleware >%v<", err)
 		return nil, err
 	}
 
-	// authz
+	// Authz
 	h, err = rnr.Authz(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding authz middleware >%v<", err)
+		l.Warn("failed adding authz middleware >%v<", err)
 		return nil, err
 	}
 
-	// authen
+	// Authen
 	h, err = rnr.Authen(hc, h)
 	if err != nil {
-		rnr.Log.Warn("failed adding authen middleware >%v<", err)
+		l.Warn("failed adding authen middleware >%v<", err)
 		return nil, err
 	}
 
-	// correlation
+	// Tx
+	h, err = rnr.Tx(h)
+	if err != nil {
+		l.Warn("failed adding tx middleware >%v<", err)
+		return nil, err
+	}
+
+	// Correlation
 	h, err = rnr.Correlation(h)
 	if err != nil {
-		rnr.Log.Warn("failed adding correlation middleware >%v<", err)
+		l.Warn("failed adding correlation middleware >%v<", err)
 		return nil, err
 	}
 
-	// server defined routes
+	// Server defined routes
 	h, err = rnr.MiddlewareFunc(h)
 	if err != nil {
-		rnr.Log.Warn("failed middleware >%v<", err)
+		l.Warn("failed middleware >%v<", err)
 		return nil, err
 	}
 
-	// wrap everything in a httprouter Handler
+	// Wrap everything in a httprouter Handler
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
-		// log
-		rnr.Log.Info("RequestURI %s", r.RequestURI)
-		// delegate
-		h(w, r, pp, nil, rnr.Log, nil)
+
+		// New logger instance per request
+		l, err := l.NewInstance()
+		if err != nil {
+			WriteSystemError(rnr.Log, w, err)
+			return
+		}
+
+		// Delegate
+		h(w, r, pp, nil, l, nil)
 	}
 
 	return handle, nil
 }
 
 // ReadRequest -
-func (rnr *Runner) ReadRequest(l logger.Logger, r *http.Request, s interface{}) error {
+func ReadRequest(l logger.Logger, r *http.Request, s interface{}) error {
 
-	data := r.Context().Value(ContextKeyData)
+	data := r.Context().Value(ctxKeyData)
 
 	if data != nil {
 		r := strings.NewReader(data.(string))
@@ -225,53 +261,59 @@ func (rnr *Runner) ReadRequest(l logger.Logger, r *http.Request, s interface{}) 
 	return nil
 }
 
-// WriteResponse -
-func (rnr *Runner) WriteResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
+func ReadXMLRequest(l logger.Logger, r *http.Request, s interface{}) (*string, error) {
 
-	// determine response status
-	status := http.StatusOK
+	data := r.Context().Value(ctxKeyData)
 
-	switch r := s.(type) {
-	case *Response:
-		l.Debug("Payload type is a base server response >%#v<", r)
-		if r.Error.Code != "" {
-			switch r.Error.Code {
-			case ErrorCodeNotFound:
-				status = http.StatusNotFound
-			case ErrorCodeValidation:
-				status = http.StatusBadRequest
-			case ErrorCodeSystem:
-				status = http.StatusInternalServerError
-			case ErrorCodeUnauthorized:
-				status = http.StatusUnauthorized
-			}
-		}
-	case Response:
-		l.Debug("Payload type is a base server response >%#v<", r)
-		if r.Error.Code != "" {
-			switch r.Error.Code {
-			case ErrorCodeNotFound:
-				status = http.StatusNotFound
-			case ErrorCodeValidation:
-				status = http.StatusBadRequest
-			case ErrorCodeSystem:
-				status = http.StatusInternalServerError
-			case ErrorCodeUnauthorized:
-				status = http.StatusUnauthorized
-			}
-		}
-	default:
-		l.Debug("Payload type is not a base server response >%#v<", r)
-		//
+	d, ok := data.(string)
+	if !ok {
+		return nil, nil
 	}
 
+	l.Info("xml message body >%s<", d)
+	reader := strings.NewReader(d)
+	if err := xml.NewDecoder(reader).Decode(s); err != nil {
+		return &d, fmt.Errorf("failed decoding request data >%s< >%v<", d, err)
+	}
+
+	return &d, nil
+}
+
+// WriteResponse -
+func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, options ...WriteResponseOption) error {
+	l = Logger(l, "WriteResponse")
+
+	status := http.StatusOK
 	l.Info("Write response status >%d<", status)
 
 	// content type json
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
+	for _, o := range options {
+		if err := o(w); err != nil {
+			return err
+		}
+	}
+
 	// status
 	w.WriteHeader(status)
 
-	return json.NewEncoder(w).Encode(s)
+	return json.NewEncoder(w).Encode(r)
+}
+
+func WriteXMLResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
+	l = Logger(l, "WriteXMLResponse")
+
+	status := http.StatusOK
+	l.Info("Write response status >%d<", status)
+
+	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
+
+	w.WriteHeader(status)
+
+	if _, err := w.Write([]byte(xml.Header)); err != nil {
+		return err
+	}
+
+	return xml.NewEncoder(w).Encode(s)
 }

@@ -4,8 +4,10 @@ package test
 // able to use common setup and teardown tooling for all repositories
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/brianvoe/gofakeit"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
@@ -20,10 +22,10 @@ func TestCreateOne(t *testing.T) {
 	// harness
 	config := harness.DataConfig{}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -37,14 +39,18 @@ func TestCreateOne(t *testing.T) {
 		{
 			name: "Without ID",
 			rec: func() *record.Dungeon {
-				return &record.Dungeon{}
+				return &record.Dungeon{
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
+				}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
 			rec: func() *record.Dungeon {
-				rec := &record.Dungeon{}
+				rec := &record.Dungeon{
+					Name: fmt.Sprintf("%s %s", gofakeit.Name(), gofakeit.Name()),
+				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -57,7 +63,7 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
 			err = h.Setup()
@@ -86,7 +92,7 @@ func TestCreateOne(t *testing.T) {
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -101,10 +107,10 @@ func TestGetOne(t *testing.T) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -135,7 +141,7 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -163,7 +169,7 @@ func TestGetOne(t *testing.T) {
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -178,10 +184,10 @@ func TestUpdateOne(t *testing.T) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -216,7 +222,7 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -245,7 +251,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }
 
@@ -260,10 +266,10 @@ func TestDeleteOne(t *testing.T) {
 		},
 	}
 
-	c, l, s, m, err := dependencies.Default()
+	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "Default dependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, m, config)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
@@ -294,7 +300,7 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
 			err = h.Setup()
@@ -324,6 +330,6 @@ func TestDeleteOne(t *testing.T) {
 			require.Nil(t, rec, "GetOne does not return record")
 
 			h.RollbackTx()
-		}()
+		})
 	}
 }

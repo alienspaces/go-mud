@@ -22,7 +22,7 @@ if [ "$APP_SERVER_ENV" = "development" ]; then
     -e POSTGRES_PASSWORD="$APP_SERVER_DB_PASSWORD" \
     -e POSTGRES_DB="$APP_SERVER_DB_NAME" \
     -p "${APP_SERVER_DB_PORT}":5432 -d \
-    postgres:10.4-alpine || exit $?
+    postgres:13.7-alpine3.16 || exit $?
 fi
 
 # pgcrypto for uuids

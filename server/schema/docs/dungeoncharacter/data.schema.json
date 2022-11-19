@@ -1,86 +1,130 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeoncharacter/data.schema.json",
-  "title": "Character Data",
-  "description": "Character data",
+  "title": "Dungeon Character Data",
+  "description": "Dungeon character data",
   "type": "object",
   "required": [
-    "id",
     "dungeon_id",
-    "dungeon_location_id",
-    "name",
-    "strength",
-    "dexterity",
-    "intelligence",
-    "current_strength",
-    "current_dexterity",
-    "current_intelligence",
-    "health",
-    "fatigue",
-    "coins",
-    "experience_points",
-    "attribute_points",
-    "created_at"
+    "dungeon_name",
+    "dungeon_description",
+    "location_id",
+    "location_name",
+    "location_description",
+    "character_id",
+    "character_name",
+    "character_strength",
+    "character_dexterity",
+    "character_intelligence",
+    "character_current_strength",
+    "character_current_dexterity",
+    "character_current_intelligence",
+    "character_health",
+    "character_fatigue",
+    "character_current_health",
+    "character_current_fatigue",
+    "character_coins",
+    "character_experience_points",
+    "character_attribute_points",
+    "character_created_at"
   ],
   "properties": {
-    "id": {
-      "type": "string",
-      "format": "uuid"
-    },
     "dungeon_id": {
       "type": "string",
-      "format": "uuid"
+      "format": "uuid",
+      "readOnly": true
     },
-    "dungeon_location_id": {
+    "dungeon_name": {
       "type": "string",
-      "format": "uuid"
+      "readOnly": true
     },
-    "name": {
-      "type": "string"
-    },
-    "strength": {
-      "type": "number"
-    },
-    "dexterity": {
-      "type": "number"
-    },
-    "intelligence": {
-      "type": "number"
-    },
-    "current_strength": {
-      "type": "number"
-    },
-    "current_dexterity": {
-      "type": "number"
-    },
-    "current_intelligence": {
-      "type": "number"
-    },
-    "health": {
-      "type": "number"
-    },
-    "fatigue": {
-      "type": "number"
-    },
-    "coins": {
-      "type": "number"
-    },
-    "experience_points": {
-      "type": "number"
-    },
-    "attribute_points": {
-      "type": "number"
-    },
-    "points": {
-      "type": "number"
-    },
-    "created_at": {
+    "dungeon_description": {
       "type": "string",
-      "format": "date-time"
+      "readOnly": true
     },
-    "updated_at": {
+    "location_id": {
       "type": "string",
-      "format": "date-time"
+      "format": "uuid",
+      "readOnly": true
+    },
+    "location_name": {
+      "type": "string",
+      "readOnly": true
+    },
+    "location_description": {
+      "type": "string",
+      "readOnly": true
+    },
+    "character_id": {
+      "type": "string",
+      "format": "uuid",
+      "readOnly": true
+    },
+    "character_name": {
+      "type": "string",
+      "readOnly": true
+    },
+    "character_strength": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_dexterity": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_intelligence": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_current_strength": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_current_dexterity": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_current_intelligence": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_health": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_fatigue": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_current_health": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_current_fatigue": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_coins": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_experience_points": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_attribute_points": {
+      "type": "number",
+      "readOnly": true
+    },
+    "character_created_at": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true
+    },
+    "character_updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true
     }
   }
 }

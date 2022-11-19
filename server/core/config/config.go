@@ -6,29 +6,20 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
 )
 
-// Item defines a valid environment variable and whether it is required
-type Item struct {
-	Key      string
-	Required bool
-}
-
-// Config defines a container of items and corresponding values
+// Config defines a container of Items and corresponding Values. Items specifies whether the Item.Key is required.
 type Config struct {
-	Items  []*Item
-	Values map[string]string
+	Required map[string]bool
+	Values   map[string]string
 }
-
-var _ configurer.Configurer = &Config{}
 
 // NewConfig creates a new environment object
 func NewConfig(items []Item, dotEnv bool) (*Config, error) {
 
 	e := Config{
-		Values: make(map[string]string),
+		Required: make(map[string]bool),
+		Values:   make(map[string]string),
 	}
 
 	err := e.Init(items, dotEnv)
@@ -46,7 +37,13 @@ func (e *Config) Init(items []Item, dotEnv bool) (err error) {
 	dir := os.Getenv("APP_SERVER_HOME")
 	if dir == "" {
 		dir, err = os.Getwd()
-		os.Setenv("APP_SERVER_HOME", dir)
+		if err != nil {
+			return err
+		}
+		err := os.Setenv("APP_SERVER_HOME", dir)
+		if err != nil {
+			return err
+		}
 	}
 	err = e.Add("APP_SERVER_HOME", true)
 	if err != nil {
@@ -73,26 +70,12 @@ func (e *Config) Init(items []Item, dotEnv bool) (err error) {
 
 // Get returns a config item value
 func (e *Config) Get(key string) (value string) {
-
-	for _, item := range e.Items {
-		if item.Key == key {
-			value = e.Values[key]
-			return value
-		}
-	}
-
-	return ""
+	return e.Values[key]
 }
 
 // Set a config item value
 func (e *Config) Set(key string, value string) {
-
-	for _, item := range e.Items {
-		if item.Key == key {
-			e.Values[key] = value
-			return
-		}
-	}
+	e.Values[key] = value
 }
 
 // Add will add a new config item
@@ -103,14 +86,14 @@ func (e *Config) Add(key string, required bool) (err error) {
 		Required: required,
 	}
 
-	e.Items = append(e.Items, &item)
+	e.Required[key] = required
 
-	err = e.sourceItem(&item)
+	err = e.sourceItem(item)
 	if err != nil {
 		return err
 	}
 
-	err = e.checkItem(&item)
+	err = e.checkItem(item)
 	if err != nil {
 		return err
 	}
@@ -118,21 +101,12 @@ func (e *Config) Add(key string, required bool) (err error) {
 	return nil
 }
 
-// Verify checks whether the provided items have values set
-func (e *Config) Verify(items []Item) (err error) {
-
-	for _, item := range items {
-		err = e.checkItem(&item)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+func (e *Config) GetAll() map[string]string {
+	return e.Values
 }
 
 // sourceItem - sources and sets a config item value
-func (e *Config) sourceItem(item *Item) error {
+func (e *Config) sourceItem(item Item) error {
 
 	value := os.Getenv(item.Key)
 	e.Set(item.Key, value)
@@ -141,10 +115,10 @@ func (e *Config) sourceItem(item *Item) error {
 }
 
 // checkItem - checks a config item
-func (e *Config) checkItem(item *Item) error {
+func (e *Config) checkItem(item Item) error {
 
 	if item.Required && e.Values[item.Key] == "" {
-		return fmt.Errorf("Failed checking env value >%s<", item.Key)
+		return fmt.Errorf("failed checking env value >%s<", item.Key)
 	}
 
 	return nil

@@ -112,14 +112,14 @@ func (c *Client) Init() error {
 	c.Log.Debug("** Initialise **")
 
 	if c.Config == nil {
-		msg := "Configurer undefined, cannot init client"
+		msg := "property Configurer undefined, cannot init client"
 		c.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
 	// Host
 	if c.Host == "" {
-		msg := "Host undefined, cannot init client"
+		msg := "property Host undefined, cannot init client"
 		c.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
@@ -127,7 +127,7 @@ func (c *Client) Init() error {
 	// AuthTypeBearer
 	if c.AuthType == AuthTypeBearer {
 		if c.AuthToken == "" {
-			msg := "AuthType is AuthTypeBearer and AuthToken is undefined, cannot init client"
+			msg := "property AuthType is AuthTypeBearer and property AuthToken is undefined, cannot init client"
 			c.Log.Warn(msg)
 			return fmt.Errorf(msg)
 		}
@@ -136,12 +136,12 @@ func (c *Client) Init() error {
 	// AuthTypeBasic
 	if c.AuthType == AuthTypeBasic {
 		if c.AuthUser == "" {
-			msg := "AuthType is AuthTypeBasic and AuthUser is undefined, cannot init client"
+			msg := "property AuthType is AuthTypeBasic and property AuthUser is undefined, cannot init client"
 			c.Log.Warn(msg)
 			return fmt.Errorf(msg)
 		}
 		if c.AuthPass == "" {
-			msg := "AuthType is AuthTypeBasic and AuthUser is undefined, cannot init client"
+			msg := "property AuthType is AuthTypeBasic and property AuthUser is undefined, cannot init client"
 			c.Log.Warn(msg)
 			return fmt.Errorf(msg)
 		}
@@ -456,7 +456,7 @@ func (c *Client) BuildURL(method, requestURL string, params map[string]string) (
 	case http.MethodPut, http.MethodDelete:
 		if _, ok := params["id"]; !ok {
 			if _, ok := params[":id"]; !ok {
-				msg := "Params must contain :id for method Put"
+				msg := "params must contain :id for method Put and Delete"
 				c.Log.Warn(msg)
 				return requestURL, fmt.Errorf(msg)
 			}
@@ -472,15 +472,15 @@ func (c *Client) BuildURL(method, requestURL string, params map[string]string) (
 
 		// do not allow empty param values
 		if value == "" {
-			return requestURL, fmt.Errorf("Param >%s< has empty value", param)
+			return requestURL, fmt.Errorf("param >%s< has empty value", param)
 		}
 
 		found := false
-		if strings.Index(requestURL, "/:"+param) != -1 {
+		if strings.Contains(requestURL, "/:"+param) {
 			requestURL = strings.Replace(requestURL, "/:"+param, "/"+value, 1)
 			found = true
 		}
-		if strings.Index(requestURL, "/"+param) != -1 {
+		if strings.Contains(requestURL, "/"+param) {
 			requestURL = strings.Replace(requestURL, "/"+param, "/"+value, 1)
 			found = true
 		}
@@ -498,7 +498,7 @@ func (c *Client) BuildURL(method, requestURL string, params map[string]string) (
 	}
 
 	// do not allow missing parameters
-	if strings.Index(requestURL, "/:") != -1 {
+	if strings.Contains(requestURL, "/:") {
 		return requestURL, fmt.Errorf("URL >%s< still contains placeholders", requestURL)
 	}
 

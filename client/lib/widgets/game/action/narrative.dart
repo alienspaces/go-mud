@@ -10,7 +10,7 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 class GameActionNarrativeWidget extends StatefulWidget {
   const GameActionNarrativeWidget({Key? key}) : super(key: key);
   @override
-  _GameActionNarrativeWidgetState createState() =>
+  State<GameActionNarrativeWidget> createState() =>
       _GameActionNarrativeWidgetState();
 }
 
@@ -42,7 +42,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
           var lineWidget = GameActionNarrativeLineWidget(
             key: UniqueKey(),
             width: width,
-            line: state.current.narrative,
+            line: state.current.actionNarrative,
           );
           setState(() {
             lines.add(lineWidget);
@@ -70,7 +70,7 @@ class GameActionNarrativeLineWidget extends StatefulWidget {
       {Key? key, required this.line, required this.width})
       : super(key: key);
   @override
-  _GameActionNarrativeLineWidgetState createState() =>
+  State<GameActionNarrativeLineWidget> createState() =>
       _GameActionNarrativeLineWidgetState();
 }
 

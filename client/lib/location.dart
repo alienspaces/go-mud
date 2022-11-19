@@ -4,6 +4,7 @@ import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repositor
 
 // Room content location maps
 const int roomLocationCount = 14;
+
 enum ContentType { character, monster, object }
 
 class LocationContent {
@@ -22,32 +23,32 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   final log = getLogger('GetLocationContents');
 
   Map<int, LocationContent> populatedByIndex =
-      locationPopulatedByIndex[locationData.name] ?? {};
+      locationPopulatedByIndex[locationData.locationName] ?? {};
   Map<String, int> populatedByName =
-      locationPopulatedByName[locationData.name] ?? {};
-  List<int> unpopulated = locationUnpopulated[locationData.name] ??
+      locationPopulatedByName[locationData.locationName] ?? {};
+  List<int> unpopulated = locationUnpopulated[locationData.locationName] ??
       [for (var i = 0; i < roomLocationCount; i++) i];
 
   Map<String, ContentType> newLocationContents = {};
   List<String> roomContentNames = [];
 
-  log.fine('*** Dungeon objects ${locationData.objects?.length}');
-  if (locationData.objects != null) {
-    for (var dungeonObject in locationData.objects!) {
+  log.fine('*** Dungeon objects ${locationData.locationObjects?.length}');
+  if (locationData.locationObjects != null) {
+    for (var dungeonObject in locationData.locationObjects!) {
       newLocationContents[dungeonObject.name] = ContentType.object;
       roomContentNames.add(dungeonObject.name);
     }
   }
-  log.fine('*** Dungeon characters ${locationData.characters?.length}');
-  if (locationData.characters != null) {
-    for (var dungeonCharacter in locationData.characters!) {
+  log.fine('*** Dungeon characters ${locationData.locationCharacters?.length}');
+  if (locationData.locationCharacters != null) {
+    for (var dungeonCharacter in locationData.locationCharacters!) {
       newLocationContents[dungeonCharacter.name] = ContentType.character;
       roomContentNames.add(dungeonCharacter.name);
     }
   }
-  log.fine('*** Dungeon monsters ${locationData.monsters?.length}');
-  if (locationData.monsters != null) {
-    for (var dungeonMonster in locationData.monsters!) {
+  log.fine('*** Dungeon monsters ${locationData.locationMonsters?.length}');
+  if (locationData.locationMonsters != null) {
+    for (var dungeonMonster in locationData.locationMonsters!) {
       newLocationContents[dungeonMonster.name] = ContentType.monster;
       roomContentNames.add(dungeonMonster.name);
     }
@@ -86,9 +87,9 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
 
   log.fine('*** Unpopulated after ${unpopulated.length}');
 
-  locationPopulatedByIndex[locationData.name] = populatedByIndex;
-  locationPopulatedByName[locationData.name] = populatedByName;
-  locationUnpopulated[locationData.name] = unpopulated;
+  locationPopulatedByIndex[locationData.locationName] = populatedByIndex;
+  locationPopulatedByName[locationData.locationName] = populatedByName;
+  locationUnpopulated[locationData.locationName] = unpopulated;
 
   return populatedByIndex;
 }

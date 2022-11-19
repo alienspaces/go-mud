@@ -18,9 +18,31 @@ type DungeonRequest struct {
 
 // DungeonData -
 type DungeonData struct {
-	ID          string    `json:"id,omitempty"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at,omitempty"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty"`
+	DungeonID          string    `json:"dungeon_id"`
+	DungeonName        string    `json:"dungeon_name"`
+	DungeonDescription string    `json:"dungeon_description"`
+	DungeonCreatedAt   time.Time `json:"dungeon_created_at,omitempty"`
+	DungeonUpdatedAt   time.Time `json:"dungeon_updated_at,omitempty"`
+}
+
+// DungeonEnterRequest
+type DungeonEnterRequest struct {
+	Request
+	Data DungeonEnterData `json:"data"`
+}
+
+// DungeonEnterData
+type DungeonEnterData struct {
+	CharacterID string `json:"character_id,omitempty"`
+}
+
+// DungeonExitRequest
+type DungeonExitRequest struct {
+	Request
+	Data DungeonExitData `json:"data"`
+}
+
+// DungeonExitData
+type DungeonExitData struct {
+	CharacterID string `json:"character_id,omitempty"`
 }

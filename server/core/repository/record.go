@@ -5,7 +5,18 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
+	"gitlab.com/alienspaces/go-mud/server/core/nulltime"
 )
+
+// NOTE:
+// Use sql.NullXxx types when the underlying database column:
+// - has a NOT NULL check constraint;
+// - does not otherwise have any other CHECK constraints;
+// - is not an eval type;
+// - is not an uuid type;
+// - does not have a foreign key constraint; and
+// - you don't want it to default to Go's default value for the property type.
 
 // Record -
 type Record struct {
@@ -29,36 +40,24 @@ func NewCreatedAt() time.Time {
 
 // NewUpdatedAt -
 func NewUpdatedAt() sql.NullTime {
-	return NewNullTime(timestamp())
+	return nulltime.FromTime(timestamp())
+}
+
+// NewProcessedAt -
+func NewProcessedAt() sql.NullTime {
+	return nulltime.FromTime(timestamp())
+}
+
+// NewFailedAt -
+func NewFailedAt() sql.NullTime {
+	return nulltime.FromTime(timestamp())
 }
 
 // NewDeletedAt -
 func NewDeletedAt() sql.NullTime {
-	return NewNullTime(timestamp())
+	return nulltime.FromTime(timestamp())
 }
 
 func timestamp() time.Time {
 	return time.Now().UTC()
-}
-
-// NewNullTime - converts time type to sql.NewNullTime type
-func NewNullTime(t time.Time) sql.NullTime {
-	if t.IsZero() {
-		return sql.NullTime{}
-	}
-	return sql.NullTime{
-		Time:  t,
-		Valid: true,
-	}
-}
-
-// NewNullString - converts string type to sql.NullString type
-func NewNullString(s string) sql.NullString {
-	if s == "" {
-		return sql.NullString{}
-	}
-	return sql.NullString{
-		String: s,
-		Valid:  true,
-	}
 }

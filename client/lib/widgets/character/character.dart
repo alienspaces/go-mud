@@ -6,7 +6,8 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/character/create/create.dart';
-import 'package:go_mud_client/widgets/character/train/train.dart';
+import 'package:go_mud_client/widgets/character/create/create_button.dart';
+import 'package:go_mud_client/widgets/character/list/list.dart';
 
 class CharacterContainerWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
@@ -17,7 +18,7 @@ class CharacterContainerWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CharacterContainerWidgetState createState() =>
+  State<CharacterContainerWidget> createState() =>
       _CharacterContainerWidgetState();
 }
 
@@ -32,29 +33,36 @@ class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
         log.fine('listener...');
       },
       builder: (BuildContext context, CharacterState characterState) {
-        if (characterState is CharacterStateInitial ||
+        List<Widget> pageWidgets = [];
+
+        if (characterState is CharacterStateCreate ||
             characterState is CharacterStateCreateError) {
+          log.info('Displaying character create');
           // ignore: avoid_unnecessary_containers
-          return Container(
+          pageWidgets.add(Container(
             child: CharacterCreateWidget(
               callbacks: widget.callbacks,
             ),
-          );
-        } else if (characterState is CharacterStateSelected) {
+          ));
+        } else {
+          log.info('Displaying character list');
           // ignore: avoid_unnecessary_containers
-          return Container(
-            child: CharacterTrainWidget(
+          pageWidgets.add(Container(
+            child: CharacterListWidget(
               callbacks: widget.callbacks,
             ),
-          );
+          ));
+
+          // ignore: avoid_unnecessary_containers
+          pageWidgets.add(Container(
+            child: CharacterCreateButtonWidget(
+              callbacks: widget.callbacks,
+            ),
+          ));
         }
 
-        // Shouldn't get here..
-        log.fine('Character state >$characterState<');
-
-        // ignore: avoid_unnecessary_containers
-        return Container(
-          child: const Text('Character Container, failed getting character'),
+        return Column(
+          children: pageWidgets,
         );
       },
     );

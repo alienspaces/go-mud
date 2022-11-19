@@ -12,7 +12,7 @@ class CharacterButtonWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _CharacterButtonWidgetState createState() => _CharacterButtonWidgetState();
+  State<CharacterButtonWidget> createState() => _CharacterButtonWidgetState();
 }
 
 class _CharacterButtonWidgetState extends State<CharacterButtonWidget> {

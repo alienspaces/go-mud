@@ -4,26 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 void selectAction(BuildContext context, String action) {
   final log = getLogger('GameActionPanelWidget');
   log.fine('Selecting action..');
 
-  final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-  if (dungeonCubit.dungeonRecord == null) {
+  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
+  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
     log.warning(
-        'Dungeon cubit missing dungeon record, cannot initialise action');
-    return;
-  }
-
-  final characterCubit = BlocProvider.of<CharacterCubit>(context);
-  if (characterCubit.characterRecord == null) {
-    log.warning(
-        'Character cubit missing character record, cannot initialise action');
+        'Dungeon character cubit missing dungeon character record, cannot initialise action');
     return;
   }
 
@@ -42,17 +34,10 @@ void submitAction(BuildContext context) async {
   final log = getLogger('GameActionPanelWidget');
   log.fine('Submitting action..');
 
-  final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-  if (dungeonCubit.dungeonRecord == null) {
+  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
+  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
     log.warning(
-        'Dungeon cubit missing dungeon record, cannot initialise action');
-    return;
-  }
-
-  final characterCubit = BlocProvider.of<CharacterCubit>(context);
-  if (characterCubit.characterRecord == null) {
-    log.warning(
-        'Character cubit missing character record, cannot initialise action');
+        'Dungeon character cubit missing dungeon character record, cannot initialise action');
     return;
   }
 
@@ -61,13 +46,13 @@ void submitAction(BuildContext context) async {
   final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
   await dungeonActionCubit.createAction(
-    dungeonCubit.dungeonRecord!.id,
-    characterCubit.characterRecord!.id,
+    dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
+    dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
     dungeonCommandCubit.command(),
   );
   dungeonCommandCubit.unselectAll();
 
-  // TODO: Loop this using a timer allowing animations to complete
+  // TODO: (client) Loop this using a timer allowing animations to complete
   var moreActions = dungeonActionCubit.playAction();
   log.fine('++ More actions >$moreActions<');
 }

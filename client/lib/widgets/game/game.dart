@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
+import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
 import 'package:go_mud_client/widgets/game/action/narrative.dart';
@@ -18,7 +17,7 @@ class GameWidget extends StatefulWidget {
   const GameWidget({Key? key}) : super(key: key);
 
   @override
-  _GameWidgetState createState() => _GameWidgetState();
+  State<GameWidget> createState() => _GameWidgetState();
 }
 
 class _GameWidgetState extends State<GameWidget> {
@@ -36,17 +35,11 @@ class _GameWidgetState extends State<GameWidget> {
     final log = getLogger('GameWidget');
     log.fine('Initialising action..');
 
-    final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-    if (dungeonCubit.dungeonRecord == null) {
+    final dungeonCharacterCubit =
+        BlocProvider.of<DungeonCharacterCubit>(context);
+    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
       log.warning(
-          'Dungeon cubit missing dungeon record, cannot initialise action');
-      return;
-    }
-
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
-    if (characterCubit.characterRecord == null) {
-      log.warning(
-          'Character cubit missing character record, cannot initialise action');
+          'Dungeon character cubit missing dungeon character record, cannot initialise action');
       return;
     }
 
@@ -57,8 +50,8 @@ class _GameWidgetState extends State<GameWidget> {
 
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     dungeonActionCubit.createAction(
-      dungeonCubit.dungeonRecord!.id,
-      characterCubit.characterRecord!.id,
+      dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
+      dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
       dungeonCommandCubit.command(),
     );
 
@@ -70,49 +63,75 @@ class _GameWidgetState extends State<GameWidget> {
     final log = getLogger('Game');
     log.fine('Building..');
 
-    // ignore: avoid_unnecessary_containers
-    return Container(
-      color: Colors.purple[50],
-      // Top level game widget stack
-      child: Stack(
-        children: <Widget>[
+    return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
+      listener: (context, state) {
+        log.fine('listener...');
+      },
+      builder: (BuildContext context, DungeonCharacterState state) {
+        log.fine('builder...');
+
+        if (state is DungeonCharacterStateCreate) {
           // ignore: avoid_unnecessary_containers
-          Container(
-            child: Column(
-              children: const <Widget>[
-                // Location description
-                Expanded(
-                  flex: 3,
-                  child: GameLocationDescriptionContainerWidget(),
+          return Container(
+            child: const Text("Entering"),
+          );
+        } else if (state is DungeonCharacterStateCreateError) {
+          // ignore: avoid_unnecessary_containers
+          return Container(
+            child: const Text("Error"),
+          );
+        } else if (state is DungeonCharacterStateCreated) {
+          // ignore: avoid_unnecessary_containers
+          return Container(
+            color: Colors.purple[50],
+            // Top level game widget stack
+            child: Stack(
+              children: <Widget>[
+                // ignore: avoid_unnecessary_containers
+                Container(
+                  child: Column(
+                    children: const <Widget>[
+                      // Location description
+                      Expanded(
+                        flex: 3,
+                        child: GameLocationDescriptionContainerWidget(),
+                      ),
+                      // Game board
+                      Expanded(
+                        flex: 10,
+                        child: GameBoardWidget(),
+                      ),
+                      // Current actions
+                      Expanded(
+                        flex: 4,
+                        child: GameActionPanelWidget(),
+                      ),
+                      // Current command
+                      Expanded(
+                        flex: 1,
+                        child: GameActionCommandWidget(),
+                      ),
+                    ],
+                  ),
                 ),
-                // Game board
-                Expanded(
-                  flex: 10,
-                  child: GameBoardWidget(),
+                // ignore: avoid_unnecessary_containers
+                Container(
+                  child: const GameCardWidget(),
                 ),
-                // Current actions
-                Expanded(
-                  flex: 4,
-                  child: GameActionPanelWidget(),
-                ),
-                // Current command
-                Expanded(
-                  flex: 1,
-                  child: GameActionCommandWidget(),
-                ),
+                // ignore: avoid_unnecessary_containers
+                Container(
+                  child: const GameActionNarrativeWidget(),
+                )
               ],
             ),
-          ),
-          // ignore: avoid_unnecessary_containers
-          Container(
-            child: const GameCardWidget(),
-          ),
-          // ignore: avoid_unnecessary_containers
-          Container(
-            child: const GameActionNarrativeWidget(),
-          )
-        ],
-      ),
+          );
+        }
+
+        // ignore: avoid_unnecessary_containers
+        return Container(
+          child: const Text("Empty"),
+        );
+      },
     );
   }
 }

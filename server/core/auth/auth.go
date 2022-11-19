@@ -52,12 +52,13 @@ func NewAuth(c configurer.Configurer, l logger.Logger) (*Auth, error) {
 
 // Init -
 func (j *Auth) Init() error {
+	l := j.Logger("Init")
 
 	// JWT signing key
 	jwtSigningKey := j.Config.Get("APP_SERVER_JWT_SIGNING_KEY")
 	if jwtSigningKey == "" {
-		msg := "APP_SERVER_JWT_SIGNING_KEY not defined, cannot sign JWT"
-		j.Log.Warn(msg)
+		msg := "missing APP_SERVER_JWT_SIGNING_KEY, failed initialisation"
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
@@ -69,8 +70,11 @@ func (j *Auth) Init() error {
 
 // EncodeJWT -
 func (j *Auth) EncodeJWT(claims *Claims) (string, error) {
+	l := j.Logger("EncodeJWT")
 
-	j.Log.Info("Encoding JWT")
+	l.Info("JWT token expires >%v<", claims.StandardClaims.ExpiresAt)
+	l.Info("JWT token roles >%v<", claims.Roles)
+	l.Info("JWT token identity >%v<", claims.Identity)
 
 	// Standard claims
 	claims.IssuedAt = time.Now().Unix()
@@ -79,12 +83,12 @@ func (j *Auth) EncodeJWT(claims *Claims) (string, error) {
 	// Token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	j.Log.Info("JWT token >%v< signing key >%s<", token, j.JwtSigningKey)
+	l.Info("Signing token with key >%s<", j.JwtSigningKey)
 
 	// Signed
 	tokenString, err := token.SignedString([]byte(j.JwtSigningKey))
 	if err != nil {
-		j.Log.Warn("Failed signing JWT >%v<", err)
+		l.Warn("failed signing JWT >%v<", err)
 		return "", err
 	}
 
@@ -93,23 +97,29 @@ func (j *Auth) EncodeJWT(claims *Claims) (string, error) {
 
 // DecodeJWT -
 func (j *Auth) DecodeJWT(tokenString string) (*Claims, error) {
+	l := j.Logger("DecodeJWT")
 
-	j.Log.Info("Decoding JWT >%s<", tokenString)
+	l.Info("Decoding JWT token string >%s<", tokenString)
 
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.JwtSigningKey), nil
 	})
 	if err != nil {
-		j.Log.Warn("Failed parsing JWT claims >%v<", err)
+		l.Warn("failed parsing JWT claims >%v<", err)
 		return nil, err
 	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-		j.Log.Info("Expires >%v<", claims.StandardClaims.ExpiresAt)
-		j.Log.Info("Roles >%v<", claims.Roles)
-		j.Log.Info("Identity >%v<", claims.Identity)
+		l.Info("JWT token expires >%v<", claims.StandardClaims.ExpiresAt)
+		l.Info("JWT token roles >%v<", claims.Roles)
+		l.Info("JWT token identity >%v<", claims.Identity)
 		return claims, nil
 	}
 
 	return nil, err
+}
+
+// Logger -
+func (j *Auth) Logger(functionName string) logger.Logger {
+	return j.Log.WithPackageContext("core/auth").WithFunctionContext(functionName)
 }

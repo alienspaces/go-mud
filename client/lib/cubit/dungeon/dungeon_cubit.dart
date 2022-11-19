@@ -18,6 +18,7 @@ class DungeonCubit extends Cubit<DungeonState> {
   DungeonCubit({required this.config, required this.repositories})
       : super(const DungeonStateInitial());
 
+  // TODO: Unused
   void clearDungeon() {
     dungeonRecord = null;
     emit(DungeonStateLoaded(dungeonRecords: dungeonRecords));
@@ -38,16 +39,5 @@ class DungeonCubit extends Cubit<DungeonState> {
     }
 
     emit(DungeonStateLoaded(dungeonRecords: dungeonRecords));
-  }
-
-  Future<void> selectDungeon(DungeonRecord dungeonRecord) async {
-    this.dungeonRecord = dungeonRecord;
-
-    emit(
-      DungeonStateLoaded(
-        dungeonRecords: dungeonRecords,
-        currentDungeonRecord: dungeonRecord,
-      ),
-    );
   }
 }

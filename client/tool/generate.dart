@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dotenv/dotenv.dart' as dotenv;
+import 'package:dotenv/dotenv.dart';
 
 // Application
 import 'package:go_mud_client/logger.dart';
@@ -11,16 +11,17 @@ Future<void> main() async {
   initLogger();
   final log = getLogger('main');
 
-  dotenv.load();
+  var env = DotEnv();
+  env.load();
 
-  log.warning('APP_CLIENT_API_HOST = ${dotenv.env["APP_CLIENT_API_HOST"]}');
-  log.warning('APP_CLIENT_API_PORT = ${dotenv.env["APP_CLIENT_API_PORT"]}');
-  log.warning('APP_CLIENT_API_HOST = ${dotenv.env["APP_CLIENT_API_SCHEME"]}');
+  log.warning('APP_CLIENT_API_HOST = ${env["APP_CLIENT_API_HOST"]}');
+  log.warning('APP_CLIENT_API_PORT = ${env["APP_CLIENT_API_PORT"]}');
+  log.warning('APP_CLIENT_API_HOST = ${env["APP_CLIENT_API_SCHEME"]}');
 
   final config = {
-    'serverHost': dotenv.env['APP_CLIENT_API_HOST'],
-    'serverScheme': dotenv.env['APP_CLIENT_API_SCHEME'],
-    'serverPort': dotenv.env['APP_CLIENT_API_PORT'],
+    'serverHost': env['APP_CLIENT_API_HOST'],
+    'serverScheme': env['APP_CLIENT_API_SCHEME'],
+    'serverPort': env['APP_CLIENT_API_PORT'],
   };
 
   const filename = 'lib/config.dart';

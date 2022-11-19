@@ -6,22 +6,54 @@ import (
 
 // DataConfig -
 type DataConfig struct {
-	DungeonConfig []DungeonConfig
+	ObjectConfig    []ObjectConfig
+	MonsterConfig   []MonsterConfig
+	CharacterConfig []CharacterConfig
+	DungeonConfig   []DungeonConfig
 }
 
 // DungeonConfig -
 type DungeonConfig struct {
-	Record record.Dungeon
-	// DefaultDungeonLocationName string
-	DungeonLocationConfig  []DungeonLocationConfig
-	DungeonCharacterConfig []DungeonCharacterConfig
-	DungeonMonsterConfig   []DungeonMonsterConfig
-	DungeonObjectConfig    []DungeonObjectConfig
-	DungeonActionConfig    []DungeonActionConfig
+	Record                record.Dungeon
+	LocationConfig        []LocationConfig
+	DungeonInstanceConfig []DungeonInstanceConfig
 }
 
-type DungeonLocationConfig struct {
-	Record                record.DungeonLocation
+// ObjectConfig -
+type ObjectConfig struct {
+	Record record.Object
+}
+
+// MonsterConfig -
+type MonsterConfig struct {
+	Record              record.Monster
+	MonsterObjectConfig []MonsterObjectConfig
+}
+
+// MonsterObjectConfig -
+type MonsterObjectConfig struct {
+	Record record.MonsterObject
+	// ObjectName is used to resolve the object identifier of the resulting record
+	ObjectName string
+}
+
+// CharacterConfig -
+type CharacterConfig struct {
+	Record                record.Character
+	CharacterObjectConfig []CharacterObjectConfig
+}
+
+// CharacterObjectConfig -
+type CharacterObjectConfig struct {
+	Record record.CharacterObject
+	// ObjectName is used to resolve the object identifier of the resulting record
+	ObjectName string
+}
+
+// LocationConfig -
+type LocationConfig struct {
+	Record record.Location
+	// [Direction]LocationName is used to resolve the location identifiers of the resulting record
 	NorthLocationName     string
 	NortheastLocationName string
 	EastLocationName      string
@@ -32,27 +64,40 @@ type DungeonLocationConfig struct {
 	NorthwestLocationName string
 	UpLocationName        string
 	DownLocationName      string
+
+	// Location Monsters
+	LocationMonsterConfig []LocationMonsterConfig
+
+	// Location Objects
+	LocationObjectConfig []LocationObjectConfig
 }
 
-type DungeonActionConfig struct {
+type LocationMonsterConfig struct {
+	Record record.LocationMonster
+	// MonsterName is used to resolve the monster identifier of the resulting record
+	MonsterName string
+}
+
+type LocationObjectConfig struct {
+	Record record.LocationObject
+	// ObjectName is used to resolve the object identifier of the resulting record
+	ObjectName string
+}
+
+// DungeonInstanceConfig -
+type DungeonInstanceConfig struct {
+	CharacterInstanceConfig []CharacterInstanceConfig
+	ActionConfig            []ActionConfig
+}
+
+// CharacterInstanceConfig -
+type CharacterInstanceConfig struct {
+	Name string
+}
+
+// ActionConfig -
+type ActionConfig struct {
 	CharacterName string
 	MonsterName   string
 	Command       string
-}
-
-type DungeonCharacterConfig struct {
-	Record       record.DungeonCharacter
-	LocationName string
-}
-
-type DungeonMonsterConfig struct {
-	Record       record.DungeonMonster
-	LocationName string
-}
-
-type DungeonObjectConfig struct {
-	Record        record.DungeonObject
-	LocationName  string
-	CharacterName string
-	MonsterName   string
 }

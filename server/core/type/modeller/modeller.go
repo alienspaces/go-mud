@@ -8,7 +8,7 @@ import (
 
 // Modeller -
 type Modeller interface {
-	Init(p preparer.Preparer, tx *sqlx.Tx) (err error)
+	Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) (err error)
 	Commit() error
 	Rollback() error
 }

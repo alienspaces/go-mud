@@ -12,7 +12,7 @@ class GameStashedWidget extends StatefulWidget {
   const GameStashedWidget({Key? key}) : super(key: key);
 
   @override
-  _GameStashedWidgetState createState() => _GameStashedWidgetState();
+  State<GameStashedWidget> createState() => _GameStashedWidgetState();
 }
 
 class _GameStashedWidgetState extends State<GameStashedWidget> {
@@ -30,12 +30,12 @@ class _GameStashedWidgetState extends State<GameStashedWidget> {
 
         List<Widget> stashedWidgets = [];
         if (state is DungeonActionStatePlaying &&
-            state.current.character != null &&
-            state.current.character?.stashedObjects != null) {
-          var stashed = state.current.character?.stashedObjects;
+            state.current.actionCharacter != null &&
+            state.current.actionCharacter?.characterStashedObjects != null) {
+          var stashed = state.current.actionCharacter?.characterStashedObjects;
           for (var i = 0; i < stashed!.length; i++) {
             stashedWidgets.add(
-              ObjectButtonWidget(objectName: stashed[i].name),
+              ObjectButtonWidget(objectName: stashed[i].objectName),
             );
           }
         }

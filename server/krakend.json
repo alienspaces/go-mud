@@ -107,14 +107,14 @@
       ]
     },
     {
-      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters",
+      "endpoint": "/api/v1/characters",
       "headers_to_pass": ["Authorization"],
       "method": "POST",
       "output_encoding": "no-op",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters",
+          "url_pattern": "/api/v1/characters",
           "encoding": "no-op",
           "method": "POST",
           "host": ["http://172.17.0.1:8084"],
@@ -123,16 +123,96 @@
       ]
     },
     {
-      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters",
+      "endpoint": "/api/v1/characters",
       "headers_to_pass": ["Authorization"],
       "method": "GET",
       "output_encoding": "no-op",
       "extra_config": {},
       "backend": [
         {
-          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters",
+          "url_pattern": "/api/v1/characters",
           "encoding": "no-op",
           "method": "GET",
+          "host": ["http://172.17.0.1:8084"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/characters/{character_id}",
+      "headers_to_pass": ["Authorization"],
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/v1/characters/{character_id}",
+          "encoding": "no-op",
+          "method": "GET",
+          "host": ["http://172.17.0.1:8084"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
+          "encoding": "no-op",
+          "method": "POST",
+          "host": ["http://172.17.0.1:8084"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
+      "headers_to_pass": ["Authorization"],
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
+          "encoding": "no-op",
+          "method": "GET",
+          "host": ["http://172.17.0.1:8084"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/enter",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/enter",
+          "encoding": "no-op",
+          "method": "POST",
+          "host": ["http://172.17.0.1:8084"],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/exit",
+      "headers_to_pass": ["Authorization"],
+      "method": "POST",
+      "output_encoding": "no-op",
+      "extra_config": {},
+      "backend": [
+        {
+          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/exit",
+          "encoding": "no-op",
+          "method": "POST",
           "host": ["http://172.17.0.1:8084"],
           "disable_host_sanitize": true
         }
@@ -147,38 +227,6 @@
       "backend": [
         {
           "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}",
-          "encoding": "no-op",
-          "method": "GET",
-          "host": ["http://172.17.0.1:8084"],
-          "disable_host_sanitize": true
-        }
-      ]
-    },
-    {
-      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
-      "headers_to_pass": ["Authorization"],
-      "method": "POST",
-      "output_encoding": "no-op",
-      "extra_config": {},
-      "backend": [
-        {
-          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
-          "encoding": "no-op",
-          "method": "POST",
-          "host": ["http://172.17.0.1:8084"],
-          "disable_host_sanitize": true
-        }
-      ]
-    },
-    {
-      "endpoint": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
-      "headers_to_pass": ["Authorization"],
-      "method": "GET",
-      "output_encoding": "no-op",
-      "extra_config": {},
-      "backend": [
-        {
-          "url_pattern": "/api/v1/dungeons/{dungeon_id}/characters/{character_id}/actions",
           "encoding": "no-op",
           "method": "GET",
           "host": ["http://172.17.0.1:8084"],
