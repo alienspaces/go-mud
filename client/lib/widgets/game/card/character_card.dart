@@ -13,7 +13,7 @@ void displayCharacterCard(
 
   log.fine('Rendering look character dialogue');
 
-  CharacterDetailedData character = dungeonActionRecord.targetCharacter!;
+  CharacterDetailedData character = dungeonActionRecord.actionTargetCharacter!;
 
   Widget content = Container(
     alignment: Alignment.center,
@@ -31,8 +31,8 @@ void displayCharacterCard(
           flex: 1,
           child: bar(
             "Strength",
-            character.strength,
-            character.currentStrength,
+            character.characterStrength,
+            character.characterCurrentStrength,
             null,
             null,
           ),
@@ -41,8 +41,8 @@ void displayCharacterCard(
           flex: 1,
           child: bar(
             "Dexterity",
-            character.dexterity,
-            character.currentDexterity,
+            character.characterDexterity,
+            character.characterCurrentDexterity,
             null,
             null,
           ),
@@ -51,8 +51,8 @@ void displayCharacterCard(
           flex: 1,
           child: bar(
             "Intelligence",
-            character.intelligence,
-            character.currentIntelligence,
+            character.characterIntelligence,
+            character.characterCurrentIntelligence,
             null,
             null,
           ),
@@ -61,8 +61,8 @@ void displayCharacterCard(
           flex: 1,
           child: bar(
             "Health",
-            character.health,
-            character.currentHealth,
+            character.characterHealth,
+            character.characterCurrentHealth,
             null,
             null,
           ),
@@ -71,8 +71,8 @@ void displayCharacterCard(
           flex: 1,
           child: bar(
             "Fatigue",
-            character.fatigue,
-            character.currentFatigue,
+            character.characterFatigue,
+            character.characterCurrentFatigue,
             null,
             null,
           ),
@@ -85,7 +85,7 @@ void displayCharacterCard(
         Expanded(
           flex: 3,
           child: GameCardEquippedWidget(
-            objects: character.equippedObjects,
+            objects: character.characterEquippedObjects,
           ),
         )
       ],
@@ -99,7 +99,7 @@ void displayCharacterCard(
       return FractionallySizedBox(
         heightFactor: .8,
         child: AlertDialog(
-          title: Text(character.name),
+          title: Text(character.characterName),
           content: content,
           actions: <Widget>[
             TextButton(

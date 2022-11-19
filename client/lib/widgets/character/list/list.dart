@@ -54,7 +54,7 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
           state.characterRecords?.forEach((characterRecord) {
             log.info([
               'Displaying character list item widget',
-              characterRecord.name,
+              characterRecord.characterName,
             ]);
             widgets.add(
               // ignore: avoid_unnecessary_containers

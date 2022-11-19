@@ -37,7 +37,7 @@ class DungeonListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final log = getLogger('DungeonListItemWidget');
     log.fine(
-        'Select current dungeon ${dungeonRecord.id} ${dungeonRecord.name}');
+        'Select current dungeon ${dungeonRecord.dungeonID} ${dungeonRecord.dungeonName}');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
@@ -60,12 +60,12 @@ class DungeonListItemWidget extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Text(dungeonRecord.name,
+            child: Text(dungeonRecord.dungeonName,
                 style: Theme.of(context).textTheme.headline3),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Text(dungeonRecord.description),
+            child: Text(dungeonRecord.dungeonDescription),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -77,8 +77,8 @@ class DungeonListItemWidget extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => _enterDungeon(
                       context,
-                      dungeonRecord.id,
-                      characterRecord.id,
+                      dungeonRecord.dungeonID,
+                      characterRecord.characterID,
                     ),
                     style: buttonStyle,
                     child: const Text('Enter'),

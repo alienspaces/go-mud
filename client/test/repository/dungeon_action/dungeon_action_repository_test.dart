@@ -23,17 +23,17 @@ void main() {
           'DungeonActionRepository create "look" command returns a dungeon action record',
     );
     expect(
-      dungeonActionRecord!.command,
+      dungeonActionRecord!.actionCommand,
       isNotNull,
       reason: 'DungeonActionRecord.command is not null',
     );
     expect(
-      dungeonActionRecord.location,
+      dungeonActionRecord.actionLocation,
       isNotNull,
       reason: 'DungeonActionRecord.location is not null',
     );
     expect(
-      dungeonActionRecord.character,
+      dungeonActionRecord.actionCharacter,
       isNotNull,
       reason: 'DungeonActionRecord.character is not null',
     );

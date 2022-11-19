@@ -33,15 +33,15 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
         .create(dungeonID, characterID, command);
 
     log.fine(
-        '(createAction) location ${createdDungeonActionRecord?.location.name}');
+        '(createAction) location ${createdDungeonActionRecord?.actionLocation.locationName}');
     log.fine(
-        '(createAction) targetLocation ${createdDungeonActionRecord?.targetLocation?.name}');
+        '(createAction) targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
     log.fine(
-        '(createAction) targetCharacter ${createdDungeonActionRecord?.targetCharacter?.name}');
+        '(createAction) targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.characterName}');
     log.fine(
-        '(createAction) targetMonster ${createdDungeonActionRecord?.targetMonster?.name}');
+        '(createAction) targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.monsterName}');
     log.fine(
-        '(createAction) targetObject ${createdDungeonActionRecord?.targetObject?.name}');
+        '(createAction) targetObject ${createdDungeonActionRecord?.actionTargetObject?.objectName}');
 
     if (createdDungeonActionRecord != null) {
       dungeonActionRecord = createdDungeonActionRecord;
@@ -50,8 +50,9 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       emit(
         DungeonActionStateCreated(
           current: createdDungeonActionRecord,
-          action: createdDungeonActionRecord.command,
-          direction: createdDungeonActionRecord.targetLocation?.direction,
+          action: createdDungeonActionRecord.actionCommand,
+          direction: createdDungeonActionRecord
+              .actionTargetLocation?.locationDirection,
         ),
       );
     }
@@ -76,35 +77,35 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     DungeonActionRecord previous = dungeonActionRecords.removeAt(0);
     DungeonActionRecord current = dungeonActionRecords[0];
     String? direction;
-    if (current.command == 'move' || current.command == 'look') {
-      direction = current.targetLocation?.direction;
+    if (current.actionCommand == 'move' || current.actionCommand == 'look') {
+      direction = current.actionTargetLocation?.locationDirection;
     }
 
-    if (current.targetLocation != null) {
+    if (current.actionTargetLocation != null) {
       log.fine(
-          '(playAction) Play action command >${current.command}< direction >$direction<');
+          '(playAction) Play action command >${current.actionCommand}< direction >$direction<');
     }
 
-    if (current.targetCharacter != null) {
+    if (current.actionTargetCharacter != null) {
       log.fine(
-          '(playAction) Play action command >${current.command}< character >${current.targetCharacter?.name}<');
+          '(playAction) Play action command >${current.actionCommand}< character >${current.actionTargetCharacter?.characterName}<');
     }
 
-    if (current.targetMonster != null) {
+    if (current.actionTargetMonster != null) {
       log.fine(
-          '(playAction) Play action command >${current.command}< monster >${current.targetMonster?.name}<');
+          '(playAction) Play action command >${current.actionCommand}< monster >${current.actionTargetMonster?.monsterName}<');
     }
 
-    if (current.targetObject != null) {
+    if (current.actionTargetObject != null) {
       log.fine(
-          '(playAction) Play action command >${current.command}< object >${current.targetObject?.name}<');
+          '(playAction) Play action command >${current.actionCommand}< object >${current.actionTargetObject?.objectName}<');
     }
 
     emit(
       DungeonActionStatePlaying(
         previous: previous,
         current: current,
-        action: current.command,
+        action: current.actionCommand,
         direction: direction,
       ),
     );

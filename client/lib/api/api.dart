@@ -108,10 +108,10 @@ class API {
   }
 
   Future<APIResponse> createCharacter({
-    required String name,
-    required int strength,
-    required int dexterity,
-    required int intelligence,
+    required String characterName,
+    required int characterStrength,
+    required int characterDexterity,
+    required int characterIntelligence,
   }) async {
     final log = getLogger('API');
     final client = RetryClient(http.Client());
@@ -129,10 +129,10 @@ class API {
 
       String bodyData = jsonEncode({
         "data": {
-          "name": name,
-          "strength": strength,
-          "dexterity": dexterity,
-          "intelligence": intelligence,
+          "character_name": characterName,
+          "character_strength": characterStrength,
+          "character_dexterity": characterDexterity,
+          "character_intelligence": characterIntelligence,
         },
       });
       log.warning('bodyData $bodyData');

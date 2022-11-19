@@ -42,7 +42,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
           var lineWidget = GameActionNarrativeLineWidget(
             key: UniqueKey(),
             width: width,
-            line: state.current.narrative,
+            line: state.current.actionNarrative,
           );
           setState(() {
             lines.add(lineWidget);

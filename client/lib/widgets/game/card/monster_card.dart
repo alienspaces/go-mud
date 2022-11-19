@@ -15,10 +15,10 @@ void displayMonsterCard(
 
   log.info(
     'Rendering look monster dialogue',
-    dungeonActionRecord.targetMonster!,
+    dungeonActionRecord.actionTargetMonster!,
   );
 
-  MonsterDetailedData monster = dungeonActionRecord.targetMonster!;
+  MonsterDetailedData monster = dungeonActionRecord.actionTargetMonster!;
 
   Widget content = Container(
     alignment: Alignment.center,
@@ -34,8 +34,8 @@ void displayMonsterCard(
           flex: 1,
           child: bar(
             "Strength",
-            monster.strength,
-            monster.currentStrength,
+            monster.monsterStrength,
+            monster.monsterCurrentStrength,
             null,
             null,
           ),
@@ -44,8 +44,8 @@ void displayMonsterCard(
           flex: 1,
           child: bar(
             "Dexterity",
-            monster.dexterity,
-            monster.currentDexterity,
+            monster.monsterDexterity,
+            monster.monsterCurrentDexterity,
             null,
             null,
           ),
@@ -54,8 +54,8 @@ void displayMonsterCard(
           flex: 1,
           child: bar(
             "Intelligence",
-            monster.intelligence,
-            monster.currentIntelligence,
+            monster.monsterIntelligence,
+            monster.monsterCurrentIntelligence,
             null,
             null,
           ),
@@ -64,8 +64,8 @@ void displayMonsterCard(
           flex: 1,
           child: bar(
             "Health",
-            monster.health,
-            monster.currentHealth,
+            monster.monsterHealth,
+            monster.monsterCurrentHealth,
             null,
             null,
           ),
@@ -74,8 +74,8 @@ void displayMonsterCard(
           flex: 1,
           child: bar(
             "Fatigue",
-            monster.fatigue,
-            monster.currentFatigue,
+            monster.monsterFatigue,
+            monster.monsterCurrentFatigue,
             null,
             null,
           ),
@@ -87,7 +87,7 @@ void displayMonsterCard(
         Expanded(
           flex: 3,
           child: GameCardEquippedWidget(
-            objects: monster.equippedObjects,
+            objects: monster.monsterEquippedObjects,
           ),
         )
       ],
@@ -101,7 +101,7 @@ void displayMonsterCard(
       return FractionallySizedBox(
         heightFactor: .8,
         child: AlertDialog(
-          title: Text(monster.name),
+          title: Text(monster.monsterName),
           content: content,
           actions: <Widget>[
             TextButton(

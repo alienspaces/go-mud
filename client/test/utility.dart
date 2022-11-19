@@ -65,10 +65,10 @@ class MockAPI implements API {
 
   @override
   Future<APIResponse> createCharacter({
-    required String name,
-    required int strength,
-    required int dexterity,
-    required int intelligence,
+    required String characterName,
+    required int characterStrength,
+    required int characterDexterity,
+    required int characterIntelligence,
   }) async {
     return Future.value(APIResponse(body: ''));
   }

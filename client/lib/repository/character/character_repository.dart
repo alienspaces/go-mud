@@ -28,13 +28,13 @@ class CharacterRepository implements CharacterRepositoryInterface {
   @override
   Future<CharacterRecord?> createOne(CreateCharacterRecord createRecord) async {
     final log = getLogger('CharacterRepository');
-    log.info('Creating character ${createRecord.name}');
+    log.info('Creating character ${createRecord.characterName}');
 
     var response = await api.createCharacter(
-      name: createRecord.name,
-      strength: createRecord.strength,
-      dexterity: createRecord.dexterity,
-      intelligence: createRecord.intelligence,
+      characterName: createRecord.characterName,
+      characterStrength: createRecord.characterStrength,
+      characterDexterity: createRecord.characterDexterity,
+      characterIntelligence: createRecord.characterIntelligence,
     );
 
     log.info('APIResponse body ${response.body}');

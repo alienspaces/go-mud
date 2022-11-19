@@ -2,14 +2,14 @@
 part of 'dungeon_repository.dart';
 
 class DungeonRecord extends Equatable {
-  final String id;
-  final String name;
-  final String description;
+  final String dungeonID;
+  final String dungeonName;
+  final String dungeonDescription;
 
   const DungeonRecord({
-    required this.id,
-    required this.name,
-    required this.description,
+    required this.dungeonID,
+    required this.dungeonName,
+    required this.dungeonDescription,
   });
 
   factory DungeonRecord.fromJson(Map<String, dynamic> json) {
@@ -17,18 +17,22 @@ class DungeonRecord extends Equatable {
       throw RecordEmptyException('JSON data is empty');
     }
     return DungeonRecord(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
+      dungeonID: json['dungeon_id'],
+      dungeonName: json['dungeon_name'],
+      dungeonDescription: json['dungeon_description'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
+        'dungeon_id': dungeonID,
+        'dungeon_name': dungeonName,
+        'dungeon_description': dungeonDescription,
       };
 
   @override
-  List<Object> get props => [id, name, description];
+  List<Object> get props => [
+        dungeonID,
+        dungeonName,
+        dungeonDescription,
+      ];
 }

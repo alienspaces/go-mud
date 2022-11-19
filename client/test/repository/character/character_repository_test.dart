@@ -25,37 +25,37 @@ void main() {
       reason: 'CharacterRepository getOne response is not null',
     );
     expect(
-      character!.id,
+      character!.characterID,
       isNotNull,
       reason: 'CharacterRepository getOne character.id is not null',
     );
     expect(
-      character.name,
+      character.characterName,
       isNotNull,
       reason: 'CharacterRepository getOne character.name is not null',
     );
     expect(
-      character.strength,
+      character.characterStrength,
       isNotNull,
       reason: 'CharacterRepository getOne character.strength is not null',
     );
     expect(
-      character.dexterity,
+      character.characterDexterity,
       isNotNull,
       reason: 'CharacterRepository getOne character.dexterity is not null',
     );
     expect(
-      character.intelligence,
+      character.characterIntelligence,
       isNotNull,
       reason: 'CharacterRepository getOne character.intelligence is not null',
     );
     expect(
-      character.health,
+      character.characterHealth,
       isNotNull,
       reason: 'CharacterRepository getOne character.health is not null',
     );
     expect(
-      character.fatigue,
+      character.characterFatigue,
       isNotNull,
       reason: 'CharacterRepository getOne character.fatigue is not null',
     );

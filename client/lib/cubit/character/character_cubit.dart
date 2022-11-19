@@ -48,9 +48,9 @@ class CharacterCubit extends Cubit<CharacterState> {
 
     emit(const CharacterStateCreate());
 
-    if (characterRecord.strength +
-            characterRecord.dexterity +
-            characterRecord.intelligence >
+    if (characterRecord.characterStrength +
+            characterRecord.characterDexterity +
+            characterRecord.characterIntelligence >
         maxAttributes) {
       String message = 'New character attributes exceeds maximum allowed';
       log.warning(message);

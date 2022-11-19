@@ -48,10 +48,10 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     CreateCharacterRecord createCharacterRecord = CreateCharacterRecord(
-      name: characterNameController.text,
-      strength: strength,
-      dexterity: dexterity,
-      intelligence: intelligence,
+      characterName: characterNameController.text,
+      characterStrength: strength,
+      characterDexterity: dexterity,
+      characterIntelligence: intelligence,
     );
 
     characterCubit.createCharacter(createCharacterRecord);

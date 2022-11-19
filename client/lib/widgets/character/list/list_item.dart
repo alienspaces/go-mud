@@ -33,7 +33,8 @@ class _CharacterListItemWidgetState extends State<CharacterListItemWidget> {
   /// Sets the current character state to the provided character
   void _selectCharacter(BuildContext context, CharacterRecord characterRecord) {
     final log = getLogger('CharacterListItemWidget');
-    log.fine('Select ${characterRecord.id} ${characterRecord.name}');
+    log.fine(
+        'Select ${characterRecord.characterID} ${characterRecord.characterName}');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     characterCubit.selectCharacter(characterRecord);
@@ -45,7 +46,7 @@ class _CharacterListItemWidgetState extends State<CharacterListItemWidget> {
   Widget build(BuildContext context) {
     final log = getLogger('CharacterListItemWidget');
     log.info(
-        'Display ${widget.characterRecord.id} ${widget.characterRecord.name}');
+        'Display ${widget.characterRecord.characterID} ${widget.characterRecord.characterName}');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
@@ -84,7 +85,7 @@ class _CharacterListItemWidgetState extends State<CharacterListItemWidget> {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Text(
-              widget.characterRecord.name,
+              widget.characterRecord.characterName,
               style: Theme.of(context).textTheme.headline3,
             ),
           ),

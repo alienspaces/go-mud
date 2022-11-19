@@ -30,12 +30,13 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
 
         List<Widget> equippedWidgets = [];
         if (state is DungeonActionStatePlaying &&
-            state.current.character != null &&
-            state.current.character?.equippedObjects != null) {
-          var equipped = state.current.character?.equippedObjects;
+            state.current.actionCharacter != null &&
+            state.current.actionCharacter?.characterEquippedObjects != null) {
+          var equipped =
+              state.current.actionCharacter?.characterEquippedObjects;
           for (var i = 0; i < equipped!.length; i++) {
             equippedWidgets.add(
-              ObjectButtonWidget(objectName: equipped[i].name),
+              ObjectButtonWidget(objectName: equipped[i].objectName),
             );
           }
         }

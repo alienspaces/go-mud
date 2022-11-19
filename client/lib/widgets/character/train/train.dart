@@ -71,29 +71,29 @@ class _CharacterTrainWidgetState extends State<CharacterTrainWidget> {
                     // ignore: avoid_unnecessary_containers
                     Container(
                       child: Text(
-                        'Train: ${state.characterRecord.name}',
+                        'Train: ${state.characterRecord.characterName}',
                         style: Theme.of(context).textTheme.headline5,
                       ),
                     ),
                     Container(
                       child: _buildAttribute(
-                          'Strength', state.characterRecord.strength),
+                          'Strength', state.characterRecord.characterStrength),
+                    ),
+                    Container(
+                      child: _buildAttribute('Dexterity',
+                          state.characterRecord.characterDexterity),
+                    ),
+                    Container(
+                      child: _buildAttribute('Intelligence',
+                          state.characterRecord.characterIntelligence),
                     ),
                     Container(
                       child: _buildAttribute(
-                          'Dexterity', state.characterRecord.dexterity),
+                          'Health', state.characterRecord.characterHealth),
                     ),
                     Container(
                       child: _buildAttribute(
-                          'Intelligence', state.characterRecord.intelligence),
-                    ),
-                    Container(
-                      child: _buildAttribute(
-                          'Health', state.characterRecord.health),
-                    ),
-                    Container(
-                      child: _buildAttribute(
-                          'Fatigue', state.characterRecord.fatigue),
+                          'Fatigue', state.characterRecord.characterFatigue),
                     ),
                   ],
                 ),

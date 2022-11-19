@@ -65,13 +65,15 @@ class _GameLocationDescriptionWidgetState
               Container(
                 alignment: Alignment.center,
                 margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
-                child: Text(widget.dungeonActionRecord.location.name,
+                child: Text(
+                    widget.dungeonActionRecord.actionLocation.locationName,
                     style: Theme.of(context).textTheme.headline5),
               ),
               Container(
                 alignment: Alignment.center,
                 margin: const EdgeInsets.fromLTRB(5, 5, 5, 10),
-                child: Text(widget.dungeonActionRecord.location.description),
+                child: Text(widget
+                    .dungeonActionRecord.actionLocation.locationDescription),
               ),
             ],
           ),

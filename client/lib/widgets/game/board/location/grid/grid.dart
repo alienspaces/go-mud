@@ -106,7 +106,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Direction widget
   Widget _directionWidget(
       BuildContext context, LocationData locationData, String direction) {
-    if (!locationData.directions.contains(direction)) {
+    if (!locationData.locationDirections.contains(direction)) {
       return _emptyWidget('${directionLabelMap[direction]}');
     }
 
