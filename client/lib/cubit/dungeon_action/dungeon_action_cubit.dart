@@ -32,16 +32,25 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
         .dungeonActionRepository
         .create(dungeonID, characterID, command);
 
-    log.fine(
+    log.info(
         '(createAction) location ${createdDungeonActionRecord?.actionLocation.locationName}');
-    log.fine(
-        '(createAction) targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
-    log.fine(
-        '(createAction) targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.characterName}');
-    log.fine(
-        '(createAction) targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.monsterName}');
-    log.fine(
-        '(createAction) targetObject ${createdDungeonActionRecord?.actionTargetObject?.objectName}');
+
+    if (createdDungeonActionRecord?.actionTargetLocation != null) {
+      log.info(
+          '(createAction) targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
+    }
+    if (createdDungeonActionRecord?.actionTargetCharacter != null) {
+      log.info(
+          '(createAction) targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.toJson()}');
+    }
+    if (createdDungeonActionRecord?.actionTargetMonster != null) {
+      log.info(
+          '(createAction) targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.toJson()}');
+    }
+    if (createdDungeonActionRecord?.actionTargetObject != null) {
+      log.info(
+          '(createAction) targetObject ${createdDungeonActionRecord?.actionTargetObject?.toJson()}');
+    }
 
     if (createdDungeonActionRecord != null) {
       dungeonActionRecord = createdDungeonActionRecord;

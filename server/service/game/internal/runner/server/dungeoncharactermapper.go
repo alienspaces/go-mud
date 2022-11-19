@@ -14,7 +14,7 @@ func (rnr *Runner) InstanceViewRecordSetToDungeonCharacterResponseData(instanceR
 		LocationID:                   instanceRecordSet.LocationInstanceViewRec.LocationID,
 		LocationName:                 instanceRecordSet.LocationInstanceViewRec.Name,
 		LocationDescription:          instanceRecordSet.LocationInstanceViewRec.Description,
-		CharacterID:                  instanceRecordSet.CharacterInstanceViewRec.ID,
+		CharacterID:                  instanceRecordSet.CharacterInstanceViewRec.CharacterID,
 		CharacterName:                instanceRecordSet.CharacterInstanceViewRec.Name,
 		CharacterStrength:            instanceRecordSet.CharacterInstanceViewRec.Strength,
 		CharacterDexterity:           instanceRecordSet.CharacterInstanceViewRec.Dexterity,

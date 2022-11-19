@@ -109,7 +109,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
     await dungeonActionCubit.createAction(
       dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-      dungeonCharacterCubit.dungeonCharacterRecord!.id,
+      dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
       dungeonCommandCubit.command(),
     );
     dungeonCommandCubit.unselectAll();

@@ -51,7 +51,7 @@ class _GameWidgetState extends State<GameWidget> {
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     dungeonActionCubit.createAction(
       dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-      dungeonCharacterCubit.dungeonCharacterRecord!.id,
+      dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
       dungeonCommandCubit.command(),
     );
 

@@ -29,8 +29,9 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
 
     // Find existing cached record
     DungeonCharacterRecord? rec = dungeonCharacterRecords?.firstWhere((rec) {
-      log.info('Testing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
-      if (rec.id == characterID) {
+      log.info(
+          'Testing dungeon ID ${rec.dungeonID} character ID ${rec.characterID}');
+      if (rec.characterID == characterID) {
         return true;
       }
       return false;
@@ -66,7 +67,8 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     emit(const DungeonCharacterStateCreate());
 
     dungeonCharacterRecords?.forEach((rec) {
-      log.info('Existing dungeon ID ${rec.dungeonID} character ID ${rec.id}');
+      log.info(
+          'Existing dungeon ID ${rec.dungeonID} character ID ${rec.characterID}');
     });
 
     DungeonCharacterRecord? existingDungeonCharacterRecord =
@@ -126,7 +128,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
 
     DungeonCharacterRecord? deletedDungeonCharacterRecord =
         dungeonCharacterRecords?.firstWhere((dungeonCharacterRecord) {
-      if (dungeonCharacterRecord.id == characterID &&
+      if (dungeonCharacterRecord.characterID == characterID &&
           dungeonCharacterRecord.dungeonID == dungeonID) {
         return true;
       }

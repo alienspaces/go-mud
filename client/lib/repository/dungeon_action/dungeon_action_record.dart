@@ -225,7 +225,7 @@ class ObjectData {
   ObjectData({required this.name});
 
   factory ObjectData.fromJson(Map<String, dynamic> json) {
-    return ObjectData(name: json['name']);
+    return ObjectData(name: json['object_name']);
   }
 }
 
@@ -249,6 +249,13 @@ class ObjectDetailedData {
       objectIsEquipped: json['object_is_equipped'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'object_name': objectName,
+        'object_description': objectDescription,
+        'object_is_stashed': objectIsStashed,
+        'object_is_equipped': objectIsEquipped,
+      };
 }
 
 class CharacterData {
@@ -260,7 +267,7 @@ class CharacterData {
 
   factory CharacterData.fromJson(Map<String, dynamic> json) {
     return CharacterData(
-      name: json['name'],
+      name: json['character_name'],
     );
   }
 }
@@ -327,6 +334,20 @@ class CharacterDetailedData {
       characterEquippedObjects: equippedObjectData,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'character_name': characterName,
+        'character_strength': characterStrength,
+        'character_dexterity': characterDexterity,
+        'character_intelligence': characterIntelligence,
+        'character_current_strength': characterCurrentStrength,
+        'character_current_dexterity': characterCurrentDexterity,
+        'character_current_intelligence': characterCurrentIntelligence,
+        'character_health': characterHealth,
+        'character_fatigue': characterFatigue,
+        'character_current_health': characterCurrentHealth,
+        'character_current_fatigue': characterCurrentFatigue,
+      };
 }
 
 class MonsterData {
@@ -338,7 +359,7 @@ class MonsterData {
 
   factory MonsterData.fromJson(Map<String, dynamic> json) {
     return MonsterData(
-      name: json['name'],
+      name: json['monster_name'],
     );
   }
 }
@@ -395,4 +416,18 @@ class MonsterDetailedData {
       monsterEquippedObjects: equippedObjectData,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'monster_name': monsterName,
+        'monster_strength': monsterStrength,
+        'monster_dexterity': monsterDexterity,
+        'monster_intelligence': monsterIntelligence,
+        'monster_current_strength': monsterCurrentStrength,
+        'monster_current_dexterity': monsterCurrentDexterity,
+        'monster_current_intelligence': monsterCurrentIntelligence,
+        'monster_health': monsterHealth,
+        'monster_fatigue': monsterFatigue,
+        'monster_current_health': monsterCurrentHealth,
+        'monster_current_fatigue': monsterCurrentFatigue,
+      };
 }
