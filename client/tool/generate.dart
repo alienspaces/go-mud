@@ -11,7 +11,7 @@ Future<void> main() async {
   initLogger();
   final log = getLogger('main');
 
-  var env = DotEnv();
+  var env = DotEnv(includePlatformEnvironment: true);
   env.load();
 
   log.warning('APP_CLIENT_API_HOST = ${env["APP_CLIENT_API_HOST"]}');
