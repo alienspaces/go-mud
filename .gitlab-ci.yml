@@ -33,7 +33,7 @@ test-client:
   image: $CI_REGISTRY/alienspaces/go-mud/cirrusci/flutter:3.3.0
   stage: test-client
   services:
-    - name: $CI_REGISTRY/alienspaces/go-mud/game-server:$CI_COMMIT_SHORT_SHA"
+    - name: $CI_REGISTRY/alienspaces/go-mud/game-server:$CI_COMMIT_SHORT_SHA
       alias: game-server
   script:
     - cd client
