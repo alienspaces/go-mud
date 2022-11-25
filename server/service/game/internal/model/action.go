@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
@@ -139,477 +140,104 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		ActionCharacterObjectRecs: actionCharacterObjectRecs,
 	}
 
-	// Get the updated current location instance record set
-	locationInstanceRecordSet, err = m.GetLocationInstanceViewRecordSet(actionRec.LocationInstanceID, true)
+	// Create current location record set
+	currentLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
 	if err != nil {
-		l.Warn("failed getting dungeon location record set after performing action >%v<", err)
+		l.Warn("failed creating action location record set >%v<", err)
 		return nil, err
 	}
+	actionRecordSet.CurrentLocation = currentLocationRecordSet
 
-	l.Info("Dungeon location record set location name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.Name)
-	l.Info("Dungeon location record set characters >%d<", len(locationInstanceRecordSet.CharacterInstanceViewRecs))
-	l.Info("Dungeon location record set monsters >%d<", len(locationInstanceRecordSet.MonsterInstanceViewRecs))
-	l.Info("Dungeon location record set objects >%d<", len(locationInstanceRecordSet.ObjectInstanceViewRecs))
-
-	// Current location
-	locationInstanceViewRec, err := m.GetLocationInstanceViewRec(actionRec.LocationInstanceID)
-	if err != nil {
-		l.Warn("failed getting dungeon location record after performing action >%v<", err)
-		return nil, err
-	}
-
-	// TODO: (game) What is this for, can we use a location instance view record?
-	currentLocationRecordSet := record.ActionLocationRecordSet{
-		LocationInstanceViewRec: locationInstanceViewRec,
-		ActionCharacterRecs:     []*record.ActionCharacter{},
-		ActionMonsterRecs:       []*record.ActionMonster{},
-		ActionObjectRecs:        []*record.ActionObject{},
-	}
-
-	// Character Occupants: Create the action character record for each character now at the current location
-	if len(locationInstanceRecordSet.CharacterInstanceViewRecs) > 0 {
-		for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
-
-			actionCharacterRec := record.ActionCharacter{
-				RecordType:          record.ActionCharacterRecordTypeOccupant,
-				ActionID:            actionRec.ID,
-				LocationInstanceID:  locationInstanceViewRec.ID,
-				CharacterInstanceID: characterInstanceViewRec.ID,
-				Name:                characterInstanceViewRec.Name,
-				Strength:            characterInstanceViewRec.Strength,
-				Dexterity:           characterInstanceViewRec.Dexterity,
-				Intelligence:        characterInstanceViewRec.Intelligence,
-				CurrentStrength:     characterInstanceViewRec.CurrentStrength,
-				CurrentDexterity:    characterInstanceViewRec.CurrentDexterity,
-				CurrentIntelligence: characterInstanceViewRec.CurrentIntelligence,
-				Health:              characterInstanceViewRec.Health,
-				Fatigue:             characterInstanceViewRec.Fatigue,
-				CurrentHealth:       characterInstanceViewRec.CurrentHealth,
-				CurrentFatigue:      characterInstanceViewRec.CurrentFatigue,
-			}
-
-			err := m.CreateActionCharacterRec(&actionCharacterRec)
-			if err != nil {
-				l.Warn("failed creating current location action character record >%v<", err)
-				return nil, err
-			}
-
-			l.Info("Created current location action character record ID >%s<", actionCharacterRec.ID)
-			currentLocationRecordSet.ActionCharacterRecs = append(currentLocationRecordSet.ActionCharacterRecs, &actionCharacterRec)
-		}
-	}
-
-	// Monster Occupants: Create the action monster record for each monster now at the current location
-	if len(locationInstanceRecordSet.MonsterInstanceViewRecs) > 0 {
-		for _, monsterInstanceViewRec := range locationInstanceRecordSet.MonsterInstanceViewRecs {
-			actionMonsterRec := record.ActionMonster{
-				RecordType:          record.ActionMonsterRecordTypeOccupant,
-				ActionID:            actionRec.ID,
-				LocationInstanceID:  locationInstanceViewRec.ID,
-				MonsterInstanceID:   monsterInstanceViewRec.ID,
-				Name:                monsterInstanceViewRec.Name,
-				Strength:            monsterInstanceViewRec.Strength,
-				Dexterity:           monsterInstanceViewRec.Dexterity,
-				Intelligence:        monsterInstanceViewRec.Intelligence,
-				CurrentStrength:     monsterInstanceViewRec.CurrentStrength,
-				CurrentDexterity:    monsterInstanceViewRec.CurrentDexterity,
-				CurrentIntelligence: monsterInstanceViewRec.CurrentIntelligence,
-				Health:              monsterInstanceViewRec.Health,
-				Fatigue:             monsterInstanceViewRec.Fatigue,
-				CurrentHealth:       monsterInstanceViewRec.CurrentHealth,
-				CurrentFatigue:      monsterInstanceViewRec.CurrentFatigue,
-			}
-			err := m.CreateActionMonsterRec(&actionMonsterRec)
-			if err != nil {
-				l.Warn("failed creating current location action monster record >%v<", err)
-				return nil, err
-			}
-
-			l.Info("Created current location action monster record ID >%s<", actionMonsterRec.ID)
-			currentLocationRecordSet.ActionMonsterRecs = append(currentLocationRecordSet.ActionMonsterRecs, &actionMonsterRec)
-		}
-	}
-
-	// Object Occupants: Create the action object record for each object now at the current location
-	if len(locationInstanceRecordSet.ObjectInstanceViewRecs) > 0 {
-		for _, objectInstanceViewRec := range locationInstanceRecordSet.ObjectInstanceViewRecs {
-			dungeonActionObjectRec := record.ActionObject{
-				RecordType:         record.ActionObjectRecordTypeOccupant,
-				ActionID:           actionRec.ID,
-				LocationInstanceID: locationInstanceViewRec.ID,
-				ObjectInstanceID:   objectInstanceViewRec.ID,
-				Name:               objectInstanceViewRec.Name,
-				Description:        objectInstanceViewRec.Description,
-				IsStashed:          objectInstanceViewRec.IsStashed,
-				IsEquipped:         objectInstanceViewRec.IsEquipped,
-			}
-			err := m.CreateActionObjectRec(&dungeonActionObjectRec)
-			if err != nil {
-				l.Warn("failed creating current location action object record >%v<", err)
-				return nil, err
-			}
-
-			l.Info("Created current location action object record ID >%s<", dungeonActionObjectRec.ID)
-			currentLocationRecordSet.ActionObjectRecs = append(currentLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
-		}
-	}
-
-	actionRecordSet.CurrentLocation = &currentLocationRecordSet
-
-	// Get the target location instance record set when set
+	// Create target location record set
 	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-
-		locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(actionRec.ResolvedTargetLocationInstanceID.String, true)
+		targetLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
 		if err != nil {
-			l.Warn("failed getting target location instance record set after performing action >%v<", err)
+			l.Warn("failed creating target action location record set >%v<", err)
 			return nil, err
 		}
-
-		// Target location
-		targetLocationInstanceViewRec, err := m.GetLocationInstanceViewRec(actionRec.ResolvedTargetLocationInstanceID.String)
-		if err != nil {
-			l.Warn("failed getting target location instance view record after performing action >%v<", err)
-			return nil, err
-		}
-
-		targetLocationRecordSet := record.ActionLocationRecordSet{
-			LocationInstanceViewRec: targetLocationInstanceViewRec,
-			ActionCharacterRecs:     []*record.ActionCharacter{},
-			ActionMonsterRecs:       []*record.ActionMonster{},
-			ActionObjectRecs:        []*record.ActionObject{},
-		}
-
-		// Character Occupants: Create the action character record for each character at the target location
-		if len(locationInstanceRecordSet.CharacterInstanceViewRecs) > 0 {
-			for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
-				actionCharacterRec := record.ActionCharacter{
-					RecordType:          record.ActionCharacterRecordTypeOccupant,
-					ActionID:            actionRec.ID,
-					LocationInstanceID:  targetLocationInstanceViewRec.ID,
-					CharacterInstanceID: characterInstanceViewRec.ID,
-					Name:                characterInstanceViewRec.Name,
-					Strength:            characterInstanceViewRec.Strength,
-					Dexterity:           characterInstanceViewRec.Dexterity,
-					Intelligence:        characterInstanceViewRec.Intelligence,
-					CurrentStrength:     characterInstanceViewRec.CurrentStrength,
-					CurrentDexterity:    characterInstanceViewRec.CurrentDexterity,
-					CurrentIntelligence: characterInstanceViewRec.CurrentIntelligence,
-					Health:              characterInstanceViewRec.Health,
-					Fatigue:             characterInstanceViewRec.Fatigue,
-					CurrentHealth:       characterInstanceViewRec.CurrentHealth,
-					CurrentFatigue:      characterInstanceViewRec.CurrentFatigue,
-				}
-
-				err := m.CreateActionCharacterRec(&actionCharacterRec)
-				if err != nil {
-					l.Warn("failed creating target location occupant action character record >%v<", err)
-					return nil, err
-				}
-
-				l.Info("Created target location occupant action character record ID >%s<", actionCharacterRec.ID)
-				targetLocationRecordSet.ActionCharacterRecs = append(targetLocationRecordSet.ActionCharacterRecs, &actionCharacterRec)
-			}
-		}
-
-		// Monster Occupants: Create the action monster record for each monster at the target location
-		if len(locationInstanceRecordSet.MonsterInstanceViewRecs) > 0 {
-			for _, monsterInstanceViewRec := range locationInstanceRecordSet.MonsterInstanceViewRecs {
-				actionMonsterRec := record.ActionMonster{
-					RecordType:          record.ActionMonsterRecordTypeOccupant,
-					ActionID:            actionRec.ID,
-					LocationInstanceID:  targetLocationInstanceViewRec.ID,
-					MonsterInstanceID:   monsterInstanceViewRec.ID,
-					Name:                monsterInstanceViewRec.Name,
-					Strength:            monsterInstanceViewRec.Strength,
-					Dexterity:           monsterInstanceViewRec.Dexterity,
-					Intelligence:        monsterInstanceViewRec.Intelligence,
-					CurrentStrength:     monsterInstanceViewRec.CurrentStrength,
-					CurrentDexterity:    monsterInstanceViewRec.CurrentDexterity,
-					CurrentIntelligence: monsterInstanceViewRec.CurrentIntelligence,
-					Health:              monsterInstanceViewRec.Health,
-					Fatigue:             monsterInstanceViewRec.Fatigue,
-					CurrentHealth:       monsterInstanceViewRec.CurrentHealth,
-					CurrentFatigue:      monsterInstanceViewRec.CurrentFatigue,
-				}
-				err := m.CreateActionMonsterRec(&actionMonsterRec)
-				if err != nil {
-					l.Warn("failed creating target location occupant action monster record >%v<", err)
-					return nil, err
-				}
-
-				l.Info("Created target location occupant action monster record ID >%s<", actionMonsterRec.ID)
-				targetLocationRecordSet.ActionMonsterRecs = append(targetLocationRecordSet.ActionMonsterRecs, &actionMonsterRec)
-			}
-		}
-
-		// Object Occupants: Create the action object record for each object at the target location
-		if len(locationInstanceRecordSet.ObjectInstanceViewRecs) > 0 {
-			for _, objectInstanceViewRec := range locationInstanceRecordSet.ObjectInstanceViewRecs {
-				dungeonActionObjectRec := record.ActionObject{
-					RecordType:         record.ActionObjectRecordTypeOccupant,
-					ActionID:           actionRec.ID,
-					LocationInstanceID: locationInstanceViewRec.ID,
-					ObjectInstanceID:   objectInstanceViewRec.ID,
-					Name:               objectInstanceViewRec.Name,
-					Description:        objectInstanceViewRec.Description,
-					IsStashed:          objectInstanceViewRec.IsStashed,
-					IsEquipped:         objectInstanceViewRec.IsEquipped,
-				}
-				err := m.CreateActionObjectRec(&dungeonActionObjectRec)
-				if err != nil {
-					l.Warn("failed creating target location occupant action object record >%v<", err)
-					return nil, err
-				}
-
-				l.Info("Created target location occupant action object record ID >%s<", dungeonActionObjectRec.ID)
-				targetLocationRecordSet.ActionObjectRecs = append(targetLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
-			}
-		}
-
-		actionRecordSet.TargetLocation = &targetLocationRecordSet
+		actionRecordSet.TargetLocation = targetLocationRecordSet
 	}
 
-	// Create the target character action record
+	// Create target character action records
 	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-
-		l.Info("Resolved target character instance ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
-
-		targetCharacterInstanceViewRec, err := m.GetCharacterInstanceViewRec(actionRec.ResolvedTargetCharacterInstanceID.String)
+		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
 		if err != nil {
-			l.Warn("failed getting target character instance view record >%v<", err)
+			l.Warn("failed create action character records >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionCharacter{
-			RecordType:          record.ActionCharacterRecordTypeTarget,
-			ActionID:            actionRec.ID,
-			LocationInstanceID:  locationInstanceViewRec.ID,
-			CharacterInstanceID: targetCharacterInstanceViewRec.ID,
-			Name:                targetCharacterInstanceViewRec.Name,
-			Strength:            targetCharacterInstanceViewRec.Strength,
-			Dexterity:           targetCharacterInstanceViewRec.Dexterity,
-			Intelligence:        targetCharacterInstanceViewRec.Intelligence,
-			CurrentStrength:     targetCharacterInstanceViewRec.CurrentStrength,
-			CurrentDexterity:    targetCharacterInstanceViewRec.CurrentDexterity,
-			CurrentIntelligence: targetCharacterInstanceViewRec.CurrentIntelligence,
-			Health:              targetCharacterInstanceViewRec.Health,
-			Fatigue:             targetCharacterInstanceViewRec.Fatigue,
-			CurrentHealth:       targetCharacterInstanceViewRec.CurrentHealth,
-			CurrentFatigue:      targetCharacterInstanceViewRec.CurrentFatigue,
-		}
-
-		err = m.CreateActionCharacterRec(rec)
-		if err != nil {
-			l.Warn("failed creating target action character record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionCharacterRec = rec
-
-		// Create action character object records
-		objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(targetCharacterInstanceViewRec.ID)
-		if err != nil {
-			l.Warn("failed getting target character object records >%v<", err)
-			return nil, err
-		}
-
-		l.Info("Adding >%d< target character object records", len(objectInstanceViewRecs))
-
-		targetCharacterObjectRecs := []*record.ActionCharacterObject{}
-		for _, objectInstanceViewRec := range objectInstanceViewRecs {
-			l.Info("Adding target character object record >%v<", objectInstanceViewRecs)
-			dungeonCharacterObjectRec := record.ActionCharacterObject{
-				ActionID:            actionRec.ID,
-				CharacterInstanceID: targetCharacterInstanceViewRec.ID,
-				ObjectInstanceID:    objectInstanceViewRec.ID,
-				Name:                objectInstanceViewRec.Name,
-				IsEquipped:          objectInstanceViewRec.IsEquipped,
-				IsStashed:           objectInstanceViewRec.IsStashed,
-			}
-			err := m.CreateActionCharacterObjectRec(&dungeonCharacterObjectRec)
-			if err != nil {
-				l.Warn("failed creating source action character object record >%v<", err)
-				return nil, err
-			}
-			targetCharacterObjectRecs = append(targetCharacterObjectRecs, &dungeonCharacterObjectRec)
-		}
-		actionRecordSet.TargetActionCharacterObjectRecs = targetCharacterObjectRecs
+		actionRecordSet.TargetActionCharacterRec = actionCharacterRec
+		actionRecordSet.TargetActionCharacterObjectRecs = actionCharacterObjectRecs
 	}
 
 	// Create the target dungeon monster action record
 	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-
-		l.Info("Resolved target monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
-
-		targetMonsterInstanceViewRec, err := m.GetMonsterInstanceViewRec(actionRec.ResolvedTargetMonsterInstanceID.String)
+		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
 		if err != nil {
-			l.Warn("failed getting target monster instance view record >%v<", err)
+			l.Warn("failed create action character records >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionMonster{
-			RecordType:          record.ActionMonsterRecordTypeTarget,
-			ActionID:            actionRec.ID,
-			LocationInstanceID:  locationInstanceViewRec.ID,
-			MonsterInstanceID:   targetMonsterInstanceViewRec.ID,
-			Name:                targetMonsterInstanceViewRec.Name,
-			Strength:            targetMonsterInstanceViewRec.Strength,
-			Dexterity:           targetMonsterInstanceViewRec.Dexterity,
-			Intelligence:        targetMonsterInstanceViewRec.Intelligence,
-			CurrentStrength:     targetMonsterInstanceViewRec.CurrentStrength,
-			CurrentDexterity:    targetMonsterInstanceViewRec.CurrentDexterity,
-			CurrentIntelligence: targetMonsterInstanceViewRec.CurrentIntelligence,
-			Health:              targetMonsterInstanceViewRec.Health,
-			Fatigue:             targetMonsterInstanceViewRec.Fatigue,
-			CurrentHealth:       targetMonsterInstanceViewRec.CurrentHealth,
-			CurrentFatigue:      targetMonsterInstanceViewRec.CurrentFatigue,
-		}
-
-		err = m.CreateActionMonsterRec(rec)
-		if err != nil {
-			l.Warn("failed creating target action monster record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionMonsterRec = rec
-
-		// Create action monster object records
-		objectInstanceViewRecs, err := m.GetMonsterInstanceEquippedObjectInstanceViewRecs(targetMonsterInstanceViewRec.ID)
-		if err != nil {
-			l.Warn("failed getting target monster object records >%v<", err)
-			return nil, err
-		}
-
-		l.Info("Adding >%d< target monster object records", len(objectInstanceViewRecs))
-
-		targetMonsterObjectRecs := []*record.ActionMonsterObject{}
-		for _, objectInstanceViewRec := range objectInstanceViewRecs {
-			l.Info("Adding target monster object record >%v<", objectInstanceViewRec)
-			dungeonMonsterObjectRec := record.ActionMonsterObject{
-				ActionID:          actionRec.ID,
-				MonsterInstanceID: targetMonsterInstanceViewRec.ID,
-				ObjectInstanceID:  objectInstanceViewRec.ID,
-				Name:              objectInstanceViewRec.Name,
-				IsEquipped:        objectInstanceViewRec.IsEquipped,
-				IsStashed:         objectInstanceViewRec.IsStashed,
-			}
-			err := m.CreateActionMonsterObjectRec(&dungeonMonsterObjectRec)
-			if err != nil {
-				l.Warn("failed creating source action monster object record >%v<", err)
-				return nil, err
-			}
-			targetMonsterObjectRecs = append(targetMonsterObjectRecs, &dungeonMonsterObjectRec)
-		}
-		actionRecordSet.TargetActionMonsterObjectRecs = targetMonsterObjectRecs
+		actionRecordSet.TargetActionMonsterRec = actionMonsterRec
+		actionRecordSet.TargetActionMonsterObjectRecs = actionMonsterObjectRecs
 	}
 
 	// Create the target dungeon object action record
 	if actionRec.ResolvedTargetObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedTargetObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID),
+			record.ActionObjectRecordTypeTarget,
+		)
 		if err != nil {
-			l.Warn("failed getting target object instance view record >%v<", err)
+			l.Warn("failed creating action target object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeTarget,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating target action object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionObjectRec = rec
+		actionRecordSet.TargetActionObjectRec = actionObjectRec
 	}
 
 	// Create the stashed dungeon object action record
 	if actionRec.ResolvedStashedObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedStashedObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedStashedObjectInstanceID),
+			record.ActionObjectRecordTypeStashed,
+		)
 		if err != nil {
-			l.Warn("failed getting stashed object instance view record >%v<", err)
+			l.Warn("failed creating action stashed object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeStashed,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating stashed action object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.StashedActionObjectRec = rec
+		actionRecordSet.StashedActionObjectRec = actionObjectRec
 	}
 
 	// Create the equipped dungeon object action record
 	if actionRec.ResolvedEquippedObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedEquippedObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedEquippedObjectInstanceID),
+			record.ActionObjectRecordTypeEquipped,
+		)
 		if err != nil {
-			l.Warn("failed getting equipped object instance view record >%v<", err)
+			l.Warn("failed creating action equipped object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeEquipped,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating equipped action object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.EquippedActionObjectRec = rec
+		actionRecordSet.EquippedActionObjectRec = actionObjectRec
 	}
 
 	// Create the dropped dungeon object action record
 	if actionRec.ResolvedDroppedObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedDroppedObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedDroppedObjectInstanceID),
+			record.ActionObjectRecordTypeDropped,
+		)
 		if err != nil {
-			l.Warn("failed getting dropped object instance view record >%v<", err)
+			l.Warn("failed creating action equipped object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeDropped,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating dropped action object record >%v<", err)
-			return nil, err
-		}
-
-		l.Warn("Assigning dropped object >%v< to action record set", rec)
-
-		actionRecordSet.DroppedActionObjectRec = rec
+		actionRecordSet.DroppedActionObjectRec = actionObjectRec
 	}
 
 	return &actionRecordSet, nil
@@ -744,478 +372,104 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		ActionMonsterObjectRecs: actionMonsterObjectRecs,
 	}
 
-	// Get the updated current location instance record set
-	locationInstanceRecordSet, err = m.GetLocationInstanceViewRecordSet(actionRec.LocationInstanceID, true)
+	// Create current location record set
+	currentLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
 	if err != nil {
-		l.Warn("failed getting dungeon location record set after performing action >%v<", err)
+		l.Warn("failed creating action location record set >%v<", err)
 		return nil, err
 	}
+	actionRecordSet.CurrentLocation = currentLocationRecordSet
 
-	l.Info("Dungeon location record set location name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.Name)
-	l.Info("Dungeon location record set characters >%d<", len(locationInstanceRecordSet.CharacterInstanceViewRecs))
-	l.Info("Dungeon location record set monsters >%d<", len(locationInstanceRecordSet.MonsterInstanceViewRecs))
-	l.Info("Dungeon location record set objects >%d<", len(locationInstanceRecordSet.ObjectInstanceViewRecs))
-
-	// Current location
-	locationInstanceViewRec, err := m.GetLocationInstanceViewRec(actionRec.LocationInstanceID)
-	if err != nil {
-		l.Warn("failed getting dungeon location record after performing action >%v<", err)
-		return nil, err
-	}
-
-	// TODO: (game) What is this for, can we use a location instance view record?
-	currentLocationRecordSet := record.ActionLocationRecordSet{
-		LocationInstanceViewRec: locationInstanceViewRec,
-		ActionCharacterRecs:     []*record.ActionCharacter{},
-		ActionMonsterRecs:       []*record.ActionMonster{},
-		ActionObjectRecs:        []*record.ActionObject{},
-	}
-
-	// Character Occupants: Create the action character record for each character now at the current location
-	if len(locationInstanceRecordSet.CharacterInstanceViewRecs) > 0 {
-		for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
-
-			actionCharacterRec := record.ActionCharacter{
-				RecordType:          record.ActionCharacterRecordTypeOccupant,
-				ActionID:            actionRec.ID,
-				LocationInstanceID:  locationInstanceViewRec.ID,
-				CharacterInstanceID: characterInstanceViewRec.ID,
-				Name:                characterInstanceViewRec.Name,
-				Strength:            characterInstanceViewRec.Strength,
-				Dexterity:           characterInstanceViewRec.Dexterity,
-				Intelligence:        characterInstanceViewRec.Intelligence,
-				CurrentStrength:     characterInstanceViewRec.CurrentStrength,
-				CurrentDexterity:    characterInstanceViewRec.CurrentDexterity,
-				CurrentIntelligence: characterInstanceViewRec.CurrentIntelligence,
-				Health:              characterInstanceViewRec.Health,
-				Fatigue:             characterInstanceViewRec.Fatigue,
-				CurrentHealth:       characterInstanceViewRec.CurrentHealth,
-				CurrentFatigue:      characterInstanceViewRec.CurrentFatigue,
-			}
-
-			err := m.CreateActionCharacterRec(&actionCharacterRec)
-			if err != nil {
-				l.Warn("failed creating current location action character record >%v<", err)
-				return nil, err
-			}
-
-			l.Info("Created current location action character record ID >%s<", actionCharacterRec.ID)
-			currentLocationRecordSet.ActionCharacterRecs = append(currentLocationRecordSet.ActionCharacterRecs, &actionCharacterRec)
-		}
-	}
-
-	// Monster Occupants: Create the action monster record for each monster now at the current location
-	if len(locationInstanceRecordSet.MonsterInstanceViewRecs) > 0 {
-		for _, monsterInstanceViewRec := range locationInstanceRecordSet.MonsterInstanceViewRecs {
-
-			actionMonsterRec := record.ActionMonster{
-				RecordType:          record.ActionMonsterRecordTypeOccupant,
-				ActionID:            actionRec.ID,
-				LocationInstanceID:  locationInstanceViewRec.ID,
-				MonsterInstanceID:   monsterInstanceViewRec.ID,
-				Name:                monsterInstanceViewRec.Name,
-				Strength:            monsterInstanceViewRec.Strength,
-				Dexterity:           monsterInstanceViewRec.Dexterity,
-				Intelligence:        monsterInstanceViewRec.Intelligence,
-				CurrentStrength:     monsterInstanceViewRec.CurrentStrength,
-				CurrentDexterity:    monsterInstanceViewRec.CurrentDexterity,
-				CurrentIntelligence: monsterInstanceViewRec.CurrentIntelligence,
-				Health:              monsterInstanceViewRec.Health,
-				Fatigue:             monsterInstanceViewRec.Fatigue,
-				CurrentHealth:       monsterInstanceViewRec.CurrentHealth,
-				CurrentFatigue:      monsterInstanceViewRec.CurrentFatigue,
-			}
-			err := m.CreateActionMonsterRec(&actionMonsterRec)
-			if err != nil {
-				l.Warn("failed creating current location action monster record >%v<", err)
-				return nil, err
-			}
-
-			l.Info("Created current location action monster record ID >%s<", actionMonsterRec.ID)
-			currentLocationRecordSet.ActionMonsterRecs = append(currentLocationRecordSet.ActionMonsterRecs, &actionMonsterRec)
-		}
-	}
-
-	// Object Occupants: Create the action object record for each object now at the current location
-	if len(locationInstanceRecordSet.ObjectInstanceViewRecs) > 0 {
-		for _, objectInstanceViewRec := range locationInstanceRecordSet.ObjectInstanceViewRecs {
-			dungeonActionObjectRec := record.ActionObject{
-				RecordType:         record.ActionObjectRecordTypeOccupant,
-				ActionID:           actionRec.ID,
-				LocationInstanceID: locationInstanceViewRec.ID,
-				ObjectInstanceID:   objectInstanceViewRec.ID,
-				Name:               objectInstanceViewRec.Name,
-				Description:        objectInstanceViewRec.Description,
-				IsStashed:          objectInstanceViewRec.IsStashed,
-				IsEquipped:         objectInstanceViewRec.IsEquipped,
-			}
-			err := m.CreateActionObjectRec(&dungeonActionObjectRec)
-			if err != nil {
-				l.Warn("failed creating current location action object record >%v<", err)
-				return nil, err
-			}
-
-			l.Info("Created current location action object record ID >%s<", dungeonActionObjectRec.ID)
-			currentLocationRecordSet.ActionObjectRecs = append(currentLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
-		}
-	}
-
-	actionRecordSet.CurrentLocation = &currentLocationRecordSet
-
-	// Get the target location instance record set when set
+	// Create target location record set
 	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-
-		locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(actionRec.ResolvedTargetLocationInstanceID.String, true)
+		targetLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
 		if err != nil {
-			l.Warn("failed getting target location instance record set after performing action >%v<", err)
+			l.Warn("failed creating target action location record set >%v<", err)
 			return nil, err
 		}
-
-		// Target location
-		targetLocationInstanceViewRec, err := m.GetLocationInstanceViewRec(actionRec.ResolvedTargetLocationInstanceID.String)
-		if err != nil {
-			l.Warn("failed getting target location instance view record after performing action >%v<", err)
-			return nil, err
-		}
-
-		targetLocationRecordSet := record.ActionLocationRecordSet{
-			LocationInstanceViewRec: targetLocationInstanceViewRec,
-			ActionCharacterRecs:     []*record.ActionCharacter{},
-			ActionMonsterRecs:       []*record.ActionMonster{},
-			ActionObjectRecs:        []*record.ActionObject{},
-		}
-
-		// Character Occupants: Create the action character record for each character at the target location
-		if len(locationInstanceRecordSet.CharacterInstanceViewRecs) > 0 {
-			for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
-				actionCharacterRec := record.ActionCharacter{
-					RecordType:          record.ActionCharacterRecordTypeOccupant,
-					ActionID:            actionRec.ID,
-					LocationInstanceID:  targetLocationInstanceViewRec.ID,
-					CharacterInstanceID: characterInstanceViewRec.ID,
-					Name:                characterInstanceViewRec.Name,
-					Strength:            characterInstanceViewRec.Strength,
-					Dexterity:           characterInstanceViewRec.Dexterity,
-					Intelligence:        characterInstanceViewRec.Intelligence,
-					CurrentStrength:     characterInstanceViewRec.CurrentStrength,
-					CurrentDexterity:    characterInstanceViewRec.CurrentDexterity,
-					CurrentIntelligence: characterInstanceViewRec.CurrentIntelligence,
-					Health:              characterInstanceViewRec.Health,
-					Fatigue:             characterInstanceViewRec.Fatigue,
-					CurrentHealth:       characterInstanceViewRec.CurrentHealth,
-					CurrentFatigue:      characterInstanceViewRec.CurrentFatigue,
-				}
-
-				err := m.CreateActionCharacterRec(&actionCharacterRec)
-				if err != nil {
-					l.Warn("failed creating target location occupant action character record >%v<", err)
-					return nil, err
-				}
-
-				l.Info("Created target location occupant action character record ID >%s<", actionCharacterRec.ID)
-				targetLocationRecordSet.ActionCharacterRecs = append(targetLocationRecordSet.ActionCharacterRecs, &actionCharacterRec)
-			}
-		}
-
-		// Monster Occupants: Create the action monster record for each monster at the target location
-		if len(locationInstanceRecordSet.MonsterInstanceViewRecs) > 0 {
-			for _, monsterInstanceViewRec := range locationInstanceRecordSet.MonsterInstanceViewRecs {
-				actionMonsterRec := record.ActionMonster{
-					RecordType:          record.ActionMonsterRecordTypeOccupant,
-					ActionID:            actionRec.ID,
-					LocationInstanceID:  targetLocationInstanceViewRec.ID,
-					MonsterInstanceID:   monsterInstanceViewRec.ID,
-					Name:                monsterInstanceViewRec.Name,
-					Strength:            monsterInstanceViewRec.Strength,
-					Dexterity:           monsterInstanceViewRec.Dexterity,
-					Intelligence:        monsterInstanceViewRec.Intelligence,
-					CurrentStrength:     monsterInstanceViewRec.CurrentStrength,
-					CurrentDexterity:    monsterInstanceViewRec.CurrentDexterity,
-					CurrentIntelligence: monsterInstanceViewRec.CurrentIntelligence,
-					Health:              monsterInstanceViewRec.Health,
-					Fatigue:             monsterInstanceViewRec.Fatigue,
-					CurrentHealth:       monsterInstanceViewRec.CurrentHealth,
-					CurrentFatigue:      monsterInstanceViewRec.CurrentFatigue,
-				}
-				err := m.CreateActionMonsterRec(&actionMonsterRec)
-				if err != nil {
-					l.Warn("failed creating target location occupant action monster record >%v<", err)
-					return nil, err
-				}
-
-				l.Info("Created target location occupant action monster record ID >%s<", actionMonsterRec.ID)
-				targetLocationRecordSet.ActionMonsterRecs = append(targetLocationRecordSet.ActionMonsterRecs, &actionMonsterRec)
-			}
-		}
-
-		// Object Occupants: Create the action object record for each object at the target location
-		if len(locationInstanceRecordSet.ObjectInstanceViewRecs) > 0 {
-			for _, objectInstanceViewRec := range locationInstanceRecordSet.ObjectInstanceViewRecs {
-				dungeonActionObjectRec := record.ActionObject{
-					RecordType:         record.ActionObjectRecordTypeOccupant,
-					ActionID:           actionRec.ID,
-					LocationInstanceID: locationInstanceViewRec.ID,
-					ObjectInstanceID:   objectInstanceViewRec.ID,
-					Name:               objectInstanceViewRec.Name,
-					Description:        objectInstanceViewRec.Description,
-					IsStashed:          objectInstanceViewRec.IsStashed,
-					IsEquipped:         objectInstanceViewRec.IsEquipped,
-				}
-				err := m.CreateActionObjectRec(&dungeonActionObjectRec)
-				if err != nil {
-					l.Warn("failed creating target location occupant action object record >%v<", err)
-					return nil, err
-				}
-
-				l.Info("Created target location occupant action object record ID >%s<", dungeonActionObjectRec.ID)
-				targetLocationRecordSet.ActionObjectRecs = append(targetLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
-			}
-		}
-
-		actionRecordSet.TargetLocation = &targetLocationRecordSet
+		actionRecordSet.TargetLocation = targetLocationRecordSet
 	}
 
 	// Create the target character action record
 	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-
-		l.Info("Resolved target character instance ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
-
-		targetCharacterInstanceViewRec, err := m.GetCharacterInstanceViewRec(actionRec.ResolvedTargetCharacterInstanceID.String)
+		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
 		if err != nil {
-			l.Warn("failed getting target character instance view record >%v<", err)
+			l.Warn("failed create action character records >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionCharacter{
-			RecordType:          record.ActionCharacterRecordTypeTarget,
-			ActionID:            actionRec.ID,
-			LocationInstanceID:  locationInstanceViewRec.ID,
-			CharacterInstanceID: targetCharacterInstanceViewRec.ID,
-			Name:                targetCharacterInstanceViewRec.Name,
-			Strength:            targetCharacterInstanceViewRec.Strength,
-			Dexterity:           targetCharacterInstanceViewRec.Dexterity,
-			Intelligence:        targetCharacterInstanceViewRec.Intelligence,
-			CurrentStrength:     targetCharacterInstanceViewRec.CurrentStrength,
-			CurrentDexterity:    targetCharacterInstanceViewRec.CurrentDexterity,
-			CurrentIntelligence: targetCharacterInstanceViewRec.CurrentIntelligence,
-			Health:              targetCharacterInstanceViewRec.Health,
-			Fatigue:             targetCharacterInstanceViewRec.Fatigue,
-			CurrentHealth:       targetCharacterInstanceViewRec.CurrentHealth,
-			CurrentFatigue:      targetCharacterInstanceViewRec.CurrentFatigue,
-		}
-
-		err = m.CreateActionCharacterRec(rec)
-		if err != nil {
-			l.Warn("failed creating target action character record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionCharacterRec = rec
-
-		// Create action character object records
-		objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(targetCharacterInstanceViewRec.ID)
-		if err != nil {
-			l.Warn("failed getting target character object records >%v<", err)
-			return nil, err
-		}
-
-		l.Info("Adding >%d< target character object records", len(objectInstanceViewRecs))
-
-		targetCharacterObjectRecs := []*record.ActionCharacterObject{}
-		for _, objectInstanceViewRec := range objectInstanceViewRecs {
-			l.Info("Adding target character object record >%v<", objectInstanceViewRecs)
-			dungeonCharacterObjectRec := record.ActionCharacterObject{
-				ActionID:            actionRec.ID,
-				CharacterInstanceID: targetCharacterInstanceViewRec.ID,
-				ObjectInstanceID:    objectInstanceViewRec.ID,
-				Name:                objectInstanceViewRec.Name,
-				IsEquipped:          objectInstanceViewRec.IsEquipped,
-				IsStashed:           objectInstanceViewRec.IsStashed,
-			}
-			err := m.CreateActionCharacterObjectRec(&dungeonCharacterObjectRec)
-			if err != nil {
-				l.Warn("failed creating source action character object record >%v<", err)
-				return nil, err
-			}
-			targetCharacterObjectRecs = append(targetCharacterObjectRecs, &dungeonCharacterObjectRec)
-		}
-		actionRecordSet.TargetActionCharacterObjectRecs = targetCharacterObjectRecs
+		actionRecordSet.TargetActionCharacterRec = actionCharacterRec
+		actionRecordSet.TargetActionCharacterObjectRecs = actionCharacterObjectRecs
 	}
 
 	// Create the target dungeon monster action record
 	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-
-		l.Info("Resolved target monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
-
-		targetMonsterInstanceViewRec, err := m.GetMonsterInstanceViewRec(actionRec.ResolvedTargetMonsterInstanceID.String)
+		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
 		if err != nil {
-			l.Warn("failed getting target monster instance view record >%v<", err)
+			l.Warn("failed create action character records >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionMonster{
-			RecordType:          record.ActionMonsterRecordTypeTarget,
-			ActionID:            actionRec.ID,
-			LocationInstanceID:  locationInstanceViewRec.ID,
-			MonsterInstanceID:   targetMonsterInstanceViewRec.ID,
-			Name:                targetMonsterInstanceViewRec.Name,
-			Strength:            targetMonsterInstanceViewRec.Strength,
-			Dexterity:           targetMonsterInstanceViewRec.Dexterity,
-			Intelligence:        targetMonsterInstanceViewRec.Intelligence,
-			CurrentStrength:     targetMonsterInstanceViewRec.CurrentStrength,
-			CurrentDexterity:    targetMonsterInstanceViewRec.CurrentDexterity,
-			CurrentIntelligence: targetMonsterInstanceViewRec.CurrentIntelligence,
-			Health:              targetMonsterInstanceViewRec.Health,
-			Fatigue:             targetMonsterInstanceViewRec.Fatigue,
-			CurrentHealth:       targetMonsterInstanceViewRec.CurrentHealth,
-			CurrentFatigue:      targetMonsterInstanceViewRec.CurrentFatigue,
-		}
-
-		err = m.CreateActionMonsterRec(rec)
-		if err != nil {
-			l.Warn("failed creating target action monster record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionMonsterRec = rec
-
-		// Create action monster object records
-		objectInstanceViewRecs, err := m.GetMonsterInstanceEquippedObjectInstanceViewRecs(targetMonsterInstanceViewRec.ID)
-		if err != nil {
-			l.Warn("failed getting target monster object records >%v<", err)
-			return nil, err
-		}
-
-		l.Info("Adding >%d< target monster object records", len(objectInstanceViewRecs))
-
-		targetMonsterObjectRecs := []*record.ActionMonsterObject{}
-		for _, objectInstanceViewRec := range objectInstanceViewRecs {
-			l.Info("Adding target monster object record >%v<", objectInstanceViewRec)
-			dungeonMonsterObjectRec := record.ActionMonsterObject{
-				ActionID:          actionRec.ID,
-				MonsterInstanceID: targetMonsterInstanceViewRec.ID,
-				ObjectInstanceID:  objectInstanceViewRec.ID,
-				Name:              objectInstanceViewRec.Name,
-				IsEquipped:        objectInstanceViewRec.IsEquipped,
-				IsStashed:         objectInstanceViewRec.IsStashed,
-			}
-			err := m.CreateActionMonsterObjectRec(&dungeonMonsterObjectRec)
-			if err != nil {
-				l.Warn("failed creating source action monster object record >%v<", err)
-				return nil, err
-			}
-			targetMonsterObjectRecs = append(targetMonsterObjectRecs, &dungeonMonsterObjectRec)
-		}
-		actionRecordSet.TargetActionMonsterObjectRecs = targetMonsterObjectRecs
+		actionRecordSet.TargetActionMonsterRec = actionMonsterRec
+		actionRecordSet.TargetActionMonsterObjectRecs = actionMonsterObjectRecs
 	}
 
 	// Create the target dungeon object action record
 	if actionRec.ResolvedTargetObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedTargetObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID),
+			record.ActionObjectRecordTypeTarget,
+		)
 		if err != nil {
-			l.Warn("failed getting target object instance view record >%v<", err)
+			l.Warn("failed creating action target object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeTarget,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating target action object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionObjectRec = rec
+		actionRecordSet.TargetActionObjectRec = actionObjectRec
 	}
 
 	// Create the stashed dungeon object action record
 	if actionRec.ResolvedStashedObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedStashedObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedStashedObjectInstanceID),
+			record.ActionObjectRecordTypeStashed,
+		)
 		if err != nil {
-			l.Warn("failed getting stashed object instance view record >%v<", err)
+			l.Warn("failed creating action stashed object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeStashed,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating stashed action object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.StashedActionObjectRec = rec
+		actionRecordSet.StashedActionObjectRec = actionObjectRec
 	}
 
 	// Create the equipped dungeon object action record
 	if actionRec.ResolvedEquippedObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedEquippedObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedEquippedObjectInstanceID),
+			record.ActionObjectRecordTypeEquipped,
+		)
 		if err != nil {
-			l.Warn("failed getting equipped object instance view record >%v<", err)
+			l.Warn("failed creating action equipped object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeEquipped,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating equipped action object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.EquippedActionObjectRec = rec
+		actionRecordSet.EquippedActionObjectRec = actionObjectRec
 	}
 
 	// Create the dropped dungeon object action record
 	if actionRec.ResolvedDroppedObjectInstanceID.Valid {
-		targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(actionRec.ResolvedDroppedObjectInstanceID.String)
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedDroppedObjectInstanceID),
+			record.ActionObjectRecordTypeDropped,
+		)
 		if err != nil {
-			l.Warn("failed getting dropped object instance view record >%v<", err)
+			l.Warn("failed creating action equipped object record >%v<", err)
 			return nil, err
 		}
-
-		rec := &record.ActionObject{
-			RecordType:         record.ActionObjectRecordTypeDropped,
-			ActionID:           actionRec.ID,
-			LocationInstanceID: locationInstanceViewRec.ID,
-			ObjectInstanceID:   targetObjectInstanceViewRec.ID,
-			Name:               targetObjectInstanceViewRec.Name,
-			Description:        targetObjectInstanceViewRec.Description,
-			IsStashed:          targetObjectInstanceViewRec.IsStashed,
-			IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
-		}
-
-		err = m.CreateActionObjectRec(rec)
-		if err != nil {
-			l.Warn("failed creating dropped action object record >%v<", err)
-			return nil, err
-		}
-
-		l.Warn("Assigning dropped object >%v< to action record set", rec)
-
-		actionRecordSet.DroppedActionObjectRec = rec
+		actionRecordSet.DroppedActionObjectRec = actionObjectRec
 	}
 
 	return &actionRecordSet, nil
@@ -1574,7 +828,6 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 }
 
 func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forUpdate bool) (*record.LocationInstanceViewRecordSet, error) {
-
 	l := m.Logger("GetLocationInstanceViewRecordSet")
 
 	locationInstanceRecordSet := &record.LocationInstanceViewRecordSet{}
@@ -1671,4 +924,278 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 	locationInstanceRecordSet.LocationInstanceViewRecs = locationInstanceViewRecs
 
 	return locationInstanceRecordSet, nil
+}
+
+func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID string) (*record.ActionLocationRecordSet, error) {
+	l := m.Logger("createActionLocationRecordSet")
+
+	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(locationInstanceID, true)
+	if err != nil {
+		l.Warn("failed getting dungeon location record set after performing action >%v<", err)
+		return nil, err
+	}
+	locationInstanceViewRec := locationInstanceRecordSet.LocationInstanceViewRec
+
+	l.Info("Dungeon location record set location name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.Name)
+	l.Info("Dungeon location record set characters >%d<", len(locationInstanceRecordSet.CharacterInstanceViewRecs))
+	l.Info("Dungeon location record set monsters >%d<", len(locationInstanceRecordSet.MonsterInstanceViewRecs))
+	l.Info("Dungeon location record set objects >%d<", len(locationInstanceRecordSet.ObjectInstanceViewRecs))
+
+	currentLocationRecordSet := record.ActionLocationRecordSet{
+		LocationInstanceViewRec: locationInstanceViewRec,
+		ActionCharacterRecs:     []*record.ActionCharacter{},
+		ActionMonsterRecs:       []*record.ActionMonster{},
+		ActionObjectRecs:        []*record.ActionObject{},
+	}
+
+	// Character Occupants: Create the action character record for each character now at the current location
+	if len(locationInstanceRecordSet.CharacterInstanceViewRecs) > 0 {
+		for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
+
+			actionCharacterRec := record.ActionCharacter{
+				RecordType:          record.ActionCharacterRecordTypeOccupant,
+				ActionID:            actionID,
+				LocationInstanceID:  locationInstanceViewRec.ID,
+				CharacterInstanceID: characterInstanceViewRec.ID,
+				Name:                characterInstanceViewRec.Name,
+				Strength:            characterInstanceViewRec.Strength,
+				Dexterity:           characterInstanceViewRec.Dexterity,
+				Intelligence:        characterInstanceViewRec.Intelligence,
+				CurrentStrength:     characterInstanceViewRec.CurrentStrength,
+				CurrentDexterity:    characterInstanceViewRec.CurrentDexterity,
+				CurrentIntelligence: characterInstanceViewRec.CurrentIntelligence,
+				Health:              characterInstanceViewRec.Health,
+				Fatigue:             characterInstanceViewRec.Fatigue,
+				CurrentHealth:       characterInstanceViewRec.CurrentHealth,
+				CurrentFatigue:      characterInstanceViewRec.CurrentFatigue,
+			}
+
+			err := m.CreateActionCharacterRec(&actionCharacterRec)
+			if err != nil {
+				l.Warn("failed creating current location action character record >%v<", err)
+				return nil, err
+			}
+
+			l.Info("Created current location action character record ID >%s<", actionCharacterRec.ID)
+			currentLocationRecordSet.ActionCharacterRecs = append(currentLocationRecordSet.ActionCharacterRecs, &actionCharacterRec)
+		}
+	}
+
+	// Monster Occupants: Create the action monster record for each monster now at the current location
+	if len(locationInstanceRecordSet.MonsterInstanceViewRecs) > 0 {
+		for _, monsterInstanceViewRec := range locationInstanceRecordSet.MonsterInstanceViewRecs {
+			actionMonsterRec := record.ActionMonster{
+				RecordType:          record.ActionMonsterRecordTypeOccupant,
+				ActionID:            actionID,
+				LocationInstanceID:  locationInstanceViewRec.ID,
+				MonsterInstanceID:   monsterInstanceViewRec.ID,
+				Name:                monsterInstanceViewRec.Name,
+				Strength:            monsterInstanceViewRec.Strength,
+				Dexterity:           monsterInstanceViewRec.Dexterity,
+				Intelligence:        monsterInstanceViewRec.Intelligence,
+				CurrentStrength:     monsterInstanceViewRec.CurrentStrength,
+				CurrentDexterity:    monsterInstanceViewRec.CurrentDexterity,
+				CurrentIntelligence: monsterInstanceViewRec.CurrentIntelligence,
+				Health:              monsterInstanceViewRec.Health,
+				Fatigue:             monsterInstanceViewRec.Fatigue,
+				CurrentHealth:       monsterInstanceViewRec.CurrentHealth,
+				CurrentFatigue:      monsterInstanceViewRec.CurrentFatigue,
+			}
+			err := m.CreateActionMonsterRec(&actionMonsterRec)
+			if err != nil {
+				l.Warn("failed creating current location action monster record >%v<", err)
+				return nil, err
+			}
+
+			l.Info("Created current location action monster record ID >%s<", actionMonsterRec.ID)
+			currentLocationRecordSet.ActionMonsterRecs = append(currentLocationRecordSet.ActionMonsterRecs, &actionMonsterRec)
+		}
+	}
+
+	// Object Occupants: Create the action object record for each object now at the current location
+	if len(locationInstanceRecordSet.ObjectInstanceViewRecs) > 0 {
+		for _, objectInstanceViewRec := range locationInstanceRecordSet.ObjectInstanceViewRecs {
+			dungeonActionObjectRec := record.ActionObject{
+				RecordType:         record.ActionObjectRecordTypeOccupant,
+				ActionID:           actionID,
+				LocationInstanceID: locationInstanceViewRec.ID,
+				ObjectInstanceID:   objectInstanceViewRec.ID,
+				Name:               objectInstanceViewRec.Name,
+				Description:        objectInstanceViewRec.Description,
+				IsStashed:          objectInstanceViewRec.IsStashed,
+				IsEquipped:         objectInstanceViewRec.IsEquipped,
+			}
+			err := m.CreateActionObjectRec(&dungeonActionObjectRec)
+			if err != nil {
+				l.Warn("failed creating current location action object record >%v<", err)
+				return nil, err
+			}
+
+			l.Info("Created current location action object record ID >%s<", dungeonActionObjectRec.ID)
+			currentLocationRecordSet.ActionObjectRecs = append(currentLocationRecordSet.ActionObjectRecs, &dungeonActionObjectRec)
+		}
+	}
+
+	return &currentLocationRecordSet, nil
+}
+
+func (m *Model) createActionTargetCharacterRecs(actionID, locationInstanceID, characterInstanceID string) (*record.ActionCharacter, []*record.ActionCharacterObject, error) {
+	l := m.Logger("createActionTargetCharacterRecs")
+
+	l.Info("Creating action ID >%s< character instance ID >%s< records", actionID, characterInstanceID)
+
+	targetCharacterInstanceViewRec, err := m.GetCharacterInstanceViewRec(characterInstanceID)
+	if err != nil {
+		l.Warn("failed getting target character instance view record >%v<", err)
+		return nil, nil, err
+	}
+
+	rec := &record.ActionCharacter{
+		RecordType:          record.ActionCharacterRecordTypeTarget,
+		ActionID:            actionID,
+		LocationInstanceID:  locationInstanceID,
+		CharacterInstanceID: targetCharacterInstanceViewRec.ID,
+		Name:                targetCharacterInstanceViewRec.Name,
+		Strength:            targetCharacterInstanceViewRec.Strength,
+		Dexterity:           targetCharacterInstanceViewRec.Dexterity,
+		Intelligence:        targetCharacterInstanceViewRec.Intelligence,
+		CurrentStrength:     targetCharacterInstanceViewRec.CurrentStrength,
+		CurrentDexterity:    targetCharacterInstanceViewRec.CurrentDexterity,
+		CurrentIntelligence: targetCharacterInstanceViewRec.CurrentIntelligence,
+		Health:              targetCharacterInstanceViewRec.Health,
+		Fatigue:             targetCharacterInstanceViewRec.Fatigue,
+		CurrentHealth:       targetCharacterInstanceViewRec.CurrentHealth,
+		CurrentFatigue:      targetCharacterInstanceViewRec.CurrentFatigue,
+	}
+
+	err = m.CreateActionCharacterRec(rec)
+	if err != nil {
+		l.Warn("failed creating target action character record >%v<", err)
+		return nil, nil, err
+	}
+
+	// Create action character object records
+	objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(targetCharacterInstanceViewRec.ID)
+	if err != nil {
+		l.Warn("failed getting target character object records >%v<", err)
+		return nil, nil, err
+	}
+
+	l.Info("Adding >%d< target character object records", len(objectInstanceViewRecs))
+
+	targetCharacterObjectRecs := []*record.ActionCharacterObject{}
+	for _, objectInstanceViewRec := range objectInstanceViewRecs {
+		l.Info("Adding target character object record >%v<", objectInstanceViewRecs)
+		dungeonCharacterObjectRec := record.ActionCharacterObject{
+			ActionID:            actionID,
+			CharacterInstanceID: targetCharacterInstanceViewRec.ID,
+			ObjectInstanceID:    objectInstanceViewRec.ID,
+			Name:                objectInstanceViewRec.Name,
+			IsEquipped:          objectInstanceViewRec.IsEquipped,
+			IsStashed:           objectInstanceViewRec.IsStashed,
+		}
+		err := m.CreateActionCharacterObjectRec(&dungeonCharacterObjectRec)
+		if err != nil {
+			l.Warn("failed creating source action character object record >%v<", err)
+			return nil, nil, err
+		}
+		targetCharacterObjectRecs = append(targetCharacterObjectRecs, &dungeonCharacterObjectRec)
+	}
+
+	return rec, targetCharacterObjectRecs, nil
+}
+
+func (m *Model) createActionTargetMonsterRecs(actionID, locationInstanceID, monsterInstanceID string) (*record.ActionMonster, []*record.ActionMonsterObject, error) {
+	l := m.Logger("createActionTargetMonsterRecs")
+
+	l.Info("Creating action ID >%s< monster instance ID >%s< records", actionID, monsterInstanceID)
+
+	targetMonsterInstanceViewRec, err := m.GetMonsterInstanceViewRec(monsterInstanceID)
+	if err != nil {
+		l.Warn("failed getting target monster instance view record >%v<", err)
+		return nil, nil, err
+	}
+
+	rec := &record.ActionMonster{
+		RecordType:          record.ActionMonsterRecordTypeTarget,
+		ActionID:            actionID,
+		LocationInstanceID:  locationInstanceID,
+		MonsterInstanceID:   targetMonsterInstanceViewRec.ID,
+		Name:                targetMonsterInstanceViewRec.Name,
+		Strength:            targetMonsterInstanceViewRec.Strength,
+		Dexterity:           targetMonsterInstanceViewRec.Dexterity,
+		Intelligence:        targetMonsterInstanceViewRec.Intelligence,
+		CurrentStrength:     targetMonsterInstanceViewRec.CurrentStrength,
+		CurrentDexterity:    targetMonsterInstanceViewRec.CurrentDexterity,
+		CurrentIntelligence: targetMonsterInstanceViewRec.CurrentIntelligence,
+		Health:              targetMonsterInstanceViewRec.Health,
+		Fatigue:             targetMonsterInstanceViewRec.Fatigue,
+		CurrentHealth:       targetMonsterInstanceViewRec.CurrentHealth,
+		CurrentFatigue:      targetMonsterInstanceViewRec.CurrentFatigue,
+	}
+
+	err = m.CreateActionMonsterRec(rec)
+	if err != nil {
+		l.Warn("failed creating target action monster record >%v<", err)
+		return nil, nil, err
+	}
+
+	// Create action monster object records
+	objectInstanceViewRecs, err := m.GetMonsterInstanceEquippedObjectInstanceViewRecs(targetMonsterInstanceViewRec.ID)
+	if err != nil {
+		l.Warn("failed getting target monster object records >%v<", err)
+		return nil, nil, err
+	}
+
+	l.Info("Adding >%d< target monster object records", len(objectInstanceViewRecs))
+
+	targetMonsterObjectRecs := []*record.ActionMonsterObject{}
+	for _, objectInstanceViewRec := range objectInstanceViewRecs {
+		l.Info("Adding target monster object record >%v<", objectInstanceViewRecs)
+		dungeonMonsterObjectRec := record.ActionMonsterObject{
+			ActionID:          actionID,
+			MonsterInstanceID: targetMonsterInstanceViewRec.ID,
+			ObjectInstanceID:  objectInstanceViewRec.ID,
+			Name:              objectInstanceViewRec.Name,
+			IsEquipped:        objectInstanceViewRec.IsEquipped,
+			IsStashed:         objectInstanceViewRec.IsStashed,
+		}
+		err := m.CreateActionMonsterObjectRec(&dungeonMonsterObjectRec)
+		if err != nil {
+			l.Warn("failed creating source action monster object record >%v<", err)
+			return nil, nil, err
+		}
+		targetMonsterObjectRecs = append(targetMonsterObjectRecs, &dungeonMonsterObjectRec)
+	}
+
+	return rec, targetMonsterObjectRecs, nil
+}
+
+func (m *Model) createActionObjectRec(actionID, locationInstanceID, objectInstanceID, recordType string) (*record.ActionObject, error) {
+	l := m.Logger("createActionObjectRec")
+
+	targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(objectInstanceID)
+	if err != nil {
+		l.Warn("failed getting target object instance view record >%v<", err)
+		return nil, err
+	}
+
+	rec := &record.ActionObject{
+		RecordType:         recordType,
+		ActionID:           actionID,
+		LocationInstanceID: locationInstanceID,
+		ObjectInstanceID:   targetObjectInstanceViewRec.ID,
+		Name:               targetObjectInstanceViewRec.Name,
+		Description:        targetObjectInstanceViewRec.Description,
+		IsStashed:          targetObjectInstanceViewRec.IsStashed,
+		IsEquipped:         targetObjectInstanceViewRec.IsEquipped,
+	}
+
+	err = m.CreateActionObjectRec(rec)
+	if err != nil {
+		l.Warn("failed creating target action object record >%v<", err)
+		return nil, err
+	}
+
+	return rec, nil
 }
