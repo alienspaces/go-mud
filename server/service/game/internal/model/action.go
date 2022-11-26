@@ -8,7 +8,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// TODO: (game) Dry out/refactor ProcessCharacterAction and ProcessMonsterAction
 // TODO: (game) Do not allow attack type commands in an entrance room
 
 // ProcessCharacterAction - Processes a submitted character action
@@ -49,12 +48,11 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 
 	// Resolve the submitted character action
 	args := &ResolverArgs{
-		DungeonInstanceID:  characterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID: characterInstanceViewRec.LocationInstanceID,
-		EntityType:         EntityTypeCharacter,
-		EntityInstanceID:   characterInstanceViewRec.ID,
+		EntityType:                EntityTypeCharacter,
+		EntityInstanceID:          characterInstanceViewRec.ID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
 	}
-	actionRec, err := m.resolveAction(sentence, args, locationInstanceRecordSet)
+	actionRec, err := m.resolveAction(sentence, args)
 	if err != nil {
 		l.Warn("failed resolving character action >%v<", err)
 		return nil, coreerror.NewInvalidError("sentence", fmt.Sprintf("sentence >%s< could not be resolved", sentence))
@@ -185,12 +183,11 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 
 	// Resolve the submitted monster action
 	args := &ResolverArgs{
-		DungeonInstanceID:  mivRec.DungeonInstanceID,
-		LocationInstanceID: mivRec.LocationInstanceID,
-		EntityType:         EntityTypeMonster,
-		EntityInstanceID:   mivRec.ID,
+		EntityType:                EntityTypeMonster,
+		EntityInstanceID:          mivRec.ID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
 	}
-	actionRec, err := m.resolveAction(sentence, args, locationInstanceRecordSet)
+	actionRec, err := m.resolveAction(sentence, args)
 	if err != nil {
 		l.Warn("failed resolving monster action >%v<", err)
 		return nil, err

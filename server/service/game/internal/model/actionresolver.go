@@ -23,10 +23,9 @@ const EntityTypeMonster EntityType = "monster"
 const EntityTypeCharacter EntityType = "character"
 
 type ResolverArgs struct {
-	DungeonInstanceID  string
-	LocationInstanceID string
-	EntityType         EntityType
-	EntityInstanceID   string
+	EntityType                EntityType
+	EntityInstanceID          string
+	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
 }
 
 type ResolverSentence struct {
@@ -34,10 +33,7 @@ type ResolverSentence struct {
 	Sentence string
 }
 
-func (m *Model) resolveAction(
-	sentence string,
-	args *ResolverArgs,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Action, error) {
 
 	l := m.Logger("resolveAction")
 
@@ -47,7 +43,7 @@ func (m *Model) resolveAction(
 		return nil, err
 	}
 
-	resolveFuncs := map[string]func(sentence string, args *ResolverArgs, locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error){
+	resolveFuncs := map[string]func(sentence string, args *ResolverArgs) (*record.Action, error){
 		record.ActionCommandMove:  m.resolveMoveAction,
 		record.ActionCommandLook:  m.resolveLookAction,
 		record.ActionCommandStash: m.resolveStashAction,
@@ -57,12 +53,12 @@ func (m *Model) resolveAction(
 
 	resolveFunc, ok := resolveFuncs[resolved.Command]
 	if !ok {
-		msg := fmt.Sprintf("Command >%s< could not be resolved", resolved.Command)
+		msg := fmt.Sprintf("command >%s< could not be resolved", resolved.Command)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
-	dungeonActionRec, err := resolveFunc(resolved.Sentence, args, locationInstanceRecordSet)
+	dungeonActionRec, err := resolveFunc(resolved.Sentence, args)
 	if err != nil {
 		l.Warn("failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
@@ -103,7 +99,7 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	return &resolved, nil
 }
 
-func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs, records *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs) (*record.Action, error) {
 
 	l := m.Logger("resolveMoveAction")
 
@@ -111,8 +107,11 @@ func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs, records *
 	var targetLocationInstanceID string
 	var targetLocationDirection string
 
+	locationRecordSet := args.LocationInstanceRecordSet
+	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
+
 	if sentence != "" {
-		targetLocationInstanceID, targetLocationDirection, err = m.resolveSentenceLocationDirection(sentence, records.LocationInstanceViewRec)
+		targetLocationInstanceID, targetLocationDirection, err = m.resolveSentenceLocationDirection(sentence, locationInstanceRec)
 		if err != nil {
 			l.Warn("failed to resolve sentence location direction >%v<", err)
 			return nil, err
@@ -126,8 +125,8 @@ func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs, records *
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:                args.DungeonInstanceID,
-		LocationInstanceID:               args.LocationInstanceID,
+		DungeonInstanceID:                locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID:               locationInstanceRec.ID,
 		ResolvedCommand:                  "move",
 		ResolvedTargetLocationDirection:  nullstring.FromString(targetLocationDirection),
 		ResolvedTargetLocationInstanceID: nullstring.FromString(targetLocationInstanceID),
@@ -142,10 +141,7 @@ func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs, records *
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveLookAction(
-	sentence string,
-	args *ResolverArgs,
-	locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveLookAction(sentence string, args *ResolverArgs) (*record.Action, error) {
 
 	l := m.Logger("resolveLookAction")
 
@@ -155,6 +151,9 @@ func (m *Model) resolveLookAction(
 	var targetObjectInstanceID string
 	var targetMonsterInstanceID string
 	var targetCharacterInstanceID string
+
+	locationRecordSet := args.LocationInstanceRecordSet
+	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
 
 	if sentence != "" {
 		targetLocationInstanceID, targetLocationDirection, err = m.resolveSentenceLocationDirection(sentence, locationRecordSet.LocationInstanceViewRec)
@@ -204,8 +203,8 @@ func (m *Model) resolveLookAction(
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:                 args.DungeonInstanceID,
-		LocationInstanceID:                args.LocationInstanceID,
+		DungeonInstanceID:                 locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID:                locationInstanceRec.ID,
 		ResolvedCommand:                   "look",
 		ResolvedTargetObjectInstanceID:    nullstring.FromString(targetObjectInstanceID),
 		ResolvedTargetMonsterInstanceID:   nullstring.FromString(targetMonsterInstanceID),
@@ -223,11 +222,14 @@ func (m *Model) resolveLookAction(
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveStashAction(sentence string, args *ResolverArgs, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveStashAction(sentence string, args *ResolverArgs) (*record.Action, error) {
 
 	l := m.Logger("resolveStashAction")
 
 	var stashedObjectInstanceID string
+
+	locationRecordSet := args.LocationInstanceRecordSet
+	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
 
 	if sentence != "" {
 		// Find object in room
@@ -267,8 +269,8 @@ func (m *Model) resolveStashAction(sentence string, args *ResolverArgs, location
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:               args.DungeonInstanceID,
-		LocationInstanceID:              args.LocationInstanceID,
+		DungeonInstanceID:               locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID:              locationInstanceRec.ID,
 		ResolvedCommand:                 "stash",
 		ResolvedTargetObjectInstanceID:  nullstring.FromString(stashedObjectInstanceID),
 		ResolvedStashedObjectInstanceID: nullstring.FromString(stashedObjectInstanceID),
@@ -283,11 +285,14 @@ func (m *Model) resolveStashAction(sentence string, args *ResolverArgs, location
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs) (*record.Action, error) {
 
 	l := m.Logger("resolveEquipAction")
 
 	var equippedObjectInstanceID string
+
+	locationRecordSet := args.LocationInstanceRecordSet
+	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
 
 	if sentence != "" {
 		// Find object in room
@@ -327,8 +332,8 @@ func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs, location
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:                args.DungeonInstanceID,
-		LocationInstanceID:               args.LocationInstanceID,
+		DungeonInstanceID:                locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID:               locationInstanceRec.ID,
 		ResolvedCommand:                  "equip",
 		ResolvedTargetObjectInstanceID:   nullstring.FromString(equippedObjectInstanceID),
 		ResolvedEquippedObjectInstanceID: nullstring.FromString(equippedObjectInstanceID),
@@ -343,11 +348,14 @@ func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs, location
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveDropAction(sentence string, args *ResolverArgs, locationRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error) {
+func (m *Model) resolveDropAction(sentence string, args *ResolverArgs) (*record.Action, error) {
 
 	l := m.Logger("resolveDropAction")
 
 	var droppedObjectInstanceID string
+
+	locationRecordSet := args.LocationInstanceRecordSet
+	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
 
 	if sentence != "" {
 
@@ -409,8 +417,8 @@ func (m *Model) resolveDropAction(sentence string, args *ResolverArgs, locationR
 	}
 
 	dungeonActionRec := record.Action{
-		DungeonInstanceID:               args.DungeonInstanceID,
-		LocationInstanceID:              args.LocationInstanceID,
+		DungeonInstanceID:               locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID:              locationInstanceRec.ID,
 		ResolvedCommand:                 "drop",
 		ResolvedTargetObjectInstanceID:  nullstring.FromString(droppedObjectInstanceID),
 		ResolvedDroppedObjectInstanceID: nullstring.FromString(droppedObjectInstanceID),
