@@ -134,113 +134,17 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		actionCharacterObjectRecs = append(actionCharacterObjectRecs, &dungeonCharacterObjectRec)
 	}
 
-	actionRecordSet := record.ActionRecordSet{
+	actionRecordSet, err := m.createActionRecordSetRecords(&record.ActionRecordSet{
 		ActionRec:                 actionRec,
 		ActionCharacterRec:        &actionCharacterRec,
 		ActionCharacterObjectRecs: actionCharacterObjectRecs,
-	}
-
-	// Create current location record set
-	currentLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
+	})
 	if err != nil {
-		l.Warn("failed creating action location record set >%v<", err)
+		l.Warn("failed creating action record set records >%v<", err)
 		return nil, err
 	}
-	actionRecordSet.CurrentLocation = currentLocationRecordSet
 
-	// Create target location record set
-	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-		targetLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
-		if err != nil {
-			l.Warn("failed creating target action location record set >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetLocation = targetLocationRecordSet
-	}
-
-	// Create target character action records
-	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
-		if err != nil {
-			l.Warn("failed create action character records >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionCharacterRec = actionCharacterRec
-		actionRecordSet.TargetActionCharacterObjectRecs = actionCharacterObjectRecs
-	}
-
-	// Create the target dungeon monster action record
-	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
-		if err != nil {
-			l.Warn("failed create action character records >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionMonsterRec = actionMonsterRec
-		actionRecordSet.TargetActionMonsterObjectRecs = actionMonsterObjectRecs
-	}
-
-	// Create the target dungeon object action record
-	if actionRec.ResolvedTargetObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID),
-			record.ActionObjectRecordTypeTarget,
-		)
-		if err != nil {
-			l.Warn("failed creating action target object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionObjectRec = actionObjectRec
-	}
-
-	// Create the stashed dungeon object action record
-	if actionRec.ResolvedStashedObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedStashedObjectInstanceID),
-			record.ActionObjectRecordTypeStashed,
-		)
-		if err != nil {
-			l.Warn("failed creating action stashed object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.StashedActionObjectRec = actionObjectRec
-	}
-
-	// Create the equipped dungeon object action record
-	if actionRec.ResolvedEquippedObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedEquippedObjectInstanceID),
-			record.ActionObjectRecordTypeEquipped,
-		)
-		if err != nil {
-			l.Warn("failed creating action equipped object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.EquippedActionObjectRec = actionObjectRec
-	}
-
-	// Create the dropped dungeon object action record
-	if actionRec.ResolvedDroppedObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedDroppedObjectInstanceID),
-			record.ActionObjectRecordTypeDropped,
-		)
-		if err != nil {
-			l.Warn("failed creating action equipped object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.DroppedActionObjectRec = actionObjectRec
-	}
-
-	return &actionRecordSet, nil
+	return actionRecordSet, nil
 }
 
 // ProcessMonsterAction - Processes a submitted character action
@@ -250,41 +154,41 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	l.Info("Processing monster ID >%s< action command >%s<", monsterInstanceID, sentence)
 
 	// Verify the monster performing the action exists within the specified dungeon
-	monsterInstanceViewRec, err := m.GetMonsterInstanceViewRec(monsterInstanceID)
+	mivRec, err := m.GetMonsterInstanceViewRec(monsterInstanceID)
 	if err != nil {
 		l.Warn("failed getting monster record before performing action >%v<", err)
 		return nil, err
 	}
-	if monsterInstanceViewRec == nil {
+	if mivRec == nil {
 		msg := fmt.Sprintf("failed getting monster record ID >%s< before performing action", monsterInstanceID)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
-	if monsterInstanceViewRec.DungeonInstanceID != dungeonInstanceID {
+	if mivRec.DungeonInstanceID != dungeonInstanceID {
 		msg := fmt.Sprintf("monster ID >%s< does not exist in dungeon ID >%s<", monsterInstanceID, dungeonInstanceID)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
 	// Get the current dungeon location set of related records
-	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(monsterInstanceViewRec.LocationInstanceID, true)
+	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(mivRec.LocationInstanceID, true)
 	if err != nil {
 		l.Warn("failed getting dungeon location record set before performing action >%v<", err)
 		return nil, err
 	}
 	if locationInstanceRecordSet == nil {
-		msg := fmt.Sprintf("failed getting dungeon location record ID >%s< set before performing action", monsterInstanceViewRec.LocationInstanceID)
+		msg := fmt.Sprintf("failed getting dungeon location record ID >%s< set before performing action", mivRec.LocationInstanceID)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
 	// Resolve the submitted monster action
 	args := &ResolverArgs{
-		DungeonInstanceID:  monsterInstanceViewRec.DungeonInstanceID,
-		LocationInstanceID: monsterInstanceViewRec.LocationInstanceID,
+		DungeonInstanceID:  mivRec.DungeonInstanceID,
+		LocationInstanceID: mivRec.LocationInstanceID,
 		EntityType:         EntityTypeMonster,
-		EntityInstanceID:   monsterInstanceViewRec.ID,
+		EntityInstanceID:   mivRec.ID,
 	}
 	actionRec, err := m.resolveAction(sentence, args, locationInstanceRecordSet)
 	if err != nil {
@@ -293,7 +197,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	}
 
 	// Perform the submitted monster action
-	actionRec, err = m.performAction(nil, monsterInstanceViewRec, actionRec, locationInstanceRecordSet)
+	actionRec, err = m.performAction(nil, mivRec, actionRec, locationInstanceRecordSet)
 	if err != nil {
 		l.Warn("failed performing monster action >%v<", err)
 		return nil, err
@@ -308,8 +212,8 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 
 	l.Info("Created action record ID >%s<", actionRec.ID)
 
-	// TODO: (game) Maybe don't need to do this... Get the updated monster record
-	monsterInstanceViewRec, err = m.GetMonsterInstanceViewRec(monsterInstanceID)
+	// Get the updated monster record
+	mivRec, err = m.GetMonsterInstanceViewRec(monsterInstanceID)
 	if err != nil {
 		l.Warn("failed getting monster record after performing action >%v<", err)
 		return nil, err
@@ -320,18 +224,18 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		RecordType:          record.ActionMonsterRecordTypeSource,
 		ActionID:            actionRec.ID,
 		LocationInstanceID:  actionRec.LocationInstanceID,
-		MonsterInstanceID:   monsterInstanceViewRec.ID,
-		Name:                monsterInstanceViewRec.Name,
-		Strength:            monsterInstanceViewRec.Strength,
-		Dexterity:           monsterInstanceViewRec.Dexterity,
-		Intelligence:        monsterInstanceViewRec.Intelligence,
-		CurrentStrength:     monsterInstanceViewRec.CurrentStrength,
-		CurrentDexterity:    monsterInstanceViewRec.CurrentDexterity,
-		CurrentIntelligence: monsterInstanceViewRec.CurrentIntelligence,
-		Health:              monsterInstanceViewRec.Health,
-		Fatigue:             monsterInstanceViewRec.Fatigue,
-		CurrentHealth:       monsterInstanceViewRec.CurrentHealth,
-		CurrentFatigue:      monsterInstanceViewRec.CurrentFatigue,
+		MonsterInstanceID:   mivRec.ID,
+		Name:                mivRec.Name,
+		Strength:            mivRec.Strength,
+		Dexterity:           mivRec.Dexterity,
+		Intelligence:        mivRec.Intelligence,
+		CurrentStrength:     mivRec.CurrentStrength,
+		CurrentDexterity:    mivRec.CurrentDexterity,
+		CurrentIntelligence: mivRec.CurrentIntelligence,
+		Health:              mivRec.Health,
+		Fatigue:             mivRec.Fatigue,
+		CurrentHealth:       mivRec.CurrentHealth,
+		CurrentFatigue:      mivRec.CurrentFatigue,
 	}
 
 	err = m.CreateActionMonsterRec(&actionMonsterRec)
@@ -341,22 +245,22 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	}
 
 	// Create action monster object records
-	objectInstanceViewRecs, err := m.GetMonsterInstanceObjectInstanceViewRecs(monsterInstanceViewRec.ID)
+	oivRecs, err := m.GetMonsterInstanceObjectInstanceViewRecs(mivRec.ID)
 	if err != nil {
 		l.Warn("failed getting source monster object instance view records >%v<", err)
 		return nil, err
 	}
 
 	actionMonsterObjectRecs := []*record.ActionMonsterObject{}
-	for _, objectInstanceViewRec := range objectInstanceViewRecs {
-		l.Info("Adding monster action object record >%#v<", objectInstanceViewRec)
+	for _, oivRec := range oivRecs {
+		l.Info("Adding monster action object record >%#v<", oivRec)
 		dungeonMonsterObjectRec := record.ActionMonsterObject{
 			ActionID:          actionRec.ID,
-			MonsterInstanceID: monsterInstanceViewRec.ID,
-			ObjectInstanceID:  objectInstanceViewRec.ID,
-			Name:              objectInstanceViewRec.Name,
-			IsEquipped:        objectInstanceViewRec.IsEquipped,
-			IsStashed:         objectInstanceViewRec.IsStashed,
+			MonsterInstanceID: mivRec.ID,
+			ObjectInstanceID:  oivRec.ID,
+			Name:              oivRec.Name,
+			IsEquipped:        oivRec.IsEquipped,
+			IsStashed:         oivRec.IsStashed,
 		}
 		err := m.CreateActionMonsterObjectRec(&dungeonMonsterObjectRec)
 		if err != nil {
@@ -366,113 +270,17 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		actionMonsterObjectRecs = append(actionMonsterObjectRecs, &dungeonMonsterObjectRec)
 	}
 
-	actionRecordSet := record.ActionRecordSet{
+	actionRecordSet, err := m.createActionRecordSetRecords(&record.ActionRecordSet{
 		ActionRec:               actionRec,
 		ActionMonsterRec:        &actionMonsterRec,
 		ActionMonsterObjectRecs: actionMonsterObjectRecs,
-	}
-
-	// Create current location record set
-	currentLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
+	})
 	if err != nil {
-		l.Warn("failed creating action location record set >%v<", err)
+		l.Warn("failed creating action record set records >%v<", err)
 		return nil, err
 	}
-	actionRecordSet.CurrentLocation = currentLocationRecordSet
 
-	// Create target location record set
-	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-		targetLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
-		if err != nil {
-			l.Warn("failed creating target action location record set >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetLocation = targetLocationRecordSet
-	}
-
-	// Create the target character action record
-	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
-		if err != nil {
-			l.Warn("failed create action character records >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionCharacterRec = actionCharacterRec
-		actionRecordSet.TargetActionCharacterObjectRecs = actionCharacterObjectRecs
-	}
-
-	// Create the target dungeon monster action record
-	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
-		if err != nil {
-			l.Warn("failed create action character records >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionMonsterRec = actionMonsterRec
-		actionRecordSet.TargetActionMonsterObjectRecs = actionMonsterObjectRecs
-	}
-
-	// Create the target dungeon object action record
-	if actionRec.ResolvedTargetObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID),
-			record.ActionObjectRecordTypeTarget,
-		)
-		if err != nil {
-			l.Warn("failed creating action target object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.TargetActionObjectRec = actionObjectRec
-	}
-
-	// Create the stashed dungeon object action record
-	if actionRec.ResolvedStashedObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedStashedObjectInstanceID),
-			record.ActionObjectRecordTypeStashed,
-		)
-		if err != nil {
-			l.Warn("failed creating action stashed object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.StashedActionObjectRec = actionObjectRec
-	}
-
-	// Create the equipped dungeon object action record
-	if actionRec.ResolvedEquippedObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedEquippedObjectInstanceID),
-			record.ActionObjectRecordTypeEquipped,
-		)
-		if err != nil {
-			l.Warn("failed creating action equipped object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.EquippedActionObjectRec = actionObjectRec
-	}
-
-	// Create the dropped dungeon object action record
-	if actionRec.ResolvedDroppedObjectInstanceID.Valid {
-		actionObjectRec, err := m.createActionObjectRec(
-			actionRec.ID,
-			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedDroppedObjectInstanceID),
-			record.ActionObjectRecordTypeDropped,
-		)
-		if err != nil {
-			l.Warn("failed creating action equipped object record >%v<", err)
-			return nil, err
-		}
-		actionRecordSet.DroppedActionObjectRec = actionObjectRec
-	}
-
-	return &actionRecordSet, nil
+	return actionRecordSet, nil
 }
 
 func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, error) {
@@ -924,6 +732,114 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 	locationInstanceRecordSet.LocationInstanceViewRecs = locationInstanceViewRecs
 
 	return locationInstanceRecordSet, nil
+}
+
+func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecordSet) (*record.ActionRecordSet, error) {
+	l := m.Logger("createActionRecordSetRecords")
+
+	actionRec := actionRecordSet.ActionRec
+
+	// Create current location record set
+	currentLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
+	if err != nil {
+		l.Warn("failed creating action location record set >%v<", err)
+		return nil, err
+	}
+	actionRecordSet.CurrentLocation = currentLocationRecordSet
+
+	// Create target location record set
+	if actionRec.ResolvedTargetLocationInstanceID.Valid {
+		targetLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
+		if err != nil {
+			l.Warn("failed creating target action location record set >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.TargetLocation = targetLocationRecordSet
+	}
+
+	// Create the target character action record
+	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
+		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+		if err != nil {
+			l.Warn("failed create action character records >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.TargetActionCharacterRec = actionCharacterRec
+		actionRecordSet.TargetActionCharacterObjectRecs = actionCharacterObjectRecs
+	}
+
+	// Create the target dungeon monster action record
+	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
+		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
+		if err != nil {
+			l.Warn("failed create action character records >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.TargetActionMonsterRec = actionMonsterRec
+		actionRecordSet.TargetActionMonsterObjectRecs = actionMonsterObjectRecs
+	}
+
+	// Create the target dungeon object action record
+	if actionRec.ResolvedTargetObjectInstanceID.Valid {
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID),
+			record.ActionObjectRecordTypeTarget,
+		)
+		if err != nil {
+			l.Warn("failed creating action target object record >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.TargetActionObjectRec = actionObjectRec
+	}
+
+	// Create the stashed dungeon object action record
+	if actionRec.ResolvedStashedObjectInstanceID.Valid {
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedStashedObjectInstanceID),
+			record.ActionObjectRecordTypeStashed,
+		)
+		if err != nil {
+			l.Warn("failed creating action stashed object record >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.StashedActionObjectRec = actionObjectRec
+	}
+
+	// Create the equipped dungeon object action record
+	if actionRec.ResolvedEquippedObjectInstanceID.Valid {
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedEquippedObjectInstanceID),
+			record.ActionObjectRecordTypeEquipped,
+		)
+		if err != nil {
+			l.Warn("failed creating action equipped object record >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.EquippedActionObjectRec = actionObjectRec
+	}
+
+	// Create the dropped dungeon object action record
+	if actionRec.ResolvedDroppedObjectInstanceID.Valid {
+		actionObjectRec, err := m.createActionObjectRec(
+			actionRec.ID,
+			actionRec.LocationInstanceID,
+			nullstring.ToString(actionRec.ResolvedDroppedObjectInstanceID),
+			record.ActionObjectRecordTypeDropped,
+		)
+		if err != nil {
+			l.Warn("failed creating action equipped object record >%v<", err)
+			return nil, err
+		}
+		actionRecordSet.DroppedActionObjectRec = actionObjectRec
+	}
+
+	return actionRecordSet, nil
 }
 
 func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID string) (*record.ActionLocationRecordSet, error) {
