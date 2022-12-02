@@ -14,7 +14,7 @@ var dungeonActionResolvedCommands []string = []string{
 	record.ActionCommandStash,
 	record.ActionCommandEquip,
 	record.ActionCommandDrop,
-	// record.ActionCommandAttack,
+	record.ActionCommandAttack,
 }
 
 type EntityType string
@@ -34,7 +34,6 @@ type ResolverSentence struct {
 }
 
 func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Action, error) {
-
 	l := m.Logger("resolveAction")
 
 	resolved, err := m.resolveCommand(sentence)
@@ -44,11 +43,12 @@ func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Acti
 	}
 
 	resolveFuncs := map[string]func(sentence string, args *ResolverArgs) (*record.Action, error){
-		record.ActionCommandMove:  m.resolveMoveAction,
-		record.ActionCommandLook:  m.resolveLookAction,
-		record.ActionCommandStash: m.resolveStashAction,
-		record.ActionCommandEquip: m.resolveEquipAction,
-		record.ActionCommandDrop:  m.resolveDropAction,
+		record.ActionCommandMove:   m.resolveActionMove,
+		record.ActionCommandLook:   m.resolveActionLook,
+		record.ActionCommandStash:  m.resolveActionStash,
+		record.ActionCommandEquip:  m.resolveActionEquip,
+		record.ActionCommandDrop:   m.resolveActionDrop,
+		record.ActionCommandAttack: m.resolveActionAttack,
 	}
 
 	resolveFunc, ok := resolveFuncs[resolved.Command]
@@ -69,17 +69,17 @@ func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Acti
 	return dungeonActionRec, nil
 }
 
+// NOTE: Some commands require an additional argument, we can probably short circuit that check here...
 func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
+	l := m.Logger("resolveCommand")
+
 	sentenceWords := strings.Split(sentence, " ")
 	resolved := ResolverSentence{}
-
-	l := m.Logger("resolveCommand")
 
 	l.Debug("Have sentence words >%v<", sentenceWords)
 
 	for _, dungeonAction := range dungeonActionResolvedCommands {
 		l.Debug("Checking dungeon action >%s<", dungeonAction)
-
 		// NOTE: The appended space is important
 		if strings.Contains(sentence, dungeonAction+" ") {
 			l.Debug("Sentence contains action >%s<", dungeonAction)
@@ -99,9 +99,8 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	return &resolved, nil
 }
 
-func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs) (*record.Action, error) {
-
-	l := m.Logger("resolveMoveAction")
+func (m *Model) resolveActionMove(sentence string, args *ResolverArgs) (*record.Action, error) {
+	l := m.Logger("resolveActionMove")
 
 	var err error
 	var targetLocationInstanceID string
@@ -141,9 +140,8 @@ func (m *Model) resolveMoveAction(sentence string, args *ResolverArgs) (*record.
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveLookAction(sentence string, args *ResolverArgs) (*record.Action, error) {
-
-	l := m.Logger("resolveLookAction")
+func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.Action, error) {
+	l := m.Logger("resolveActionLook")
 
 	var err error
 	var targetLocationInstanceID string
@@ -222,9 +220,56 @@ func (m *Model) resolveLookAction(sentence string, args *ResolverArgs) (*record.
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveStashAction(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*record.Action, error) {
+	l := m.Logger("resolveActionAttack")
 
-	l := m.Logger("resolveStashAction")
+	var targetMonsterInstanceID string
+	var targetCharacterInstanceID string
+
+	locationRecordSet := args.LocationInstanceRecordSet
+	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
+
+	if sentence != "" {
+		dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, locationRecordSet.MonsterInstanceViewRecs)
+		if err != nil {
+			l.Warn("failed to resolve sentence monster >%v<", err)
+			return nil, err
+		}
+		if dungeonMonsterRec != nil {
+			targetMonsterInstanceID = dungeonMonsterRec.ID
+		}
+
+		if targetMonsterInstanceID == "" {
+			characterInstanceViewRec, err := m.resolveSentenceCharacter(sentence, locationRecordSet.CharacterInstanceViewRecs)
+			if err != nil {
+				l.Warn("failed to resolve sentence character >%v<", err)
+				return nil, err
+			}
+			if characterInstanceViewRec != nil {
+				targetCharacterInstanceID = characterInstanceViewRec.ID
+			}
+		}
+	}
+
+	dungeonActionRec := record.Action{
+		DungeonInstanceID:                 locationInstanceRec.DungeonInstanceID,
+		LocationInstanceID:                locationInstanceRec.ID,
+		ResolvedCommand:                   "attack",
+		ResolvedTargetMonsterInstanceID:   nullstring.FromString(targetMonsterInstanceID),
+		ResolvedTargetCharacterInstanceID: nullstring.FromString(targetCharacterInstanceID),
+	}
+
+	if args.EntityType == EntityTypeCharacter {
+		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	} else if args.EntityType == EntityTypeMonster {
+		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+	}
+
+	return &dungeonActionRec, nil
+}
+
+func (m *Model) resolveActionStash(sentence string, args *ResolverArgs) (*record.Action, error) {
+	l := m.Logger("resolveActionStash")
 
 	var stashedObjectInstanceID string
 
@@ -285,9 +330,8 @@ func (m *Model) resolveStashAction(sentence string, args *ResolverArgs) (*record
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs) (*record.Action, error) {
-
-	l := m.Logger("resolveEquipAction")
+func (m *Model) resolveActionEquip(sentence string, args *ResolverArgs) (*record.Action, error) {
+	l := m.Logger("resolveActionEquip")
 
 	var equippedObjectInstanceID string
 
@@ -348,9 +392,8 @@ func (m *Model) resolveEquipAction(sentence string, args *ResolverArgs) (*record
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveDropAction(sentence string, args *ResolverArgs) (*record.Action, error) {
-
-	l := m.Logger("resolveDropAction")
+func (m *Model) resolveActionDrop(sentence string, args *ResolverArgs) (*record.Action, error) {
+	l := m.Logger("resolveActionDrop")
 
 	var droppedObjectInstanceID string
 

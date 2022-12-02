@@ -27,11 +27,12 @@ func (m *Model) performAction(
 	l := m.Logger("performCharacterAction")
 
 	actionFuncs := map[string]characterActionFunc{
-		"move":  m.performActionMove,
-		"look":  m.performActionLook,
-		"stash": m.performActionStash,
-		"equip": m.performActionEquip,
-		"drop":  m.performActionDrop,
+		"move":   m.performActionMove,
+		"look":   m.performActionLook,
+		"stash":  m.performActionStash,
+		"equip":  m.performActionEquip,
+		"drop":   m.performActionDrop,
+		"attack": m.performActionAttack,
 	}
 
 	actionFunc, ok := actionFuncs[actionRec.ResolvedCommand]
@@ -61,7 +62,6 @@ func (m *Model) performActionMove(
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
-
 	l := m.Logger("performActionMove")
 
 	if actionRec.CharacterInstanceID.Valid {
@@ -111,7 +111,6 @@ func (m *Model) performActionLook(
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
-
 	l := m.Logger("performActionLook")
 
 	// TODO: (game) Register the number of times the character has looked at any other
@@ -140,7 +139,6 @@ func (m *Model) performActionStash(
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
-
 	l := m.Logger("performActionStash")
 
 	if actionRec.CharacterInstanceID.Valid {
@@ -205,7 +203,6 @@ func (m *Model) performActionEquip(
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
-
 	l := m.Logger("performActionEquip")
 
 	if actionRec.CharacterInstanceID.Valid {
@@ -270,7 +267,6 @@ func (m *Model) performActionDrop(
 	actionRec *record.Action,
 	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
 ) (*record.Action, error) {
-
 	l := m.Logger("performActionDrop")
 
 	if actionRec.CharacterInstanceID.Valid {
@@ -333,6 +329,37 @@ func (m *Model) performActionDrop(
 		if err != nil {
 			l.Warn("failed updating dungeon object instance record >%v<", err)
 			return nil, err
+		}
+	}
+
+	return actionRec, nil
+}
+
+// TODO: Implement attack action
+func (m *Model) performActionAttack(
+	characterInstanceViewRec *record.CharacterInstanceView,
+	monsterInstanceViewRec *record.MonsterInstanceView,
+	actionRec *record.Action,
+	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
+) (*record.Action, error) {
+	l := m.Logger("performActionAttack")
+
+	if actionRec.CharacterInstanceID.Valid {
+
+		if actionRec.ResolvedTargetMonsterInstanceID.Valid {
+			l.Debug("Attacking monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
+
+		} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
+			l.Debug("Attacking character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
+		}
+
+	} else if actionRec.MonsterInstanceID.Valid {
+
+		if actionRec.ResolvedTargetMonsterInstanceID.Valid {
+			l.Debug("Attacking monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
+
+		} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
+			l.Debug("Attacking character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
 		}
 	}
 
