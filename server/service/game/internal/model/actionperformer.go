@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/mapper"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
@@ -335,7 +336,6 @@ func (m *Model) performActionDrop(
 	return actionRec, nil
 }
 
-// TODO: Implement attack action
 func (m *Model) performActionAttack(
 	characterInstanceViewRec *record.CharacterInstanceView,
 	monsterInstanceViewRec *record.MonsterInstanceView,
@@ -345,21 +345,24 @@ func (m *Model) performActionAttack(
 	l := m.Logger("performActionAttack")
 
 	if actionRec.CharacterInstanceID.Valid {
-
-		if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-			l.Debug("Attacking monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
-
-		} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-			l.Debug("Attacking character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
+		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
+			l.Info("Character attacking character")
 		}
-
+		if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+			l.Info("Character attacking monster")
+		}
+		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
+			l.Info("With weapon")
+		}
 	} else if actionRec.MonsterInstanceID.Valid {
-
-		if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-			l.Debug("Attacking monster ID >%s<", actionRec.ResolvedTargetMonsterInstanceID.String)
-
-		} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-			l.Debug("Attacking character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
+		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
+			l.Info("Monster attacking character")
+		}
+		if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+			l.Info("Monster attacking monster")
+		}
+		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
+			l.Info("With weapon")
 		}
 	}
 

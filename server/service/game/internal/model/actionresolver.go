@@ -230,6 +230,8 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*recor
 	locationInstanceRec := locationRecordSet.LocationInstanceViewRec
 
 	if sentence != "" {
+
+		// Attacking a monster
 		dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, locationRecordSet.MonsterInstanceViewRecs)
 		if err != nil {
 			l.Warn("failed to resolve sentence monster >%v<", err)
@@ -239,6 +241,7 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*recor
 			targetMonsterInstanceID = dungeonMonsterRec.ID
 		}
 
+		// Attacking a character
 		if targetMonsterInstanceID == "" {
 			characterInstanceViewRec, err := m.resolveSentenceCharacter(sentence, locationRecordSet.CharacterInstanceViewRecs)
 			if err != nil {
@@ -261,8 +264,43 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*recor
 
 	if args.EntityType == EntityTypeCharacter {
 		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+
+		// Attacking with a specific weapon
+		objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
+		if err != nil {
+			l.Warn("failed to get character equipped objects >%v<", err)
+			return nil, err
+		}
+
+		objectInstanceRec, err := m.getObjectFromSentence(sentence, objectInstanceViewRecs)
+		if err != nil {
+			l.Warn("failed to get character object from sentence >%v<", err)
+			return nil, err
+		}
+
+		if objectInstanceRec != nil {
+			dungeonActionRec.ResolvedEquippedObjectInstanceID = nullstring.FromString(objectInstanceRec.ID)
+		}
+
 	} else if args.EntityType == EntityTypeMonster {
 		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+
+		// Attacking with a specific weapon
+		objectInstanceViewRecs, err := m.GetMonsterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
+		if err != nil {
+			l.Warn("failed to get monster equipped objects >%v<", err)
+			return nil, err
+		}
+
+		objectInstanceRec, err := m.getObjectFromSentence(sentence, objectInstanceViewRecs)
+		if err != nil {
+			l.Warn("failed to get monster object from sentence >%v<", err)
+			return nil, err
+		}
+
+		if objectInstanceRec != nil {
+			dungeonActionRec.ResolvedEquippedObjectInstanceID = nullstring.FromString(objectInstanceRec.ID)
+		}
 	}
 
 	return &dungeonActionRec, nil

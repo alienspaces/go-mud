@@ -16,11 +16,11 @@ const (
 )
 
 type Action struct {
+	SerialID                          sql.NullInt16  `db:"serial_id"`
 	DungeonInstanceID                 string         `db:"dungeon_instance_id"`
 	LocationInstanceID                string         `db:"location_instance_id"`
 	CharacterInstanceID               sql.NullString `db:"character_instance_id"`
 	MonsterInstanceID                 sql.NullString `db:"monster_instance_id"`
-	SerialID                          sql.NullInt16  `db:"serial_id"`
 	ResolvedCommand                   string         `db:"resolved_command"`
 	ResolvedEquippedObjectInstanceID  sql.NullString `db:"resolved_equipped_object_instance_id"`
 	ResolvedStashedObjectInstanceID   sql.NullString `db:"resolved_stashed_object_instance_id"`

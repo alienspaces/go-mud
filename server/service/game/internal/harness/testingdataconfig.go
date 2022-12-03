@@ -67,7 +67,7 @@ var DefaultDataConfig = DataConfig{
 		{
 			Record: record.Monster{
 				Name:        "Grumpy Dwarf",
-				Description: "A particularly grumpy specimen of a typical dwarf.",
+				Description: "A particularly grumpy specimen of a common dwarf.",
 			},
 			MonsterObjectConfig: []MonsterObjectConfig{
 				{
@@ -87,7 +87,7 @@ var DefaultDataConfig = DataConfig{
 		{
 			Record: record.Monster{
 				Name:        "Angry Goblin",
-				Description: "A particularly angry specimen of a typical goblin.",
+				Description: "A particularly angry specimen of a common goblin.",
 			},
 			MonsterObjectConfig: []MonsterObjectConfig{},
 		},
@@ -218,6 +218,9 @@ var DefaultDataConfig = DataConfig{
 					CharacterInstanceConfig: []CharacterInstanceConfig{
 						{
 							Name: "Barricade",
+						},
+						{
+							Name: "Legislate",
 						},
 					},
 					ActionConfig: []ActionConfig{
