@@ -108,6 +108,9 @@ func TestPostActionHandler(t *testing.T) {
 									{
 										CharacterName: cRec.Name,
 									},
+									{
+										CharacterName: "legislate",
+									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
@@ -156,6 +159,9 @@ func TestPostActionHandler(t *testing.T) {
 								LocationCharacters: []schema.ActionLocationCharacter{
 									{
 										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: "legislate",
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -328,6 +334,9 @@ func TestPostActionHandler(t *testing.T) {
 									{
 										CharacterName: cRec.Name,
 									},
+									{
+										CharacterName: "legislate",
+									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
@@ -433,6 +442,9 @@ func TestPostActionHandler(t *testing.T) {
 									{
 										CharacterName: cRec.Name,
 									},
+									{
+										CharacterName: "legislate",
+									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
@@ -527,6 +539,9 @@ func TestPostActionHandler(t *testing.T) {
 								LocationCharacters: []schema.ActionLocationCharacter{
 									{
 										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: "legislate",
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -637,6 +652,9 @@ func TestPostActionHandler(t *testing.T) {
 									{
 										CharacterName: cRec.Name,
 									},
+									{
+										CharacterName: "legislate",
+									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
@@ -743,6 +761,9 @@ func TestPostActionHandler(t *testing.T) {
 									{
 										CharacterName: cRec.Name,
 									},
+									{
+										CharacterName: "legislate",
+									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
@@ -842,6 +863,9 @@ func TestPostActionHandler(t *testing.T) {
 									{
 										CharacterName: cRec.Name,
 									},
+									{
+										CharacterName: "legislate",
+									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
@@ -940,6 +964,9 @@ func TestPostActionHandler(t *testing.T) {
 								LocationCharacters: []schema.ActionLocationCharacter{
 									{
 										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: "legislate",
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -1072,11 +1099,11 @@ func TestPostActionHandler(t *testing.T) {
 
 						// Current location characters
 						t.Logf("Checking character count >%d< >%d<", len(expectData.ActionLocation.LocationCharacters), len(responseBody.Data[idx].ActionLocation.LocationCharacters))
-						require.Equal(t, len(expectData.ActionLocation.LocationCharacters), len(responseBody.Data[idx].ActionLocation.LocationCharacters), "Response characters count equals expected")
+						require.Equal(t, len(expectData.ActionLocation.LocationCharacters), len(responseBody.Data[idx].ActionLocation.LocationCharacters), "Response action location characters count equals expected")
 						if len(expectData.ActionLocation.LocationCharacters) > 0 {
-							for cIdx, character := range expectData.ActionLocation.LocationCharacters {
-								t.Logf("Checking character name >%s< >%s<", character.CharacterName, responseBody.Data[idx].ActionLocation.LocationCharacters[cIdx].CharacterName)
-								require.Equal(t, character.CharacterName, responseBody.Data[idx].ActionLocation.LocationCharacters[cIdx].CharacterName, "Character name equals expected")
+							for _, character := range expectData.ActionLocation.LocationCharacters {
+								t.Logf("Checking action location character name >%s<", character.CharacterName)
+								require.True(t, responseBody.Data[idx].ActionLocation.LocationCharacters.HasCharacterWithName(character.CharacterName))
 							}
 						}
 						if len(expectData.ActionLocation.LocationCharacters) == 0 {
@@ -1085,11 +1112,11 @@ func TestPostActionHandler(t *testing.T) {
 
 						// Current location monsters
 						t.Logf("Checking monster count >%d< >%d<", len(expectData.ActionLocation.LocationMonsters), len(responseBody.Data[idx].ActionLocation.LocationMonsters))
-						require.Equal(t, len(expectData.ActionLocation.LocationMonsters), len(responseBody.Data[idx].ActionLocation.LocationMonsters), "Response monsters count equals expected")
+						require.Equal(t, len(expectData.ActionLocation.LocationMonsters), len(responseBody.Data[idx].ActionLocation.LocationMonsters), "Response action location monsters count equals expected")
 						if len(expectData.ActionLocation.LocationMonsters) > 0 {
-							for mIdx, monster := range expectData.ActionLocation.LocationMonsters {
-								t.Logf("Checking monster name >%s< >%s<", monster.MonsterName, responseBody.Data[idx].ActionLocation.LocationMonsters[mIdx].MonsterName)
-								require.Equal(t, monster.MonsterName, responseBody.Data[idx].ActionLocation.LocationMonsters[mIdx].MonsterName, "Monster name equals expected")
+							for _, monster := range expectData.ActionLocation.LocationMonsters {
+								t.Logf("Checking action location monster name >%s<", monster.MonsterName)
+								require.True(t, responseBody.Data[idx].ActionLocation.LocationMonsters.HasMonsterWithName(monster.MonsterName))
 							}
 						}
 						if len(expectData.ActionLocation.LocationMonsters) == 0 {
@@ -1098,17 +1125,11 @@ func TestPostActionHandler(t *testing.T) {
 
 						// Current location objects (any order)
 						t.Logf("Checking object count >%d< >%d<", len(expectData.ActionLocation.LocationObjects), len(responseBody.Data[idx].ActionLocation.LocationObjects))
-						require.Equal(t, len(expectData.ActionLocation.LocationObjects), len(responseBody.Data[idx].ActionLocation.LocationObjects), "Response objects count equals expected")
+						require.Equal(t, len(expectData.ActionLocation.LocationObjects), len(responseBody.Data[idx].ActionLocation.LocationObjects), "Response action location objects count equals expected")
 						if len(expectData.ActionLocation.LocationObjects) > 0 {
-							for _, eObject := range expectData.ActionLocation.LocationObjects {
-								found := false
-								for _, rObject := range responseBody.Data[idx].ActionLocation.LocationObjects {
-									t.Logf("Checking expected location object name >%s< response location object name >%s<", eObject.ObjectName, rObject.ObjectName)
-									if eObject.ObjectName == rObject.ObjectName {
-										found = true
-									}
-								}
-								require.True(t, found, fmt.Sprintf("Location object name >%s< found", eObject.ObjectName))
+							for _, object := range expectData.ActionLocation.LocationObjects {
+								t.Logf("Checking action location object name >%s<", object.ObjectName)
+								require.True(t, responseBody.Data[idx].ActionLocation.LocationObjects.HasObjectWithName(object.ObjectName))
 							}
 						}
 
@@ -1126,37 +1147,31 @@ func TestPostActionHandler(t *testing.T) {
 
 							// Target location characters
 							t.Logf("Checking character count >%d< >%d<", len(expectData.ActionTargetLocation.LocationCharacters), len(responseBody.Data[idx].ActionTargetLocation.LocationCharacters))
-							require.Equal(t, len(expectData.ActionTargetLocation.LocationCharacters), len(responseBody.Data[idx].ActionTargetLocation.LocationCharacters), "Response characters count equals expected")
+							require.Equal(t, len(expectData.ActionTargetLocation.LocationCharacters), len(responseBody.Data[idx].ActionTargetLocation.LocationCharacters), "Response action target location characters count equals expected")
 							if len(expectData.ActionTargetLocation.LocationCharacters) > 0 {
-								for cIdx, character := range expectData.ActionTargetLocation.LocationCharacters {
-									t.Logf("Checking character name >%s< >%s<", character.CharacterName, responseBody.Data[idx].ActionTargetLocation.LocationCharacters[cIdx].CharacterName)
-									require.Equal(t, character.CharacterName, responseBody.Data[idx].ActionTargetLocation.LocationCharacters[cIdx].CharacterName, "Character name equals expected")
+								for _, character := range expectData.ActionTargetLocation.LocationCharacters {
+									t.Logf("Checking action target location character name >%s<", character.CharacterName)
+									require.True(t, responseBody.Data[idx].ActionTargetLocation.LocationCharacters.HasCharacterWithName(character.CharacterName))
 								}
 							}
 
 							// Target location monsters
 							t.Logf("Checking monster count >%d< >%d<", len(expectData.ActionTargetLocation.LocationMonsters), len(responseBody.Data[idx].ActionTargetLocation.LocationMonsters))
-							require.Equal(t, len(expectData.ActionTargetLocation.LocationMonsters), len(responseBody.Data[idx].ActionTargetLocation.LocationMonsters), "Response monsters count equals expected")
+							require.Equal(t, len(expectData.ActionTargetLocation.LocationMonsters), len(responseBody.Data[idx].ActionTargetLocation.LocationMonsters), "Response action target location monsters count equals expected")
 							if len(expectData.ActionTargetLocation.LocationMonsters) > 0 {
-								for mIdx, monster := range expectData.ActionTargetLocation.LocationMonsters {
-									t.Logf("Checking monster name >%s< >%s<", monster.MonsterName, responseBody.Data[idx].ActionTargetLocation.LocationMonsters[mIdx].MonsterName)
-									require.Equal(t, monster.MonsterName, responseBody.Data[idx].ActionTargetLocation.LocationMonsters[mIdx].MonsterName, "Monster name equals expected")
+								for _, monster := range expectData.ActionTargetLocation.LocationMonsters {
+									t.Logf("Checking action target location monster name >%s<", monster.MonsterName)
+									require.True(t, responseBody.Data[idx].ActionTargetLocation.LocationMonsters.HasMonsterWithName(monster.MonsterName))
 								}
 							}
 
 							// Target location objects
 							t.Logf("Checking object count >%d< >%d<", len(expectData.ActionTargetLocation.LocationObjects), len(responseBody.Data[idx].ActionTargetLocation.LocationObjects))
-							require.Equal(t, len(expectData.ActionTargetLocation.LocationObjects), len(responseBody.Data[idx].ActionTargetLocation.LocationObjects), "Response objects count equals expected")
+							require.Equal(t, len(expectData.ActionTargetLocation.LocationObjects), len(responseBody.Data[idx].ActionTargetLocation.LocationObjects), "Response action target location objects count equals expected")
 							if len(expectData.ActionTargetLocation.LocationObjects) > 0 {
-								for _, eObject := range expectData.ActionTargetLocation.LocationObjects {
-									found := false
-									for _, tObject := range responseBody.Data[idx].ActionTargetLocation.LocationObjects {
-										t.Logf("Checking expected target location object name >%s< response target location object name >%s<", eObject.ObjectName, tObject.ObjectName)
-										if eObject.ObjectName == tObject.ObjectName {
-											found = true
-										}
-									}
-									require.True(t, found, fmt.Sprintf("Target location object name >%s< found", eObject.ObjectName))
+								for _, object := range expectData.ActionTargetLocation.LocationObjects {
+									t.Logf("Checking action target location object name >%s<", object.ObjectName)
+									require.True(t, responseBody.Data[idx].ActionTargetLocation.LocationObjects.HasObjectWithName(object.ObjectName))
 								}
 							}
 						}

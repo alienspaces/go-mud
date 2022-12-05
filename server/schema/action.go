@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"strings"
 	"time"
 )
 
@@ -40,14 +41,47 @@ type ActionRequestData struct {
 	Sentence string `json:"sentence"`
 }
 
+type ActionLocationCharacters []ActionLocationCharacter
+
+func (alc ActionLocationCharacters) HasCharacterWithName(name string) bool {
+	for i := range alc {
+		if strings.EqualFold(alc[i].CharacterName, name) {
+			return true
+		}
+	}
+	return false
+}
+
+type ActionLocationMonsters []ActionLocationMonster
+
+func (alm ActionLocationMonsters) HasMonsterWithName(name string) bool {
+	for i := range alm {
+		if strings.EqualFold(alm[i].MonsterName, name) {
+			return true
+		}
+	}
+	return false
+}
+
+type ActionLocationObjects []ActionLocationObject
+
+func (alo ActionLocationObjects) HasObjectWithName(name string) bool {
+	for i := range alo {
+		if strings.EqualFold(alo[i].ObjectName, name) {
+			return true
+		}
+	}
+	return false
+}
+
 type ActionLocation struct {
-	LocationName        string                    `json:"location_name"`
-	LocationDescription string                    `json:"location_description"`
-	LocationDirection   string                    `json:"location_direction,omitempty"`
-	LocationDirections  []string                  `json:"location_directions"`
-	LocationCharacters  []ActionLocationCharacter `json:"location_characters,omitempty"`
-	LocationMonsters    []ActionLocationMonster   `json:"location_monsters,omitempty"`
-	LocationObjects     []ActionLocationObject    `json:"location_objects,omitempty"`
+	LocationName        string                   `json:"location_name"`
+	LocationDescription string                   `json:"location_description"`
+	LocationDirection   string                   `json:"location_direction,omitempty"`
+	LocationDirections  []string                 `json:"location_directions"`
+	LocationCharacters  ActionLocationCharacters `json:"location_characters,omitempty"`
+	LocationMonsters    ActionLocationMonsters   `json:"location_monsters,omitempty"`
+	LocationObjects     ActionLocationObjects    `json:"location_objects,omitempty"`
 }
 
 // ActionLocationCharacter describes a character that is at a location
