@@ -17,31 +17,31 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	l.Info("Processing character ID >%s< action command >%s<", characterInstanceID, sentence)
 
 	// Verify the character performing the action exists within the specified dungeon
-	characterInstanceViewRec, err := m.GetCharacterInstanceViewRec(characterInstanceID)
+	civRec, err := m.GetCharacterInstanceViewRec(characterInstanceID)
 	if err != nil {
 		l.Warn("failed getting character record before performing action >%v<", err)
 		return nil, err
 	}
-	if characterInstanceViewRec == nil {
+	if civRec == nil {
 		msg := fmt.Sprintf("failed getting character record ID >%s< before performing action", characterInstanceID)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
-	if characterInstanceViewRec.DungeonInstanceID != dungeonInstanceID {
+	if civRec.DungeonInstanceID != dungeonInstanceID {
 		msg := fmt.Sprintf("character ID >%s< does not exist in dungeon ID >%s<", characterInstanceID, dungeonInstanceID)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
 	// Get the current dungeon location set of related records
-	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(characterInstanceViewRec.LocationInstanceID, true)
+	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(civRec.LocationInstanceID, true)
 	if err != nil {
 		l.Warn("failed getting dungeon location record set before performing action >%v<", err)
 		return nil, err
 	}
 	if locationInstanceRecordSet == nil {
-		msg := fmt.Sprintf("failed getting dungeon location record ID >%s< set before performing action", characterInstanceViewRec.LocationInstanceID)
+		msg := fmt.Sprintf("failed getting dungeon location record ID >%s< set before performing action", civRec.LocationInstanceID)
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
@@ -49,7 +49,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	// Resolve the submitted character action
 	args := &ResolverArgs{
 		EntityType:                EntityTypeCharacter,
-		EntityInstanceID:          characterInstanceViewRec.ID,
+		EntityInstanceID:          civRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
 	}
 	actionRec, err := m.resolveAction(sentence, args)
@@ -59,7 +59,12 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	}
 
 	// Perform the submitted character action
-	actionRec, err = m.performAction(characterInstanceViewRec, nil, actionRec, locationInstanceRecordSet)
+	actionRec, err = m.performAction(&PerformerArgs{
+		ActionRec:                 actionRec,
+		CharacterInstanceViewRec:  civRec,
+		MonsterInstanceViewRec:    nil,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
 	if err != nil {
 		l.Warn("failed performing character action >%v<", err)
 		return nil, err
@@ -75,7 +80,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	l.Info("Created action record ID >%s<", actionRec.ID)
 
 	// TODO: (game) Maybe don't need to do this... Get the updated character record
-	characterInstanceViewRec, err = m.GetCharacterInstanceViewRec(characterInstanceID)
+	civRec, err = m.GetCharacterInstanceViewRec(characterInstanceID)
 	if err != nil {
 		l.Warn("failed getting character record after performing action >%v<", err)
 		return nil, err
@@ -86,18 +91,18 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		RecordType:          record.ActionCharacterRecordTypeSource,
 		ActionID:            actionRec.ID,
 		LocationInstanceID:  actionRec.LocationInstanceID,
-		CharacterInstanceID: characterInstanceViewRec.ID,
-		Name:                characterInstanceViewRec.Name,
-		Strength:            characterInstanceViewRec.Strength,
-		Dexterity:           characterInstanceViewRec.Dexterity,
-		Intelligence:        characterInstanceViewRec.Intelligence,
-		CurrentStrength:     characterInstanceViewRec.CurrentStrength,
-		CurrentDexterity:    characterInstanceViewRec.CurrentDexterity,
-		CurrentIntelligence: characterInstanceViewRec.CurrentIntelligence,
-		Health:              characterInstanceViewRec.Health,
-		Fatigue:             characterInstanceViewRec.Fatigue,
-		CurrentHealth:       characterInstanceViewRec.CurrentHealth,
-		CurrentFatigue:      characterInstanceViewRec.CurrentFatigue,
+		CharacterInstanceID: civRec.ID,
+		Name:                civRec.Name,
+		Strength:            civRec.Strength,
+		Dexterity:           civRec.Dexterity,
+		Intelligence:        civRec.Intelligence,
+		CurrentStrength:     civRec.CurrentStrength,
+		CurrentDexterity:    civRec.CurrentDexterity,
+		CurrentIntelligence: civRec.CurrentIntelligence,
+		Health:              civRec.Health,
+		Fatigue:             civRec.Fatigue,
+		CurrentHealth:       civRec.CurrentHealth,
+		CurrentFatigue:      civRec.CurrentFatigue,
 	}
 
 	err = m.CreateActionCharacterRec(&actionCharacterRec)
@@ -107,22 +112,22 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	}
 
 	// Create action character object records
-	objectInstanceViewRecs, err := m.GetCharacterInstanceObjectInstanceViewRecs(characterInstanceViewRec.ID)
+	oivRecs, err := m.GetCharacterInstanceObjectInstanceViewRecs(civRec.ID)
 	if err != nil {
 		l.Warn("failed getting source character object instance view records >%v<", err)
 		return nil, err
 	}
 
 	actionCharacterObjectRecs := []*record.ActionCharacterObject{}
-	for _, objectInstanceViewRec := range objectInstanceViewRecs {
-		l.Info("Adding character action object record >%#v<", objectInstanceViewRec)
+	for _, oivRec := range oivRecs {
+		l.Info("Adding character action object record >%#v<", oivRec)
 		dungeonCharacterObjectRec := record.ActionCharacterObject{
 			ActionID:            actionRec.ID,
-			CharacterInstanceID: characterInstanceViewRec.ID,
-			ObjectInstanceID:    objectInstanceViewRec.ID,
-			Name:                objectInstanceViewRec.Name,
-			IsEquipped:          objectInstanceViewRec.IsEquipped,
-			IsStashed:           objectInstanceViewRec.IsStashed,
+			CharacterInstanceID: civRec.ID,
+			ObjectInstanceID:    oivRec.ID,
+			Name:                oivRec.Name,
+			IsEquipped:          oivRec.IsEquipped,
+			IsStashed:           oivRec.IsStashed,
 		}
 		err := m.CreateActionCharacterObjectRec(&dungeonCharacterObjectRec)
 		if err != nil {
@@ -194,7 +199,12 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	}
 
 	// Perform the submitted monster action
-	actionRec, err = m.performAction(nil, mivRec, actionRec, locationInstanceRecordSet)
+	actionRec, err = m.performAction(&PerformerArgs{
+		ActionRec:                 actionRec,
+		CharacterInstanceViewRec:  nil,
+		MonsterInstanceViewRec:    mivRec,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
 	if err != nil {
 		l.Warn("failed performing monster action >%v<", err)
 		return nil, err

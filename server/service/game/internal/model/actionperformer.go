@@ -13,19 +13,40 @@ import (
 // record around everywhere or whether a more specific PerformerArgs definition
 // (like ResolverArgs) would clean this up.
 
-type characterActionFunc func(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet) (*record.Action, error)
+type PerformerArgs struct {
+	ActionRec                 *record.Action
+	CharacterInstanceViewRec  *record.CharacterInstanceView
+	MonsterInstanceViewRec    *record.MonsterInstanceView
+	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
+}
 
-func (m *Model) performAction(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+type characterActionFunc func(args *PerformerArgs) (*record.Action, error)
+
+func checkPerformerArgs(args *PerformerArgs) error {
+	if args.ActionRec == nil {
+		msg := "args ActionRec missing, cannot perform action"
+		return fmt.Errorf(msg)
+	}
+	if args.CharacterInstanceViewRec == nil && args.MonsterInstanceViewRec == nil {
+		msg := "args CharacterInstanceViewRec and MonsterInstanceViewRec are missing, cannot perform action"
+		return fmt.Errorf(msg)
+	}
+	if args.LocationInstanceRecordSet == nil {
+		msg := "args LocationInstanceRecordSet missing, cannot perform action"
+		return fmt.Errorf(msg)
+	}
+	return nil
+}
+
+func (m *Model) performAction(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performCharacterAction")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
 
 	actionFuncs := map[string]characterActionFunc{
 		"move":   m.performActionMove,
@@ -46,7 +67,7 @@ func (m *Model) performAction(
 	l.Info("Performing action resolved command >%s<", actionRec.ResolvedCommand)
 
 	var err error
-	actionRec, err = actionFunc(characterInstanceViewRec, monsterInstanceViewRec, actionRec, locationInstanceRecordSet)
+	actionRec, err = actionFunc(args)
 	if err != nil {
 		l.Warn("failed performing action >%v<", err)
 		return nil, err
@@ -57,13 +78,17 @@ func (m *Model) performAction(
 	return actionRec, nil
 }
 
-func (m *Model) performActionMove(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+func (m *Model) performActionMove(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionMove")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
+	characterInstanceViewRec := args.CharacterInstanceViewRec
+	monsterInstanceViewRec := args.MonsterInstanceViewRec
 
 	if actionRec.CharacterInstanceID.Valid {
 		// Character move direction
@@ -106,13 +131,15 @@ func (m *Model) performActionMove(
 	return actionRec, nil
 }
 
-func (m *Model) performActionLook(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+func (m *Model) performActionLook(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionLook")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
 
 	// TODO: (game) Register the number of times the character has looked at any other
 	// location, object, monster of character. Looking at anything multiple times
@@ -134,13 +161,15 @@ func (m *Model) performActionLook(
 	return actionRec, nil
 }
 
-func (m *Model) performActionStash(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+func (m *Model) performActionStash(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionStash")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
 
 	if actionRec.CharacterInstanceID.Valid {
 		// Character stash object
@@ -198,13 +227,15 @@ func (m *Model) performActionStash(
 	return actionRec, nil
 }
 
-func (m *Model) performActionEquip(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+func (m *Model) performActionEquip(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionEquip")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
 
 	if actionRec.CharacterInstanceID.Valid {
 		// Character equip object
@@ -262,13 +293,15 @@ func (m *Model) performActionEquip(
 	return actionRec, nil
 }
 
-func (m *Model) performActionDrop(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+func (m *Model) performActionDrop(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionDrop")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
 
 	if actionRec.CharacterInstanceID.Valid {
 		// Character drop object
@@ -336,13 +369,15 @@ func (m *Model) performActionDrop(
 	return actionRec, nil
 }
 
-func (m *Model) performActionAttack(
-	characterInstanceViewRec *record.CharacterInstanceView,
-	monsterInstanceViewRec *record.MonsterInstanceView,
-	actionRec *record.Action,
-	locationInstanceRecordSet *record.LocationInstanceViewRecordSet,
-) (*record.Action, error) {
+func (m *Model) performActionAttack(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionAttack")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
 
 	if actionRec.CharacterInstanceID.Valid {
 		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
