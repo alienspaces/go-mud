@@ -59,8 +59,8 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 				HandlerConfig:  testCaseHandlerConfig,
 				RequestHeaders: testCaseRequestHeaders,
 				RequestPathParams: func(data harness.Data) map[string]string {
-					dRec, _ := data.GetDungeonRecByName("Cave")
-					cRec, _ := data.GetCharacterRecByName("Legislate")
+					dRec, _ := data.GetDungeonRecByName("cave")
+					cRec, _ := data.GetCharacterRecByName("bolster")
 					params := map[string]string{
 						":dungeon_id":   dRec.ID,
 						":character_id": cRec.ID,

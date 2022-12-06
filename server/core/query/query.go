@@ -72,7 +72,7 @@ func (q *Query) GetRows(sql string, params map[string]interface{}, operators map
 		return nil, err
 	}
 
-	l.Warn("SQL >%s< Params >%#v<", querySQL, queryParams)
+	l.Debug("SQL >%s< Params >%#v<", querySQL, queryParams)
 
 	rows, err := tx.NamedQuery(querySQL, queryParams)
 	if err != nil {

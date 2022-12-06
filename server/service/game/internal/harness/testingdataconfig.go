@@ -62,6 +62,20 @@ var DefaultDataConfig = DataConfig{
 				DescriptionDetailed: "A stone mace.",
 			},
 		},
+		{
+			Record: record.Object{
+				Name:                "Chipped Hammer",
+				Description:         "A chipped hammer.",
+				DescriptionDetailed: "A chipped hammer.",
+			},
+		},
+		{
+			Record: record.Object{
+				Name:                "Chipped Breastplate",
+				Description:         "A chipped breastplate.",
+				DescriptionDetailed: "A chipped breastplate.",
+			},
+		},
 	},
 	MonsterConfig: []MonsterConfig{
 		{
@@ -122,6 +136,25 @@ var DefaultDataConfig = DataConfig{
 						IsEquipped: true,
 					},
 					ObjectName: "Stone Mace",
+				},
+			},
+		},
+		{
+			Record: record.Character{
+				Name: "Bolster",
+			},
+			CharacterObjectConfig: []CharacterObjectConfig{
+				{
+					Record: record.CharacterObject{
+						IsEquipped: true,
+					},
+					ObjectName: "Chipped Hammer",
+				},
+				{
+					Record: record.CharacterObject{
+						IsEquipped: true,
+					},
+					ObjectName: "Chipped Breastplate",
 				},
 			},
 		},

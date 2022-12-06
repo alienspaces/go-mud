@@ -44,7 +44,7 @@ func TestGetOne(t *testing.T) {
 					{
 						DungeonInstanceID:             d.DungeonInstanceRecs[0].ID,
 						DungeonID:                     d.DungeonInstanceRecs[0].DungeonID,
-						DungeonInstanceCharacterCount: 1,
+						DungeonInstanceCharacterCount: 2,
 						DungeonLocationCount:          6,
 					},
 				}
