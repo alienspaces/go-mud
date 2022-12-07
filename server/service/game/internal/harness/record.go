@@ -1,20 +1,36 @@
 package harness
 
 import (
+	"fmt"
+
 	"github.com/brianvoe/gofakeit"
 
+	"gitlab.com/alienspaces/go-mud/server/core/repository"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
+
+// uniqueName appends a UUID4 to the end of the name to make it unique
+// for parallel test execution.
+func uniqueName(name string) string {
+	if name == "" {
+		gofakeit.Name()
+	}
+	return fmt.Sprintf("%s (%s)", name, repository.NewRecordID())
+}
+
+// removes the unique UUID4 from the end of the name to make it normal for
+// test harness functions that return a record based on its non unique name.
+func normalName(name string) string {
+	return name[:len(name)-39]
+}
 
 func (t *Testing) createObjectRec(objectConfig ObjectConfig) (*record.Object, error) {
 	l := t.Logger("createObjectRec")
 
 	rec := objectConfig.Record
 
-	if rec.Name == "" {
-		rec.Name = gofakeit.Name()
-	}
+	rec.Name = uniqueName(rec.Name)
 
 	l.Debug("Creating object record >%#v<", rec)
 
@@ -31,10 +47,9 @@ func (t *Testing) createMonsterRec(monsterConfig MonsterConfig) (*record.Monster
 
 	rec := monsterConfig.Record
 
+	rec.Name = uniqueName(rec.Name)
+
 	// Default values
-	if rec.Name == "" {
-		rec.Name = gofakeit.Name() + " " + gofakeit.Name()
-	}
 	if rec.Strength == 0 {
 		rec.Strength = 10
 	}
@@ -85,10 +100,9 @@ func (t *Testing) createCharacterRec(characterConfig CharacterConfig) (*record.C
 
 	rec := characterConfig.Record
 
+	rec.Name = uniqueName(rec.Name)
+
 	// Default values
-	if rec.Name == "" {
-		rec.Name = gofakeit.Name() + " " + gofakeit.Name()
-	}
 	if rec.Strength == 0 {
 		rec.Strength = 10
 	}

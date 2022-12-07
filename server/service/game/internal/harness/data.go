@@ -61,18 +61,15 @@ func (d *Data) GetObjectRecByID(objectID string) (*record.Object, error) {
 			return rec, nil
 		}
 	}
-
 	return nil, fmt.Errorf("failed getting object with ID >%s<", objectID)
 }
 
 func (d *Data) GetObjectRecByName(objectName string) (*record.Object, error) {
-
 	for idx := range d.ObjectRecs {
-		if strings.EqualFold(d.ObjectRecs[idx].Name, objectName) {
+		if strings.EqualFold(normalName(d.ObjectRecs[idx].Name), objectName) {
 			return d.ObjectRecs[idx], nil
 		}
 	}
-
 	return nil, fmt.Errorf("failed getting object with Name >%s<", objectName)
 }
 
@@ -101,7 +98,7 @@ func (d *Data) GetMonsterRecByID(monsterID string) (*record.Monster, error) {
 func (d *Data) GetMonsterRecByName(monsterName string) (*record.Monster, error) {
 
 	for idx := range d.MonsterRecs {
-		if strings.EqualFold(d.MonsterRecs[idx].Name, monsterName) {
+		if strings.EqualFold(normalName(d.MonsterRecs[idx].Name), monsterName) {
 			return d.MonsterRecs[idx], nil
 		}
 	}
@@ -144,7 +141,7 @@ func (d *Data) GetCharacterRecByID(characterID string) (*record.Character, error
 func (d *Data) GetCharacterRecByName(characterName string) (*record.Character, error) {
 
 	for idx := range d.CharacterRecs {
-		if strings.EqualFold(d.CharacterRecs[idx].Name, characterName) {
+		if strings.EqualFold(normalName(d.CharacterRecs[idx].Name), characterName) {
 			return d.CharacterRecs[idx], nil
 		}
 	}
@@ -185,7 +182,7 @@ func (d *Data) GetDungeonRecByID(dungeonID string) (*record.Dungeon, error) {
 
 func (d *Data) GetDungeonRecByName(dungeonName string) (*record.Dungeon, error) {
 	for idx := range d.DungeonRecs {
-		if strings.EqualFold(d.DungeonRecs[idx].Name, dungeonName) {
+		if strings.EqualFold(normalName(d.DungeonRecs[idx].Name), dungeonName) {
 			return d.DungeonRecs[idx], nil
 		}
 	}
@@ -214,7 +211,7 @@ func (d *Data) GetLocationRecByID(locationID string) (*record.Location, error) {
 
 func (d *Data) GetLocationRecByName(name string) (*record.Location, error) {
 	for idx := range d.LocationRecs {
-		if strings.EqualFold(d.LocationRecs[idx].Name, name) {
+		if strings.EqualFold(normalName(d.LocationRecs[idx].Name), name) {
 			return d.LocationRecs[idx], nil
 		}
 	}
@@ -260,7 +257,7 @@ func (d *Data) GetObjectInstanceRecByName(name string) (*record.ObjectInstance, 
 		if err != nil {
 			return nil, err
 		}
-		if strings.EqualFold(oRec.Name, name) {
+		if strings.EqualFold(normalName(oRec.Name), name) {
 			return rec, nil
 		}
 	}
@@ -395,13 +392,13 @@ func (d *Data) AddMonsterInstanceRec(rec *record.MonsterInstance) {
 }
 
 func (d *Data) GetMonsterInstanceRecByName(name string) (*record.MonsterInstance, error) {
-	for _, ciRec := range d.MonsterInstanceRecs {
-		cRec, err := d.GetMonsterRecByID(ciRec.MonsterID)
+	for _, miRec := range d.MonsterInstanceRecs {
+		mRec, err := d.GetMonsterRecByID(miRec.MonsterID)
 		if err != nil {
 			return nil, err
 		}
-		if strings.EqualFold(cRec.Name, name) {
-			return ciRec, nil
+		if strings.EqualFold(normalName(mRec.Name), name) {
+			return miRec, nil
 		}
 	}
 	return nil, fmt.Errorf("failed getting character instance with name >%s<", name)
@@ -424,7 +421,7 @@ func (d *Data) GetCharacterInstanceRecByName(name string) (*record.CharacterInst
 		if err != nil {
 			return nil, err
 		}
-		if strings.EqualFold(cRec.Name, name) {
+		if strings.EqualFold(normalName(cRec.Name), name) {
 			return ciRec, nil
 		}
 	}
@@ -448,7 +445,7 @@ func (d *Data) GetDungeonInstanceRecByName(name string) (*record.DungeonInstance
 		if err != nil {
 			return nil, err
 		}
-		if strings.EqualFold(dungeonRec.Name, name) {
+		if strings.EqualFold(normalName(dungeonRec.Name), name) {
 			return rec, nil
 		}
 	}
@@ -501,7 +498,7 @@ func (d *Data) GetLocationInstanceRecByName(name string) (*record.LocationInstan
 		if err != nil {
 			return nil, err
 		}
-		if strings.EqualFold(lRec.Name, name) {
+		if strings.EqualFold(normalName(lRec.Name), name) {
 			return rec, nil
 		}
 	}

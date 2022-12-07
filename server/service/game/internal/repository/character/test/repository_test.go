@@ -38,7 +38,7 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.Character {
 				return &record.Character{
-					Name:         "Bolster",
+					Name:         "Sweetest",
 					Strength:     10,
 					Dexterity:    10,
 					Intelligence: 10,
