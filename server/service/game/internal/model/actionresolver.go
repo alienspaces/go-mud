@@ -161,6 +161,7 @@ func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.
 		}
 
 		if targetLocationInstanceID == "" {
+			l.Info("Looking for object >%s<", sentence)
 			dungeonObjectRec, err := m.getObjectFromSentence(sentence, locationRecordSet.ObjectInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to resolve sentence object >%v<", err)
@@ -172,6 +173,7 @@ func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.
 		}
 
 		if targetLocationInstanceID == "" && targetObjectInstanceID == "" && targetCharacterInstanceID == "" {
+			l.Info("Looking for monster >%s<", sentence)
 			dungeonMonsterRec, err := m.resolveSentenceMonster(sentence, locationRecordSet.MonsterInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to resolve sentence monster >%v<", err)
@@ -183,6 +185,7 @@ func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.
 		}
 
 		if targetLocationInstanceID == "" && targetObjectInstanceID == "" && targetMonsterInstanceID == "" {
+			l.Info("Looking for character >%s<", sentence)
 			characterInstanceViewRec, err := m.resolveSentenceCharacter(sentence, locationRecordSet.CharacterInstanceViewRecs)
 			if err != nil {
 				l.Warn("failed to resolve sentence character >%v<", err)
@@ -555,8 +558,11 @@ func (m *Model) resolveSentenceLocationDirection(sentence string, locationInstan
 }
 
 func (m *Model) getObjectFromSentence(sentence string, dungeonObjectViewRecs []*record.ObjectInstanceView) (*record.ObjectInstanceView, error) {
+	l := m.Logger("getObjectFromSentence")
+
 	for _, dungeonObjectViewRec := range dungeonObjectViewRecs {
-		if strings.Contains(sentence, strings.ToLower(dungeonObjectViewRec.Name)) {
+		l.Info("Sentence >%s< contains >%s<", sentence, strings.ToLower(dungeonObjectViewRec.Name))
+		if strings.Contains(strings.ToLower(sentence), strings.ToLower(dungeonObjectViewRec.Name)) {
 			return dungeonObjectViewRec, nil
 		}
 	}
@@ -564,8 +570,11 @@ func (m *Model) getObjectFromSentence(sentence string, dungeonObjectViewRecs []*
 }
 
 func (m *Model) resolveSentenceMonster(sentence string, dungeonMonsterViewRecs []*record.MonsterInstanceView) (*record.MonsterInstanceView, error) {
+	l := m.Logger("resolveSentenceMonster")
+
 	for _, dungeonMonsterViewRec := range dungeonMonsterViewRecs {
-		if strings.Contains(sentence, strings.ToLower(dungeonMonsterViewRec.Name)) {
+		l.Info("Sentence >%s< contains >%s<", strings.ToLower(dungeonMonsterViewRec.Name))
+		if strings.Contains(strings.ToLower(sentence), strings.ToLower(dungeonMonsterViewRec.Name)) {
 			return dungeonMonsterViewRec, nil
 		}
 	}
@@ -573,8 +582,11 @@ func (m *Model) resolveSentenceMonster(sentence string, dungeonMonsterViewRecs [
 }
 
 func (m *Model) resolveSentenceCharacter(sentence string, characterInstanceViewRecs []*record.CharacterInstanceView) (*record.CharacterInstanceView, error) {
+	l := m.Logger("resolveSentenceCharacter")
+
 	for _, characterInstanceViewRec := range characterInstanceViewRecs {
-		if strings.Contains(sentence, strings.ToLower(characterInstanceViewRec.Name)) {
+		l.Info("Sentence >%s< contains >%s<", sentence, strings.ToLower(characterInstanceViewRec.Name))
+		if strings.Contains(strings.ToLower(sentence), strings.ToLower(characterInstanceViewRec.Name)) {
 			return characterInstanceViewRec, nil
 		}
 	}

@@ -3,6 +3,7 @@ package harness
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"gitlab.com/alienspaces/go-mud/server/core/harness"
 	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
@@ -294,7 +295,7 @@ func (t *Testing) resolveDataLocationDirectionIdentifiers(d *Data, dungeonConfig
 
 	findLocationRec := func(locationName string) *record.Location {
 		for _, dungeonLocationRec := range d.LocationRecs {
-			if dungeonLocationRec.Name == locationName {
+			if strings.EqualFold(NormalName(dungeonLocationRec.Name), locationName) {
 				return dungeonLocationRec
 			}
 		}

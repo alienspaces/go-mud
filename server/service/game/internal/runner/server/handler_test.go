@@ -222,6 +222,9 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		result, err := jsonschema.Validate(handlerConfig.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
 		require.NoError(t, err, "Validates against schema without error")
 		t.Logf("Validation result errors >%+v< valid >%t<", result.Errors(), result.Valid())
+
+		// TODO: Test response schema validation is true
+		//		require.True(t, result.Valid(), "Validates against schema")
 	}
 
 	tf(handlerConfig.Method, responseBody)

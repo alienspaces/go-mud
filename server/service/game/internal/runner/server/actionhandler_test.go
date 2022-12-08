@@ -49,6 +49,7 @@ func TestPostActionHandler(t *testing.T) {
 		return headers
 	}
 
+	// All actions are performed by "Barricade" in the "Cave"
 	testCaseRequestPathParams := func(data harness.Data) map[string]string {
 		dRec, _ := data.GetDungeonRecByName("cave")
 		cRec, _ := data.GetCharacterRecByName("barricade")
@@ -92,6 +93,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				loRec, _ := data.GetObjectRecByName("rusted sword")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 
@@ -109,7 +111,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -161,7 +163,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -315,6 +317,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				loRec, _ := data.GetObjectRecByName("rusted sword")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				tlRec, _ := data.GetLocationRecByName("cave tunnel")
@@ -335,7 +338,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -408,9 +411,10 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
+					toRec, _ := data.GetObjectRecByName("rusted sword")
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
-							Sentence: "look rusted sword",
+							Sentence: fmt.Sprintf("look %s", toRec.Name),
 						},
 					}
 					return &res
@@ -425,6 +429,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				loRec, _ := data.GetObjectRecByName("rusted sword")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				toRec, _ := data.GetObjectRecByName("rusted sword")
@@ -443,7 +448,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -504,9 +509,10 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
+					tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
-							Sentence: "look Grumpy Dwarf",
+							Sentence: fmt.Sprintf("look %s", tmRec.Name),
 						},
 					}
 					return &res
@@ -521,6 +527,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				loRec, _ := data.GetObjectRecByName("rusted sword")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
@@ -541,7 +548,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -616,9 +623,10 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
+					tcRec, _ := data.GetCharacterRecByName("barricade")
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
-							Sentence: "look barricade",
+							Sentence: fmt.Sprintf("look %s", tcRec.Name),
 						},
 					}
 					return &res
@@ -633,6 +641,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				loRec, _ := data.GetObjectRecByName("rusted sword")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				tcRec, _ := data.GetCharacterRecByName("barricade")
@@ -653,7 +662,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -728,9 +737,10 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
+					toRec, _ := data.GetObjectRecByName("rusted sword")
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
-							Sentence: "stash rusted sword",
+							Sentence: fmt.Sprintf("stash %s", toRec.Name),
 						},
 					}
 					return &res
@@ -745,6 +755,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				toRec, _ := data.GetObjectRecByName("rusted sword")
 
@@ -762,7 +773,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -830,9 +841,10 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
+					toRec, _ := data.GetObjectRecByName("rusted sword")
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
-							Sentence: "equip rusted sword",
+							Sentence: fmt.Sprintf("equip %s", toRec.Name),
 						},
 					}
 					return &res
@@ -847,6 +859,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				toRec, _ := data.GetObjectRecByName("rusted sword")
 
@@ -864,7 +877,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -932,9 +945,10 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
+					toRec, _ := data.GetObjectRecByName("dull bronze ring")
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
-							Sentence: "drop Dull Bronze Ring",
+							Sentence: fmt.Sprintf("drop %s", toRec.Name),
 						},
 					}
 					return &res
@@ -948,6 +962,7 @@ func TestPostActionHandler(t *testing.T) {
 				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				lRec, _ := data.GetLocationRecByName("cave entrance")
+				lcRec, _ := data.GetCharacterRecByName("legislate")
 				loRec, _ := data.GetObjectRecByName("rusted sword")
 				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
 				toRec, _ := data.GetObjectRecByName("dull bronze ring")
@@ -966,7 +981,7 @@ func TestPostActionHandler(t *testing.T) {
 										CharacterName: cRec.Name,
 									},
 									{
-										CharacterName: "legislate",
+										CharacterName: lcRec.Name,
 									},
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
@@ -1084,10 +1099,10 @@ func TestPostActionHandler(t *testing.T) {
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Command
-						require.Equal(t, expectData.ActionCommand, responseBody.Data[idx].ActionCommand)
+						require.Equal(t, expectData.ActionCommand, responseBody.Data[idx].ActionCommand, "Response action command equals expected")
 
 						// Narrative
-						require.Equal(t, expectData.ActionNarrative, responseBody.Data[idx].ActionNarrative)
+						require.Equal(t, expectData.ActionNarrative, responseBody.Data[idx].ActionNarrative, "Response action narrative equals expected")
 
 						// Current location
 						t.Logf("Checking location name >%s< >%s<", expectData.ActionLocation.LocationName, responseBody.Data[idx].ActionLocation.LocationName)
@@ -1103,7 +1118,7 @@ func TestPostActionHandler(t *testing.T) {
 						if len(expectData.ActionLocation.LocationCharacters) > 0 {
 							for _, character := range expectData.ActionLocation.LocationCharacters {
 								t.Logf("Checking action location character name >%s<", character.CharacterName)
-								require.True(t, responseBody.Data[idx].ActionLocation.LocationCharacters.HasCharacterWithName(character.CharacterName))
+								require.True(t, responseBody.Data[idx].ActionLocation.LocationCharacters.HasCharacterWithName(character.CharacterName), "Response action location characters has character with name ")
 							}
 						}
 						if len(expectData.ActionLocation.LocationCharacters) == 0 {

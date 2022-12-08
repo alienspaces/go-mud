@@ -5,7 +5,6 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -37,7 +36,7 @@ func TestProcessCharacterAction(t *testing.T) {
 		name                  string
 		dungeonInstanceID     func(data harness.Data) string
 		characterInstanceID   func(data harness.Data) string
-		sentence              string
+		sentence              func(data harness.Data) string
 		expectActionRecordSet func(data harness.Data) *record.ActionRecordSet
 		expectError           bool
 	}{
@@ -51,7 +50,9 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "look",
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -113,7 +114,9 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "look north",
+			sentence: func(data harness.Data) string {
+				return "look north"
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -175,7 +178,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "look rusted sword",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+				return fmt.Sprintf("look %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -239,7 +245,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "look grumpy dwarf",
+			sentence: func(data harness.Data) string {
+				tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				return fmt.Sprintf("look %s", tmRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -324,7 +333,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "look barricade",
+			sentence: func(data harness.Data) string {
+				tcRec, _ := data.GetCharacterRecByName("barricade")
+				return fmt.Sprintf("look %s", tcRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -407,7 +419,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "stash rusted sword",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+				return fmt.Sprintf("stash %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -482,17 +497,19 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "stash dull bronze ring",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("dull bronze ring")
+				return fmt.Sprintf("stash %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
-				oRec := &record.Object{}
+				toRec, _ := data.GetObjectRecByName("dull bronze ring")
 				for i := range oiRecs {
-					oRec, _ = data.GetObjectRecByID(oiRecs[i].ObjectID)
-					if strings.EqualFold(oRec.Name, "dull bronze ring") {
+					if oiRecs[i].ObjectID == toRec.ID {
 						oiRecs[i].IsStashed = true
 						oiRecs[i].IsEquipped = false
 						break
@@ -535,14 +552,14 @@ func TestProcessCharacterAction(t *testing.T) {
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
-						Name:        oRec.Name,
-						Description: oRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   true,
 						IsEquipped:  false,
 					},
 					StashedActionObjectRec: &record.ActionObject{
-						Name:        oRec.Name,
-						Description: oRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   true,
 						IsEquipped:  false,
 					},
@@ -560,7 +577,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "equip rusted sword",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("rusted sword")
+				return fmt.Sprintf("equip %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
@@ -635,17 +655,19 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "equip blood stained pouch",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("blood stained pouch")
+				return fmt.Sprintf("equip %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
-				oRec := &record.Object{}
+				toRec, _ := data.GetObjectRecByName("blood stained pouch")
 				for i := range oiRecs {
-					oRec, _ = data.GetObjectRecByID(oiRecs[i].ObjectID)
-					if strings.EqualFold(oRec.Name, "blood stained pouch") {
+					if oiRecs[i].ObjectID == toRec.ID {
 						oiRecs[i].IsStashed = false
 						oiRecs[i].IsEquipped = true
 						break
@@ -688,14 +710,14 @@ func TestProcessCharacterAction(t *testing.T) {
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
-						Name:        oRec.Name,
-						Description: oRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   false,
 						IsEquipped:  true,
 					},
 					EquippedActionObjectRec: &record.ActionObject{
-						Name:        oRec.Name,
-						Description: oRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   false,
 						IsEquipped:  true,
 					},
@@ -713,28 +735,30 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "drop dull bronze ring",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("dull bronze ring")
+				return fmt.Sprintf("drop %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 
+				toRec, _ := data.GetObjectRecByName("dull bronze ring")
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 
-				taoRec := &record.Object{}
 				acoRecs := []*record.ActionCharacterObject{}
-				for _, oiRec := range oiRecs {
-					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
-					if strings.EqualFold(oRec.Name, "dull bronze ring") {
-						taoRec = oRec
+				for i := range oiRecs {
+					if oiRecs[i].ObjectID == toRec.ID {
 						continue
 					}
+					oRec, _ := data.GetObjectRecByID(oiRecs[i].ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
+						CharacterInstanceID: nullstring.ToString(oiRecs[i].CharacterInstanceID),
+						ObjectInstanceID:    oiRecs[i].ID,
 						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						IsStashed:           oiRecs[i].IsStashed,
+						IsEquipped:          oiRecs[i].IsEquipped,
 					})
 				}
 
@@ -762,14 +786,14 @@ func TestProcessCharacterAction(t *testing.T) {
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
-						Name:        taoRec.Name,
-						Description: taoRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   false,
 						IsEquipped:  false,
 					},
 					DroppedActionObjectRec: &record.ActionObject{
-						Name:        taoRec.Name,
-						Description: taoRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   false,
 						IsEquipped:  false,
 					},
@@ -787,28 +811,30 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 				return ciRec.ID
 			},
-			sentence: "drop blood stained pouch",
+			sentence: func(data harness.Data) string {
+				toRec, _ := data.GetObjectRecByName("blood stained pouch")
+				return fmt.Sprintf("drop %s", toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("barricade")
 				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
 
+				toRec, _ := data.GetObjectRecByName("blood stained pouch")
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 
-				taoRec := &record.Object{}
 				acoRecs := []*record.ActionCharacterObject{}
-				for _, oiRec := range oiRecs {
-					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
-					if strings.EqualFold(oRec.Name, "blood stained pouch") {
-						taoRec = oRec
+				for i := range oiRecs {
+					if oiRecs[i].ObjectID == toRec.ID {
 						continue
 					}
+					oRec, _ := data.GetObjectRecByID(oiRecs[i].ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
+						CharacterInstanceID: nullstring.ToString(oiRecs[i].CharacterInstanceID),
+						ObjectInstanceID:    oiRecs[i].ID,
 						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						IsStashed:           oiRecs[i].IsStashed,
+						IsEquipped:          oiRecs[i].IsEquipped,
 					})
 				}
 
@@ -836,14 +862,14 @@ func TestProcessCharacterAction(t *testing.T) {
 					},
 					ActionCharacterObjectRecs: acoRecs,
 					TargetActionObjectRec: &record.ActionObject{
-						Name:        taoRec.Name,
-						Description: taoRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   false,
 						IsEquipped:  false,
 					},
 					DroppedActionObjectRec: &record.ActionObject{
-						Name:        taoRec.Name,
-						Description: taoRec.Description,
+						Name:        toRec.Name,
+						Description: toRec.Description,
 						IsStashed:   false,
 						IsEquipped:  false,
 					},
@@ -861,7 +887,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("legislate")
 				return ciRec.ID
 			},
-			sentence: "attack grumpy dwarf",
+			sentence: func(data harness.Data) string {
+				tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				return fmt.Sprintf("attack %s", tmRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("legislate")
@@ -946,14 +975,19 @@ func TestProcessCharacterAction(t *testing.T) {
 				ciRec, _ := data.GetCharacterInstanceRecByName("legislate")
 				return ciRec.ID
 			},
-			sentence: "attack grumpy dwarf with stone mace",
+			sentence: func(data harness.Data) string {
+				tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				toRec, _ := data.GetObjectRecByName("stone mace")
+				return fmt.Sprintf("attack %s with %s", tmRec.Name, toRec.Name)
+			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
 				cRec, _ := data.GetCharacterRecByName("legislate")
 				ciRec, _ := data.GetCharacterInstanceRecByName("legislate")
 
+				eoRec, _ := data.GetObjectRecByName("stone mace")
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
-				eoRec := &record.Object{}
+
 				acoRecs := []*record.ActionCharacterObject{}
 				for idx := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRecs[idx].ObjectID)
@@ -964,9 +998,6 @@ func TestProcessCharacterAction(t *testing.T) {
 						IsStashed:           oiRecs[idx].IsStashed,
 						IsEquipped:          oiRecs[idx].IsEquipped,
 					})
-					if strings.EqualFold(oRec.Name, "stone mace") {
-						eoRec = oRec
-					}
 				}
 
 				oiRecs = data.GetEquippedObjectInstanceRecsByMonsterInstanceID(data.MonsterInstanceRecs[0].ID)
@@ -1035,7 +1066,7 @@ func TestProcessCharacterAction(t *testing.T) {
 
 	for _, tc := range tests {
 
-		t.Logf("Run test >%s< - >%s<", tc.name, tc.sentence)
+		t.Logf("Run test >%s<", tc.name)
 
 		t.Run(tc.name, func(t *testing.T) {
 
@@ -1056,7 +1087,10 @@ func TestProcessCharacterAction(t *testing.T) {
 			dungeonInstanceID := tc.dungeonInstanceID(th.Data)
 			characterInstanceID := tc.characterInstanceID(th.Data)
 
-			rslt, err := th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, tc.sentence)
+			sentence := tc.sentence(th.Data)
+			t.Logf("Sentence >%s<", sentence)
+
+			rslt, err := th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
 			if tc.expectError == true {
 				require.Error(t, err, "CreateDungeonObjectRec returns error")
 				return

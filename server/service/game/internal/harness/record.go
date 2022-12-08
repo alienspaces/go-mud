@@ -10,9 +10,9 @@ import (
 	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
 )
 
-// uniqueName appends a UUID4 to the end of the name to make it unique
+// UniqueName appends a UUID4 to the end of the name to make it unique
 // for parallel test execution.
-func uniqueName(name string) string {
+func UniqueName(name string) string {
 	if name == "" {
 		gofakeit.Name()
 	}
@@ -21,7 +21,7 @@ func uniqueName(name string) string {
 
 // removes the unique UUID4 from the end of the name to make it normal for
 // test harness functions that return a record based on its non unique name.
-func normalName(name string) string {
+func NormalName(name string) string {
 	return name[:len(name)-39]
 }
 
@@ -30,7 +30,7 @@ func (t *Testing) createObjectRec(objectConfig ObjectConfig) (*record.Object, er
 
 	rec := objectConfig.Record
 
-	rec.Name = uniqueName(rec.Name)
+	rec.Name = UniqueName(rec.Name)
 
 	l.Debug("Creating object record >%#v<", rec)
 
@@ -47,7 +47,7 @@ func (t *Testing) createMonsterRec(monsterConfig MonsterConfig) (*record.Monster
 
 	rec := monsterConfig.Record
 
-	rec.Name = uniqueName(rec.Name)
+	rec.Name = UniqueName(rec.Name)
 
 	// Default values
 	if rec.Strength == 0 {
@@ -100,7 +100,7 @@ func (t *Testing) createCharacterRec(characterConfig CharacterConfig) (*record.C
 
 	rec := characterConfig.Record
 
-	rec.Name = uniqueName(rec.Name)
+	rec.Name = UniqueName(rec.Name)
 
 	// Default values
 	if rec.Strength == 0 {
@@ -151,9 +151,7 @@ func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon
 
 	rec := dungeonConfig.Record
 
-	if rec.Name == "" {
-		rec.Name = gofakeit.Name()
-	}
+	rec.Name = UniqueName(rec.Name)
 
 	l.Debug("Creating dungeon record >%#v<", rec)
 
@@ -170,6 +168,7 @@ func (t *Testing) createLocationRec(dungeonRec *record.Dungeon, dungeonLocationC
 
 	rec := dungeonLocationConfig.Record
 	rec.DungeonID = dungeonRec.ID
+	rec.Name = UniqueName(rec.Name)
 
 	l.Debug("Creating dungeon location record >%#v<", rec)
 
