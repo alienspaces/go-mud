@@ -369,6 +369,7 @@ func (m *Model) performActionDrop(args *PerformerArgs) (*record.Action, error) {
 	return actionRec, nil
 }
 
+// TODO: Calculate to-hit, weapon damage, effects etc
 func (m *Model) performActionAttack(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionAttack")
 
@@ -380,24 +381,80 @@ func (m *Model) performActionAttack(args *PerformerArgs) (*record.Action, error)
 	actionRec := args.ActionRec
 
 	if actionRec.CharacterInstanceID.Valid {
+
+		// TODO: Get equipped weapon for character, establish attack bonuses, damage rating etc
+		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
+			l.Info("Attacking with weapon")
+		}
+
 		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
 			l.Info("Character attacking character")
-		}
-		if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+			tciRec, err := m.GetCharacterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID), true)
+			if err != nil {
+				l.Warn("failed getting character instance record >%s<", err)
+				return nil, err
+			}
+
+			tciRec.Health -= 1
+
+			err = m.UpdateCharacterInstanceRec(tciRec)
+			if err != nil {
+				l.Warn("failed updating character instance record >%s<", err)
+				return nil, err
+			}
+		} else if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
 			l.Info("Character attacking monster")
-		}
-		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
-			l.Info("With weapon")
+			tmiRec, err := m.GetMonsterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID), true)
+			if err != nil {
+				l.Warn("failed getting monster instance record >%s<", err)
+				return nil, err
+			}
+
+			tmiRec.Health -= 1
+
+			err = m.UpdateMonsterInstanceRec(tmiRec)
+			if err != nil {
+				l.Warn("failed updating monster instance record >%s<", err)
+				return nil, err
+			}
 		}
 	} else if actionRec.MonsterInstanceID.Valid {
+
+		// TODO: Get equipped weapon for monster, establish attack bonuses, damage rating etc
+		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
+			l.Info("Attacking with weapon")
+		}
+
 		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
 			l.Info("Monster attacking character")
-		}
-		if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+			tciRec, err := m.GetCharacterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID), true)
+			if err != nil {
+				l.Warn("failed getting character instance record >%s<", err)
+				return nil, err
+			}
+
+			tciRec.Health -= 1
+
+			err = m.UpdateCharacterInstanceRec(tciRec)
+			if err != nil {
+				l.Warn("failed updating character instance record >%s<", err)
+				return nil, err
+			}
+		} else if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
 			l.Info("Monster attacking monster")
-		}
-		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
-			l.Info("With weapon")
+			tmiRec, err := m.GetMonsterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID), true)
+			if err != nil {
+				l.Warn("failed getting monster instance record >%s<", err)
+				return nil, err
+			}
+
+			tmiRec.Health -= 1
+
+			err = m.UpdateMonsterInstanceRec(tmiRec)
+			if err != nil {
+				l.Warn("failed updating monster instance record >%s<", err)
+				return nil, err
+			}
 		}
 	}
 
