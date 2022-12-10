@@ -27,6 +27,6 @@ test-client:
     - flutter pub get
     - dart ./tool/generate.dart
     - flutter test
-  only:
-    - develop
-    - master
+  # only:
+  #   - develop
+  #   - master
