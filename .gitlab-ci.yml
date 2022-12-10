@@ -1,13 +1,13 @@
 include:
   - template: Security/SAST.gitlab-ci.yml
-  - local: "/server/.gitlab-ci.yml"
-  - local: "/client/.gitlab-ci.yml"
+  - local: "/backend/.gitlab-ci.yml"
+  - local: "/frontend/.gitlab-ci.yml"
 
 stages:
   - test
-  - test-server
-  - build-server
-  - test-client
+  - test-backend
+  - build-backend
+  - test-frontend
 
 sast:
   variables:
