@@ -38,6 +38,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     });
 
     if (rec != null) {
+      log.info("Returning existing record");
       return rec;
     }
 
@@ -51,12 +52,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
       return Future<DungeonCharacterRecord?>.value(null);
     }
 
-    if (rec != null) {
-      dungeonCharacterRecords?.add(rec);
-      emit(DungeonCharacterStateLoaded(dungeonCharacterRecord: rec));
-    }
-
-    return Future<DungeonCharacterRecord?>.value(null);
+    return Future<DungeonCharacterRecord?>.value(rec);
   }
 
   Future<void> enterDungeonCharacter(
@@ -79,6 +75,8 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
         existingDungeonCharacterRecord.dungeonID == dungeonID) {
       log.info(
           'Dungeon with character $existingDungeonCharacterRecord is already in this dungeon');
+      dungeonCharacterRecords?.add(existingDungeonCharacterRecord);
+      dungeonCharacterRecord = existingDungeonCharacterRecord;
       emit(DungeonCharacterStateCreated(
           dungeonCharacterRecord: existingDungeonCharacterRecord));
       return;

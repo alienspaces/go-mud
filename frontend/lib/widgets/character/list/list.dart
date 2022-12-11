@@ -30,10 +30,10 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
 
   void _loadCharacters(BuildContext context) {
     final log = getLogger('CharacterListWidget');
-    log.fine('Loading dungeons');
+    log.info('Loading characters');
 
-    final dungeonCubit = BlocProvider.of<CharacterCubit>(context);
-    dungeonCubit.loadCharacters();
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    characterCubit.loadCharacters();
   }
 
   @override
@@ -80,7 +80,7 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
           widgets.add(
             // ignore: avoid_unnecessary_containers
             Container(
-              child: const Text('Loading dungeons...'),
+              child: const Text('Loading characters...'),
             ),
           );
         }

@@ -27,6 +27,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
       _actionWidget(context, 'Stash', 'stash'),
       _actionWidget(context, 'Drop', 'drop'),
       _actionWidget(context, 'Use', 'use'),
+      _actionWidget(context, 'Attack', 'attack'),
     ];
   }
 
@@ -157,14 +158,14 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
           child: Row(
             children: <Widget>[
               Expanded(
-                flex: 3,
+                flex: 4,
                 child: GridView.count(
-                  crossAxisCount: 3,
+                  crossAxisCount: 4,
                   children: _generateActions(context),
                 ),
               ),
               Expanded(
-                flex: 2,
+                flex: 1,
                 child: _submitActionWidget(
                   context,
                 ),
