@@ -91,7 +91,8 @@ class BoardLocationWidget extends StatelessWidget {
                 locationData: state.current.actionLocation,
               ),
             );
-          } else if (dungeonActionRecord.actionCommand == 'look') {
+          } else if (dungeonActionRecord.actionCommand == 'look' ||
+              dungeonActionRecord.actionCommand == 'attack') {
             widgets.add(
               GameLocationGridWidget(
                 key: UniqueKey(),
