@@ -8,10 +8,10 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	coresql "gitlab.com/alienspaces/go-mud/server/core/sql"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/repositor"
 )
 
 // Repository -

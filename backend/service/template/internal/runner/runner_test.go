@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/dependencies"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/harness"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/dependencies"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/harness"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 func NewTestHarness() (*harness.Testing, error) {

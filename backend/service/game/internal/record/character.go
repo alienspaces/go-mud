@@ -1,6 +1,6 @@
 package record
 
-import "gitlab.com/alienspaces/go-mud/server/core/repository"
+import "gitlab.com/alienspaces/go-mud/backend/core/repository"
 
 type Character struct {
 	Name             string `db:"name"`

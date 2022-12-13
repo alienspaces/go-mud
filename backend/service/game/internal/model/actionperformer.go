@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/mapper"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/mapper"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // TODO: (game) Determine whether we need to pass the character/monster instance view

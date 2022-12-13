@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 )
 
 func Test_validateQueryParameters(t *testing.T) {

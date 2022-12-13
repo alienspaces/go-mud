@@ -1,8 +1,8 @@
 package runner
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // DungeonRequestDataToRecord -

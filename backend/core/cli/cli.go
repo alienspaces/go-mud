@@ -1,11 +1,11 @@
 package cli
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
-	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/runnable"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 // CLI -

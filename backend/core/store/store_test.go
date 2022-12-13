@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/config"
-	"gitlab.com/alienspaces/go-mud/server/core/log"
+	"gitlab.com/alienspaces/go-mud/backend/core/config"
+	"gitlab.com/alienspaces/go-mud/backend/core/log"
 )
 
 func newDependencies(t *testing.T) (*config.Config, *log.Log, *Store) {

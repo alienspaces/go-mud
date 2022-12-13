@@ -3,12 +3,12 @@ package locationinstanceview
 import (
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
-	"gitlab.com/alienspaces/go-mud/server/core/tag"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/core/tag"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/repositor"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (

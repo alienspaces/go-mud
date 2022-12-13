@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeon/response.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/docs/dungeon/response.schema.json",
   "title": "Dungeon Main",
   "type": "object",
   "required": ["data"],
   "properties": {
     "data": {
       "type": "array",
-      "items": { "$ref": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/dungeon/data.schema.json" }
+      "items": { "$ref": "https://gitlab.com/alienspaces/go-mud/backend/schema/docs/dungeon/data.schema.json" }
     }
   }
 }

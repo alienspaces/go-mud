@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

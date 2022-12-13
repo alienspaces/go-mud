@@ -1,9 +1,9 @@
 package runner
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // The following data is test data used to seed a test game servers

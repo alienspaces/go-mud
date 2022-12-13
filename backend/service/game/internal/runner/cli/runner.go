@@ -5,11 +5,11 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	command "gitlab.com/alienspaces/go-mud/server/core/cli"
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
+	command "gitlab.com/alienspaces/go-mud/backend/core/cli"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 // Runner -

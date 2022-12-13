@@ -1,7 +1,7 @@
 package runnable
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 // Runnable -

@@ -5,9 +5,9 @@ import (
 
 	"github.com/brianvoe/gofakeit"
 
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // UniqueName appends a UUID4 to the end of the name to make it unique

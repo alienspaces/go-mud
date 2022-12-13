@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	coresql "gitlab.com/alienspaces/go-mud/server/core/sql"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 const (

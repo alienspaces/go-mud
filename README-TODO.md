@@ -8,11 +8,12 @@
 
 ## Now
 
+- 8-implement-turns
+
 ## Next
 
-- 8-implement-turns
+- 10-implement-effects
 
 ## Later
 
-- 10-implement-effects
 - 9-implement-monster-actions

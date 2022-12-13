@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 func TestGetOne(t *testing.T) {

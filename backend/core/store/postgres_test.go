@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	coreConfig "gitlab.com/alienspaces/go-mud/server/core/config"
-	"gitlab.com/alienspaces/go-mud/server/core/log"
+	coreConfig "gitlab.com/alienspaces/go-mud/backend/core/config"
+	"gitlab.com/alienspaces/go-mud/backend/core/log"
 )
 
 func Test_getPostgresDB(t *testing.T) {

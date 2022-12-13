@@ -5,8 +5,8 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 func WriteError(l logger.Logger, w http.ResponseWriter, e error) {

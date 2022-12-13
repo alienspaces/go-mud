@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 // ValidateTemplateRec - validates creating and updating a template record

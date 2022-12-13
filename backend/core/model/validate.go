@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/nullbool"
-	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/nullbool"
+	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
 )
 
 // IsUUID - tests whether provided string is a valid UUID

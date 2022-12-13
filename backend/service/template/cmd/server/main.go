@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/dependencies"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/runner"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/dependencies"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/runner"
 )
 
 func main() {

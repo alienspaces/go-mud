@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/server/schema/docs/action/data.schema.json",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/docs/action/data.schema.json",
   "title": "Dungeon Action Data",
   "description": "Dungeon action data",
   "type": "object",

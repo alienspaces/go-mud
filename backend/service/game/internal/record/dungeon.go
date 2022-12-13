@@ -1,7 +1,7 @@
 package record
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 )
 
 // Repository record types

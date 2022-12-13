@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/convert"
+	"gitlab.com/alienspaces/go-mud/backend/core/convert"
 )
 
 func TestFromBool(t *testing.T) {

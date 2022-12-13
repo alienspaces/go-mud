@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 )
 
 func TestNewSchemaError(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"gitlab.com/alienspaces/go-mud/server/core/nulltime"
+	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
 )
 
 // NOTE:

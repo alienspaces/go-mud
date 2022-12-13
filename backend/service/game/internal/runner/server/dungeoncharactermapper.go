@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/schema"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
 )
 
 // InstanceViewRecordSetToDungeonCharacterResponse

@@ -1,4 +1,4 @@
-module gitlab.com/alienspaces/go-mud/server/constant
+module gitlab.com/alienspaces/go-mud/backend/constant
 
 go 1.15
 
