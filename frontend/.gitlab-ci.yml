@@ -1,0 +1,29 @@
+test-frontend:
+  variables:
+    APP_SERVER_ENV: ci
+    APP_SERVER_PORT: 8084
+    APP_SERVER_LOG_LEVEL: warn
+    APP_SERVER_LOG_PRETTY: "true"
+    APP_SERVER_SCHEMA_PATH: "./schema/docs"
+    APP_SERVER_JWT_SIGNING_KEY: "!notTherealSecretNoob!"
+    APP_SERVER_DB_HOST: localhost
+    APP_SERVER_DB_NAME: "go-mud"
+    APP_SERVER_DB_PORT: 5432
+    APP_SERVER_DB_USER: "go-mud-user"
+    APP_SERVER_DB_PASSWORD: "go-mud-pass"
+    APP_SERVER_DB_MAX_OPEN_CONNECTIONS: 50
+    APP_SERVER_DB_MAX_IDLE_CONNECTIONS: 25
+    APP_SERVER_DB_MAX_IDLE_TIME_MINS: 15    
+    APP_CLIENT_API_SCHEME: "http"
+    APP_CLIENT_API_HOST: game-server
+    APP_CLIENT_API_PORT: 8084
+  image: $CI_REGISTRY/alienspaces/go-mud/cirrusci/flutter:3.3.9
+  stage: test-frontend
+  services:
+    - name: $CI_REGISTRY/alienspaces/go-mud/game-server:$CI_COMMIT_SHORT_SHA
+      alias: game-server
+  script:
+    - cd frontend
+    - flutter pub get
+    - dart ./tool/generate.dart
+    - flutter test

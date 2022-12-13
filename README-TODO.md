@@ -8,25 +8,12 @@
 
 ## Now
 
-- Server: Dungeon instances
-  - Spawn a new dungeon instance that can occupy max N characters
-  - Delete old dungeon instances 5 minutes after they are empty of characters
+2-implement-melee-attack-action
 
 ## Next
 
-- Server: Implement 2 second turns
-- Client: Implement 2 second progress bar and retries
+- 8-implement-turns
 
 ## Later
 
-- Server: Implement monster movement
-- Server: Effects
-  - Object effects (passive)
-  - Object and spells damage effects (active)
-- Server: Object and monster respawning
-- Client: Icons for room contents
-- Server: Support multiple different servers that belong to the same service to support
-  building a separate server for managing monster movement, dungeon cleanup etc
-  - Rename `server/service/game/internal/cli/runner` to `server/service/game/internal/cli/api`
-  - Rename `server/service/game/internal/server/runner` to `server/service/game/internal/server/api`
-- All: Docker Compose
+- 10-implement-effects
