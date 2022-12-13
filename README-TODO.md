@@ -8,8 +8,6 @@
 
 ## Now
 
-2-implement-melee-attack-action
-
 ## Next
 
 - 8-implement-turns
@@ -17,3 +15,4 @@
 ## Later
 
 - 10-implement-effects
+- 9-implement-monster-actions
