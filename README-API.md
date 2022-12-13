@@ -10,7 +10,7 @@
 
 **List dungeons:**
 
-- [Response Schema](server/schema/docs/dungeon/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeon/response.schema.json)
 
 ```bash
 GET /api/v1/dungeons
@@ -18,7 +18,7 @@ GET /api/v1/dungeons
 
 **Get dungeon:**
 
-- [Response Schema](server/schema/docs/dungeon/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeon/response.schema.json)
 
 ```bash
 GET /api/v1/dungeons/{:dungeon_id}
@@ -28,7 +28,7 @@ GET /api/v1/dungeons/{:dungeon_id}
 
 **List dungeon locations:**
 
-- [Response Schema](server/schema/docs/location/response.schema.json)
+- [Response Schema](backend/schema/docs/location/response.schema.json)
 
 ```bash
 GET /api/v1/dungeons/{:dungeon_id}/locations
@@ -36,7 +36,7 @@ GET /api/v1/dungeons/{:dungeon_id}/locations
 
 **Get dungeon location:**
 
-- [Response Schema](server/schema/docs/location/response.schema.json)
+- [Response Schema](backend/schema/docs/location/response.schema.json)
 
 ```bash
 GET /api/v1/dungeons/{:dungeon_id}/locations/{:location_id}
@@ -46,8 +46,8 @@ GET /api/v1/dungeons/{:dungeon_id}/locations/{:location_id}
 
 **Create character:**
 
-- [Request Schema](server/schema/docs/character/create.request.schema.json)
-- [Response Schema](server/schema/docs/character/response.schema.json)
+- [Request Schema](backend/schema/docs/character/create.request.schema.json)
+- [Response Schema](backend/schema/docs/character/response.schema.json)
 
 ```bash
 POST /api/v1/characters
@@ -55,7 +55,7 @@ POST /api/v1/characters
 
 **List characters:**
 
-- [Response Schema](server/schema/docs/character/response.schema.json)
+- [Response Schema](backend/schema/docs/character/response.schema.json)
 
 ```bash
 GET /api/v1/characters
@@ -63,7 +63,7 @@ GET /api/v1/characters
 
 **Get character:**
 
-- [Response Schema](server/schema/docs/character/response.schema.json)
+- [Response Schema](backend/schema/docs/character/response.schema.json)
 
 ```bash
 GET /api/v1/characters/{:character_id}
@@ -73,8 +73,8 @@ GET /api/v1/characters/{:character_id}
 
 📝 _Unimplemented_
 
-- [Request Schema](server/schema/docs/character/response.schema.json)
-- [Response Schema](server/schema/docs/character/response.schema.json)
+- [Request Schema](backend/schema/docs/character/response.schema.json)
+- [Response Schema](backend/schema/docs/character/response.schema.json)
 
 ```bash
 PUT /api/v1/characters/{:character_id}
@@ -88,7 +88,7 @@ Dungeon instances are created to accomodate a maximum number of characters per d
 
 Entering a dungeon returns the specific dungeon instance the character entered.
 
-- [Response Schema](server/schema/docs/dungeoninstance/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeoninstance/response.schema.json)
 
 ```bash
 POST /api/v1/dungeons/{:dungeon_id}/enter
@@ -98,7 +98,7 @@ POST /api/v1/dungeons/{:dungeon_id}/enter
 
 Lists the currently running dungeon instances.
 
-- [Response Schema](server/schema/docs/dungeoninstance/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeoninstance/response.schema.json)
 
 ```bash
 GET /api/v1/dungeons/{:dungeon_id}/instances
@@ -108,7 +108,7 @@ GET /api/v1/dungeons/{:dungeon_id}/instances
 
 Returns a specific running dungeon instance.
 
-- [Response Schema](server/schema/docs/dungeoninstance/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeoninstance/response.schema.json)
 
 ```bash
 GET /api/v1/dungeons/{:dungeon_id}/instances/{:dungeon_instance_id}
@@ -120,8 +120,8 @@ Characters are controlled by performing actions.
 
 **Create a character action:**
 
-- [Request Schema](server/schema/docs/action/create.request.schema.json)
-- [Response Schema](server/schema/docs/action/response.schema.json)
+- [Request Schema](backend/schema/docs/action/create.request.schema.json)
+- [Response Schema](backend/schema/docs/action/response.schema.json)
 
 ```bash
 POST /api/v1/dungeons/{:dungeon_id}/instances/{:dungeon_instance_id}/actions

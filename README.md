@@ -17,7 +17,7 @@ A M.U.D (multi user dungeon) with a back end API built with [`Go`](https://go.de
 Starts a [`postgres`](https://www.postgresql.org/) database in a [`docker`](https://www.docker.com/) container, runs database migrations with [`db-migrate`](https://db-migrate.readthedocs.io/en/latest/), loads game data and starts the [`Go`](https://go.dev/) API server.
 
 ```bash
-cd server
+cd backend
 ./script/start
 ```
 
@@ -28,7 +28,7 @@ API server will be available at [http://localhost:8082/](http://localhost:8082/)
 Generate client configuration code.
 
 ```bash
-cd client
+cd frontend
 ./script/start
 ```
 
