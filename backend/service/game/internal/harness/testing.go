@@ -242,41 +242,56 @@ func (t *Testing) CreateData() error {
 				teardownData.AddCharacterInstanceRecordSet(characterInstanceRecordSet)
 			}
 
-			// Actions
-			for _, actionConfig := range dungeonInstanceConfig.ActionConfig {
+			// Turns
+			for _, turnConfig := range dungeonInstanceConfig.TurnConfig {
 
-				// Character action
-				if actionConfig.CharacterName != "" {
-					ciRec, err := data.GetCharacterInstanceRecByName(actionConfig.CharacterName)
-					if err != nil {
-						l.Warn("failed getting character instance record by name >%s< >%v<", actionConfig.CharacterName, err)
-						return err
-					}
-					actionRecordSet, err := t.createCharacterActionRec(ciRec.DungeonInstanceID, ciRec.ID, actionConfig.Command)
-					if err != nil {
-						l.Warn("failed creating character action record >%v<", err)
-						return err
-					}
-
-					data.AddActionRecordSet(actionRecordSet)
-					teardownData.AddActionRecordSet(actionRecordSet)
+				turnRec, err := t.createTurnRec(dungeonInstanceRecordSet.DungeonInstanceRec.ID, turnConfig)
+				if err != nil {
+					l.Warn("failed creating turn record >%v<", err)
+					return err
 				}
 
-				// Monster action
-				if actionConfig.MonsterName != "" {
-					miRec, err := data.GetMonsterInstanceRecByName(actionConfig.MonsterName)
-					if err != nil {
-						l.Warn("failed getting monster instance record by name >%s< >%v<", actionConfig.MonsterName, err)
-						return err
-					}
-					actionRecordSet, err := t.createMonsterActionRec(miRec.DungeonInstanceID, miRec.ID, actionConfig.Command)
-					if err != nil {
-						l.Warn("failed creating monster action record >%v<", err)
-						return err
+				l.Info("+ Created turn record ID >%s< dungeon instance ID >%s< turn >%d<", turnRec.ID, turnRec.DungeonInstanceID, turnRec.Turn)
+
+				data.AddTurnRec(turnRec)
+				teardownData.AddTurnRec(turnRec)
+
+				// Actions
+				for _, actionConfig := range turnConfig.ActionConfig {
+
+					// Character action
+					if actionConfig.CharacterName != "" {
+						ciRec, err := data.GetCharacterInstanceRecByName(actionConfig.CharacterName)
+						if err != nil {
+							l.Warn("failed getting character instance record by name >%s< >%v<", actionConfig.CharacterName, err)
+							return err
+						}
+						actionRecordSet, err := t.createCharacterActionRec(ciRec.DungeonInstanceID, ciRec.ID, actionConfig.Command)
+						if err != nil {
+							l.Warn("failed creating character action record >%v<", err)
+							return err
+						}
+
+						data.AddActionRecordSet(actionRecordSet)
+						teardownData.AddActionRecordSet(actionRecordSet)
 					}
 
-					data.AddActionRecordSet(actionRecordSet)
-					teardownData.AddActionRecordSet(actionRecordSet)
+					// Monster action
+					if actionConfig.MonsterName != "" {
+						miRec, err := data.GetMonsterInstanceRecByName(actionConfig.MonsterName)
+						if err != nil {
+							l.Warn("failed getting monster instance record by name >%s< >%v<", actionConfig.MonsterName, err)
+							return err
+						}
+						actionRecordSet, err := t.createMonsterActionRec(miRec.DungeonInstanceID, miRec.ID, actionConfig.Command)
+						if err != nil {
+							l.Warn("failed creating monster action record >%v<", err)
+							return err
+						}
+
+						data.AddActionRecordSet(actionRecordSet)
+						teardownData.AddActionRecordSet(actionRecordSet)
+					}
 				}
 			}
 		}
@@ -616,7 +631,28 @@ ACTION_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< object instance records", len(t.teardownData.ObjectInstanceRecs))
+	l.Info("Removing >%d< turn records", len(t.teardownData.ObjectInstanceRecs))
+
+TURN_RECS:
+	for {
+		if len(t.teardownData.TurnRecs) == 0 {
+			break TURN_RECS
+		}
+		var rec *record.Turn
+		rec, t.teardownData.TurnRecs = t.teardownData.TurnRecs[0], t.teardownData.TurnRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveTurnRec(rec.ID)
+		if err != nil {
+			l.Warn("failed removing dungeon instance record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
+	l.Info("Removing >%d< object instance records", len(t.teardownData.MonsterObjectRecs))
 
 OBJECT_INSTANCE_RECS:
 	for {

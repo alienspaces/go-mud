@@ -47,6 +47,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	r.MiddlewareFunc = r.Middleware
 	r.HandlerFunc = r.Handler
 	r.ModellerFunc = r.Modeller
+	r.RunDaemonFunc = r.RunDaemon
 
 	// Handler config
 	hc := r.CharacterHandlerConfig(nil)

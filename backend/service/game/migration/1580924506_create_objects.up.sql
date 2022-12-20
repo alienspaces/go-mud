@@ -607,3 +607,14 @@ CREATE TABLE "action_object" (
     record_type = 'occupant'
   )
 );
+
+
+CREATE TABLE "turn" (
+  "id"                  uuid CONSTRAINT turn_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "dungeon_instance_id" uuid NOT NULL,
+  "turn"                integer,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "turn_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id)
+);

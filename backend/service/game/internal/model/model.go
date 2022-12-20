@@ -37,6 +37,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/object"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/objectinstance"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/objectinstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/turn"
 )
 
 // Model -
@@ -213,19 +214,19 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, objectInstanceViewRepo)
 
-	dungeonActionRepo, err := action.NewRepository(m.Log, p, tx)
+	actionRepo, err := action.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionRepo)
+	repositoryList = append(repositoryList, actionRepo)
 
-	dungeonActionCharacterRepo, err := actioncharacter.NewRepository(m.Log, p, tx)
+	actionCharacterRepo, err := actioncharacter.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action character repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionCharacterRepo)
+	repositoryList = append(repositoryList, actionCharacterRepo)
 
 	dungeonActionCharacterObjectRepo, err := actioncharacterobject.NewRepository(m.Log, p, tx)
 	if err != nil {
@@ -234,26 +235,33 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, dungeonActionCharacterObjectRepo)
 
-	dungeonActionMonsterRepo, err := actionmonster.NewRepository(m.Log, p, tx)
+	actionMonsterRepo, err := actionmonster.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionMonsterRepo)
+	repositoryList = append(repositoryList, actionMonsterRepo)
 
-	dungeonActionMonsterObjectRepo, err := actionmonsterobject.NewRepository(m.Log, p, tx)
+	actionMonsterObjectRepo, err := actionmonsterobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster object repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionMonsterObjectRepo)
+	repositoryList = append(repositoryList, actionMonsterObjectRepo)
 
-	dungeonActionObjectRepo, err := actionobject.NewRepository(m.Log, p, tx)
+	actionObjectRepo, err := actionobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action object repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionObjectRepo)
+	repositoryList = append(repositoryList, actionObjectRepo)
+
+	turnRepo, err := turn.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed turn repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, turnRepo)
 
 	return repositoryList, nil
 }
@@ -556,6 +564,18 @@ func (m *Model) ActionObjectRepository() *actionobject.Repository {
 	}
 
 	return r.(*actionobject.Repository)
+}
+
+// TurnRepository -
+func (m *Model) TurnRepository() *turn.Repository {
+
+	r := m.Repositories[turn.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", turn.TableName)
+		return nil
+	}
+
+	return r.(*turn.Repository)
 }
 
 // DungeonInstanceCapacityQuery -

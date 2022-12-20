@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
@@ -235,7 +235,7 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 
 	rnr.Log.Debug("schema main content path >%s<", mainSchemaPath)
 
-	mainSchema, err = ioutil.ReadFile(mainSchemaPath)
+	mainSchema, err = os.ReadFile(mainSchemaPath)
 	if err != nil {
 		return mainSchema, referenceSchemas, err
 	}
@@ -246,7 +246,7 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 
 		rnr.Log.Debug("schema reference content path >%s<", path)
 
-		ds, err := ioutil.ReadFile(path)
+		ds, err := os.ReadFile(path)
 		if err != nil {
 			return mainSchema, referenceSchemas, err
 		}

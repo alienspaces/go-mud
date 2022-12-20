@@ -256,14 +256,18 @@ var DefaultDataConfig = DataConfig{
 							Name: "Legislate",
 						},
 					},
-					ActionConfig: []ActionConfig{
+					TurnConfig: []TurnConfig{
 						{
-							CharacterName: "Barricade",
-							Command:       "look",
-						},
-						{
-							MonsterName: "Grumpy Dwarf",
-							Command:     "look",
+							ActionConfig: []ActionConfig{
+								{
+									CharacterName: "Barricade",
+									Command:       "look",
+								},
+								{
+									MonsterName: "Grumpy Dwarf",
+									Command:     "look",
+								},
+							},
 						},
 					},
 				},

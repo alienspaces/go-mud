@@ -6,7 +6,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// validateActionMonsterRec - validates creating and updating a game record
+// validateActionMonsterRec - validates creating and updating an action monster record
 func (m *Model) validateActionMonsterRec(rec *record.ActionMonster) error {
 
 	if rec.RecordType == "" {
@@ -43,7 +43,7 @@ func (m *Model) validateActionMonsterRec(rec *record.ActionMonster) error {
 	return nil
 }
 
-// validateDeleteActionMonsterRec - validates it is okay to delete a game record
+// validateDeleteActionMonsterRec - validates it is okay to delete an action monster record
 func (m *Model) validateDeleteActionMonsterRec(recID string) error {
 
 	return nil

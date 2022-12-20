@@ -6,7 +6,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// validateCharacterObjectRec - validates creating and updating a game record
+// validateCharacterObjectRec - validates creating and updating a character object record
 func (m *Model) validateCharacterObjectRec(rec *record.CharacterObject) error {
 
 	if rec.CharacterID == "" {
@@ -25,7 +25,7 @@ func (m *Model) validateCharacterObjectRec(rec *record.CharacterObject) error {
 	return nil
 }
 
-// validateDeleteCharacterObjectRec - validates it is okay to delete a game record
+// validateDeleteCharacterObjectRec - validates it is okay to delete a character object record
 func (m *Model) validateDeleteCharacterObjectRec(recID string) error {
 
 	return nil

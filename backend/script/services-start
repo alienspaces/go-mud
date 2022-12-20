@@ -51,12 +51,12 @@ function start_services {
             fi
 
             # Build server
-            SERVER_NAME="go-mud-${service_name}-server"
-            rm -f "$SERVER_NAME"
-            go build -o "$SERVER_NAME" ./cmd/server
+            server_name="go-mud-${service_name}-server"
+            rm -f "$server_name"
+            go build -o "$server_name" ./cmd/server
 
-            echo "=> (start_services) - Running server $SERVER_NAME - $APP_SERVER_HOST:$APP_SERVER_PORT"
-            ./"$SERVER_NAME"&
+            echo "=> (start_services) - Running server $server_name - $APP_SERVER_HOST:$APP_SERVER_PORT"
+            ./"$server_name"&
             cd - || exit
         fi
     done

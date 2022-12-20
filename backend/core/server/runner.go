@@ -366,7 +366,7 @@ func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 // Run starts the HTTP server and daemon processes. Override to implement a custom run function.
 func (rnr *Runner) Run(args map[string]interface{}) error {
 
-	rnr.Log.Debug("** Run **")
+	rnr.Log.Info("** Run **")
 
 	// signal channel
 	sigChan := make(chan os.Signal, 1)
@@ -374,22 +374,22 @@ func (rnr *Runner) Run(args map[string]interface{}) error {
 
 	// run HTTP server
 	go func() {
-		rnr.Log.Debug("** Running HTTP server process **")
+		rnr.Log.Info("** Running HTTP server process **")
 		if err := rnr.RunHTTPFunc(args); err != nil {
 			rnr.Log.Error("Failed run server >%v<", err)
 			sigChan <- syscall.SIGTERM
 		}
-		rnr.Log.Debug("** HTTP server process ended **")
+		rnr.Log.Info("** HTTP server process ended **")
 	}()
 
 	// run daemon server
 	go func() {
-		rnr.Log.Debug("** Running daemon process **")
+		rnr.Log.Info("** Running daemon process **")
 		if err := rnr.RunDaemonFunc(args); err != nil {
 			rnr.Log.Error("Failed run daemon >%v<", err)
 			sigChan <- syscall.SIGTERM
 		}
-		rnr.Log.Debug("** Daemon process ended **")
+		rnr.Log.Info("** Daemon process ended **")
 	}()
 
 	// wait

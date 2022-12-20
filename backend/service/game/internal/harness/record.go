@@ -312,3 +312,20 @@ func (t *Testing) createMonsterActionRec(dungeonInstanceID, monsterInstanceID, s
 
 	return dungeonActionRecordSet, nil
 }
+
+func (t *Testing) createTurnRec(dungeonInstanceID string, turnConfig TurnConfig) (*record.Turn, error) {
+	l := t.Logger("createTurnRec")
+
+	rec := turnConfig.Record
+
+	rec.DungeonInstanceID = dungeonInstanceID
+
+	l.Debug("Creating turn record >%#v<", rec)
+
+	err := t.Model.(*model.Model).CreateTurnRec(&rec)
+	if err != nil {
+		l.Warn("Failed creating turn record >%v<", err)
+		return nil, err
+	}
+	return &rec, nil
+}

@@ -185,14 +185,18 @@ var testDataConfig = harness.DataConfig{
 							Name: "Barricade",
 						},
 					},
-					ActionConfig: []harness.ActionConfig{
+					TurnConfig: []harness.TurnConfig{
 						{
-							CharacterName: "Barricade",
-							Command:       "look",
-						},
-						{
-							MonsterName: "Grumpy Dwarf",
-							Command:     "look",
+							ActionConfig: []harness.ActionConfig{
+								{
+									CharacterName: "Barricade",
+									Command:       "look",
+								},
+								{
+									MonsterName: "Grumpy Dwarf",
+									Command:     "look",
+								},
+							},
 						},
 					},
 				},

@@ -42,6 +42,9 @@ type Data struct {
 	ActionMonsterRecs         []*record.ActionMonster
 	ActionMonsterObjectRecs   []*record.ActionMonsterObject
 	ActionObjectRecs          []*record.ActionObject
+
+	// Turn
+	TurnRecs []*record.Turn
 }
 
 // Object
@@ -569,6 +572,17 @@ func (d *Data) AddActionObjectRec(rec *record.ActionObject) {
 		}
 	}
 	d.ActionObjectRecs = append(d.ActionObjectRecs, rec)
+}
+
+// Turn
+func (d *Data) AddTurnRec(rec *record.Turn) {
+	for idx := range d.TurnRecs {
+		if d.TurnRecs[idx].ID == rec.ID {
+			d.TurnRecs[idx] = rec
+			return
+		}
+	}
+	d.TurnRecs = append(d.TurnRecs, rec)
 }
 
 func (d *Data) AddActionLocationRecordSet(alrs *record.ActionLocationRecordSet) {
