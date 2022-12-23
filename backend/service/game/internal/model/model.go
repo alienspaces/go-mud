@@ -1,7 +1,11 @@
 package model
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/jmoiron/sqlx"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/model"
@@ -11,6 +15,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/config"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeoninstancecapacity"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/action"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actioncharacter"
@@ -42,14 +47,17 @@ import (
 
 // Model -
 type Model struct {
+	turnDuration int
 	model.Model
 }
+
+var _ modeller.Modeller = &Model{}
 
 // NewModel -
 func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model, error) {
 
 	m := &Model{
-		model.Model{
+		Model: model.Model{
 			Config: c,
 			Log:    l,
 			Store:  s,
@@ -58,6 +66,17 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 
 	m.RepositoriesFunc = m.NewRepositories
 	m.QueriesFunc = m.NewQueries
+
+	turnDuration, err := strconv.Atoi(c.Get(config.AppServerTurnDuration))
+	if err != nil {
+		return nil, err
+	}
+	if turnDuration == 0 {
+		err := fmt.Errorf("missing configuration variable >%s<", config.AppServerTurnDuration)
+		return nil, err
+	}
+
+	m.turnDuration = turnDuration
 
 	return m, nil
 }

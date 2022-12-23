@@ -12,10 +12,6 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 
 	// New turn
 	if rec.ID == "" {
-		if rec.DungeonInstanceID == "" {
-			return fmt.Errorf("failed validation, DungeonInstanceID is empty")
-		}
-
 		// Can only have a single turn record per dungeon instance
 		recs, err := m.GetTurnRecs(
 			map[string]interface{}{
@@ -30,6 +26,9 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 			l.Warn(err.Error())
 			return err
 		}
+	} else {
+		// TODO: validate turn duration
+		l.Info("turn duration >%d", m.turnDuration)
 	}
 
 	if rec.DungeonInstanceID == "" {
