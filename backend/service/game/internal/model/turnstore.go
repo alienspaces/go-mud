@@ -64,7 +64,6 @@ func (m *Model) CreateTurnRec(rec *record.Turn) error {
 
 // UpdateTurnRec -
 func (m *Model) UpdateTurnRec(rec *record.Turn) error {
-
 	l := m.Logger("UpdateTurnRec")
 
 	l.Debug("Updating turn record >%#v<", rec)
@@ -82,7 +81,6 @@ func (m *Model) UpdateTurnRec(rec *record.Turn) error {
 
 // DeleteTurnRec -
 func (m *Model) DeleteTurnRec(recID string) error {
-
 	l := m.Logger("DeleteTurnRec")
 
 	l.Debug("Deleting turn rec ID >%s<", recID)

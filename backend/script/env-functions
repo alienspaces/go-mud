@@ -22,6 +22,8 @@ env_vars=( \
     'APP_SERVER_DB_PASSWORD' \
     # JSON Schema
     'APP_SERVER_SCHEMA_PATH' \
+    # turn duration (milliseconds)
+    'APP_SERVER_TURN_DURATION' \
 );
 
 function clear_env {
