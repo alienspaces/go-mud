@@ -15,7 +15,7 @@ import (
 func (rnr *Runner) Correlation(h Handle) (Handle, error) {
 
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, _ modeller.Modeller) error {
-		l = Logger(l, "Correlation")
+		l = HTTPLogger(l, "Correlation")
 
 		correlationID := r.Header.Get("X-Correlation-ID")
 		if correlationID == "" {

@@ -72,11 +72,11 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 	return http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
 }
 
-// Router - default RouterFunc, override this function for custom routes
-func (rnr *Runner) Router(router *httprouter.Router) error {
-	l := Logger(rnr.Log, "Router")
+// DefaultRouterFunc - default RouterFunc, override this function for custom routes
+func (rnr *Runner) DefaultRouterFunc(router *httprouter.Router) error {
+	l := HTTPLogger(rnr.Log, "Router")
 
-	l.Info("Using router")
+	l.Info("Using default empty router")
 
 	return nil
 }
@@ -92,7 +92,7 @@ func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
 
 // Handler - default HandlerFunc, override this function for custom handler
 func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "DefaultHandlerFunc")
+	l = HTTPLogger(l, "DefaultHandlerFunc")
 
 	l.Info("Using default handler")
 
@@ -103,7 +103,7 @@ func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp
 
 // DefaultRouter - implements default routes based on runner configuration options
 func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
-	l := Logger(rnr.Log, "DefaultRouter")
+	l := HTTPLogger(rnr.Log, "DefaultRouter")
 
 	l.Info("Using default router")
 
@@ -148,8 +148,9 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 		case http.MethodHead:
 			r.HEAD(hc.Path, h)
 		default:
-			l.Warn("Router HTTP method >%s< not supported", hc.Method)
-			return nil, fmt.Errorf("Router HTTP method >%s< not supported", hc.Method)
+			err := fmt.Errorf("router HTTP method >%s< not supported", hc.Method)
+			l.Warn(err.Error())
+			return nil, err
 		}
 	}
 
@@ -165,7 +166,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 
 // DefaultMiddleware - implements middlewares based on runner configuration
 func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h Handle) (httprouter.Handle, error) {
-	l := Logger(rnr.Log, "DefaultMiddleware")
+	l := HTTPLogger(rnr.Log, "DefaultMiddleware")
 
 	l.Info("Using default middleware")
 
@@ -281,7 +282,7 @@ func ReadXMLRequest(l logger.Logger, r *http.Request, s interface{}) (*string, e
 
 // WriteResponse -
 func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, options ...WriteResponseOption) error {
-	l = Logger(l, "WriteResponse")
+	l = HTTPLogger(l, "WriteResponse")
 
 	status := http.StatusOK
 	l.Info("Write response status >%d<", status)
@@ -302,7 +303,7 @@ func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, option
 }
 
 func WriteXMLResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
-	l = Logger(l, "WriteXMLResponse")
+	l = HTTPLogger(l, "WriteXMLResponse")
 
 	status := http.StatusOK
 	l.Info("Write response status >%d<", status)

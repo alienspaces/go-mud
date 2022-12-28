@@ -64,21 +64,34 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
 // Modeller -
 func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
-
 	m, err := model.NewModel(rnr.Config, l, rnr.Store)
 	if err != nil {
 		l.Warn("failed new model >%v<", err)
 		return nil, err
 	}
-
 	return m, nil
 }
 
-func Logger(l logger.Logger, functionName string) logger.Logger {
+func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
+	m, err := rnr.InitModeller(l)
+	if err != nil {
+		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
+		return nil, err
+	}
+	return m.(*model.Model), nil
+}
+
+// DaemonLogger provides a contextual logger for usage in daemon methods
+func (rnr *Runner) DaemonLogger(functionName string) logger.Logger {
+	return rnr.Log.WithPackageContext("game/server/daemon").WithFunctionContext(functionName)
+}
+
+// HTTPLogger provides a contextual logger for usage in HTTP handler methods
+func HTTPLogger(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}
-	return l.WithPackageContext("game/server").WithFunctionContext(functionName)
+	return l.WithPackageContext("game/server/http").WithFunctionContext(functionName)
 }
 
 func mergeHandlerConfigs(hc1 map[server.HandlerConfigKey]server.HandlerConfig, hc2 map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {

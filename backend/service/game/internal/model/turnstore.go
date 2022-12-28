@@ -3,7 +3,9 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -46,8 +48,9 @@ func (m *Model) GetTurnRec(recID string, forUpdate bool) (*record.Turn, error) {
 func (m *Model) CreateTurnRec(rec *record.Turn) error {
 	l := m.Logger("CreateTurnRec")
 
-	// All turns start at turn
-	rec.Turn = 1
+	// Initial defaults
+	rec.TurnCount = 1
+	rec.IncrementedAt = nulltime.FromTime(time.Now().UTC())
 
 	l.Debug("Creating turn record >%#v<", rec)
 

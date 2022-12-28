@@ -10,7 +10,7 @@ import (
 )
 
 func WriteError(l logger.Logger, w http.ResponseWriter, e error) {
-	l = Logger(l, "WriteError")
+	l = HTTPLogger(l, "WriteError")
 
 	eres, err := coreerror.ToError(e)
 	if err != nil {
@@ -36,7 +36,7 @@ func WriteError(l logger.Logger, w http.ResponseWriter, e error) {
 }
 
 func WriteNotFoundError(l logger.Logger, w http.ResponseWriter, entity string, id string) {
-	l = Logger(l, "WriteNotFoundError")
+	l = HTTPLogger(l, "WriteNotFoundError")
 
 	e := coreerror.NewNotFoundError(entity, id)
 	l.Warn("Resource not found >%v<", e)
@@ -45,7 +45,7 @@ func WriteNotFoundError(l logger.Logger, w http.ResponseWriter, entity string, i
 }
 
 func WriteUnavailableError(l logger.Logger, w http.ResponseWriter, err error) {
-	l = Logger(l, "WriteUnavailableError")
+	l = HTTPLogger(l, "WriteUnavailableError")
 
 	e := coreerror.NewUnavailableError()
 	l.Error("Service unavailable >%v< >%v<", err, e)
@@ -54,7 +54,7 @@ func WriteUnavailableError(l logger.Logger, w http.ResponseWriter, err error) {
 }
 
 func WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
-	l = Logger(l, "WriteSystemError")
+	l = HTTPLogger(l, "WriteSystemError")
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
@@ -76,7 +76,7 @@ func WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
 
 // WriteXMLErrorResponse responds with an 200 HTTP Status Code. For Service Cloud to retry message delivery, a nack (false) should be sent instead.
 func WriteXMLErrorResponse(l logger.Logger, w http.ResponseWriter, s interface{}, err error) {
-	l = Logger(l, "WriteXMLErrorResponse")
+	l = HTTPLogger(l, "WriteXMLErrorResponse")
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 

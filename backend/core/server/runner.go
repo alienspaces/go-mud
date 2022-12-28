@@ -188,7 +188,7 @@ var _ runnable.Runnable = &Runner{}
 
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
-	l := Logger(rnr.Log, "Init")
+	l := rnr.Logger("Init")
 
 	if rnr.Log == nil {
 		return fmt.Errorf("logger is nil, cannot initialise server runner")
@@ -260,7 +260,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	// HTTP server - router
 	if rnr.RouterFunc == nil {
-		rnr.RouterFunc = rnr.Router
+		rnr.RouterFunc = rnr.DefaultRouterFunc
 	}
 
 	// HTTP server - middleware
@@ -344,19 +344,19 @@ func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 		return nil, err
 	}
 	if m == nil {
-		l.Warn("modeller is nil, cannot continue")
+		l.Warn("ModellerFunc returned nil, cannot continue")
 		return nil, err
 	}
 
 	tx, err := rnr.Store.GetTx()
 	if err != nil {
-		l.Warn("failed getting DB connection >%v<", err)
+		l.Warn("failed Store GetTx >%v<", err)
 		return m, err
 	}
 
 	err = m.Init(p, pCfg, tx)
 	if err != nil {
-		l.Warn("failed init modeller >%v<", err)
+		l.Warn("failed model Init >%v<", err)
 		return m, err
 	}
 

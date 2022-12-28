@@ -251,7 +251,7 @@ func (t *Testing) CreateData() error {
 					return err
 				}
 
-				l.Info("+ Created turn record ID >%s< dungeon instance ID >%s< turn >%d<", turnRec.ID, turnRec.DungeonInstanceID, turnRec.Turn)
+				l.Info("+ Created turn record ID >%s< dungeon instance ID >%s< turn >%d<", turnRec.ID, turnRec.DungeonInstanceID, turnRec.TurnCount)
 
 				data.AddTurnRec(turnRec)
 				teardownData.AddTurnRec(turnRec)

@@ -80,7 +80,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 
 // GetDungeonHandler -
 func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "GetDungeonHandler")
+	l = HTTPLogger(l, "GetDungeonHandler")
 	l.Info("** Get dungeon handler **")
 
 	// Path parameters
@@ -136,7 +136,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 // GetDungeonsHandler -
 func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "GetDungeonsHandler")
+	l = HTTPLogger(l, "GetDungeonsHandler")
 	l.Info("** Get dungeons handler **")
 
 	var recs []*record.Dungeon

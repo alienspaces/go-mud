@@ -3,15 +3,16 @@ package model
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/jmoiron/sqlx"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/model"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/repositor"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 
@@ -47,7 +48,7 @@ import (
 
 // Model -
 type Model struct {
-	turnDuration int
+	turnDuration time.Duration
 	model.Model
 }
 
@@ -76,7 +77,7 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 		return nil, err
 	}
 
-	m.turnDuration = turnDuration
+	m.turnDuration = time.Duration(turnDuration) * time.Millisecond
 
 	return m, nil
 }

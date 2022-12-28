@@ -16,12 +16,12 @@ import (
 
 // Repository -
 type Repository struct {
-	Config             Config
-	Log                logger.Logger
-	Tx                 *sqlx.Tx
-	Prepare            preparer.Repository
-	RecordParams       map[string]*RecordParam
-	computedAttributes []string
+	Config           Config
+	Log              logger.Logger
+	Tx               *sqlx.Tx
+	Prepare          preparer.Repository
+	RecordParams     map[string]*RecordParam
+	updateAttributes []string
 }
 
 var _ repositor.Repositor = &Repository{}
@@ -60,15 +60,16 @@ func (r *Repository) Init() error {
 		return errors.New("repository Attributes are empty, cannot initialise")
 	}
 
-	computedAttributes := []string{}
+	updateAttributes := []string{}
 	for _, attribute := range r.Attributes() {
-		if attribute == "created_at" ||
+		if attribute == "id" ||
+			attribute == "created_at" ||
 			attribute == "deleted_at" {
 			continue
 		}
-		computedAttributes = append(computedAttributes, attribute)
+		updateAttributes = append(updateAttributes, attribute)
 	}
-	r.computedAttributes = computedAttributes
+	r.updateAttributes = updateAttributes
 
 	return nil
 }
@@ -379,7 +380,7 @@ AND   deleted_at IS NULL
 RETURNING %s
 `,
 		r.TableName(),
-		equalsAndNewlineSeparated(r.computedAttributes),
+		equalsAndNewlineSeparated(r.updateAttributes),
 		commaSeparated(r.Attributes()))
 }
 

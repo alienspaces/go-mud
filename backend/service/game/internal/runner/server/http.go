@@ -13,7 +13,7 @@ import (
 
 // Handler - default handler
 func (rnr *Runner) Handler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "Handler")
+	l = HTTPLogger(l, "Handler")
 
 	l.Info("Using Go M.U.D game handler")
 
@@ -24,7 +24,7 @@ func (rnr *Runner) Handler(w http.ResponseWriter, r *http.Request, pp httprouter
 
 // Router -
 func (rnr *Runner) Router(r *httprouter.Router) error {
-	l := Logger(rnr.Log, "Router")
+	l := HTTPLogger(rnr.Log, "Router")
 
 	l.Info("Using Go M.U.D game router")
 
@@ -33,7 +33,7 @@ func (rnr *Runner) Router(r *httprouter.Router) error {
 
 // Middleware -
 func (rnr *Runner) Middleware(h server.Handle) (server.Handle, error) {
-	l := Logger(rnr.Log, "Middleware")
+	l := HTTPLogger(rnr.Log, "Middleware")
 
 	l.Info("Using Go M.U.D game middleware")
 
