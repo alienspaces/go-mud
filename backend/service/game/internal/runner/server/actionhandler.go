@@ -66,7 +66,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 
 // PostActionHandler -
 func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = HTTPLogger(l, "PostActionHandler")
+	l = loggerWithContext(l, "PostActionHandler")
 	l.Info("** Post action handler **")
 
 	// Path parameters

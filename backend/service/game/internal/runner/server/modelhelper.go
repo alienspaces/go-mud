@@ -15,7 +15,7 @@ type InstanceViewRecordSet struct {
 }
 
 func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m modeller.Modeller, characterID string) (*InstanceViewRecordSet, error) {
-	l = HTTPLogger(l, "getInstanceViewRecordSetByCharacterID")
+	l = loggerWithContext(l, "getInstanceViewRecordSetByCharacterID")
 
 	characterInstanceViewRecs, err := m.(*model.Model).GetCharacterInstanceViewRecs(
 		map[string]interface{}{

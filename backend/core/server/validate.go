@@ -22,7 +22,7 @@ import (
 func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 
 	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, _ map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-		l = HTTPLogger(l, "Validate")
+		l = loggerWithContext(l, "Validate")
 
 		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)
 

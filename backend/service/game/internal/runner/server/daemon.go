@@ -13,7 +13,7 @@ import (
 // The daemon process is a long running background process intended to listen or poll for events
 // and then process those events.
 func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
-	l := rnr.Logger("RunDaemon")
+	l := loggerWithContext(rnr.Log, "RunDaemon")
 
 	for keepRunning() {
 
@@ -145,7 +145,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 }
 
 func processDungeonInstanceTurn(l logger.Logger, m *model.Model, rec *record.DungeonInstance) (*model.IncrementDungeonInstanceTurnResult, error) {
-	l = HTTPLogger(l, "processDungeonInstanceTurn")
+	l = loggerWithContext(l, "processDungeonInstanceTurn")
 
 	var result *model.IncrementDungeonInstanceTurnResult
 	var err error

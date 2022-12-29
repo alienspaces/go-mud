@@ -86,8 +86,8 @@ func (rnr *Runner) DaemonLogger(functionName string) logger.Logger {
 	return rnr.Log.WithPackageContext("game/server/daemon").WithFunctionContext(functionName)
 }
 
-// HTTPLogger provides a contextual logger for usage in HTTP handler methods
-func HTTPLogger(l logger.Logger, functionName string) logger.Logger {
+// loggerWithContext provides a contextual logger for usage in HTTP handler methods
+func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}

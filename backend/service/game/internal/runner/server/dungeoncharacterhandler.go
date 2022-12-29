@@ -106,7 +106,7 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[server.HandlerConfigKey]
 
 // GetDungeonCharacterHandler -
 func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = HTTPLogger(l, "GetDungeonCharacterHandler")
+	l = loggerWithContext(l, "GetDungeonCharacterHandler")
 	l.Info("** Get dungeon character handler **")
 
 	// Path parameters
@@ -206,7 +206,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 
 // PostDungeonCharacterEnterHandler -
 func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = HTTPLogger(l, "PostDungeonCharacterEnterHandler")
+	l = loggerWithContext(l, "PostDungeonCharacterEnterHandler")
 	l.Info("** Dungeon character enter handler **")
 
 	// Path parameters
@@ -316,7 +316,7 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 
 // PostDungeonCharacterExitHandler -
 func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = HTTPLogger(l, "PostDungeonCharacterExitHandler")
+	l = loggerWithContext(l, "PostDungeonCharacterExitHandler")
 	l.Info("** Dungeon character exit handler **")
 
 	// Path parameters

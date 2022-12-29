@@ -188,7 +188,7 @@ var _ runnable.Runnable = &Runner{}
 
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
-	l := rnr.Logger("Init")
+	l := loggerWithContext(rnr.Log, "Init")
 
 	if rnr.Log == nil {
 		return fmt.Errorf("logger is nil, cannot initialise server runner")

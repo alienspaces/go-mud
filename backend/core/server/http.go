@@ -74,7 +74,7 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
 
 // DefaultRouterFunc - default RouterFunc, override this function for custom routes
 func (rnr *Runner) DefaultRouterFunc(router *httprouter.Router) error {
-	l := HTTPLogger(rnr.Log, "Router")
+	l := loggerWithContext(rnr.Log, "Router")
 
 	l.Info("Using default empty router")
 
@@ -92,7 +92,7 @@ func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
 
 // Handler - default HandlerFunc, override this function for custom handler
 func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = HTTPLogger(l, "DefaultHandlerFunc")
+	l = loggerWithContext(l, "DefaultHandlerFunc")
 
 	l.Info("Using default handler")
 
@@ -103,7 +103,7 @@ func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp
 
 // DefaultRouter - implements default routes based on runner configuration options
 func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
-	l := HTTPLogger(rnr.Log, "DefaultRouter")
+	l := loggerWithContext(rnr.Log, "DefaultRouter")
 
 	l.Info("Using default router")
 
@@ -166,7 +166,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 
 // DefaultMiddleware - implements middlewares based on runner configuration
 func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h Handle) (httprouter.Handle, error) {
-	l := HTTPLogger(rnr.Log, "DefaultMiddleware")
+	l := loggerWithContext(rnr.Log, "DefaultMiddleware")
 
 	l.Info("Using default middleware")
 
@@ -282,7 +282,7 @@ func ReadXMLRequest(l logger.Logger, r *http.Request, s interface{}) (*string, e
 
 // WriteResponse -
 func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, options ...WriteResponseOption) error {
-	l = HTTPLogger(l, "WriteResponse")
+	l = loggerWithContext(l, "WriteResponse")
 
 	status := http.StatusOK
 	l.Info("Write response status >%d<", status)
@@ -303,7 +303,7 @@ func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, option
 }
 
 func WriteXMLResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
-	l = HTTPLogger(l, "WriteXMLResponse")
+	l = loggerWithContext(l, "WriteXMLResponse")
 
 	status := http.StatusOK
 	l.Info("Write response status >%d<", status)
