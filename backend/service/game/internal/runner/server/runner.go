@@ -81,17 +81,12 @@ func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
 	return m.(*model.Model), nil
 }
 
-// DaemonLogger provides a contextual logger for usage in daemon methods
-func (rnr *Runner) DaemonLogger(functionName string) logger.Logger {
-	return rnr.Log.WithPackageContext("game/server/daemon").WithFunctionContext(functionName)
-}
-
-// loggerWithContext provides a contextual logger for usage in HTTP handler methods
+// loggerWithContext provides a logger with function context
 func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}
-	return l.WithPackageContext("game/server/http").WithFunctionContext(functionName)
+	return l.WithPackageContext("game/server").WithFunctionContext(functionName)
 }
 
 func mergeHandlerConfigs(hc1 map[server.HandlerConfigKey]server.HandlerConfig, hc2 map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {

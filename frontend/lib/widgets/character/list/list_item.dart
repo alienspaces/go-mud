@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 
 class CharacterListItemWidget extends StatelessWidget {

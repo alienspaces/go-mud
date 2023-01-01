@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Build
+source "${BASH_SOURCE%/*}"/build || exit $?
+
+# Defaults
 if [ -z "$CI_REGISTRY" ]; then
     CI_REGISTRY="registry.gitlab.com"
 fi
@@ -8,6 +12,7 @@ if [ -z "$CI_COMMIT_SHORT_SHA" ]; then
     CI_COMMIT_SHORT_SHA=$(git rev-parse --short HEAD)
 fi
 
+# Test running the game server
 docker run \
 	--env APP_SERVER_ENV="ci" \
 	--env APP_SERVER_PORT="8084" \
@@ -24,5 +29,9 @@ docker run \
     --env APP_SERVER_DB_MAX_IDLE_CONNECTIONS="25" \
     --env APP_SERVER_DB_MAX_IDLE_TIME_MINS="15" \
     --env APP_SERVER_TURN_DURATION="2000" \
+	--interactive \
+	--tty \
 	--name game-server \
 	"${CI_REGISTRY}/alienspaces/go-mud/game-server:${CI_COMMIT_SHORT_SHA}"
+
+docker rm game-server
