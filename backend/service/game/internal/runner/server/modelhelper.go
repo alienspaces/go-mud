@@ -19,35 +19,36 @@ func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m mode
 
 	characterInstanceViewRec, err := m.(*model.Model).GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {
+		l.Warn("failed getting character ID >%s< instance view reocrd >%v<", characterID, err)
 		return nil, err
 	}
 
+	// Intentionally not an error when there is no character instance
 	if characterInstanceViewRec == nil {
-		l.Warn("character instance record is nil")
-		err := coreerror.NewInternalError()
-		return nil, err
+		l.Info("character ID >%s< has no character instance record", characterID)
+		return nil, nil
 	}
 
 	dungeonInstanceViewRec, err := m.(*model.Model).GetDungeonInstanceViewRec(characterInstanceViewRec.DungeonInstanceID)
 	if err != nil {
-		l.Warn("Failed to get dungeon instance view record ID >%s<", characterInstanceViewRec.DungeonInstanceID)
+		l.Warn("failed to get dungeon instance view record ID >%s<", characterInstanceViewRec.DungeonInstanceID)
 		return nil, err
 	}
 
 	if dungeonInstanceViewRec == nil {
-		l.Warn("Dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID)
+		l.Warn("dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID)
 		err := coreerror.NewInternalError()
 		return nil, err
 	}
 
 	locationInstanceViewRec, err := m.(*model.Model).GetLocationInstanceViewRec(characterInstanceViewRec.LocationInstanceID)
 	if err != nil {
-		l.Warn("Failed to get location instance record ID >%s<", characterInstanceViewRec.LocationInstanceID)
+		l.Warn("failed to get location instance record ID >%s<", characterInstanceViewRec.LocationInstanceID)
 		return nil, err
 	}
 
 	if locationInstanceViewRec == nil {
-		l.Warn("Location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID)
+		l.Warn("location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID)
 		err := coreerror.NewInternalError()
 		return nil, err
 	}

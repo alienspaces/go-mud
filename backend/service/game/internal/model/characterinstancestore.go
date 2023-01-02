@@ -52,16 +52,17 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 		}, nil,
 	)
 	if err != nil {
+		l.Warn("failed getting character ID >%s< instance view records >%v<", characterID, err)
 		return nil, err
 	}
 
 	if len(characterInstanceViewRecs) == 0 {
-		l.Warn("Character with ID %s has not entered a dungeon", characterID)
+		l.Warn("character with ID >%s< has no character instance record", characterID)
 		return nil, nil
 	}
 
 	if len(characterInstanceViewRecs) > 1 {
-		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceViewRecs))
+		l.Warn("unexpected number of character instance records returned >%d<", len(characterInstanceViewRecs))
 		err := coreerror.NewInternalError()
 		return nil, err
 	}
