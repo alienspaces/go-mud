@@ -6,7 +6,7 @@ import (
 )
 
 // CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData
-func (rnr *Runner) CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(characterRec record.Character, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
+func (rnr *Runner) CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(characterRec *record.Character, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
 		CharacterID:               characterRec.ID,

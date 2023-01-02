@@ -132,10 +132,9 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 	}
 
 	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
-		// var responseBody *schema.DungeonCharacterResponse
-		// err = json.NewDecoder(body).Decode(&responseBody)
-		// return responseBody, err
-		return nil, nil
+		var responseBody *schema.DungeonCharacterResponse
+		err = json.NewDecoder(body).Decode(&responseBody)
+		return responseBody, err
 	}
 
 	testCases := []testCase{
@@ -174,9 +173,9 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 				}
 
 				for _, data := range responseBody.Data {
-					require.NotEmpty(t, data.DungeonID, "Data DungeonID is not empty")
 					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
-					require.NotEmpty(t, data.LocationID, "Data LocationID is not empty")
+					require.Empty(t, data.DungeonID, "Data DungeonID is empty")
+					require.Empty(t, data.LocationID, "Data LocationID is empty")
 					require.False(t, data.CharacterCreatedAt.IsZero(), "Data CreatedAt is not zero")
 				}
 			}

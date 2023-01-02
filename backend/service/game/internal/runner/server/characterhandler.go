@@ -176,7 +176,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		}
 
 		// Response data
-		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
+		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -234,7 +234,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 		}
 
 		// Response data
-		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
+		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -295,7 +295,7 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
+	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(&rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -381,7 +381,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
+	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

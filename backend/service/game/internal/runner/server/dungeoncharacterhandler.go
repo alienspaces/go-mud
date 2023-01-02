@@ -398,7 +398,35 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 		return err
 	}
 
-	err = server.WriteResponse(l, w, nil)
+	// Get updated character record
+	characterRec, err = m.(*model.Model).GetCharacterRec(characterID, false)
+	if err != nil {
+		l.Warn("failed getting character record >%v<", err)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	if characterRec == nil {
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	// Response data
+	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(characterRec, nil)
+	if err != nil {
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	// Assign response properties
+	res := schema.CharacterResponse{
+		Data: []schema.DungeonCharacterData{
+			responseData,
+		},
+	}
+
+	err = server.WriteResponse(l, w, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
