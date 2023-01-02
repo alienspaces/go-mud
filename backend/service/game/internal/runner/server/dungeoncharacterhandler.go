@@ -142,7 +142,6 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 		return err
 	}
 
-	// Resource not found
 	if dungeonRec == nil {
 		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
@@ -158,7 +157,6 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 		return err
 	}
 
-	// Resource not found
 	if characterRec == nil {
 		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
@@ -242,7 +240,6 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 		return err
 	}
 
-	// Resource not found
 	if dungeonRec == nil {
 		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
@@ -258,7 +255,6 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 		return err
 	}
 
-	// Resource not found
 	if characterRec == nil {
 		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
@@ -352,7 +348,6 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 		return err
 	}
 
-	// Resource not found
 	if dungeonRec == nil {
 		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
@@ -368,16 +363,40 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 		return err
 	}
 
-	// Resource not found
 	if characterRec == nil {
 		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	l.Info("Exiting dungeon ID with character ID >%s<", dungeonID, characterID)
+	instanceViewRecordSet, err := rnr.getInstanceViewRecordSetByCharacterID(l, m, characterID)
+	if err != nil {
+		l.Warn("failed getting character instance record >%v<", err)
+		server.WriteError(l, w, err)
+		return err
+	}
 
-	// TODO: Implemented exiting the dungeon
+	if instanceViewRecordSet == nil {
+		l.Warn("instance record set is nil")
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	if instanceViewRecordSet.DungeonInstanceViewRec.DungeonID != dungeonID {
+		l.Warn("dungeon ID >%s< does not contain character ID >%s<", dungeonID, characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
+		server.WriteError(l, w, err)
+		return err
+	}
+
+	l.Info("Exiting dungeon ID >%s< with character ID >%s<", dungeonID, characterID)
+
+	err = m.(*model.Model).CharacterExitDungeon(characterID)
+	if err != nil {
+		server.WriteError(l, w, err)
+		return err
+	}
 
 	err = server.WriteResponse(l, w, nil)
 	if err != nil {

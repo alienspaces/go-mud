@@ -17,27 +17,16 @@ type InstanceViewRecordSet struct {
 func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m modeller.Modeller, characterID string) (*InstanceViewRecordSet, error) {
 	l = loggerWithContext(l, "getInstanceViewRecordSetByCharacterID")
 
-	characterInstanceViewRecs, err := m.(*model.Model).GetCharacterInstanceViewRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil,
-	)
+	characterInstanceViewRec, err := m.(*model.Model).GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(characterInstanceViewRecs) == 0 {
-		l.Warn("Character with ID %s has not entered a dungeon", characterID)
-		return nil, nil
-	}
-
-	if len(characterInstanceViewRecs) > 1 {
-		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceViewRecs))
+	if characterInstanceViewRec == nil {
+		l.Warn("character instance record is nil")
 		err := coreerror.NewInternalError()
 		return nil, err
 	}
-
-	characterInstanceViewRec := characterInstanceViewRecs[0]
 
 	dungeonInstanceViewRec, err := m.(*model.Model).GetDungeonInstanceViewRec(characterInstanceViewRec.DungeonInstanceID)
 	if err != nil {

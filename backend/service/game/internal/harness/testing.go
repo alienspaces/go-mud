@@ -505,7 +505,7 @@ func (t *Testing) RemoveData() error {
 
 	seen := map[string]bool{}
 
-	l.Info("Removing >%d< action character object records", len(t.teardownData.ActionCharacterObjectRecs))
+	l.Debug("Removing >%d< action character object records", len(t.teardownData.ActionCharacterObjectRecs))
 
 ACTION_CHARACTER_OBJECT_RECS:
 	for {
@@ -526,7 +526,7 @@ ACTION_CHARACTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< action character records", len(t.teardownData.ActionCharacterRecs))
+	l.Debug("Removing >%d< action character records", len(t.teardownData.ActionCharacterRecs))
 
 ACTION_CHARACTER_RECS:
 	for {
@@ -547,7 +547,7 @@ ACTION_CHARACTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< action monster object records", len(t.teardownData.ActionMonsterObjectRecs))
+	l.Debug("Removing >%d< action monster object records", len(t.teardownData.ActionMonsterObjectRecs))
 
 ACTION_MONSTER_OBJECT_RECS:
 	for {
@@ -568,7 +568,7 @@ ACTION_MONSTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< action monster records", len(t.teardownData.ActionMonsterRecs))
+	l.Debug("Removing >%d< action monster records", len(t.teardownData.ActionMonsterRecs))
 
 ACTION_MONSTER_RECS:
 	for {
@@ -589,7 +589,7 @@ ACTION_MONSTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< action object records", len(t.teardownData.ActionObjectRecs))
+	l.Debug("Removing >%d< action object records", len(t.teardownData.ActionObjectRecs))
 
 ACTION_OBJECT_RECS:
 	for {
@@ -610,7 +610,7 @@ ACTION_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< action records", len(t.teardownData.ActionRecs))
+	l.Debug("Removing >%d< action records", len(t.teardownData.ActionRecs))
 
 ACTION_RECS:
 	for {
@@ -631,7 +631,7 @@ ACTION_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< turn records", len(t.teardownData.ObjectInstanceRecs))
+	l.Debug("Removing >%d< turn records", len(t.teardownData.ObjectInstanceRecs))
 
 TURN_RECS:
 	for {
@@ -652,7 +652,7 @@ TURN_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< object instance records", len(t.teardownData.MonsterObjectRecs))
+	l.Debug("Removing >%d< object instance records", len(t.teardownData.MonsterObjectRecs))
 
 OBJECT_INSTANCE_RECS:
 	for {
@@ -673,7 +673,7 @@ OBJECT_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< monster instance records", len(t.teardownData.MonsterInstanceRecs))
+	l.Debug("Removing >%d< monster instance records", len(t.teardownData.MonsterInstanceRecs))
 
 MONSTER_INSTANCE_RECS:
 	for {
@@ -694,7 +694,7 @@ MONSTER_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< character instance records", len(t.teardownData.CharacterInstanceRecs))
+	l.Debug("Removing >%d< character instance records", len(t.teardownData.CharacterInstanceRecs))
 
 CHARACTER_INSTANCE_RECS:
 	for {
@@ -715,7 +715,7 @@ CHARACTER_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< location instance records", len(t.teardownData.LocationInstanceRecs))
+	l.Debug("Removing >%d< location instance records", len(t.teardownData.LocationInstanceRecs))
 
 LOCATION_INSTANCE_RECS:
 	for {
@@ -736,7 +736,7 @@ LOCATION_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< dungeon instance records", len(t.teardownData.DungeonInstanceRecs))
+	l.Debug("Removing >%d< dungeon instance records", len(t.teardownData.DungeonInstanceRecs))
 
 DUNGEON_INSTANCE_RECS:
 	for {
@@ -757,7 +757,7 @@ DUNGEON_INSTANCE_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< monster object records", len(t.teardownData.MonsterObjectRecs))
+	l.Debug("Removing >%d< monster object records", len(t.teardownData.MonsterObjectRecs))
 
 MONSTER_OBJECT_RECS:
 	for {
@@ -778,7 +778,7 @@ MONSTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< character object records", len(t.teardownData.CharacterObjectRecs))
+	l.Debug("Removing >%d< character object records", len(t.teardownData.CharacterObjectRecs))
 
 CHARACTER_OBJECT_RECS:
 	for {
@@ -799,7 +799,7 @@ CHARACTER_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< location object records", len(t.teardownData.LocationObjectRecs))
+	l.Debug("Removing >%d< location object records", len(t.teardownData.LocationObjectRecs))
 
 LOCATION_OBJECT_RECS:
 	for {
@@ -820,7 +820,7 @@ LOCATION_OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< object records", len(t.teardownData.ObjectRecs))
+	l.Debug("Removing >%d< object records", len(t.teardownData.ObjectRecs))
 
 OBJECT_RECS:
 	for {
@@ -841,7 +841,7 @@ OBJECT_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< character records", len(t.teardownData.CharacterRecs))
+	l.Debug("Removing >%d< character records", len(t.teardownData.CharacterRecs))
 
 CHARACTER_RECS:
 	for {
@@ -862,7 +862,7 @@ CHARACTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< location monster records", len(t.teardownData.LocationMonsterRecs))
+	l.Debug("Removing >%d< location monster records", len(t.teardownData.LocationMonsterRecs))
 
 LOCATION_MONSTER_RECS:
 	for {
@@ -883,7 +883,7 @@ LOCATION_MONSTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< monster records", len(t.teardownData.MonsterRecs))
+	l.Debug("Removing >%d< monster records", len(t.teardownData.MonsterRecs))
 
 MONSTER_RECS:
 	for {
@@ -904,7 +904,7 @@ MONSTER_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< location records", len(t.teardownData.LocationRecs))
+	l.Debug("Removing >%d< location records", len(t.teardownData.LocationRecs))
 
 LOCATION_RECS:
 	for {
@@ -925,7 +925,7 @@ LOCATION_RECS:
 		seen[rec.ID] = true
 	}
 
-	l.Info("Removing >%d< dungeon records", len(t.teardownData.DungeonRecs))
+	l.Debug("Removing >%d< dungeon records", len(t.teardownData.DungeonRecs))
 
 DUNGEON_RECS:
 	for {

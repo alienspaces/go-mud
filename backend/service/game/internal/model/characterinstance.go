@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -55,8 +56,18 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*Character
 func (m *Model) CharacterExitDungeon(characterID string) error {
 	l := m.Logger("CharacterExitDungeon")
 
-	// TODO: (game) Implement exiting a dungeon instance..
-	l.Warn("Not implemented")
+	characterInstanceViewRec, err := m.GetCharacterInstanceViewRecByCharacterID(characterID)
+	if err != nil {
+		return err
+	}
+
+	if characterInstanceViewRec == nil {
+		l.Warn("character instance record is nil")
+		err := coreerror.NewInternalError()
+		return err
+	}
+
+	// TODO: Update character record experience points, coins and items
 
 	return nil
 }

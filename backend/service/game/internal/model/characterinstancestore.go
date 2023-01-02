@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -21,7 +22,6 @@ func (m *Model) GetCharacterInstanceRecs(params map[string]interface{}, operator
 
 // GetCharacterInstanceRec -
 func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.CharacterInstance, error) {
-
 	l := m.Logger("GetCharacterInstanceRec")
 
 	l.Debug("Getting character instance record ID >%s<", recID)
@@ -40,6 +40,33 @@ func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.C
 	}
 
 	return rec, err
+}
+
+// GetCharacterInstanceViewRecByCharacterID -
+func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*record.CharacterInstanceView, error) {
+	l := m.Logger("GetCharacterInstanceViewRecByCharacterID")
+
+	characterInstanceViewRecs, err := m.GetCharacterInstanceViewRecs(
+		map[string]interface{}{
+			"character_id": characterID,
+		}, nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(characterInstanceViewRecs) == 0 {
+		l.Warn("Character with ID %s has not entered a dungeon", characterID)
+		return nil, nil
+	}
+
+	if len(characterInstanceViewRecs) > 1 {
+		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceViewRecs))
+		err := coreerror.NewInternalError()
+		return nil, err
+	}
+
+	return characterInstanceViewRecs[0], nil
 }
 
 // GetCharacterInstanceRecs -

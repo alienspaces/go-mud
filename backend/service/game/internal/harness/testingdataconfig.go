@@ -4,74 +4,111 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+const (
+	CharacterNameBarricade string = "Barricade"
+	CharacterNameLegislate string = "Legislate"
+	CharacterNameBolster   string = "Bolster"
+)
+
+const (
+	MonsterNameGrumpyDwarf string = "Grumpy Dwarf"
+	MonsterNameAngryGoblin string = "Angry Goblin"
+)
+
+const (
+	ObjectNameRustedSword        string = "Rusted Sword"
+	ObjectNameRustedHelmet       string = "Rusted Helmet"
+	ObjectNameSilverKey          string = "Silver Key"
+	ObjectNameDullBronzeRing     string = "Dull Bronze Ring"
+	ObjectNameBloodStainedPouch  string = "Blood Stained Pouch"
+	ObjectNameBoneDagger         string = "Bone Dagger"
+	ObjectNameVialOfOgreBlood    string = "Vial Of Ogre Blood"
+	ObjectNameStoneMace          string = "Stone Mace"
+	ObjectNameChippedHammer      string = "Chipped Hammer"
+	ObjectNameChippedBreastplate string = "Chipped Breastplate"
+)
+
+const (
+	DungeonNameCave string = "Cave"
+)
+
+const (
+	LocationNameCaveEntrance     string = "Cave Entrance"
+	LocationNameCaveTunnel       string = "Cave Tunnel"
+	LocationNameCaveRoom         string = "Cave Room"
+	LocationNameNarrowTunnel     string = "Narrow Tunnel"
+	LocationNameDarkNarrowTunnel string = "Dark Narrow Tunnel"
+	LocationNameDarkRoom         string = "Dark Room"
+)
+
 var DefaultDataConfig = DataConfig{
 	ObjectConfig: []ObjectConfig{
 		{
 			Record: record.Object{
-				Name:                "Rusted Sword",
+				Name:                ObjectNameRustedSword,
 				Description:         "A rusted sword.",
 				DescriptionDetailed: "A rusted sword with a chipped blade and a worn leather handle.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Rusted Helmet",
+				Name:                ObjectNameRustedHelmet,
 				Description:         "A rusted helmet.",
 				DescriptionDetailed: "A rusted helmet pitted with dents.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Silver Key",
+				Name:                ObjectNameSilverKey,
 				Description:         "A silver key.",
 				DescriptionDetailed: "A silver key with fine runes in a language you do not understand engraved along the edge.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Dull Bronze Ring",
+				Name:                ObjectNameDullBronzeRing,
 				Description:         "A dull bronze ring.",
 				DescriptionDetailed: "A dull bronze ring.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Blood Stained Pouch",
+				Name:                ObjectNameBloodStainedPouch,
 				Description:         "A blood stained pouch.",
 				DescriptionDetailed: "A blood stained pouch.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Bone Dagger",
+				Name:                ObjectNameBoneDagger,
 				Description:         "A bone dagger.",
 				DescriptionDetailed: "A bone dagger.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Vial Of Ogre Blood",
+				Name:                ObjectNameVialOfOgreBlood,
 				Description:         "A large vial of ogre blood.",
 				DescriptionDetailed: "A large vial of ogre blood.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Stone Mace",
+				Name:                ObjectNameStoneMace,
 				Description:         "A stone mace.",
 				DescriptionDetailed: "A stone mace.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Chipped Hammer",
+				Name:                ObjectNameChippedHammer,
 				Description:         "A chipped hammer.",
 				DescriptionDetailed: "A chipped hammer.",
 			},
 		},
 		{
 			Record: record.Object{
-				Name:                "Chipped Breastplate",
+				Name:                ObjectNameChippedBreastplate,
 				Description:         "A chipped breastplate.",
 				DescriptionDetailed: "A chipped breastplate.",
 			},
@@ -80,7 +117,7 @@ var DefaultDataConfig = DataConfig{
 	MonsterConfig: []MonsterConfig{
 		{
 			Record: record.Monster{
-				Name:        "Grumpy Dwarf",
+				Name:        MonsterNameGrumpyDwarf,
 				Description: "A particularly grumpy specimen of a common dwarf.",
 			},
 			MonsterObjectConfig: []MonsterObjectConfig{
@@ -88,19 +125,19 @@ var DefaultDataConfig = DataConfig{
 					Record: record.MonsterObject{
 						IsEquipped: true,
 					},
-					ObjectName: "Bone Dagger",
+					ObjectName: ObjectNameBoneDagger,
 				},
 				{
 					Record: record.MonsterObject{
 						IsStashed: true,
 					},
-					ObjectName: "Vial Of Ogre Blood",
+					ObjectName: ObjectNameVialOfOgreBlood,
 				},
 			},
 		},
 		{
 			Record: record.Monster{
-				Name:        "Angry Goblin",
+				Name:        MonsterNameAngryGoblin,
 				Description: "A particularly angry specimen of a common goblin.",
 			},
 			MonsterObjectConfig: []MonsterObjectConfig{},
@@ -109,52 +146,52 @@ var DefaultDataConfig = DataConfig{
 	CharacterConfig: []CharacterConfig{
 		{
 			Record: record.Character{
-				Name: "Barricade",
+				Name: CharacterNameBarricade,
 			},
 			CharacterObjectConfig: []CharacterObjectConfig{
 				{
 					Record: record.CharacterObject{
 						IsEquipped: true,
 					},
-					ObjectName: "Dull Bronze Ring",
+					ObjectName: ObjectNameDullBronzeRing,
 				},
 				{
 					Record: record.CharacterObject{
 						IsStashed: true,
 					},
-					ObjectName: "Blood Stained Pouch",
+					ObjectName: ObjectNameBloodStainedPouch,
 				},
 			},
 		},
 		{
 			Record: record.Character{
-				Name: "Legislate",
+				Name: CharacterNameLegislate,
 			},
 			CharacterObjectConfig: []CharacterObjectConfig{
 				{
 					Record: record.CharacterObject{
 						IsEquipped: true,
 					},
-					ObjectName: "Stone Mace",
+					ObjectName: ObjectNameStoneMace,
 				},
 			},
 		},
 		{
 			Record: record.Character{
-				Name: "Bolster",
+				Name: CharacterNameBolster,
 			},
 			CharacterObjectConfig: []CharacterObjectConfig{
 				{
 					Record: record.CharacterObject{
 						IsEquipped: true,
 					},
-					ObjectName: "Chipped Hammer",
+					ObjectName: ObjectNameChippedHammer,
 				},
 				{
 					Record: record.CharacterObject{
 						IsEquipped: true,
 					},
-					ObjectName: "Chipped Breastplate",
+					ObjectName: ObjectNameChippedBreastplate,
 				},
 			},
 		},
@@ -162,86 +199,86 @@ var DefaultDataConfig = DataConfig{
 	DungeonConfig: []DungeonConfig{
 		{
 			Record: record.Dungeon{
-				Name:        "Cave",
+				Name:        DungeonNameCave,
 				Description: "A dark and damp stone cave.",
 			},
 			LocationConfig: []LocationConfig{
 				{
 					Record: record.Location{
-						Name:        "Cave Entrance",
+						Name:        LocationNameCaveEntrance,
 						Description: "A large cave entrance.",
 						IsDefault:   true,
 					},
-					NorthLocationName: "Cave Tunnel",
+					NorthLocationName: LocationNameCaveTunnel,
 					LocationMonsterConfig: []LocationMonsterConfig{
 						{
-							MonsterName: "Grumpy Dwarf",
+							MonsterName: MonsterNameGrumpyDwarf,
 						},
 					},
 					LocationObjectConfig: []LocationObjectConfig{
 						{
-							ObjectName: "Rusted Sword",
+							ObjectName: ObjectNameRustedSword,
 						},
 					},
 				},
 				{
 					Record: record.Location{
-						Name:        "Cave Tunnel",
+						Name:        LocationNameCaveTunnel,
 						Description: "A cave tunnel descends into the mountain.",
 					},
-					NorthLocationName:     "Cave Room",
-					SouthLocationName:     "Cave Entrance",
-					NorthwestLocationName: "Narrow Tunnel",
+					NorthLocationName:     LocationNameCaveRoom,
+					SouthLocationName:     LocationNameCaveEntrance,
+					NorthwestLocationName: LocationNameNarrowTunnel,
 					LocationMonsterConfig: []LocationMonsterConfig{
 						{
-							MonsterName: "Angry Goblin",
+							MonsterName: MonsterNameAngryGoblin,
 						},
 					},
 					LocationObjectConfig: []LocationObjectConfig{
 						{
-							ObjectName: "Rusted Helmet",
+							ObjectName: ObjectNameRustedHelmet,
 						},
 					},
 				},
 				{
 					Record: record.Location{
-						Name:        "Cave Room",
+						Name:        LocationNameCaveRoom,
 						Description: "A large cave room.",
 					},
-					SouthLocationName:     "Cave Tunnel",
+					SouthLocationName:     LocationNameCaveTunnel,
 					LocationMonsterConfig: []LocationMonsterConfig{},
 					LocationObjectConfig: []LocationObjectConfig{
 						{
-							ObjectName: "Silver Key",
+							ObjectName: ObjectNameSilverKey,
 						},
 					},
 				},
 				{
 					Record: record.Location{
-						Name:        "Narrow Tunnel",
+						Name:        LocationNameNarrowTunnel,
 						Description: "A narrow tunnel gradually descending into the darkness.",
 					},
-					NorthwestLocationName: "Dark Narrow Tunnel",
-					SoutheastLocationName: "Cave Tunnel",
+					NorthwestLocationName: LocationNameDarkNarrowTunnel,
+					SoutheastLocationName: LocationNameCaveTunnel,
 					LocationMonsterConfig: []LocationMonsterConfig{},
 					LocationObjectConfig:  []LocationObjectConfig{},
 				},
 				{
 					Record: record.Location{
-						Name:        "Dark Narrow Tunnel",
+						Name:        LocationNameDarkNarrowTunnel,
 						Description: "A dark narrow tunnel.",
 					},
-					SoutheastLocationName: "Narrow Tunnel",
-					DownLocationName:      "Dark Room",
+					SoutheastLocationName: LocationNameNarrowTunnel,
+					DownLocationName:      LocationNameDarkRoom,
 					LocationMonsterConfig: []LocationMonsterConfig{},
 					LocationObjectConfig:  []LocationObjectConfig{},
 				},
 				{
 					Record: record.Location{
-						Name:        "Dark Room",
+						Name:        LocationNameDarkRoom,
 						Description: "A dark room.",
 					},
-					UpLocationName:        "Dark Narrow Tunnel",
+					UpLocationName:        LocationNameDarkNarrowTunnel,
 					LocationMonsterConfig: []LocationMonsterConfig{},
 					LocationObjectConfig:  []LocationObjectConfig{},
 				},
@@ -250,21 +287,21 @@ var DefaultDataConfig = DataConfig{
 				{
 					CharacterInstanceConfig: []CharacterInstanceConfig{
 						{
-							Name: "Barricade",
+							Name: CharacterNameBarricade,
 						},
 						{
-							Name: "Legislate",
+							Name: CharacterNameLegislate,
 						},
 					},
 					TurnConfig: []TurnConfig{
 						{
 							ActionConfig: []ActionConfig{
 								{
-									CharacterName: "Barricade",
+									CharacterName: CharacterNameBarricade,
 									Command:       "look",
 								},
 								{
-									MonsterName: "Grumpy Dwarf",
+									MonsterName: MonsterNameGrumpyDwarf,
 									Command:     "look",
 								},
 							},
