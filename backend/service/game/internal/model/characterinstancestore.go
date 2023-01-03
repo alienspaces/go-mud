@@ -8,6 +8,34 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+// GetCharacterInstanceRecByCharacterID -
+func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*record.CharacterInstance, error) {
+	l := m.Logger("GetCharacterInstanceRecByCharacterID")
+
+	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"character_id": characterID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting character ID >%s< instance records >%v<", characterID, err)
+		return nil, err
+	}
+
+	if len(characterInstanceRecs) == 0 {
+		l.Warn("character with ID >%s< has no character instance record", characterID)
+		return nil, nil
+	}
+
+	if len(characterInstanceRecs) > 1 {
+		l.Warn("unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
+		err := coreerror.NewInternalError()
+		return nil, err
+	}
+
+	return characterInstanceRecs[0], nil
+}
+
 // GetCharacterInstanceRecs -
 func (m *Model) GetCharacterInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.CharacterInstance, error) {
 
@@ -52,17 +80,17 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 		}, nil,
 	)
 	if err != nil {
-		l.Warn("failed getting character ID >%s< instance view records >%v<", characterID, err)
+		l.Warn("failed getting character ID >%s< character instance view records >%v<", characterID, err)
 		return nil, err
 	}
 
 	if len(characterInstanceViewRecs) == 0 {
-		l.Warn("character with ID >%s< has no character instance record", characterID)
+		l.Warn("character with ID >%s< has no character instance view record", characterID)
 		return nil, nil
 	}
 
 	if len(characterInstanceViewRecs) > 1 {
-		l.Warn("unexpected number of character instance records returned >%d<", len(characterInstanceViewRecs))
+		l.Warn("unexpected number of character instance view records returned >%d<", len(characterInstanceViewRecs))
 		err := coreerror.NewInternalError()
 		return nil, err
 	}

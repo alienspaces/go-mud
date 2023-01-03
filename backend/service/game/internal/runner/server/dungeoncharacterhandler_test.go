@@ -89,8 +89,23 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 
 				for _, data := range responseBody.Data {
 					require.NotEmpty(t, data.DungeonID, "Data DungeonID is not empty")
-					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
+					require.NotEmpty(t, data.DungeonName, "Data DungeonName is not empty")
 					require.NotEmpty(t, data.LocationID, "Data LocationID is not empty")
+					require.NotEmpty(t, data.LocationName, "Data LocationName is not empty")
+
+					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
+					require.NotEmpty(t, data.CharacterName, "Data CharacterName is not empty")
+					require.NotEmpty(t, data.CharacterStrength, "Data CharacterStrength is not empty")
+					require.NotEmpty(t, data.CharacterDexterity, "Data CharacterDexterity is not empty")
+					require.NotEmpty(t, data.CharacterIntelligence, "Data CharacterIntelligence is not empty")
+					require.NotEmpty(t, data.CharacterCurrentStrength, "Data CharacterCurrentStrength is not empty")
+					require.NotEmpty(t, data.CharacterCurrentDexterity, "Data CharacterCurrentDexterity is not empty")
+					require.NotEmpty(t, data.CharacterCurrentIntelligence, "Data CharacterCurrentIntelligence is not empty")
+					require.NotEmpty(t, data.CharacterHealth, "Data CharacterHealth is not empty")
+					require.NotEmpty(t, data.CharacterFatigue, "Data CharacterFatigue is not empty")
+					require.NotEmpty(t, data.CharacterCurrentHealth, "Data CharacterCurrentHealth is not empty")
+					require.NotEmpty(t, data.CharacterCurrentFatigue, "Data CharacterCurrentFatigue is not empty")
+
 					require.False(t, data.CharacterCreatedAt.IsZero(), "Data CreatedAt is not zero")
 				}
 			}
@@ -173,10 +188,19 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 				}
 
 				for _, data := range responseBody.Data {
-					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
 					require.Empty(t, data.DungeonID, "Data DungeonID is empty")
 					require.Empty(t, data.LocationID, "Data LocationID is empty")
+
+					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
+					require.NotEmpty(t, data.CharacterName, "Data CharacterName is not empty")
+					require.NotEmpty(t, data.CharacterStrength, "Data CharacterStrength is not empty")
+					require.NotEmpty(t, data.CharacterDexterity, "Data CharacterDexterity is not empty")
+					require.NotEmpty(t, data.CharacterIntelligence, "Data CharacterIntelligence is not empty")
+					require.NotEmpty(t, data.CharacterHealth, "Data CharacterHealth is not empty")
+					require.NotEmpty(t, data.CharacterFatigue, "Data CharacterFatigue is not empty")
+
 					require.False(t, data.CharacterCreatedAt.IsZero(), "Data CreatedAt is not zero")
+					require.False(t, data.CharacterUpdatedAt.IsZero(), "Data UpdatedAt is not zero")
 				}
 			}
 			RunTestCase(t, th, &testCase, testFunc)
