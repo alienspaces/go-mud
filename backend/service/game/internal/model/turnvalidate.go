@@ -21,6 +21,7 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 		if err != nil {
 			l.Warn("failed to get many turn records >%v<", err)
 		}
+
 		if len(recs) != 0 {
 			err := fmt.Errorf("turn record for dungeon instance ID >%s< already exists, cannot create turn record", rec.DungeonInstanceID)
 			l.Warn(err.Error())
@@ -28,7 +29,7 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 		}
 	} else {
 		// TODO: validate turn duration
-		l.Info("turn duration >%d", m.turnDuration)
+		l.Debug("turn duration >%d", m.turnDuration)
 	}
 
 	if rec.DungeonInstanceID == "" {

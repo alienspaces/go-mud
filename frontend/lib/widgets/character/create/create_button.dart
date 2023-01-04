@@ -14,7 +14,7 @@ class CharacterCreateButtonWidget extends StatelessWidget {
 
   void _initCreateCharacter(BuildContext context) {
     final log = getLogger('CharacterCreateButtonWidget');
-    log.fine('Initiating character creation');
+    log.info('Initiating character creation');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     characterCubit.initCreateCharacter();
@@ -23,7 +23,7 @@ class CharacterCreateButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterCreateButtonWidget');
-    log.fine('Building..');
+    log.info('Building..');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),

@@ -17,7 +17,7 @@ type IncrementDungeonInstanceTurnResult struct {
 // IncrementDungeonInstanceTurnRec -
 func (m *Model) IncrementDungeonInstanceTurn(recordID string) (*IncrementDungeonInstanceTurnResult, error) {
 	l := m.Logger("IncrementDungeonInstanceTurn")
-	l.Info("Attempting to increment dungeon instance ID >%s< turn", recordID)
+	l.Debug("Attempting to increment dungeon instance ID >%s< turn", recordID)
 
 	recs, err := m.GetTurnRecs(
 		map[string]interface{}{
@@ -51,11 +51,11 @@ func (m *Model) IncrementDungeonInstanceTurn(recordID string) (*IncrementDungeon
 
 	// Check time since last turn increment
 	sinceLastIncremented := time.Since(nulltime.ToTime(rec.IncrementedAt))
-	l.Info("Last incremented duration >%d<", sinceLastIncremented.Milliseconds())
-	l.Info("Turn duration             >%d<", m.turnDuration.Milliseconds())
+	l.Debug("Last incremented duration >%d<", sinceLastIncremented.Milliseconds())
+	l.Debug("Turn duration             >%d<", m.turnDuration.Milliseconds())
 
 	if sinceLastIncremented < m.turnDuration {
-		l.Info("Too early to increment, since last incremented %d < duration %d", sinceLastIncremented.Milliseconds(), m.turnDuration.Milliseconds())
+		l.Debug("Too early to increment, since last incremented %d < duration %d", sinceLastIncremented.Milliseconds(), m.turnDuration.Milliseconds())
 		return &IncrementDungeonInstanceTurnResult{
 			Record:           nil,
 			WaitMilliseconds: m.turnDuration.Milliseconds() - sinceLastIncremented.Milliseconds(),
@@ -63,7 +63,7 @@ func (m *Model) IncrementDungeonInstanceTurn(recordID string) (*IncrementDungeon
 		}, nil
 	}
 
-	l.Info("Can increment, since last incremented %d > duration %d", sinceLastIncremented.Milliseconds(), m.turnDuration.Milliseconds())
+	l.Debug("Can increment, since last incremented %d > duration %d", sinceLastIncremented.Milliseconds(), m.turnDuration.Milliseconds())
 
 	rec.TurnCount++
 	rec.IncrementedAt = nulltime.FromTime(time.Now().UTC())

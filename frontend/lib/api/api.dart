@@ -238,7 +238,7 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> createDungeonCharacter(
+  Future<APIResponse> enterDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
@@ -322,7 +322,7 @@ class API {
     return APIResponse(body: responseBody);
   }
 
-  Future<APIResponse> deleteDungeonCharacter(
+  Future<APIResponse> exitDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {

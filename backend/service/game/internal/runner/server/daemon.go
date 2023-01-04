@@ -97,7 +97,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 		for dungeonInstanceID := range dungeonInstanceStates {
 			switch dungeonInstanceStates[dungeonInstanceID].state {
 			case processStatePending:
-				l.Info("(pending) Kicking off dungeon instance ID >%s< turn >%d<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].turn)
+				l.Debug("(pending) Kicking off dungeon instance ID >%s< turn >%d<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].turn)
 				dungeonInstanceStates[dungeonInstanceID].state = processStateRunning
 
 				go func(dungeonInstanceID string) {
@@ -158,7 +158,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 				l.Warn("(error) Removing dungeon instance ID >%s< from processing >%v<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].err)
 				delete(dungeonInstanceStates, dungeonInstanceID)
 			case processStateDone:
-				l.Info("(done) Enqueuing dungeon instance ID >%s< turn >%d<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].turn)
+				l.Debug("(done) Enqueuing dungeon instance ID >%s< turn >%d<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].turn)
 				dungeonInstanceStates[dungeonInstanceID].state = processStatePending
 			default:
 				// no-op
@@ -195,12 +195,12 @@ func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstance
 		}
 
 		if !result.Incremented && result.WaitMilliseconds > 0 {
-			l.Info("Sleeping for >%d< milliseconds", result.WaitMilliseconds)
+			l.Debug("Sleeping for >%d< milliseconds", result.WaitMilliseconds)
 			time.Sleep(time.Duration(result.WaitMilliseconds) * time.Millisecond)
 		}
 	}
 
-	l.Info("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, result.Record.TurnCount)
+	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, result.Record.TurnCount)
 
 	return result, nil
 }
