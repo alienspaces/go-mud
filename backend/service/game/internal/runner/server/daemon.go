@@ -188,16 +188,31 @@ func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstance
 	var result *model.IncrementDungeonInstanceTurnResult
 	var err error
 
+WHILE_RESULT_NOT_INCREMENTED:
 	for result == nil || !result.Incremented {
+		// Increment turn
 		result, err = m.IncrementDungeonInstanceTurn(dungeonInstanceID)
 		if err != nil {
+			l.Warn("failed incrementing dungeon ID >%s< instance turn >%v<", dungeonInstanceID, err)
 			return nil, err
 		}
 
 		if !result.Incremented && result.WaitMilliseconds > 0 {
 			l.Debug("Sleeping for >%d< milliseconds", result.WaitMilliseconds)
 			time.Sleep(time.Duration(result.WaitMilliseconds) * time.Millisecond)
+			continue WHILE_RESULT_NOT_INCREMENTED
 		}
+
+		// Process monster instances
+		recs, err := m.GetMonsterInstanceRecs(map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, false)
+		if err != nil {
+			l.Warn("failed getting dungeon ID >%s< monster instance records >%v<", dungeonInstanceID, err)
+			return nil, err
+		}
+
+		l.Info("Processing turn >%d< with >%d< monster instance records", result.Record.TurnCount, len(recs))
 	}
 
 	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, result.Record.TurnCount)

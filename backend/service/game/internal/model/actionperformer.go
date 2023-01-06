@@ -51,6 +51,7 @@ func (m *Model) performAction(args *PerformerArgs) (*record.Action, error) {
 	actionFuncs := map[string]characterActionFunc{
 		"move":   m.performActionMove,
 		"look":   m.performActionLook,
+		"use":    m.performActionUse,
 		"stash":  m.performActionStash,
 		"equip":  m.performActionEquip,
 		"drop":   m.performActionDrop,
@@ -156,6 +157,27 @@ func (m *Model) performActionLook(args *PerformerArgs) (*record.Action, error) {
 
 	} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
 		l.Debug("Looking at character ID >%s<", actionRec.ResolvedTargetCharacterInstanceID.String)
+	}
+
+	return actionRec, nil
+}
+
+func (m *Model) performActionUse(args *PerformerArgs) (*record.Action, error) {
+	l := m.Logger("performActionUse")
+
+	if err := checkPerformerArgs(args); err != nil {
+		l.Warn("failed checking performer args >%v<", err)
+		return nil, err
+	}
+
+	actionRec := args.ActionRec
+
+	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
+		l.Debug("Using object ID >%s< on monster ID >%s<", nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID), nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
+	} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
+		l.Debug("Using object ID >%s< on character ID >%s<", nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID), nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+	} else {
+		l.Debug("Using object ID >%s<", nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID))
 	}
 
 	return actionRec, nil

@@ -9,6 +9,7 @@ import (
 const (
 	ActionCommandMove   string = "move"
 	ActionCommandLook   string = "look"
+	ActionCommandUse    string = "use"
 	ActionCommandEquip  string = "equip"
 	ActionCommandStash  string = "stash"
 	ActionCommandDrop   string = "drop"
