@@ -213,6 +213,11 @@ WHILE_RESULT_NOT_INCREMENTED:
 		}
 
 		l.Info("Processing turn >%d< with >%d< monster instance records", result.Record.TurnCount, len(recs))
+
+		// TODO: Process monster action
+		for idx := range recs {
+			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
+		}
 	}
 
 	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, result.Record.TurnCount)
