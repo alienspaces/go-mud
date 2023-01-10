@@ -185,21 +185,21 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*model.IncrementDungeonInstanceTurnResult, error) {
 	l = loggerWithContext(l, "processDungeonInstanceTurn")
 
-	var result *model.IncrementDungeonInstanceTurnResult
+	var iditResult *model.IncrementDungeonInstanceTurnResult
 	var err error
 
 WHILE_RESULT_NOT_INCREMENTED:
-	for result == nil || !result.Incremented {
+	for iditResult == nil || !iditResult.Incremented {
 		// Increment turn
-		result, err = m.IncrementDungeonInstanceTurn(dungeonInstanceID)
+		iditResult, err = m.IncrementDungeonInstanceTurn(dungeonInstanceID)
 		if err != nil {
 			l.Warn("failed incrementing dungeon ID >%s< instance turn >%v<", dungeonInstanceID, err)
 			return nil, err
 		}
 
-		if !result.Incremented && result.WaitMilliseconds > 0 {
-			l.Debug("Sleeping for >%d< milliseconds", result.WaitMilliseconds)
-			time.Sleep(time.Duration(result.WaitMilliseconds) * time.Millisecond)
+		if !iditResult.Incremented && iditResult.WaitMilliseconds > 0 {
+			l.Debug("Sleeping for >%d< milliseconds", iditResult.WaitMilliseconds)
+			time.Sleep(time.Duration(iditResult.WaitMilliseconds) * time.Millisecond)
 			continue WHILE_RESULT_NOT_INCREMENTED
 		}
 
@@ -212,17 +212,24 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		l.Info("Processing turn >%d< with >%d< monster instance records", result.Record.TurnCount, len(recs))
+		l.Info("Processing turn >%d< with >%d< monster instance records", iditResult.Record.TurnCount, len(recs))
 
-		// TODO: Process monster action
+		// TODO: Process monster command
 		for idx := range recs {
 			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
+			dmicResult, err := m.DecideMonsterAction(recs[idx].ID)
+			if err != nil {
+				l.Warn("failed deciding monster instance ID >%s< action >%v<", recs[idx].ID, err)
+				return nil, err
+			}
+
+			l.Info("Monster instance ID >%s< Sentence >%s<", recs[idx].ID, dmicResult.Sentence)
 		}
 	}
 
-	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, result.Record.TurnCount)
+	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, iditResult.Record.TurnCount)
 
-	return result, nil
+	return iditResult, nil
 }
 
 func keepRunning() bool {

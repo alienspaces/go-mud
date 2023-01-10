@@ -150,6 +150,53 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	return actionRecordSet, nil
 }
 
+type DecideMonsterActionResult struct {
+	DungeonInstanceID string
+	MonsterInstanceID string
+	Sentence          string
+}
+
+// DecideMonsterAction -
+func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterActionResult, error) {
+	l := m.Logger("DecideMonsterAction")
+
+	l.Info("Deciding monster instance ID >%s< action", monsterInstanceID)
+
+	rec, err := m.GetMonsterInstanceViewRec(monsterInstanceID)
+	if err != nil {
+		l.Warn("failed getting monster instance view record >%v<", err)
+		return nil, err
+	}
+
+	// Get the current dungeon location set of related records
+	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(rec.LocationInstanceID, true)
+	if err != nil {
+		l.Warn("failed getting dungeon location record set before performing action >%v<", err)
+		return nil, err
+	}
+	if locationInstanceRecordSet == nil {
+		msg := fmt.Sprintf("failed getting dungeon location record ID >%s< set before performing action", rec.LocationInstanceID)
+		l.Warn(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	sentence, err := m.decideAction(&DeciderArgs{
+		EntityType:                EntityTypeMonster,
+		EntityInstanceID:          monsterInstanceID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
+	if err != nil {
+		l.Warn("failed deciding action >%v<", err)
+		return nil, err
+	}
+
+	return &DecideMonsterActionResult{
+		DungeonInstanceID: locationInstanceRecordSet.LocationInstanceViewRec.DungeonInstanceID,
+		MonsterInstanceID: monsterInstanceID,
+		Sentence:          sentence,
+	}, nil
+}
+
 // ProcessMonsterAction - Processes a submitted character action
 func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
 	l := m.Logger("ProcessMonsterAction")
