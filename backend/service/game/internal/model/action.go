@@ -181,8 +181,7 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 	}
 
 	sentence, err := m.decideAction(&DeciderArgs{
-		EntityType:                EntityTypeMonster,
-		EntityInstanceID:          monsterInstanceID,
+		MonsterInstanceViewRec:    rec,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
 	})
 	if err != nil {

@@ -17,8 +17,8 @@ import (
 //   away.
 
 type DeciderArgs struct {
-	EntityType                EntityType
-	EntityInstanceID          string
+	MonsterInstanceViewRec    *record.MonsterInstanceView
+	CharacterInstanceViewRec  *record.CharacterInstanceView
 	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
 }
 
@@ -27,5 +27,42 @@ func (m *Model) decideAction(args *DeciderArgs) (string, error) {
 
 	l.Info("deciding action args >%#v<", args)
 
+	if args.MonsterInstanceViewRec != nil {
+		l.Info("deciding action for monster name >%s<", args.MonsterInstanceViewRec.Name)
+	} else {
+		l.Info("deciding action for character name >%s<", args.CharacterInstanceViewRec.Name)
+	}
+
+	deciderFuncs := []func(args *DeciderArgs) (string, error){
+		m.decideActionMove,
+		m.decideActionStash,
+		m.decideActionAttack,
+	}
+
+	var err error
+	var sentence string
+
+	for idx := range deciderFuncs {
+		sentence, err = deciderFuncs[idx](args)
+		if err != nil {
+			return "", err
+		}
+		if sentence != "" {
+			break
+		}
+	}
+
+	return sentence, nil
+}
+
+func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
+	return "", nil
+}
+
+func (m *Model) decideActionStash(args *DeciderArgs) (string, error) {
+	return "", nil
+}
+
+func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 	return "", nil
 }

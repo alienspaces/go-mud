@@ -8,7 +8,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-var dungeonActionResolvedCommands []string = []string{
+var actionCommands []string = []string{
 	record.ActionCommandMove,
 	record.ActionCommandLook,
 	record.ActionCommandUse,
@@ -71,7 +71,8 @@ func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Acti
 	return dungeonActionRec, nil
 }
 
-// NOTE: Some commands require an additional argument, we can probably short circuit that check here...
+// IDEA: Some commands require an additional argument, we can probably short
+// circuit that check here...
 func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	l := m.Logger("resolveCommand")
 
@@ -80,18 +81,18 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 
 	l.Debug("Have sentence words >%v<", sentenceWords)
 
-	for _, dungeonAction := range dungeonActionResolvedCommands {
-		l.Debug("Checking dungeon action >%s<", dungeonAction)
+	for _, actionCommand := range actionCommands {
+		l.Debug("Checking dungeon action >%s<", actionCommand)
 		// NOTE: The appended space is important
-		if strings.Contains(sentence, dungeonAction+" ") {
-			l.Debug("Sentence contains action >%s<", dungeonAction)
-			sentence = strings.Replace(sentence, dungeonAction+" ", "", 1)
-			resolved.Command = dungeonAction
+		if strings.Contains(sentence, actionCommand+" ") {
+			l.Debug("Sentence contains action >%s<", actionCommand)
+			sentence = strings.Replace(sentence, actionCommand+" ", "", 1)
+			resolved.Command = actionCommand
 			resolved.Sentence = sentence
-		} else if sentence == dungeonAction {
-			l.Debug("Sentence equals action >%s<", dungeonAction)
-			sentence = strings.Replace(sentence, dungeonAction, "", 1)
-			resolved.Command = dungeonAction
+		} else if sentence == actionCommand {
+			l.Debug("Sentence equals action >%s<", actionCommand)
+			sentence = strings.Replace(sentence, actionCommand, "", 1)
+			resolved.Command = actionCommand
 			resolved.Sentence = sentence
 		}
 	}
