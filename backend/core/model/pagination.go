@@ -75,7 +75,7 @@ func resolveOffset(params map[string]interface{}, operators map[string]string, p
 	return params, operators, nil
 }
 
-// TODO (core) support sorting collection endpoint
+// TODO: (core) support sorting collection endpoint
 func resolveSortOrder(params map[string]interface{}, operators map[string]string) (map[string]interface{}, map[string]string) {
 	operators[coresql.OperatorOrderByDescending] = DefaultOrderDescendingColumn
 	return params, operators

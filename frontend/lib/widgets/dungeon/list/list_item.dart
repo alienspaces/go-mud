@@ -68,7 +68,7 @@ class DungeonListItemWidget extends StatelessWidget {
     }
     if (characterRecord.dungeonID != null &&
         characterRecord.dungeonID != dungeonRecord.dungeonID) {
-      // TODO: Could choose to not display dungeon list item at all under this scenario
+      // TODO: (client) Could choose to not display dungeon list item at all under this scenario
     }
 
     List<Widget> children = [];

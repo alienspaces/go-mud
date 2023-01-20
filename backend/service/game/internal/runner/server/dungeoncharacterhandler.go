@@ -85,12 +85,12 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[server.HandlerConfigKey]
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/docs/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeoncharacter",
+							Location: "schema/docs/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -178,7 +178,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// Response data
-	data, err := rnr.InstanceViewRecordSetToDungeonCharacterResponseData(instanceViewRecordSet)
+	data, err := dungeonCharacterResponseData(l, instanceViewRecordSet)
 	if err != nil {
 		l.Warn("failed mapping instance view record set to character response data")
 		server.WriteError(l, w, err)
@@ -286,7 +286,7 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 	}
 
 	// Response data
-	data, err := rnr.InstanceViewRecordSetToDungeonCharacterResponseData(instanceViewRecordSet)
+	data, err := dungeonCharacterResponseData(l, instanceViewRecordSet)
 	if err != nil {
 		l.Warn("failed mapping instance view record set to character response data")
 		server.WriteError(l, w, err)
@@ -413,7 +413,7 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(characterRec, nil)
+	responseData, err := characterResponseData(l, characterRec, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

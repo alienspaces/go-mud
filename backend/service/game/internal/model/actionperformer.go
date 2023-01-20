@@ -391,7 +391,7 @@ func (m *Model) performActionDrop(args *PerformerArgs) (*record.Action, error) {
 	return actionRec, nil
 }
 
-// TODO: Calculate to-hit, weapon damage, effects etc
+// TODO: 10-implement-effects: Calculate to-hit, weapon damage, effects etc
 func (m *Model) performActionAttack(args *PerformerArgs) (*record.Action, error) {
 	l := m.Logger("performActionAttack")
 
@@ -404,7 +404,7 @@ func (m *Model) performActionAttack(args *PerformerArgs) (*record.Action, error)
 
 	if actionRec.CharacterInstanceID.Valid {
 
-		// TODO: Get equipped weapon for character, establish attack bonuses, damage rating etc
+		// TODO: 10-implement-effects: Get equipped weapon for character, establish attack bonuses, damage rating etc
 		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
 			l.Info("Attacking with weapon")
 		}

@@ -42,7 +42,7 @@ class CharacterListItemWidget extends StatelessWidget {
       textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
     );
 
-    // TODO: When the character is already in a dungeon display the dungeon
+    // TODO: (client) When the character is already in a dungeon display the dungeon
     // information, the play button should also just drop the player
     // straight into the game without choosing the dungeon to play in..
     List<Widget> actionWidgets = <Widget>[

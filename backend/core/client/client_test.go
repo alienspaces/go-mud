@@ -225,7 +225,7 @@ func TestRetryRequest(t *testing.T) {
 			},
 			expectErr: true,
 		},
-		// TODO (core) delete method not yet supported in core/client/client.go
+		// TODO: (core) delete method not yet supported in core/client/client.go
 		//{
 		//	name:   "Delete resource OK",
 		//	method: http.MethodDelete,

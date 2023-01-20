@@ -49,7 +49,7 @@ func (cli *CLI) Init() error {
 // Run -
 func (cli *CLI) Run(args map[string]interface{}) error {
 
-	// TODO: (core)
+	// TODO: (core) Alerts, retries, reloads
 	// - alerting on errors
 	// - retries on start up
 	// - reload  on config changes

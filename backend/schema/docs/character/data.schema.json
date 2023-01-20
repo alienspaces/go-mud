@@ -15,7 +15,7 @@
     "character_coins",
     "character_experience_points",
     "character_attribute_points",
-    "created_at"
+    "character_created_at"
   ],
   "properties": {
     "dungeon_id": {
@@ -101,12 +101,12 @@
       "type": "number",
       "readOnly": true
     },
-    "created_at": {
+    "character_created_at": {
       "type": "string",
       "format": "date-time",
       "readOnly": true
     },
-    "updated_at": {
+    "character_updated_at": {
       "type": "string",
       "format": "date-time",
       "readOnly": true

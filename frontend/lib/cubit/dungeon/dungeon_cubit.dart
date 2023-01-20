@@ -18,7 +18,7 @@ class DungeonCubit extends Cubit<DungeonState> {
   DungeonCubit({required this.config, required this.repositories})
       : super(const DungeonStateInitial());
 
-  // TODO: Unused
+  // TODO: (client) Unused, remove this?
   void clearDungeon() {
     dungeonRecord = null;
     emit(DungeonStateLoaded(dungeonRecords: dungeonRecords));

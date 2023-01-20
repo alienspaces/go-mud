@@ -28,7 +28,7 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 			return err
 		}
 	} else {
-		// TODO: validate turn duration
+		// TODO: 8-implement-turns: validate turn duration
 		l.Debug("turn duration >%d", m.turnDuration)
 	}
 

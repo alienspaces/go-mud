@@ -1,11 +1,12 @@
 package runner
 
 import (
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/schema"
 )
 
-// InstanceViewRecordSetToDungeonCharacterResponse
-func (rnr *Runner) InstanceViewRecordSetToDungeonCharacterResponseData(instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
+// dungeonCharacterResponseData
+func dungeonCharacterResponseData(l logger.Logger, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
 		DungeonID:                    instanceRecordSet.DungeonInstanceViewRec.DungeonID,

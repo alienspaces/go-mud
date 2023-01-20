@@ -89,10 +89,10 @@
     "action_location_character": {
       "type": "object",
       "required": [
-        "name"
+        "character_name"
       ],
       "properties": {
-        "name": {
+        "character_name": {
           "type": "string"
         }
       }
@@ -100,57 +100,57 @@
     "action_character": {
       "type": "object",
       "required": [
-        "name", 
-        "strength", 
-        "dexterity",
-        "intelligence",
-        "current_strength", 
-        "current_dexterity",
-        "current_intelligence",
-        "health",
-        "fatigue"
+        "character_name", 
+        "character_strength", 
+        "character_dexterity",
+        "character_intelligence",
+        "character_current_strength", 
+        "character_current_dexterity",
+        "character_current_intelligence",
+        "character_health",
+        "character_fatigue"
       ],
       "properties": {
-        "name": {
+        "character_name": {
           "type": "string"
         },
-        "strength": {
+        "character_strength": {
           "type": "integer"
         },
-        "dexterity": {
+        "character_dexterity": {
           "type": "integer"
         },
-        "intelligence": {
+        "character_intelligence": {
           "type": "integer"
         },
-        "current_strength": {
+        "character_current_strength": {
           "type": "integer"
         },
-        "current_dexterity": {
+        "character_current_dexterity": {
           "type": "integer"
         },
-        "current_intelligence": {
+        "character_current_intelligence": {
           "type": "integer"
         },
-        "health": {
+        "character_health": {
           "type": "integer"
         },
-        "fatigue": {
+        "character_fatigue": {
           "type": "integer"
         },
-        "current_health": {
+        "character_current_health": {
           "type": "integer"
         },
-        "current_fatigue": {
+        "character_current_fatigue": {
           "type": "integer"
         },
-        "equipped_objects": {
+        "character_equipped_objects": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_object"
           }
         },
-        "stashed_objects": {
+        "character_stashed_objects": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_object"
@@ -161,10 +161,10 @@
     "action_location_monster": {
       "type": "object",
       "required": [
-        "name"
+        "monster_name"
       ],
       "properties": {
-        "name": {
+        "monster_name": {
           "type": "string"
         }
      }
@@ -172,57 +172,57 @@
     "action_monster": {
       "type": "object",
       "required": [
-        "name", 
-        "strength", 
-        "dexterity",
-        "intelligence",
-        "current_strength", 
-        "current_dexterity",
-        "current_intelligence",
-        "health",
-        "fatigue"
+        "monster_name", 
+        "monster_strength", 
+        "monster_dexterity",
+        "monster_intelligence",
+        "monster_current_strength", 
+        "monster_current_dexterity",
+        "monster_current_intelligence",
+        "monster_health",
+        "monster_fatigue"
       ],
       "properties": {
-        "name": {
+        "monster_name": {
           "type": "string"
         },
-        "strength": {
+        "monster_strength": {
           "type": "integer"
         },
-        "dexterity": {
+        "monster_dexterity": {
           "type": "integer"
         },
-        "intelligence": {
+        "monster_intelligence": {
           "type": "integer"
         },
-        "current_strength": {
+        "monster_current_strength": {
           "type": "integer"
         },
-        "current_dexterity": {
+        "monster_current_dexterity": {
           "type": "integer"
         },
-        "current_intelligence": {
+        "monster_current_intelligence": {
           "type": "integer"
         },
-        "health": {
+        "monster_health": {
           "type": "integer"
         },
-        "fatigue": {
+        "monster_fatigue": {
           "type": "integer"
         },
-        "current_health": {
+        "monster_current_health": {
           "type": "integer"
         },
-        "current_fatigue": {
+        "monster_current_fatigue": {
           "type": "integer"
         },
-        "equipped_objects": {
+        "monster_equipped_objects": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_object"
           }
         },
-        "stashed_objects": {
+        "monster_stashed_objects": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_object"
@@ -233,10 +233,10 @@
     "action_location_object": {
       "type": "object",
       "required": [
-        "name"
+        "object_name"
       ],
       "properties": {
-        "name": {
+        "object_name": {
           "type": "string"
         }
       }
@@ -244,22 +244,22 @@
     "action_object": {
       "type": "object",
       "required": [
-        "name",
-        "description",
-        "is_stashed",
-        "is_equipped"
+        "object_name",
+        "object_description",
+        "object_is_stashed",
+        "object_is_equipped"
       ],
       "properties": {
-        "name": {
+        "object_name": {
           "type": "string"
         },
-        "description": {
+        "object_description": {
           "type": "string"
         },
-        "is_stashed": {
+        "object_is_stashed": {
           "type": "boolean"
         },
-        "is_equipped": {
+        "object_is_equipped": {
           "type": "boolean"
         }
       }

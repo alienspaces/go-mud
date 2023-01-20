@@ -143,7 +143,7 @@ func (m *Model) resolveActionMove(sentence string, args *ResolverArgs) (*record.
 	return &dungeonActionRec, nil
 }
 
-// TODO: A fair amount of common code between action use and action look, consider building
+// TODO: (game) A fair amount of common code between action use and action look, consider building
 // some shared functions for identifying objects, characters or monsters at a location.
 func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionLook")
@@ -259,7 +259,7 @@ func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.
 	return &dungeonActionRec, nil
 }
 
-// TODO: A fair amount of common code between action use and action look, consider building
+// TODO: (game) A fair amount of common code between action use and action look, consider building
 // some shared functions for identifying objects, characters or monsters at a location.
 func (m *Model) resolveActionUse(sentence string, args *ResolverArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionUse")

@@ -22,7 +22,7 @@ const (
 	putCharacter  server.HandlerConfigKey = "put-character"
 )
 
-// TODO: Add character instance data to all responses as there may only be a single
+// TODO: (game) Add character instance data to all responses as there may only be a single
 // character instance.
 func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
 
@@ -176,7 +176,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		}
 
 		// Response data
-		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
+		responseData, err := characterResponseData(l, rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -234,7 +234,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 		}
 
 		// Response data
-		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
+		responseData, err := characterResponseData(l, rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -295,7 +295,7 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(&rec, instanceViewRecordSet)
+	responseData, err := characterResponseData(l, &rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -381,7 +381,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
+	responseData, err := characterResponseData(l, rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

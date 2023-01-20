@@ -28,7 +28,7 @@ func (rnr *Runner) Correlation(h Handle) (Handle, error) {
 
 		l.Context("correlation-id", correlationID)
 
-		// TODO: Implement a trace/telemetry middleware to log all requests and their non-sensitive information
+		// TODO: (core) Implement a trace/telemetry middleware to log all requests and their non-sensitive information
 		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)
 
 		return h(w, r, pp, nil, l, nil)

@@ -12,7 +12,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	"gitlab.com/alienspaces/go-mud/backend/schema"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/mapper"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
@@ -193,7 +192,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	l.Debug("Resulting action monster >%#v<", dungeonActionRecordSet.ActionMonsterRec)
 
 	// Response data
-	responseData, err := mapper.ActionRecordSetToActionResponse(l, *dungeonActionRecordSet)
+	responseData, err := actionResponseData(l, *dungeonActionRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

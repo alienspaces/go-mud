@@ -25,7 +25,7 @@ class _DungeonListWidgetState extends State<DungeonListWidget> {
 
     super.initState();
 
-    // TODO: Verify we have a current character and navigate when not.
+    // TODO: (client) Verify we have a current character and navigate when not.
 
     _loadDungeons(context);
   }
