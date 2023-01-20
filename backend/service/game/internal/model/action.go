@@ -8,7 +8,9 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// TODO: (game) Do not allow attack type commands in an entrance room
+// TODO: 8-implement-turns: check whether the character can perform a turn
+// yet based on what the current turn is and whether the character already
+// has a processed action for the current turn.
 
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {

@@ -214,7 +214,7 @@ WHILE_RESULT_NOT_INCREMENTED:
 
 		l.Info("Processing turn >%d< with >%d< monster instance records", iditResult.Record.TurnCount, len(recs))
 
-		// TODO: Process monster command
+		// TODO: 9-implement-monster-actions
 		for idx := range recs {
 			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
 			dmicResult, err := m.DecideMonsterAction(recs[idx].ID)

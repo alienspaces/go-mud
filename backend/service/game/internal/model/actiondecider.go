@@ -4,6 +4,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+// TODO: 9-implement-monster-actions
 // NOTES: Monsters should behave based on their statistics and capabilities.
 // Examples:
 // - Intelligent humanoid monsters with no equipped weapon should attempt to equip any
@@ -55,14 +56,17 @@ func (m *Model) decideAction(args *DeciderArgs) (string, error) {
 	return sentence, nil
 }
 
+// TODO: 9-implement-monster-actions
 func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
 	return "", nil
 }
 
+// TODO: 9-implement-monster-actions
 func (m *Model) decideActionStash(args *DeciderArgs) (string, error) {
 	return "", nil
 }
 
+// TODO: 9-implement-monster-actions
 func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 	return "", nil
 }

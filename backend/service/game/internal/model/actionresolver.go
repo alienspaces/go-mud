@@ -369,6 +369,8 @@ func (m *Model) resolveActionUse(sentence string, args *ResolverArgs) (*record.A
 	return &dungeonActionRec, nil
 }
 
+// TODO: 11-implement-safe-locations: Check whether the current location is a safe location
+// or not and disallow the attack action when it is.
 func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionAttack")
 
