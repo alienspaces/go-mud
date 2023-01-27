@@ -90,7 +90,8 @@ func (q *Query) GetMany(
 
 func (q *Query) SQL() string {
 	return `
-WITH "dungeon_capacity" AS (
+WITH 
+"dungeon_capacity" AS (
     SELECT 
         d.id        AS dungeon_id, 
         count(l.id) AS dungeon_location_count
@@ -98,7 +99,8 @@ WITH "dungeon_capacity" AS (
     JOIN location l 
         ON l.dungeon_id = d.id
     GROUP BY d.id
-), "dungeon_instance_capacity" AS (
+), 
+"dungeon_instance_capacity" AS (
     SELECT 
         di.id         AS dungeon_instance_id,
         di.dungeon_id AS dungeon_id,

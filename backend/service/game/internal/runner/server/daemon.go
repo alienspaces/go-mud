@@ -191,7 +191,9 @@ func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstance
 WHILE_RESULT_NOT_INCREMENTED:
 	for iditResult == nil || !iditResult.Incremented {
 		// Increment turn
-		iditResult, err = m.IncrementDungeonInstanceTurn(dungeonInstanceID)
+		iditResult, err = m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
+			DungeonInstanceID: dungeonInstanceID,
+		})
 		if err != nil {
 			l.Warn("failed incrementing dungeon ID >%s< instance turn >%v<", dungeonInstanceID, err)
 			return nil, err
