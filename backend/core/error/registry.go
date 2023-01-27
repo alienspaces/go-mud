@@ -1,14 +1,12 @@
 package error
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
-	"strings"
 )
 
 // Registry is a map of error codes to errors
-type Registry map[Code]Error
+type Registry map[ErrorCode]Error
 
 // Merge merges another error collection with this error collection returning a new error collection
 func (c Registry) Merge(a Registry) Registry {
@@ -68,8 +66,8 @@ var registry = Registry{
 	},
 }
 
-func GetRegistryError(code Code) Error {
-	return deepcopy(registry[code])
+func GetRegistryError(ec ErrorCode) Error {
+	return deepcopy(registry[ec])
 }
 
 func deepcopy(e Error) Error {
@@ -81,106 +79,4 @@ func deepcopy(e Error) Error {
 	}
 
 	return e
-}
-
-func NewInternalError() error {
-	return GetRegistryError(Internal)
-}
-
-func NewNotFoundError(resourceName string, resourceID string) error {
-	e := GetRegistryError(NotFound)
-	e.Message = fmt.Sprintf("%s with ID >%s< not found", resourceName, resourceID)
-
-	return e
-}
-
-func NewUnavailableError() error {
-	return GetRegistryError(Unavailable)
-}
-
-func NewUnauthorizedError() error {
-	return GetRegistryError(Unauthorized)
-}
-
-func NewUnauthenticatedError(message string) error {
-	e := GetRegistryError(Unauthenticated)
-	e.Message = message
-	return e
-}
-
-func NewQueryParamError(message string) error {
-	e := GetRegistryError(InvalidQueryParam)
-	e.Message = message
-	return e
-}
-
-func ProcessQueryParamError(err error) error {
-	e, conversionErr := ToError(err)
-	if conversionErr != nil {
-		return err
-	}
-
-	if len(e.SchemaValidationErrors) == 0 {
-		return NewQueryParamError(e.Error())
-	}
-
-	errStr := strings.Builder{}
-	errStr.WriteString("Invalid query parameter(s): ")
-	for i, sve := range e.SchemaValidationErrors {
-		if sve.GetField() == "$" {
-			errStr.WriteString(fmt.Sprintf("(%d) %s; ", i+1, sve.Message))
-		} else {
-			errStr.WriteString(fmt.Sprintf("(%d) %s: %s; ", i+1, sve.GetField(), sve.Message))
-		}
-	}
-
-	formattedErrString := errStr.String()
-	formattedErrString = formattedErrString[0 : len(formattedErrString)-2] // remove extra space and semicolon
-	formattedErrString += "."
-
-	return NewQueryParamError(formattedErrString)
-}
-
-func NewPathParamInvalidTypeError(param string, id string) error {
-	e := GetRegistryError(InvalidPathParam)
-	e.Message = fmt.Sprintf("Path parameter %s value >%s< is not a valid UUID", param, id)
-	return e
-}
-
-func NewPathParamInvalidError(param, id, message string) error {
-	e := GetRegistryError(InvalidPathParam)
-	if message == "" {
-		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid", param, id)
-	} else {
-		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid, %s", param, id, message)
-	}
-	return e
-}
-
-func NewInvalidBodyError(message string) error {
-	e := GetRegistryError(InvalidJSON)
-	if message != "" {
-		e.Message = message
-	}
-	return e
-}
-
-func NewInvalidError(errorCodeSuffix string, message string) error {
-	return Error{
-		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      createErrorCode(ValidationErrorInvalid, errorCodeSuffix),
-		Message:        message,
-	}
-}
-
-func NewUnsupportedError(errorCodeSuffix string, message string) error {
-	return Error{
-		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      createErrorCode(ValidationErrorUnsupported, errorCodeSuffix),
-		Message:        message,
-	}
-}
-
-func createErrorCode(errorType ValidationErrorType, field string) Code {
-	return Code(fmt.Sprintf("%s_%s", errorType, field))
 }

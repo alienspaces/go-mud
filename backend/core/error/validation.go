@@ -1,17 +1,8 @@
 package error
 
-import "fmt"
-
-type ValidationErrorType int
-
-const (
-	ValidationErrorUnsupported ValidationErrorType = iota
-	ValidationErrorInvalid
+import (
+	"fmt"
 )
-
-func (t ValidationErrorType) String() string {
-	return [...]string{"unsupported", "invalid"}[t]
-}
 
 type LinkedFields struct {
 	LinkedField string
@@ -19,15 +10,15 @@ type LinkedFields struct {
 	FieldB      string
 }
 
-func CreateRegistry(et ValidationErrorType, fields []string) Registry {
+func CreateRegistry(et ErrorType, fields []string) Registry {
 	errorCollection := Registry{}
 
 	for _, f := range fields {
-		errCode := createErrorCode(et, f)
+		errCode := NewErrorCode(et, f)
 		message := fmt.Sprintf("The property '%s' is %s.", f, et)
 
 		var e Error
-		if et == ValidationErrorInvalid {
+		if et == ErrorTypeInvalid {
 			e, _ = ToError(NewInvalidError(f, message))
 		} else {
 			e, _ = ToError(NewUnsupportedError(f, message))
@@ -38,15 +29,15 @@ func CreateRegistry(et ValidationErrorType, fields []string) Registry {
 	return errorCollection
 }
 
-func CreateLinkedRegistry(et ValidationErrorType, linkedFields []LinkedFields) Registry {
+func CreateLinkedRegistry(et ErrorType, linkedFields []LinkedFields) Registry {
 	errorCollection := Registry{}
 
 	for _, f := range linkedFields {
-		errCode := createErrorCode(et, f.LinkedField)
+		errCode := NewErrorCode(et, f.LinkedField)
 		message := fmt.Sprintf("The combination of %s and %s is %s.", f.FieldA, f.FieldB, et)
 
 		var e Error
-		if et == ValidationErrorInvalid {
+		if et == ErrorTypeInvalid {
 			e, _ = ToError(NewInvalidError(f.LinkedField, message))
 		} else {
 			e, _ = ToError(NewUnsupportedError(f.LinkedField, message))

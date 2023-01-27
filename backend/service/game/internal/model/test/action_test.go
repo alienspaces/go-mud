@@ -16,6 +16,12 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+// TODO: 8-implement-turns: Tests consecutive character actions and
+func TestConsecutiveCharacterActions(t *testing.T) {
+	// Tests to confirm a character or monster may only
+	// submit a single action per turn.
+}
+
 func TestProcessCharacterAction(t *testing.T) {
 
 	// harness
@@ -29,8 +35,6 @@ func TestProcessCharacterAction(t *testing.T) {
 
 	// harness commit data
 	th.CommitData = true
-
-	// TODO: (game) Add current location assertions
 
 	tests := []struct {
 		name                  string
