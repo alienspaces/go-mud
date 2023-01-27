@@ -10,38 +10,42 @@ import (
 )
 
 // TODO: (game) Determine whether we need to pass the character/monster instance view
-// record around everywhere or whether a more specific PerformerArgs definition
-// (like ResolverArgs) would clean this up.
+// record around everywhere or whether a more specific PerformActionArgs definition
+// (like ResolveActionArgs) would clean this up.
 
-type PerformerArgs struct {
+type PerformActionArgs struct {
 	ActionRec                 *record.Action
 	CharacterInstanceViewRec  *record.CharacterInstanceView
 	MonsterInstanceViewRec    *record.MonsterInstanceView
 	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
 }
 
-type characterActionFunc func(args *PerformerArgs) (*record.Action, error)
+type characterActionFunc func(args *PerformActionArgs) (*record.Action, error)
 
-func checkPerformerArgs(args *PerformerArgs) error {
+func checkPerformActionArgs(args *PerformActionArgs) error {
 	if args.ActionRec == nil {
 		msg := "args ActionRec missing, cannot perform action"
 		return fmt.Errorf(msg)
 	}
+	if args.ActionRec.TurnNumber == 0 {
+		err := fmt.Errorf("args ActionRec turn is zero, cannot perform action")
+		return err
+	}
 	if args.CharacterInstanceViewRec == nil && args.MonsterInstanceViewRec == nil {
-		msg := "args CharacterInstanceViewRec and MonsterInstanceViewRec are missing, cannot perform action"
-		return fmt.Errorf(msg)
+		err := fmt.Errorf("args CharacterInstanceViewRec and MonsterInstanceViewRec are missing, cannot perform action")
+		return err
 	}
 	if args.LocationInstanceRecordSet == nil {
-		msg := "args LocationInstanceRecordSet missing, cannot perform action"
-		return fmt.Errorf(msg)
+		err := fmt.Errorf("args LocationInstanceRecordSet missing, cannot perform action")
+		return err
 	}
 	return nil
 }
 
-func (m *Model) performAction(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performAction(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performCharacterAction")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -79,10 +83,10 @@ func (m *Model) performAction(args *PerformerArgs) (*record.Action, error) {
 	return actionRec, nil
 }
 
-func (m *Model) performActionMove(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionMove(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionMove")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -132,10 +136,10 @@ func (m *Model) performActionMove(args *PerformerArgs) (*record.Action, error) {
 	return actionRec, nil
 }
 
-func (m *Model) performActionLook(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionLook(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionLook")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -162,10 +166,10 @@ func (m *Model) performActionLook(args *PerformerArgs) (*record.Action, error) {
 	return actionRec, nil
 }
 
-func (m *Model) performActionUse(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionUse(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionUse")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -183,10 +187,10 @@ func (m *Model) performActionUse(args *PerformerArgs) (*record.Action, error) {
 	return actionRec, nil
 }
 
-func (m *Model) performActionStash(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionStash")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -249,10 +253,10 @@ func (m *Model) performActionStash(args *PerformerArgs) (*record.Action, error) 
 	return actionRec, nil
 }
 
-func (m *Model) performActionEquip(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionEquip")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -315,10 +319,10 @@ func (m *Model) performActionEquip(args *PerformerArgs) (*record.Action, error) 
 	return actionRec, nil
 }
 
-func (m *Model) performActionDrop(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionDrop")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}
@@ -392,10 +396,10 @@ func (m *Model) performActionDrop(args *PerformerArgs) (*record.Action, error) {
 }
 
 // TODO: 10-implement-effects: Calculate to-hit, weapon damage, effects etc
-func (m *Model) performActionAttack(args *PerformerArgs) (*record.Action, error) {
+func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, error) {
 	l := m.Logger("performActionAttack")
 
-	if err := checkPerformerArgs(args); err != nil {
+	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
 		return nil, err
 	}

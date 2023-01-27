@@ -18,12 +18,7 @@ var actionCommands []string = []string{
 	record.ActionCommandAttack,
 }
 
-type EntityType string
-
-const EntityTypeMonster EntityType = "monster"
-const EntityTypeCharacter EntityType = "character"
-
-type ResolverArgs struct {
+type ResolveActionArgs struct {
 	EntityType                EntityType
 	EntityInstanceID          string
 	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
@@ -34,7 +29,7 @@ type ResolverSentence struct {
 	Sentence string
 }
 
-func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveAction(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveAction")
 
 	resolved, err := m.resolveCommand(sentence)
@@ -43,7 +38,7 @@ func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Acti
 		return nil, err
 	}
 
-	resolveFuncs := map[string]func(sentence string, args *ResolverArgs) (*record.Action, error){
+	resolveFuncs := map[string]func(sentence string, args *ResolveActionArgs) (*record.Action, error){
 		record.ActionCommandMove:   m.resolveActionMove,
 		record.ActionCommandLook:   m.resolveActionLook,
 		record.ActionCommandUse:    m.resolveActionUse,
@@ -60,15 +55,15 @@ func (m *Model) resolveAction(sentence string, args *ResolverArgs) (*record.Acti
 		return nil, fmt.Errorf(msg)
 	}
 
-	dungeonActionRec, err := resolveFunc(resolved.Sentence, args)
+	actionRec, err := resolveFunc(resolved.Sentence, args)
 	if err != nil {
 		l.Warn("failed resolver function for command >%s< >%v<", resolved.Command, err)
 		return nil, err
 	}
 
-	l.Debug("Resolved dungeon action record >%#v<", dungeonActionRec)
+	l.Debug("Resolved dungeon action record >%#v<", actionRec)
 
-	return dungeonActionRec, nil
+	return actionRec, nil
 }
 
 // IDEA: Some commands require an additional argument, we can probably short
@@ -102,7 +97,7 @@ func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
 	return &resolved, nil
 }
 
-func (m *Model) resolveActionMove(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionMove(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionMove")
 
 	var err error
@@ -145,7 +140,7 @@ func (m *Model) resolveActionMove(sentence string, args *ResolverArgs) (*record.
 
 // TODO: (game) A fair amount of common code between action use and action look, consider building
 // some shared functions for identifying objects, characters or monsters at a location.
-func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionLook(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionLook")
 
 	var err error
@@ -261,7 +256,7 @@ func (m *Model) resolveActionLook(sentence string, args *ResolverArgs) (*record.
 
 // TODO: (game) A fair amount of common code between action use and action look, consider building
 // some shared functions for identifying objects, characters or monsters at a location.
-func (m *Model) resolveActionUse(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionUse(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionUse")
 
 	var err error
@@ -371,7 +366,7 @@ func (m *Model) resolveActionUse(sentence string, args *ResolverArgs) (*record.A
 
 // TODO: 11-implement-safe-locations: Check whether the current location is a safe location
 // or not and disallow the attack action when it is.
-func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionAttack")
 
 	var targetMonsterInstanceID string
@@ -457,7 +452,7 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolverArgs) (*recor
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveActionStash(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionStash(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionStash")
 
 	var stashedObjectInstanceID string
@@ -519,7 +514,7 @@ func (m *Model) resolveActionStash(sentence string, args *ResolverArgs) (*record
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveActionEquip(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionEquip(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionEquip")
 
 	var equippedObjectInstanceID string
@@ -581,7 +576,7 @@ func (m *Model) resolveActionEquip(sentence string, args *ResolverArgs) (*record
 	return &dungeonActionRec, nil
 }
 
-func (m *Model) resolveActionDrop(sentence string, args *ResolverArgs) (*record.Action, error) {
+func (m *Model) resolveActionDrop(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionDrop")
 
 	var droppedObjectInstanceID string

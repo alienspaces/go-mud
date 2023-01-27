@@ -8,7 +8,7 @@ import (
 
 type Turn struct {
 	DungeonInstanceID string       `db:"dungeon_instance_id"`
-	TurnCount         int          `db:"turn_count"`
+	TurnNumber        int          `db:"turn_number"`
 	IncrementedAt     sql.NullTime `db:"incremented_at"`
 	repository.Record
 }

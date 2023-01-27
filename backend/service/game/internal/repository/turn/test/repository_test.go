@@ -39,7 +39,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.Turn {
 				return &record.Turn{
 					DungeonInstanceID: data.DungeonInstanceRecs[0].ID,
-					TurnCount:         1,
+					TurnNumber:         1,
 				}
 			},
 			err: false,
@@ -49,7 +49,7 @@ func TestCreateOne(t *testing.T) {
 			rec: func(data harness.Data) *record.Turn {
 				rec := &record.Turn{
 					DungeonInstanceID: data.DungeonInstanceRecs[0].ID,
-					TurnCount:         1,
+					TurnNumber:         1,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

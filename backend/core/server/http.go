@@ -157,7 +157,7 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 	// server defined routes
 	err = rnr.RouterFunc(r)
 	if err != nil {
-		l.Warn("Failed router >%v<", err)
+		l.Warn("failed router >%v<", err)
 		return nil, err
 	}
 

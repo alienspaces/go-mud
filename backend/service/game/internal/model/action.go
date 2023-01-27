@@ -12,6 +12,11 @@ import (
 // yet based on what the current turn is and whether the character already
 // has a processed action for the current turn.
 
+type EntityType string
+
+const EntityTypeMonster EntityType = "monster"
+const EntityTypeCharacter EntityType = "character"
+
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
 	l := m.Logger("ProcessCharacterAction")
@@ -49,19 +54,32 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	}
 
 	// Resolve the submitted character action
-	args := &ResolverArgs{
+	actionRec, err := m.resolveAction(sentence, &ResolveActionArgs{
 		EntityType:                EntityTypeCharacter,
 		EntityInstanceID:          civRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
-	}
-	actionRec, err := m.resolveAction(sentence, args)
+	})
 	if err != nil {
 		l.Warn("failed resolving character action >%v<", err)
 		return nil, coreerror.NewInvalidError("sentence", fmt.Sprintf("sentence >%s< could not be resolved", sentence))
 	}
 
+	// Resolve the initial action turn
+	actionRec, err = m.resolveActionTurn(&ResolveActionTurnArgs{
+		ActionRec:         actionRec,
+		EntityType:        EntityTypeCharacter,
+		EntityInstanceID:  civRec.ID,
+		DungeonInstanceID: locationInstanceRecordSet.LocationInstanceViewRec.DungeonInstanceID,
+	})
+	if err != nil {
+		l.Warn("failed resolving action turn >%v<", err)
+		return nil, err
+	}
+
+	l.Warn("Character ID >%s< Name >%s< Action record turn >%d<", civRec.CharacterID, civRec.Name, actionRec.TurnNumber)
+
 	// Perform the submitted character action
-	actionRec, err = m.performAction(&PerformerArgs{
+	actionRec, err = m.performAction(&PerformActionArgs{
 		ActionRec:                 actionRec,
 		CharacterInstanceViewRec:  civRec,
 		MonsterInstanceViewRec:    nil,
@@ -235,19 +253,32 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	}
 
 	// Resolve the submitted monster action
-	args := &ResolverArgs{
+	actionRec, err := m.resolveAction(sentence, &ResolveActionArgs{
 		EntityType:                EntityTypeMonster,
 		EntityInstanceID:          mivRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
-	}
-	actionRec, err := m.resolveAction(sentence, args)
+	})
 	if err != nil {
 		l.Warn("failed resolving monster action >%v<", err)
 		return nil, err
 	}
 
+	// Resolve the initial action turn
+	actionRec, err = m.resolveActionTurn(&ResolveActionTurnArgs{
+		ActionRec:         actionRec,
+		EntityType:        EntityTypeCharacter,
+		EntityInstanceID:  mivRec.ID,
+		DungeonInstanceID: locationInstanceRecordSet.LocationInstanceViewRec.DungeonInstanceID,
+	})
+	if err != nil {
+		l.Warn("failed resolving action turn >%v<", err)
+		return nil, err
+	}
+
+	l.Warn("Action record turn >%d<", actionRec.TurnNumber)
+
 	// Perform the submitted monster action
-	actionRec, err = m.performAction(&PerformerArgs{
+	actionRec, err = m.performAction(&PerformActionArgs{
 		ActionRec:                 actionRec,
 		CharacterInstanceViewRec:  nil,
 		MonsterInstanceViewRec:    mivRec,

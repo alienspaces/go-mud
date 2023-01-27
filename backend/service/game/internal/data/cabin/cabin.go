@@ -106,6 +106,14 @@ func DungeonConfig() harness.DungeonConfig {
 							},
 						},
 					},
+					{
+						ActionConfig: []harness.ActionConfig{
+							{
+								CharacterName: "Bolster",
+								Command:       "look north",
+							},
+						},
+					},
 				},
 			},
 		},

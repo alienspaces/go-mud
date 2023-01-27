@@ -245,13 +245,15 @@ func (t *Testing) CreateData() error {
 			// Turns
 			for _, turnConfig := range dungeonInstanceConfig.TurnConfig {
 
-				turnRec, err := t.createTurnRec(dungeonInstanceRecordSet.DungeonInstanceRec.ID, turnConfig)
+				turnRec, err := t.incrementTurnRec(
+					dungeonInstanceRecordSet.DungeonInstanceRec.ID,
+				)
 				if err != nil {
-					l.Warn("failed creating turn record >%v<", err)
+					l.Warn("failed incrementing turn record >%v<", err)
 					return err
 				}
 
-				l.Info("+ Created turn record ID >%s< dungeon instance ID >%s< turn >%d<", turnRec.ID, turnRec.DungeonInstanceID, turnRec.TurnCount)
+				l.Info("Incremented turn record ID >%s< dungeon instance ID >%s< turn >%d<", turnRec.ID, turnRec.DungeonInstanceID, turnRec.TurnNumber)
 
 				data.AddTurnRec(turnRec)
 				teardownData.AddTurnRec(turnRec)

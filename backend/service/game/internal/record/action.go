@@ -17,7 +17,8 @@ const (
 )
 
 type Action struct {
-	SerialID                          sql.NullInt16  `db:"serial_id"`
+	SerialNumber                      sql.NullInt16  `db:"serial_number"`
+	TurnNumber                        int            `db:"turn_number"`
 	DungeonInstanceID                 string         `db:"dungeon_instance_id"`
 	LocationInstanceID                string         `db:"location_instance_id"`
 	CharacterInstanceID               sql.NullString `db:"character_instance_id"`

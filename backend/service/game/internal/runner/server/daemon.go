@@ -147,7 +147,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 					c <- dungeonInstanceProcessingResult{
 						DungeonInstanceID: dungeonInstanceID,
-						Turn:              result.Record.TurnCount,
+						Turn:              result.Record.TurnNumber,
 					}
 
 				}(dungeonInstanceID)
@@ -212,7 +212,7 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		l.Info("Processing turn >%d< with >%d< monster instance records", iditResult.Record.TurnCount, len(recs))
+		l.Info("Processing turn >%d< with >%d< monster instance records", iditResult.Record.TurnNumber, len(recs))
 
 		// TODO: 9-implement-monster-actions
 		for idx := range recs {
@@ -227,7 +227,7 @@ WHILE_RESULT_NOT_INCREMENTED:
 		}
 	}
 
-	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, iditResult.Record.TurnCount)
+	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, iditResult.Record.TurnNumber)
 
 	return iditResult, nil
 }

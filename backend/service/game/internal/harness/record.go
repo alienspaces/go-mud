@@ -2,6 +2,7 @@ package harness
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/brianvoe/gofakeit"
 
@@ -36,7 +37,7 @@ func (t *Testing) createObjectRec(objectConfig ObjectConfig) (*record.Object, er
 
 	err := t.Model.(*model.Model).CreateObjectRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating object record >%v<", err)
+		l.Warn("failed creating object record >%v<", err)
 		return nil, err
 	}
 	return &rec, nil
@@ -64,7 +65,7 @@ func (t *Testing) createMonsterRec(monsterConfig MonsterConfig) (*record.Monster
 
 	err := t.Model.(*model.Model).CreateMonsterRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating monster record >%v<", err)
+		l.Warn("failed creating monster record >%v<", err)
 		return nil, err
 	}
 
@@ -76,7 +77,7 @@ func (t *Testing) createMonsterObjectRec(data *Data, monsterRec *record.Monster,
 
 	objectRec, err := data.GetObjectRecByName(monsterObjectConfig.ObjectName)
 	if err != nil {
-		l.Warn("Failed getting object record >%v<", err)
+		l.Warn("failed getting object record >%v<", err)
 		return nil, err
 	}
 
@@ -88,7 +89,7 @@ func (t *Testing) createMonsterObjectRec(data *Data, monsterRec *record.Monster,
 
 	err = t.Model.(*model.Model).CreateMonsterObjectRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating monster object record >%v<", err)
+		l.Warn("failed creating monster object record >%v<", err)
 		return nil, err
 	}
 
@@ -117,7 +118,7 @@ func (t *Testing) createCharacterRec(characterConfig CharacterConfig) (*record.C
 
 	err := t.Model.(*model.Model).CreateCharacterRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating dungeon character record >%v<", err)
+		l.Warn("failed creating dungeon character record >%v<", err)
 		return nil, err
 	}
 	return &rec, nil
@@ -128,7 +129,7 @@ func (t *Testing) createCharacterObjectRec(data *Data, characterRec *record.Char
 
 	objectRec, err := data.GetObjectRecByName(characterObjectConfig.ObjectName)
 	if err != nil {
-		l.Warn("Failed getting object record >%v<", err)
+		l.Warn("failed getting object record >%v<", err)
 		return nil, err
 	}
 
@@ -140,7 +141,7 @@ func (t *Testing) createCharacterObjectRec(data *Data, characterRec *record.Char
 
 	err = t.Model.(*model.Model).CreateCharacterObjectRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating character object record >%v<", err)
+		l.Warn("failed creating character object record >%v<", err)
 		return nil, err
 	}
 	return &rec, nil
@@ -157,7 +158,7 @@ func (t *Testing) createDungeonRec(dungeonConfig DungeonConfig) (*record.Dungeon
 
 	err := t.Model.(*model.Model).CreateDungeonRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating dungeon record >%v<", err)
+		l.Warn("failed creating dungeon record >%v<", err)
 		return nil, err
 	}
 	return &rec, nil
@@ -174,7 +175,7 @@ func (t *Testing) createLocationRec(dungeonRec *record.Dungeon, dungeonLocationC
 
 	err := t.Model.(*model.Model).CreateLocationRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating dungeon location record >%v<", err)
+		l.Warn("failed creating dungeon location record >%v<", err)
 		return nil, err
 	}
 	return &rec, nil
@@ -185,7 +186,7 @@ func (t *Testing) createLocationObjectRec(data *Data, locationRec *record.Locati
 
 	objectRec, err := data.GetObjectRecByName(locationObjectConfig.ObjectName)
 	if err != nil {
-		l.Warn("Failed getting object record >%v<", err)
+		l.Warn("failed getting object record >%v<", err)
 		return nil, err
 	}
 
@@ -201,7 +202,7 @@ func (t *Testing) createLocationObjectRec(data *Data, locationRec *record.Locati
 
 	err = t.Model.(*model.Model).CreateLocationObjectRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating location object record >%v<", err)
+		l.Warn("failed creating location object record >%v<", err)
 		return nil, err
 	}
 
@@ -213,7 +214,7 @@ func (t *Testing) createLocationMonsterRec(data *Data, locationRec *record.Locat
 
 	monsterRec, err := data.GetMonsterRecByName(locationMonsterConfig.MonsterName)
 	if err != nil {
-		l.Warn("Failed getting monster record >%v<", err)
+		l.Warn("failed getting monster record >%v<", err)
 		return nil, err
 	}
 
@@ -229,7 +230,7 @@ func (t *Testing) createLocationMonsterRec(data *Data, locationRec *record.Locat
 
 	err = t.Model.(*model.Model).CreateLocationMonsterRec(&rec)
 	if err != nil {
-		l.Warn("Failed creating location monster record >%v<", err)
+		l.Warn("failed creating location monster record >%v<", err)
 		return nil, err
 	}
 
@@ -243,7 +244,7 @@ func (t *Testing) updateLocationRec(rec *record.Location) error {
 
 	err := t.Model.(*model.Model).UpdateLocationRec(rec)
 	if err != nil {
-		l.Warn("Failed updating dungeon location record >%v<", err)
+		l.Warn("failed updating dungeon location record >%v<", err)
 		return err
 	}
 	return nil
@@ -256,7 +257,7 @@ func (t *Testing) characterEnterDungeon(dungeonID, characterID string) (*model.D
 
 	characterInstanceRecordSet, err := t.Model.(*model.Model).CharacterEnterDungeon(dungeonID, characterID)
 	if err != nil {
-		l.Warn("Failed character entering dungeon >%v<", err)
+		l.Warn("failed character entering dungeon >%v<", err)
 		return nil, nil, err
 	}
 
@@ -264,7 +265,7 @@ func (t *Testing) characterEnterDungeon(dungeonID, characterID string) (*model.D
 	// a new dungeon instance was created to accomodate the additional character.
 	dungeonInstanceRecordSet, err := t.Model.(*model.Model).GetDungeonInstanceRecordSet(characterInstanceRecordSet.CharacterInstanceRec.DungeonInstanceID)
 	if err != nil {
-		l.Warn("Failed getting dungeon instance record set >%v<", err)
+		l.Warn("failed getting dungeon instance record set >%v<", err)
 		return nil, nil, err
 	}
 
@@ -278,7 +279,7 @@ func (t *Testing) createDungeonInstance(dungeonID string) (*model.DungeonInstanc
 
 	dungeonInstanceRecordSet, err := t.Model.(*model.Model).CreateDungeonInstance(dungeonID)
 	if err != nil {
-		l.Warn("Failed creating dungeon instance >%v<", err)
+		l.Warn("failed creating dungeon instance >%v<", err)
 		return nil, err
 	}
 
@@ -292,7 +293,7 @@ func (t *Testing) createCharacterActionRec(dungeonInstanceID, characterInstanceI
 
 	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
 	if err != nil {
-		l.Warn("Failed creating character action record >%v<", err)
+		l.Warn("failed creating character action record >%v<", err)
 		return nil, err
 	}
 
@@ -306,26 +307,31 @@ func (t *Testing) createMonsterActionRec(dungeonInstanceID, monsterInstanceID, s
 
 	dungeonActionRecordSet, err := t.Model.(*model.Model).ProcessMonsterAction(dungeonInstanceID, monsterInstanceID, sentence)
 	if err != nil {
-		l.Warn("Failed creating monster action record >%v<", err)
+		l.Warn("failed creating monster action record >%v<", err)
 		return nil, err
 	}
 
 	return dungeonActionRecordSet, nil
 }
 
-func (t *Testing) createTurnRec(dungeonInstanceID string, turnConfig TurnConfig) (*record.Turn, error) {
-	l := t.Logger("createTurnRec")
+func (t *Testing) incrementTurnRec(dungeonInstanceID string) (*record.Turn, error) {
+	l := t.Logger("incrementTurnRec")
 
-	rec := turnConfig.Record
-
-	rec.DungeonInstanceID = dungeonInstanceID
-
-	l.Debug("Creating turn record >%#v<", rec)
-
-	err := t.Model.(*model.Model).CreateTurnRec(&rec)
+	turnDuration := time.Duration(0) * time.Millisecond
+	rslt, err := t.Model.(*model.Model).IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
+		DungeonInstanceID: dungeonInstanceID,
+		TurnDuration:      &turnDuration,
+	})
 	if err != nil {
-		l.Warn("Failed creating turn record >%v<", err)
+		l.Warn("failed incrementing turn record >%v<", err)
 		return nil, err
 	}
-	return &rec, nil
+
+	if rslt == nil {
+		err := fmt.Errorf("failed incrementing dungeon instance ID >%s< turn, result is nil", dungeonInstanceID)
+		l.Warn(err.Error())
+		return nil, err
+	}
+
+	return rslt.Record, nil
 }

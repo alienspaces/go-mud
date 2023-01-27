@@ -49,7 +49,7 @@ func (m *Model) CreateTurnRec(rec *record.Turn) error {
 	l := m.Logger("CreateTurnRec")
 
 	// Initial defaults
-	rec.TurnCount = 1
+	rec.TurnNumber = 1
 	rec.IncrementedAt = nulltime.FromTime(time.Now().UTC())
 
 	l.Debug("Creating turn record >%#v<", rec)

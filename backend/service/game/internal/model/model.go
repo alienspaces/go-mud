@@ -17,6 +17,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/config"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeonentityinstanceturn"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeoninstancecapacity"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/action"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actioncharacter"
@@ -92,6 +93,13 @@ func (m *Model) NewQueries(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, er
 		return nil, err
 	}
 	queryList = append(queryList, dungeonInstanceCapacityQuery)
+
+	dungeonEntityInstanceTurnQuery, err := dungeonentityinstanceturn.NewQuery(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon entity instance turn query >%v<", err)
+		return nil, err
+	}
+	queryList = append(queryList, dungeonEntityInstanceTurnQuery)
 
 	return queryList, nil
 }
@@ -608,6 +616,18 @@ func (m *Model) DungeonInstanceCapacityQuery() *dungeoninstancecapacity.Query {
 	}
 
 	return q.(*dungeoninstancecapacity.Query)
+}
+
+// DungeonEntityInstanceTurnQuery -
+func (m *Model) DungeonEntityInstanceTurnQuery() *dungeonentityinstanceturn.Query {
+
+	q := m.Queries[dungeonentityinstanceturn.QueryName]
+	if q == nil {
+		m.Log.Warn("Query >%s< is nil", dungeonentityinstanceturn.QueryName)
+		return nil
+	}
+
+	return q.(*dungeonentityinstanceturn.Query)
 }
 
 // Logger -

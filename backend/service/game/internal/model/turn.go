@@ -8,6 +8,11 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+type IncrementDungeonInstanceTurnArgs struct {
+	DungeonInstanceID string
+	TurnDuration      *time.Duration
+}
+
 type IncrementDungeonInstanceTurnResult struct {
 	Record           *record.Turn
 	WaitMilliseconds int64
@@ -15,13 +20,14 @@ type IncrementDungeonInstanceTurnResult struct {
 }
 
 // IncrementDungeonInstanceTurnRec -
-func (m *Model) IncrementDungeonInstanceTurn(recordID string) (*IncrementDungeonInstanceTurnResult, error) {
+func (m *Model) IncrementDungeonInstanceTurn(args *IncrementDungeonInstanceTurnArgs) (*IncrementDungeonInstanceTurnResult, error) {
 	l := m.Logger("IncrementDungeonInstanceTurn")
-	l.Debug("Attempting to increment dungeon instance ID >%s< turn", recordID)
+
+	l.Info("Increment dungeon instance ID >%s< turn", args.DungeonInstanceID)
 
 	recs, err := m.GetTurnRecs(
 		map[string]interface{}{
-			"dungeon_instance_id": recordID,
+			"dungeon_instance_id": args.DungeonInstanceID,
 		}, nil, true,
 	)
 	if err != nil {
@@ -31,15 +37,16 @@ func (m *Model) IncrementDungeonInstanceTurn(recordID string) (*IncrementDungeon
 
 	var rec *record.Turn
 	if len(recs) > 1 {
-		err := fmt.Errorf("unexpected number of turn records returned >%d< for dunge instance ID >%s<", len(recs), recordID)
+		err := fmt.Errorf("unexpected number of turn records returned >%d< for dunge instance ID >%s<", len(recs), args.DungeonInstanceID)
 		l.Warn(err.Error())
 		return nil, err
 	}
 
 	if len(recs) == 0 {
 		rec = &record.Turn{
-			DungeonInstanceID: recordID,
+			DungeonInstanceID: args.DungeonInstanceID,
 		}
+
 		err := m.CreateTurnRec(rec)
 		if err != nil {
 			l.Warn("failed creating turn record >%v<", err)
@@ -50,22 +57,27 @@ func (m *Model) IncrementDungeonInstanceTurn(recordID string) (*IncrementDungeon
 	}
 
 	// Check time since last turn increment
+	turnDuration := m.turnDuration
+	if args.TurnDuration != nil {
+		turnDuration = *args.TurnDuration
+	}
+
 	sinceLastIncremented := time.Since(nulltime.ToTime(rec.IncrementedAt))
 	l.Debug("Last incremented duration >%d<", sinceLastIncremented.Milliseconds())
-	l.Debug("Turn duration             >%d<", m.turnDuration.Milliseconds())
+	l.Debug("Turn duration             >%d<", turnDuration.Milliseconds())
 
-	if sinceLastIncremented < m.turnDuration {
-		l.Debug("Too early to increment, since last incremented %d < duration %d", sinceLastIncremented.Milliseconds(), m.turnDuration.Milliseconds())
+	if sinceLastIncremented < turnDuration {
+		l.Debug("Too early to increment, since last incremented %d < duration %d", sinceLastIncremented.Milliseconds(), turnDuration.Milliseconds())
 		return &IncrementDungeonInstanceTurnResult{
 			Record:           nil,
-			WaitMilliseconds: m.turnDuration.Milliseconds() - sinceLastIncremented.Milliseconds(),
+			WaitMilliseconds: turnDuration.Milliseconds() - sinceLastIncremented.Milliseconds(),
 			Incremented:      false,
 		}, nil
 	}
 
-	l.Debug("Can increment, since last incremented %d > duration %d", sinceLastIncremented.Milliseconds(), m.turnDuration.Milliseconds())
+	l.Debug("Can increment, since last incremented %d > duration %d", sinceLastIncremented.Milliseconds(), turnDuration.Milliseconds())
 
-	rec.TurnCount++
+	rec.TurnNumber++
 	rec.IncrementedAt = nulltime.FromTime(time.Now().UTC())
 
 	err = m.UpdateTurnRec(rec)
