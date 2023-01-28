@@ -7,16 +7,22 @@ import (
 )
 
 const (
+	// TODO: (core) Change to data
 	ErrorCategoryValidation ErrorCategory = "validation"
-	ErrorCategoryResource   ErrorCategory = "resource"
-	ErrorCategoryClient     ErrorCategory = "client"
-	ErrorCategoryServer     ErrorCategory = "server"
+	// TODO: (core) Additional categories data, query_parameter and path parameter
+	ErrorCategoryResource ErrorCategory = "resource"
+	ErrorCategoryClient   ErrorCategory = "client"
+	ErrorCategoryServer   ErrorCategory = "server"
 )
 
 const (
-	ErrorCodeValidationSchema      ErrorCode = "validation.schema"
-	ErrorCodeValidationJSON        ErrorCode = "validation.invalid_json"
-	ErrorCodeValidationQueryParam  ErrorCode = "validation.invalid_query_parameter"
+	// TODO: (core) Change the following to data.invalid
+	ErrorCodeValidationSchema ErrorCode = "validation.schema"
+	// TODO: (core) Change the following to data.invalid_json
+	ErrorCodeValidationJSON ErrorCode = "validation.invalid_json"
+	// TODO: (core) Change the following to query_parameter.invalid
+	ErrorCodeValidationQueryParam ErrorCode = "validation.invalid_query_parameter"
+	// TODO: (core) Change the following to path_parameter.invalid
 	ErrorCodeValidationPathParam   ErrorCode = "validation.invalid_path_parameter"
 	ErrorCodeResourceNotFound      ErrorCode = "resource.not_found"
 	ErrorCodeClientUnauthorized    ErrorCode = "client.unauthorized"
