@@ -17,7 +17,7 @@ import (
 )
 
 // TODO: 8-implement-turns: Tests consecutive character actions and
-func TestConsecutiveCharacterActions(t *testing.T) {
+func TestConsecutiveProcessCharacterActions(t *testing.T) {
 	// Tests to confirm a character or monster may only
 	// submit a single action per turn.
 }

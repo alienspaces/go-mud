@@ -40,7 +40,7 @@ func (rnr *Runner) GetTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 
 		// Resource not found
 		if rec == nil {
-			err := coreerror.NewNotFoundError("template", id)
+			err := coreerror.NewResourceNotFoundError("template", id)
 			server.WriteError(l, w, err)
 			return err
 		}
@@ -166,7 +166,7 @@ func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("template", id)
+		err := coreerror.NewResourceNotFoundError("template", id)
 		server.WriteError(l, w, err)
 		return err
 	}

@@ -18,7 +18,7 @@ func (sve SchemaValidationError) GetField() string {
 }
 
 func NewSchemaValidationError(resultErrors []gojsonschema.ResultError) error {
-	e := GetRegistryError(SchemaValidation)
+	e := GetRegistryError(ErrorCodeValidationSchema)
 
 	resultErrors = filterNonUserFriendlyErrors(resultErrors)
 

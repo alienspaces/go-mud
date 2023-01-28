@@ -29,7 +29,7 @@ func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*recor
 
 	if len(characterInstanceRecs) > 1 {
 		l.Warn("unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewInternalError()
+		err := coreerror.NewServerInternalError()
 		return nil, err
 	}
 
@@ -91,7 +91,7 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 
 	if len(characterInstanceViewRecs) > 1 {
 		l.Warn("unexpected number of character instance view records returned >%d<", len(characterInstanceViewRecs))
-		err := coreerror.NewInternalError()
+		err := coreerror.NewServerInternalError()
 		return nil, err
 	}
 

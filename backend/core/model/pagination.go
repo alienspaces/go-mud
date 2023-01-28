@@ -52,7 +52,7 @@ func resolveLimit(params map[string]interface{}, operators map[string]string) (m
 		return params, operators, 0, err
 	}
 	if pageSize < 1 {
-		return params, operators, 0, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageSize, pageSize))
+		return params, operators, 0, coreerror.NewValidationQueryParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageSize, pageSize))
 	}
 
 	limit := pageSize + 1
@@ -67,7 +67,7 @@ func resolveOffset(params map[string]interface{}, operators map[string]string, p
 		return params, operators, err
 	}
 	if pageNumber < 1 {
-		return params, operators, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageNumber, pageNumber))
+		return params, operators, coreerror.NewValidationQueryParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageNumber, pageNumber))
 	}
 
 	offset := (pageNumber - 1) * pageSize
@@ -91,16 +91,16 @@ func extractParam(params map[string]interface{}, key string, defaultValue string
 
 	valueStr, ok := value.([]string)
 	if !ok {
-		return params, 0, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< has an invalid value >%v<", key, value))
+		return params, 0, coreerror.NewValidationQueryParamError(fmt.Sprintf("Query parameter >%s< has an invalid value >%v<", key, value))
 	}
 
 	if len(valueStr) != 1 {
-		return params, 0, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< should be a single value but is >%+v<", key, valueStr))
+		return params, 0, coreerror.NewValidationQueryParamError(fmt.Sprintf("Query parameter >%s< should be a single value but is >%+v<", key, valueStr))
 	}
 
 	valueInt, err := strconv.Atoi(valueStr[0])
 	if err != nil {
-		return params, 0, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< has an invalid value >%v<", key, value))
+		return params, 0, coreerror.NewValidationQueryParamError(fmt.Sprintf("Query parameter >%s< has an invalid value >%v<", key, value))
 	}
 
 	delete(params, key)

@@ -6,10 +6,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// TODO: 8-implement-turns: Check whether the character can perform a turn
-// yet based on what the current turn is and whether the character already
-// has a processed action for the current turn.
-
 type ResolveActionTurnArgs struct {
 	ActionRec         *record.Action
 	EntityType        EntityType
@@ -63,9 +59,9 @@ func (m *Model) resolveActionTurn(args *ResolveActionTurnArgs) (*record.Action, 
 
 	rec := recs[0]
 	if rec.EntityInstanceTurnNumber >= rec.DungeonInstanceTurnNumber {
-		err := fmt.Errorf("dungeon instance turn >%d< is less than entity instance turn >%d<", rec.DungeonInstanceTurnNumber, rec.EntityInstanceTurnNumber)
-		l.Warn(err.Error())
-		return nil, err
+		msg := fmt.Sprintf("dungeon instance turn >%d< is less than entity instance turn >%d<", rec.DungeonInstanceTurnNumber, rec.EntityInstanceTurnNumber)
+		l.Warn(msg)
+		return nil, NewActionTooEarlyError(msg)
 	}
 
 	// A character or monster can choose to not execute an action for every turn so

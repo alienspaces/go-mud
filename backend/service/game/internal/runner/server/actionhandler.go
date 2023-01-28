@@ -73,21 +73,21 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	characterID := pp.ByName("character_id")
 
 	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamInvalidTypeError("character_id", characterID)
+		err := coreerror.NewValidationPathParamTypeError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -103,7 +103,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -119,7 +119,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if characterRec == nil {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -147,14 +147,14 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if len(characterInstanceRecs) == 0 {
-		err := coreerror.NewPathParamInvalidError("character_id", characterID, "character has not entered a dungeon")
+		err := coreerror.NewValidationPathParamError("character_id", characterID, "character has not entered a dungeon")
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if len(characterInstanceRecs) > 1 {
 		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewInternalError()
+		err := coreerror.NewServerInternalError()
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -168,7 +168,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if dungeonInstanceRec == nil {
-		err := coreerror.NewPathParamInvalidError("dungeon_id", dungeonID, "dungeon does not exists")
+		err := coreerror.NewValidationPathParamError("dungeon_id", dungeonID, "dungeon does not exists")
 		server.WriteError(l, w, err)
 		return err
 	}

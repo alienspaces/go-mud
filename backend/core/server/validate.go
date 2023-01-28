@@ -28,7 +28,7 @@ func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 
 		qp, err := validateQueryParameters(l, r.URL.Query(), hc.MiddlewareConfig.ValidateQueryParams)
 		if err != nil {
-			WriteError(l, w, coreerror.ProcessQueryParamError(err))
+			WriteError(l, w, coreerror.ProcessValidationQueryParamError(err))
 			return err
 		}
 
@@ -55,9 +55,9 @@ func (rnr *Runner) Validate(hc HandlerConfig, h Handle) (Handle, error) {
 
 			var jsonSyntaxError *json.SyntaxError
 			if errors.As(err, &jsonSyntaxError) || errors.Is(err, io.ErrUnexpectedEOF) {
-				WriteError(l, w, coreerror.NewInvalidBodyError(""))
+				WriteError(l, w, coreerror.NewValidationJSONError(""))
 			} else if errors.Is(err, io.EOF) {
-				WriteError(l, w, coreerror.NewInvalidBodyError("Request body is empty."))
+				WriteError(l, w, coreerror.NewValidationJSONError("Request body is empty."))
 			} else {
 				WriteSystemError(l, w, err)
 			}
@@ -86,7 +86,7 @@ func validateQueryParameters(l logger.Logger, q url.Values, paramSchema jsonsche
 
 	if paramSchema.IsEmpty() {
 		for k := range q {
-			return nil, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< not allowed.", k))
+			return nil, coreerror.NewValidationQueryParamError(fmt.Sprintf("Query parameter >%s< not allowed.", k))
 		}
 	}
 

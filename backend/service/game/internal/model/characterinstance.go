@@ -65,7 +65,7 @@ func (m *Model) CharacterExitDungeon(characterID string) error {
 
 	if characterInstanceRec == nil {
 		l.Warn("character instance record is nil")
-		err := coreerror.NewInternalError()
+		err := coreerror.NewServerInternalError()
 		return err
 	}
 

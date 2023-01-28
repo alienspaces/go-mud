@@ -26,16 +26,3 @@ func ToError(err error) (Error, error) {
 
 	return errorPtr, nil
 }
-
-func NewErrorCode(errorType ErrorType, suffix string) ErrorCode {
-	return ErrorCode(fmt.Sprintf("%s_%s", errorType, suffix))
-}
-
-func HasErrorCode(err error, ec ErrorCode) bool {
-	e, err := ToError(err)
-	if err != nil {
-		return false
-	}
-
-	return e.ErrorCode == ec
-}

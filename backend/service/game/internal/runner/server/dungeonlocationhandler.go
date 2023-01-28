@@ -87,11 +87,11 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 
@@ -99,11 +99,11 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	locationID := pp.ByName("location_id")
 	if locationID == "" {
-		err := coreerror.NewNotFoundError("location", locationID)
+		err := coreerror.NewResourceNotFoundError("location", locationID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(locationID) {
-		err := coreerror.NewPathParamInvalidTypeError("location_id", locationID)
+		err := coreerror.NewValidationPathParamTypeError("location_id", locationID)
 		server.WriteError(l, w, err)
 		return err
 
@@ -119,7 +119,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -132,13 +132,13 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	// Resource not found
 	if locationRec == nil {
-		err := coreerror.NewNotFoundError("location", locationID)
+		err := coreerror.NewResourceNotFoundError("location", locationID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if locationRec.DungeonID != dungeonRec.ID {
-		err := coreerror.NewNotFoundError("location", locationID)
+		err := coreerror.NewResourceNotFoundError("location", locationID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -179,11 +179,11 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -198,7 +198,7 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}

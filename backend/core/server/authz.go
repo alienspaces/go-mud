@@ -40,7 +40,7 @@ func (rnr *Runner) Authz(hc HandlerConfig, h Handle) (Handle, error) {
 
 		for p := range authzPermissions {
 			if _, ok := auth.Permissions[string(p)]; !ok {
-				err := coreerror.NewUnauthorizedError()
+				err := coreerror.NewClientUnauthorizedError()
 				l.Error(err.Error())
 				WriteError(l, w, err)
 				return err

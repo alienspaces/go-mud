@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-// Registry is a map of error codes to errors
+// Registry is a map of predefined error codes to errors
 type Registry map[ErrorCode]Error
 
 // Merge merges another error collection with this error collection returning a new error collection
@@ -19,49 +19,49 @@ func (c Registry) Merge(a Registry) Registry {
 var reArray = regexp.MustCompile(`(?m)\.(\d+)(\.)?`)
 
 var registry = Registry{
-	SchemaValidation: Error{
+	ErrorCodeValidationSchema: Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      SchemaValidation,
+		ErrorCode:      ErrorCodeValidationSchema,
 		Message:        "Request body failed JSON schema validation.",
 	},
-	InvalidJSON: Error{
+	ErrorCodeValidationJSON: Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      InvalidJSON,
+		ErrorCode:      ErrorCodeValidationJSON,
 		Message:        "Request body contains invalid JSON.",
 	},
-	InvalidQueryParam: Error{
+	ErrorCodeValidationQueryParam: Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      InvalidQueryParam,
+		ErrorCode:      ErrorCodeValidationQueryParam,
 		Message:        "The value for the query parameter is invalid.",
 	},
-	InvalidPathParam: Error{
+	ErrorCodeValidationPathParam: Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      InvalidPathParam,
+		ErrorCode:      ErrorCodeValidationPathParam,
 		Message:        "The value for the path parameter is invalid.",
 	},
-	NotFound: Error{
+	ErrorCodeResourceNotFound: Error{
 		HttpStatusCode: http.StatusNotFound,
-		ErrorCode:      NotFound,
+		ErrorCode:      ErrorCodeResourceNotFound,
 		Message:        "Resource not found.",
 	},
-	Unauthorized: Error{
+	ErrorCodeClientUnauthorized: Error{
 		HttpStatusCode: http.StatusForbidden,
-		ErrorCode:      Unauthorized,
+		ErrorCode:      ErrorCodeClientUnauthorized,
 		Message:        "Permission to the requested resource is denied.",
 	},
-	Unauthenticated: Error{
+	ErrorCodeClientUnauthenticated: Error{
 		HttpStatusCode: http.StatusUnauthorized,
-		ErrorCode:      Unauthenticated,
+		ErrorCode:      ErrorCodeClientUnauthenticated,
 		Message:        "Authentication information is missing or invalid.",
 	},
-	Unavailable: Error{
+	ErrorCodeServerUnavailable: Error{
 		HttpStatusCode: http.StatusServiceUnavailable,
-		ErrorCode:      Unavailable,
+		ErrorCode:      ErrorCodeServerUnavailable,
 		Message:        "Server overloaded: unable to process request",
 	},
-	Internal: Error{
+	ErrorCodeServerInternal: Error{
 		HttpStatusCode: http.StatusInternalServerError,
-		ErrorCode:      Internal,
+		ErrorCode:      ErrorCodeServerInternal,
 		Message:        "An internal error has occurred.",
 	},
 }

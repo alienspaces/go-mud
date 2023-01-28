@@ -87,11 +87,11 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 	id := pp.ByName("dungeon_id")
 
 	if id == "" {
-		err := coreerror.NewNotFoundError("dungeon", id)
+		err := coreerror.NewResourceNotFoundError("dungeon", id)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", id)
+		err := coreerror.NewValidationPathParamTypeError("dungeon_id", id)
 		server.WriteError(l, w, err)
 		return err
 
@@ -107,7 +107,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("dungeon", id)
+		err := coreerror.NewResourceNotFoundError("dungeon", id)
 		server.WriteError(l, w, err)
 		return err
 	}

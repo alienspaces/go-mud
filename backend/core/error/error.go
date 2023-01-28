@@ -6,25 +6,23 @@ import (
 	"strings"
 )
 
-type ErrorCode string
-
 const (
-	SchemaValidation  ErrorCode = "validation.body_not_matching_json_schema"
-	InvalidJSON       ErrorCode = "validation.invalid_json"
-	InvalidQueryParam ErrorCode = "validation.invalid_query_parameter"
-	InvalidPathParam  ErrorCode = "validation.invalid_path_parameter"
-	NotFound          ErrorCode = "resource_not_found"
-	Unauthorized      ErrorCode = "unauthorized"
-	Unauthenticated   ErrorCode = "unauthenticated"
-	Unavailable       ErrorCode = "unavailable"
-	Internal          ErrorCode = "internal_error"
+	ErrorCategoryValidation ErrorCategory = "validation"
+	ErrorCategoryResource   ErrorCategory = "resource"
+	ErrorCategoryClient     ErrorCategory = "client"
+	ErrorCategoryServer     ErrorCategory = "server"
 )
 
-type ErrorType string
-
 const (
-	ErrorTypeUnsupported ErrorType = "unsupported"
-	ErrorTypeInvalid     ErrorType = "invalid"
+	ErrorCodeValidationSchema      ErrorCode = "validation.schema"
+	ErrorCodeValidationJSON        ErrorCode = "validation.invalid_json"
+	ErrorCodeValidationQueryParam  ErrorCode = "validation.invalid_query_parameter"
+	ErrorCodeValidationPathParam   ErrorCode = "validation.invalid_path_parameter"
+	ErrorCodeResourceNotFound      ErrorCode = "resource.not_found"
+	ErrorCodeClientUnauthorized    ErrorCode = "client.unauthorized"
+	ErrorCodeClientUnauthenticated ErrorCode = "client.unauthenticated"
+	ErrorCodeServerUnavailable     ErrorCode = "server.unavailable"
+	ErrorCodeServerInternal        ErrorCode = "server.internal_error"
 )
 
 type Error struct {
@@ -38,45 +36,61 @@ func (e Error) Error() string {
 	return e.Message
 }
 
-func NewInternalError() error {
-	return GetRegistryError(Internal)
+type ErrorCategory string
+type ErrorCode string
+
+func NewErrorCode(ec ErrorCategory, et ErrorType, s string) ErrorCode {
+	return ErrorCode(fmt.Sprintf("%s.%s_%s", ec, et, s))
 }
 
-func NewNotFoundError(resourceName string, resourceID string) error {
-	e := GetRegistryError(NotFound)
+func HasErrorCode(err error, ec ErrorCode) bool {
+	e, err := ToError(err)
+	if err != nil {
+		return false
+	}
+
+	return e.ErrorCode == ec
+}
+
+func NewResourceNotFoundError(resourceName string, resourceID string) error {
+	e := GetRegistryError(ErrorCodeResourceNotFound)
 	e.Message = fmt.Sprintf("%s with ID >%s< not found", resourceName, resourceID)
 
 	return e
 }
 
-func NewUnavailableError() error {
-	return GetRegistryError(Unavailable)
+func NewServerInternalError() error {
+	return GetRegistryError(ErrorCodeServerInternal)
 }
 
-func NewUnauthorizedError() error {
-	return GetRegistryError(Unauthorized)
+func NewServerUnavailableError() error {
+	return GetRegistryError(ErrorCodeServerUnavailable)
 }
 
-func NewUnauthenticatedError(message string) error {
-	e := GetRegistryError(Unauthenticated)
+func NewClientUnauthorizedError() error {
+	return GetRegistryError(ErrorCodeClientUnauthorized)
+}
+
+func NewClientUnauthenticatedError(message string) error {
+	e := GetRegistryError(ErrorCodeClientUnauthenticated)
 	e.Message = message
 	return e
 }
 
-func NewQueryParamError(message string) error {
-	e := GetRegistryError(InvalidQueryParam)
+func NewValidationQueryParamError(message string) error {
+	e := GetRegistryError(ErrorCodeValidationQueryParam)
 	e.Message = message
 	return e
 }
 
-func ProcessQueryParamError(err error) error {
+func ProcessValidationQueryParamError(err error) error {
 	e, conversionErr := ToError(err)
 	if conversionErr != nil {
 		return err
 	}
 
 	if len(e.SchemaValidationErrors) == 0 {
-		return NewQueryParamError(e.Error())
+		return NewValidationQueryParamError(e.Error())
 	}
 
 	errStr := strings.Builder{}
@@ -95,17 +109,17 @@ func ProcessQueryParamError(err error) error {
 	formattedErrString = formattedErrString[0 : len(formattedErrString)-2]
 	formattedErrString += "."
 
-	return NewQueryParamError(formattedErrString)
+	return NewValidationQueryParamError(formattedErrString)
 }
 
-func NewPathParamInvalidTypeError(param string, id string) error {
-	e := GetRegistryError(InvalidPathParam)
+func NewValidationPathParamTypeError(param string, id string) error {
+	e := GetRegistryError(ErrorCodeValidationPathParam)
 	e.Message = fmt.Sprintf("Path parameter %s value >%s< is not a valid UUID", param, id)
 	return e
 }
 
-func NewPathParamInvalidError(param, id, message string) error {
-	e := GetRegistryError(InvalidPathParam)
+func NewValidationPathParamError(param, id, message string) error {
+	e := GetRegistryError(ErrorCodeValidationPathParam)
 	if message == "" {
 		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid", param, id)
 	} else {
@@ -114,26 +128,33 @@ func NewPathParamInvalidError(param, id, message string) error {
 	return e
 }
 
-func NewInvalidBodyError(message string) error {
-	e := GetRegistryError(InvalidJSON)
+func NewValidationJSONError(message string) error {
+	e := GetRegistryError(ErrorCodeValidationJSON)
 	if message != "" {
 		e.Message = message
 	}
 	return e
 }
 
-func NewInvalidError(errorCodeSuffix string, message string) error {
+type ErrorType string
+
+const (
+	ErrorTypeUnsupported ErrorType = "unsupported"
+	ErrorTypeInvalid     ErrorType = "invalid"
+)
+
+func NewValidationInvalidError(errorCodeSuffix string, message string) error {
 	return Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      NewErrorCode(ErrorTypeInvalid, errorCodeSuffix),
+		ErrorCode:      NewErrorCode(ErrorCategoryValidation, ErrorTypeInvalid, errorCodeSuffix),
 		Message:        message,
 	}
 }
 
-func NewUnsupportedError(errorCodeSuffix string, message string) error {
+func NewValidationUnsupportedError(errorCodeSuffix string, message string) error {
 	return Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      NewErrorCode(ErrorTypeUnsupported, errorCodeSuffix),
+		ErrorCode:      NewErrorCode(ErrorCategoryValidation, ErrorTypeUnsupported, errorCodeSuffix),
 		Message:        message,
 	}
 }

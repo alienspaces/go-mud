@@ -137,11 +137,11 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	characterID := pp.ByName("character_id")
 
 	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamInvalidTypeError("character_id", characterID)
+		err := coreerror.NewValidationPathParamTypeError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -157,7 +157,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -328,11 +328,11 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	id := pp.ByName("character_id")
 
 	if id == "" {
-		err := coreerror.NewNotFoundError("character", id)
+		err := coreerror.NewResourceNotFoundError("character", id)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamInvalidTypeError("character_id", id)
+		err := coreerror.NewValidationPathParamTypeError("character_id", id)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -347,7 +347,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("character", id)
+		err := coreerror.NewResourceNotFoundError("character", id)
 		server.WriteError(l, w, err)
 		return err
 	}
