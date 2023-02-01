@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -20,6 +21,95 @@ import (
 func TestConsecutiveProcessCharacterActions(t *testing.T) {
 	// Tests to confirm a character or monster may only
 	// submit a single action per turn.
+	// harness
+	config := harness.DefaultDataConfig
+
+	c, l, s, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	th, err := harness.NewTesting(c, l, s, config)
+	require.NoError(t, err, "NewTesting returns without error")
+
+	// harness commit data
+	th.CommitData = true
+
+	tests := []struct {
+		name                string
+		dungeonInstanceID   func(data harness.Data) string
+		characterInstanceID func(data harness.Data) string
+		sentence            func(data harness.Data) string
+		incrementTurn       bool
+		expectError         bool
+	}{
+		{
+			name: "Too fast",
+			dungeonInstanceID: func(data harness.Data) string {
+				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				return diRec.ID
+			},
+			characterInstanceID: func(data harness.Data) string {
+				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				return ciRec.ID
+			},
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
+			incrementTurn: false,
+			expectError:   true,
+		},
+	}
+
+	for _, tc := range tests {
+
+		t.Logf("Run test >%s<", tc.name)
+
+		t.Run(tc.name, func(t *testing.T) {
+
+			// Test harness
+			err = th.Setup()
+			require.NoError(t, err, "Setup returns without error")
+			defer func() {
+				err = th.RollbackTx()
+				require.NoError(t, err, "RollbackTx returns without error")
+				err = th.Teardown()
+				require.NoError(t, err, "Teardown returns without error")
+			}()
+
+			// init tx
+			err = th.InitTx(nil)
+			require.NoError(t, err, "InitTx returns without error")
+
+			dungeonInstanceID := tc.dungeonInstanceID(th.Data)
+			characterInstanceID := tc.characterInstanceID(th.Data)
+
+			sentence := tc.sentence(th.Data)
+			t.Logf("Sentence >%s<", sentence)
+
+			rslt, err := th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
+			require.NoError(t, err, "ProcessCharacterAction returns without error")
+			require.NotNil(t, rslt.ActionRec, "ProcessCharacterAction returns ActionRecordSet with ActionRec")
+
+			// Increment turn
+			if tc.incrementTurn {
+				turnDuration := time.Duration(0) * time.Millisecond
+				incrslt, err := th.Model.(*model.Model).IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
+					DungeonInstanceID: dungeonInstanceID,
+					TurnDuration:      &turnDuration,
+				})
+				require.NoError(t, err, "IncrementDungeonInstanceTurn returns without error")
+				require.True(t, incrslt.Incremented, "IncrementDungeonInstanceTurn increments dungeon instance turn")
+			}
+
+			rslt, err = th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
+			if tc.expectError == true {
+				t.Logf("%#v", err)
+				require.Error(t, err, "ProcessCharacterAction returns error")
+				return
+			}
+			require.NoError(t, err, "ProcessCharacterAction returns without error")
+			require.NotNil(t, rslt.ActionRec, "ProcessCharacterAction returns ActionRecordSet with ActionRec")
+		})
+	}
 }
 
 func TestProcessCharacterAction(t *testing.T) {
@@ -1096,11 +1186,11 @@ func TestProcessCharacterAction(t *testing.T) {
 
 			rslt, err := th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
 			if tc.expectError == true {
-				require.Error(t, err, "CreateDungeonObjectRec returns error")
+				require.Error(t, err, "ProcessCharacterAction returns error")
 				return
 			}
-			require.NoError(t, err, "ProcessDungeonCharacterAction returns without error")
-			require.NotNil(t, rslt.ActionRec, "ProcessDungeonCharacterAction returns ActionRecordSet with ActionRec")
+			require.NoError(t, err, "ProcessCharacterAction returns without error")
+			require.NotNil(t, rslt.ActionRec, "ProcessCharacterAction returns ActionRecordSet with ActionRec")
 
 			xrslt := tc.expectActionRecordSet(th.Data)
 			if xrslt == nil {
