@@ -59,9 +59,9 @@ func (m *Model) resolveActionTurn(args *ResolveActionTurnArgs) (*record.Action, 
 
 	rec := recs[0]
 	if rec.EntityInstanceTurnNumber >= rec.DungeonInstanceTurnNumber {
-		msg := fmt.Sprintf("dungeon instance turn >%d< is less than entity instance turn >%d<", rec.DungeonInstanceTurnNumber, rec.EntityInstanceTurnNumber)
+		msg := fmt.Sprintf("dungeon instance turn >%d< is less than or equal to entity instance turn >%d<", rec.DungeonInstanceTurnNumber, rec.EntityInstanceTurnNumber)
 		l.Warn(msg)
-		return nil, NewActionTooEarlyError(msg)
+		return nil, NewActionTooEarlyError(rec.DungeonInstanceTurnNumber, rec.EntityInstanceTurnNumber)
 	}
 
 	// A character or monster can choose to not execute an action for every turn so

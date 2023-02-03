@@ -265,7 +265,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	// Resolve the initial action turn
 	actionRec, err = m.resolveActionTurn(&ResolveActionTurnArgs{
 		ActionRec:         actionRec,
-		EntityType:        EntityTypeCharacter,
+		EntityType:        EntityTypeMonster,
 		EntityInstanceID:  mivRec.ID,
 		DungeonInstanceID: locationInstanceRecordSet.LocationInstanceViewRec.DungeonInstanceID,
 	})

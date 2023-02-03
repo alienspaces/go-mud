@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"net/http"
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
@@ -37,10 +38,11 @@ func NewActionInvalidTargetError(message string) error {
 	}
 }
 
-func NewActionTooEarlyError(message string) error {
+func NewActionTooEarlyError(dungeonInstanceTurnNumber, entityInstanceTurnNumber int) error {
+	msg := fmt.Sprintf("dungeon instance turn >%d< is less than or equal to entity instance turn >%d<", dungeonInstanceTurnNumber, entityInstanceTurnNumber)
 	return coreerror.Error{
 		HttpStatusCode: http.StatusBadRequest,
 		ErrorCode:      ErrorCodeActionTooEarly,
-		Message:        message,
+		Message:        msg,
 	}
 }

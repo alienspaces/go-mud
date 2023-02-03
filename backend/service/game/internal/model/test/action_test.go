@@ -17,16 +17,12 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// TODO: 8-implement-turns: Tests consecutive character actions and
 func TestConsecutiveProcessCharacterActions(t *testing.T) {
-	// Tests to confirm a character or monster may only
-	// submit a single action per turn.
-	// harness
-	config := harness.DefaultDataConfig
 
 	c, l, s, err := dependencies.Default()
 	require.NoError(t, err, "NewTesting returns without error")
 
+	config := harness.DefaultDataConfig
 	th, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -38,24 +34,56 @@ func TestConsecutiveProcessCharacterActions(t *testing.T) {
 		dungeonInstanceID   func(data harness.Data) string
 		characterInstanceID func(data harness.Data) string
 		sentence            func(data harness.Data) string
-		incrementTurn       bool
-		expectError         bool
+		incrementTurns      int
+		expectError         error
 	}{
 		{
 			name: "Too fast",
 			dungeonInstanceID: func(data harness.Data) string {
-				diRec, _ := data.GetDungeonInstanceRecByName("cave")
+				diRec, _ := data.GetDungeonInstanceRecByName(harness.DungeonNameCave)
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
 				return "look"
 			},
-			incrementTurn: false,
-			expectError:   true,
+			incrementTurns: 0,
+			expectError:    model.NewActionTooEarlyError(2, 2),
+		},
+		{
+			name: "Too slow",
+			dungeonInstanceID: func(data harness.Data) string {
+				diRec, _ := data.GetDungeonInstanceRecByName(harness.DungeonNameCave)
+				return diRec.ID
+			},
+			characterInstanceID: func(data harness.Data) string {
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+				return ciRec.ID
+			},
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
+			incrementTurns: 2,
+			expectError:    nil,
+		},
+		{
+			name: "Just right",
+			dungeonInstanceID: func(data harness.Data) string {
+				diRec, _ := data.GetDungeonInstanceRecByName(harness.DungeonNameCave)
+				return diRec.ID
+			},
+			characterInstanceID: func(data harness.Data) string {
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+				return ciRec.ID
+			},
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
+			incrementTurns: 1,
+			expectError:    nil,
 		},
 	}
 
@@ -86,11 +114,13 @@ func TestConsecutiveProcessCharacterActions(t *testing.T) {
 			t.Logf("Sentence >%s<", sentence)
 
 			rslt, err := th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
-			require.NoError(t, err, "ProcessCharacterAction returns without error")
-			require.NotNil(t, rslt.ActionRec, "ProcessCharacterAction returns ActionRecordSet with ActionRec")
+			require.NoError(t, err, "Initial ProcessCharacterAction returns without error")
+			require.NotNil(t, rslt.ActionRec, "Initial ProcessCharacterAction returns ActionRecordSet with ActionRec")
 
 			// Increment turn
-			if tc.incrementTurn {
+			for inc := 0; inc < tc.incrementTurns; inc++ {
+				t.Logf("Incrementing turn >%d<", inc+1)
+
 				turnDuration := time.Duration(0) * time.Millisecond
 				incrslt, err := th.Model.(*model.Model).IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
 					DungeonInstanceID: dungeonInstanceID,
@@ -101,13 +131,136 @@ func TestConsecutiveProcessCharacterActions(t *testing.T) {
 			}
 
 			rslt, err = th.Model.(*model.Model).ProcessCharacterAction(dungeonInstanceID, characterInstanceID, sentence)
-			if tc.expectError == true {
-				t.Logf("%#v", err)
-				require.Error(t, err, "ProcessCharacterAction returns error")
+			require.Equal(t, tc.expectError, err, "Second ProcessCharacterAction error response equals expected")
+			if err != nil {
 				return
 			}
-			require.NoError(t, err, "ProcessCharacterAction returns without error")
-			require.NotNil(t, rslt.ActionRec, "ProcessCharacterAction returns ActionRecordSet with ActionRec")
+
+			require.NotNil(t, rslt.ActionRec, "Second ProcessCharacterAction returns ActionRecordSet with ActionRec")
+		})
+	}
+}
+
+func TestConsecutiveProcessMonsterActions(t *testing.T) {
+
+	c, l, s, err := dependencies.Default()
+	require.NoError(t, err, "NewTesting returns without error")
+
+	config := harness.DefaultDataConfig
+	th, err := harness.NewTesting(c, l, s, config)
+	require.NoError(t, err, "NewTesting returns without error")
+
+	// harness commit data
+	th.CommitData = true
+
+	tests := []struct {
+		name              string
+		dungeonInstanceID func(data harness.Data) string
+		monsterInstanceID func(data harness.Data) string
+		sentence          func(data harness.Data) string
+		incrementTurns    int
+		expectError       error
+	}{
+		{
+			name: "Too fast",
+			dungeonInstanceID: func(data harness.Data) string {
+				diRec, _ := data.GetDungeonInstanceRecByName(harness.DungeonNameCave)
+				return diRec.ID
+			},
+			monsterInstanceID: func(data harness.Data) string {
+				ciRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				return ciRec.ID
+			},
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
+			incrementTurns: 0,
+			expectError:    model.NewActionTooEarlyError(2, 2),
+		},
+		{
+			name: "Too slow",
+			dungeonInstanceID: func(data harness.Data) string {
+				diRec, _ := data.GetDungeonInstanceRecByName(harness.DungeonNameCave)
+				return diRec.ID
+			},
+			monsterInstanceID: func(data harness.Data) string {
+				ciRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				return ciRec.ID
+			},
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
+			incrementTurns: 2,
+			expectError:    nil,
+		},
+		{
+			name: "Just right",
+			dungeonInstanceID: func(data harness.Data) string {
+				diRec, _ := data.GetDungeonInstanceRecByName(harness.DungeonNameCave)
+				return diRec.ID
+			},
+			monsterInstanceID: func(data harness.Data) string {
+				ciRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				return ciRec.ID
+			},
+			sentence: func(data harness.Data) string {
+				return "look"
+			},
+			incrementTurns: 1,
+			expectError:    nil,
+		},
+	}
+
+	for _, tc := range tests {
+
+		t.Logf("Run test >%s<", tc.name)
+
+		t.Run(tc.name, func(t *testing.T) {
+
+			// Test harness
+			err = th.Setup()
+			require.NoError(t, err, "Setup returns without error")
+			defer func() {
+				err = th.RollbackTx()
+				require.NoError(t, err, "RollbackTx returns without error")
+				err = th.Teardown()
+				require.NoError(t, err, "Teardown returns without error")
+			}()
+
+			// init tx
+			err = th.InitTx(nil)
+			require.NoError(t, err, "InitTx returns without error")
+
+			dungeonInstanceID := tc.dungeonInstanceID(th.Data)
+			monsterInstanceID := tc.monsterInstanceID(th.Data)
+
+			sentence := tc.sentence(th.Data)
+			t.Logf("Sentence >%s<", sentence)
+
+			rslt, err := th.Model.(*model.Model).ProcessMonsterAction(dungeonInstanceID, monsterInstanceID, sentence)
+			require.NoError(t, err, "Initial ProcessMonsterAction returns without error")
+			require.NotNil(t, rslt.ActionRec, "Initial ProcessMonsterAction returns ActionRecordSet with ActionRec")
+
+			// Increment turn
+			for inc := 0; inc < tc.incrementTurns; inc++ {
+				t.Logf("Incrementing turn >%d<", inc+1)
+
+				turnDuration := time.Duration(0) * time.Millisecond
+				incrslt, err := th.Model.(*model.Model).IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
+					DungeonInstanceID: dungeonInstanceID,
+					TurnDuration:      &turnDuration,
+				})
+				require.NoError(t, err, "IncrementDungeonInstanceTurn returns without error")
+				require.True(t, incrslt.Incremented, "IncrementDungeonInstanceTurn increments dungeon instance turn")
+			}
+
+			rslt, err = th.Model.(*model.Model).ProcessMonsterAction(dungeonInstanceID, monsterInstanceID, sentence)
+			require.Equal(t, tc.expectError, err, "Second ProcessMonsterAction error response equals expected")
+			if err != nil {
+				return
+			}
+
+			require.NotNil(t, rslt.ActionRec, "Second ProcessMonsterAction returns ActionRecordSet with ActionRec")
 		})
 	}
 }
@@ -141,7 +294,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -149,8 +302,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
@@ -205,7 +358,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -213,8 +366,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
@@ -269,7 +422,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -278,8 +431,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				objectInstanceRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
@@ -336,7 +489,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -345,8 +498,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
@@ -424,17 +577,17 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
-				tcRec, _ := data.GetCharacterRecByName("barricade")
+				tcRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
 				return fmt.Sprintf("look %s", tcRec.Name)
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				acoRecs := []*record.ActionCharacterObject{}
@@ -510,7 +663,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -519,8 +672,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				oiRec, _ := data.GetObjectInstanceRecByName("rusted sword")
@@ -588,7 +741,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -597,8 +750,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				toRec, _ := data.GetObjectRecByName("dull bronze ring")
@@ -668,7 +821,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -677,8 +830,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				oiRec, _ := data.GetObjectInstanceRecByName("rusted sword")
@@ -746,7 +899,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -755,8 +908,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
 				toRec, _ := data.GetObjectRecByName("blood stained pouch")
@@ -826,7 +979,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -835,8 +988,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				toRec, _ := data.GetObjectRecByName("dull bronze ring")
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
@@ -902,7 +1055,7 @@ func TestProcessCharacterAction(t *testing.T) {
 				return diRec.ID
 			},
 			characterInstanceID: func(data harness.Data) string {
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 				return ciRec.ID
 			},
 			sentence: func(data harness.Data) string {
@@ -911,8 +1064,8 @@ func TestProcessCharacterAction(t *testing.T) {
 			},
 			expectActionRecordSet: func(data harness.Data) *record.ActionRecordSet {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
 
 				toRec, _ := data.GetObjectRecByName("blood stained pouch")
 				oiRecs := data.GetObjectInstanceRecsByCharacterInstanceID(ciRec.ID)
