@@ -15,7 +15,7 @@ class BoardLocationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationWidget');
+    final log = getLogger('BoardLocationWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

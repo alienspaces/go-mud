@@ -36,7 +36,8 @@ class DungeonCharacterRepository
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonCharacterRepository');
+    final log =
+        getLogger('DungeonCharacterRepository', 'enterDungeonCharacter');
 
     var response = await api.enterDungeonCharacter(
       dungeonID,
@@ -75,7 +76,7 @@ class DungeonCharacterRepository
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonCharacterRepository');
+    final log = getLogger('DungeonCharacterRepository', 'getDungeonCharacter');
 
     var response = await api.getDungeonCharacter(
       dungeonID,
@@ -110,7 +111,7 @@ class DungeonCharacterRepository
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonCharacterRepository');
+    final log = getLogger('DungeonCharacterRepository', 'exitDungeonCharacter');
 
     var response = await api.exitDungeonCharacter(
       dungeonID,

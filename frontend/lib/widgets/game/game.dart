@@ -23,7 +23,7 @@ class GameWidget extends StatefulWidget {
 class _GameWidgetState extends State<GameWidget> {
   @override
   void initState() {
-    final log = getLogger('HomeContainerWidget');
+    final log = getLogger('GameWidget', 'initState');
     log.fine('Initialising state..');
 
     super.initState();
@@ -32,7 +32,7 @@ class _GameWidgetState extends State<GameWidget> {
   }
 
   void _initAction(BuildContext context) {
-    final log = getLogger('GameWidget');
+    final log = getLogger('GameWidget', '_initAction');
     log.fine('Initialising action..');
 
     final dungeonCharacterCubit =
@@ -60,7 +60,7 @@ class _GameWidgetState extends State<GameWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('Game');
+    final log = getLogger('GameWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
@@ -73,12 +73,12 @@ class _GameWidgetState extends State<GameWidget> {
         if (state is DungeonCharacterStateCreate) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            child: const Text("Entering"),
+            child: const Text("GameWidget - Entering"),
           );
         } else if (state is DungeonCharacterStateCreateError) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            child: const Text("Error"),
+            child: const Text("GameWidget - Error"),
           );
         } else if (state is DungeonCharacterStateCreated) {
           // ignore: avoid_unnecessary_containers

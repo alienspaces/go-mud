@@ -40,7 +40,7 @@ class MainApp extends StatelessWidget {
   MainApp({Key? key, required this.config, required this.repositories})
       : super(key: key);
 
-  final log = getLogger('MainApp');
+  final log = getLogger('MainApp', null);
 
   @override
   Widget build(BuildContext context) {

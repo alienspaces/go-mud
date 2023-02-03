@@ -188,7 +188,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   }
 
   void _selectTarget(BuildContext context, String target) {
-    final log = getLogger('GameLocationGridWidget');
+    final log = getLogger('GameLocationGridWidget', '_selectTarget');
     log.fine('Submitting move action..');
 
     final dungeonCharacterCubit =
@@ -212,7 +212,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationGridWidget');
+    final log = getLogger('GameLocationGridWidget', 'build');
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {

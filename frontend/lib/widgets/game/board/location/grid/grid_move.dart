@@ -65,7 +65,7 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
 
   @override
   void initState() {
-    final log = getLogger('GameLocationGridMoveWidget');
+    final log = getLogger('GameLocationGridMoveWidget', 'initState');
 
     if (!mounted) {
       log.info('+++ Not mounted, not initialising');
@@ -107,7 +107,7 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
 
   @override
   void dispose() {
-    final log = getLogger('GameLocationGridMoveWidget');
+    final log = getLogger('GameLocationGridMoveWidget', 'dispose');
 
     if (!mounted) {
       log.info('### Not mounted, not disposing');
@@ -121,7 +121,7 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationGridMoveWidget');
+    final log = getLogger('GameLocationGridMoveWidget', 'build');
 
     if (!mounted) {
       log.info('<<< Not mounted, not building grid..');

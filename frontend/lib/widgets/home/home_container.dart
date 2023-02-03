@@ -17,7 +17,7 @@ class HomeContainerWidget extends StatefulWidget {
 class _HomeContainerWidgetState extends State<HomeContainerWidget> {
   @override
   void initState() {
-    final log = getLogger('HomeContainerWidget');
+    final log = getLogger('HomeContainerWidget', 'initState');
     log.fine('Initialising state..');
 
     super.initState();
@@ -25,7 +25,7 @@ class _HomeContainerWidgetState extends State<HomeContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('HomeContainerWidget');
+    final log = getLogger('HomeContainerWidget', 'build');
     log.fine('Building..');
 
     // ignore: avoid_unnecessary_containers

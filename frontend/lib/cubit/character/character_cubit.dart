@@ -43,7 +43,7 @@ class CharacterCubit extends Cubit<CharacterState> {
   }
 
   Future<void> createCharacter(CreateCharacterRecord characterRecord) async {
-    final log = getLogger('CharacterCubit');
+    final log = getLogger('CharacterCubit', 'createCharacter');
     log.fine('Creating character $characterRecord');
 
     emit(const CharacterStateCreate());
@@ -81,7 +81,7 @@ class CharacterCubit extends Cubit<CharacterState> {
   }
 
   Future<void> loadCharacters() async {
-    final log = getLogger('CharacterCubit');
+    final log = getLogger('CharacterCubit', 'loadCharacters');
     log.fine('Loading characters...');
     emit(const CharacterStateLoading());
 
@@ -98,7 +98,7 @@ class CharacterCubit extends Cubit<CharacterState> {
   }
 
   Future<void> loadCharacter(String characterID) async {
-    final log = getLogger('CharacterCubit');
+    final log = getLogger('CharacterCubit', 'loadCharacter');
     log.fine('Creating character ID $characterID');
 
     emit(const CharacterStateLoading());

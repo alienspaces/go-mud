@@ -9,7 +9,7 @@ import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
 void selectAction(BuildContext context, String action) {
-  final log = getLogger('GameActionPanelWidget');
+  final log = getLogger('Cubit', 'selectAction');
   log.fine('Selecting action..');
 
   final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
@@ -31,7 +31,7 @@ void selectAction(BuildContext context, String action) {
 }
 
 void submitAction(BuildContext context) async {
-  final log = getLogger('GameActionPanelWidget');
+  final log = getLogger('Cubit', 'submitAction');
   log.fine('Submitting action..');
 
   final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);

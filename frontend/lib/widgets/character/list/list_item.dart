@@ -20,7 +20,7 @@ class CharacterListItemWidget extends StatelessWidget {
     BuildContext context,
     CharacterRecord characterRecord,
   ) async {
-    final log = getLogger('CharacterListItemWidget');
+    final log = getLogger('CharacterListItemWidget', '_selectCharacter');
     log.info(
         'Select character >${characterRecord.characterID}< >${characterRecord.characterName}< dungeon >${characterRecord.dungeonID}< >${characterRecord.dungeonName}<');
 
@@ -33,7 +33,7 @@ class CharacterListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterListItemWidget');
+    final log = getLogger('CharacterListItemWidget', 'build');
     log.info(
         'Display ${characterRecord.characterID} ${characterRecord.characterName}');
 

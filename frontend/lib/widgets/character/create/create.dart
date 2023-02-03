@@ -40,7 +40,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
   }
 
   void _createCharacter() {
-    final log = getLogger('CharacterCreateWidget');
+    final log = getLogger('CharacterCreateWidget', '_createCharacter');
     log.fine('Creating character name >${characterNameController.text}<');
     log.fine('Creating character strength >$strength<');
     log.fine('Creating character dexterity >$dexterity<');
@@ -107,7 +107,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterCreateWidget');
+    final log = getLogger('CharacterCreateWidget', 'build');
     log.fine('Building..');
 
     InputDecoration fieldDecoration(String hintText) {

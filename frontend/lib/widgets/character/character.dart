@@ -25,7 +25,7 @@ class CharacterContainerWidget extends StatefulWidget {
 class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterContainer');
+    final log = getLogger('CharacterContainerWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(

@@ -23,7 +23,7 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
   @override
   Future<DungeonActionRecord?> create(
       String dungeonID, String characterID, String sentence) async {
-    final log = getLogger('DungeonActionRepository');
+    final log = getLogger('DungeonActionRepository', 'create');
 
     var response = await api.createDungeonAction(
       dungeonID,

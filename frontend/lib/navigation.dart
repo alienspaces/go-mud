@@ -45,37 +45,37 @@ class _NavigationState extends State<Navigation> {
 
   // Callback functions set the desired page stack
   void openHomePage(BuildContext context) {
-    final log = getLogger('Navigation');
-    log.fine('(openHomePage) Opening home page..');
+    final log = getLogger('Navigation', 'openHomePage');
+    log.fine('Opening home page..');
     setState(() {
       _pageList = [HomePage.pageName];
     });
   }
 
   void openDungeonPage(BuildContext context) {
-    final log = getLogger('Navigation');
-    log.fine('(openDungeonPage) Opening dungeon page..');
+    final log = getLogger('Navigation', 'openDungeonPage');
+    log.fine('Opening dungeon page..');
     setState(() {
       _pageList = [DungeonPage.pageName];
     });
   }
 
   void openCharacterPage(BuildContext context) {
-    final log = getLogger('Navigation');
-    log.fine('(openCharacterPage) Opening character page..');
+    final log = getLogger('Navigation', 'openCharacterPage');
+    log.fine('Opening character page..');
     setState(() {
       _pageList = [CharacterPage.pageName];
     });
   }
 
   void openGamePage(BuildContext context) {
-    final log = getLogger('Navigation');
-    log.fine('(openGamePage) Opening game page..');
+    final log = getLogger('Navigation', 'openGamePage');
+    log.fine('Opening game page..');
 
     // Clear all dungeon actions
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     log.fine(
-        '(openGamePage) Dungeon action record count ${dungeonActionCubit.dungeonActionRecords.length}');
+        'Dungeon action record count ${dungeonActionCubit.dungeonActionRecords.length}');
     dungeonActionCubit.clearActions();
 
     setState(() {
@@ -84,7 +84,7 @@ class _NavigationState extends State<Navigation> {
   }
 
   List<Page<dynamic>> _pages(BuildContext context) {
-    final log = getLogger('Navigation - _pages');
+    final log = getLogger('Navigation', '_pages');
     log.fine('Building pages..');
 
     List<Page<dynamic>> pages = [];
@@ -122,7 +122,7 @@ class _NavigationState extends State<Navigation> {
   }
 
   bool _onPopPage(Route<dynamic> route, dynamic result, BuildContext context) {
-    final log = getLogger('Navigation - _onPopPage');
+    final log = getLogger('Navigation', '_onPopPage');
     log.fine('Page name ${route.settings.name}');
 
     if (!route.didPop(result)) {
@@ -134,7 +134,7 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('Navigation - build');
+    final log = getLogger('Navigation', 'build');
     log.fine('Building..');
     return Navigator(
       key: navigatorKey,

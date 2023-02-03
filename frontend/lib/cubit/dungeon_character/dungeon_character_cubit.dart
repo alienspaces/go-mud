@@ -21,7 +21,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   /// the character is currently inside a dungeon
   Future<DungeonCharacterRecord?> getDungeonCharacterRecord(
       String dungeonID, String characterID) async {
-    final log = getLogger('getDungeonCharacterRecordForCharacter');
+    final log = getLogger('DungeonCharacterCubit', 'getDungeonCharacterRecord');
 
     emit(DungeonCharacterStateLoading(characterID: characterID));
 
@@ -41,13 +41,24 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
 
   Future<void> enterDungeonCharacter(
       String dungeonID, String characterID) async {
-    final log = getLogger('DungeonCharacterCubit');
+    final log = getLogger('DungeonCharacterCubit', 'enterDungeonCharacter');
     log.info('Entering dungeon ID $dungeonID character ID $characterID');
 
     emit(const DungeonCharacterStateCreate());
 
     dungeonCharacterRecord =
         await getDungeonCharacterRecord(dungeonID, characterID);
+
+    if (dungeonCharacterRecord != null &&
+        dungeonCharacterRecord?.dungeonID == dungeonID &&
+        dungeonCharacterRecord?.characterID == characterID) {
+      log.info(
+          'Dungeon with character $dungeonCharacterRecord is already in this dungeon, resuming..');
+      emit(DungeonCharacterStateCreated(
+        dungeonCharacterRecord: dungeonCharacterRecord!,
+      ));
+      return;
+    }
 
     // Character already inside some other dungeon
     if (dungeonCharacterRecord != null) {
@@ -76,13 +87,14 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     if (dungeonCharacterRecord != null) {
       log.info('Entered dungeon with character $dungeonCharacterRecord');
       emit(DungeonCharacterStateCreated(
-          dungeonCharacterRecord: dungeonCharacterRecord!));
+        dungeonCharacterRecord: dungeonCharacterRecord!,
+      ));
     }
   }
 
   Future<void> exitDungeonCharacter(
       String dungeonID, String characterID) async {
-    final log = getLogger('DungeonCharacterCubit');
+    final log = getLogger('DungeonCharacterCubit', 'exitDungeonCharacter');
     log.info('Exiting dungeon ID $dungeonID character ID $characterID');
 
     emit(const DungeonCharacterStateDelete());

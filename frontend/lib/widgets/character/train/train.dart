@@ -51,7 +51,7 @@ class _CharacterTrainWidgetState extends State<CharacterTrainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterTrainWidget');
+    final log = getLogger('CharacterTrainWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(

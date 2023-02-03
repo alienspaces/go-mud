@@ -18,7 +18,7 @@ class MonsterButtonWidget extends StatefulWidget {
 class _MonsterButtonWidgetState extends State<MonsterButtonWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('MonsterButtonWidget');
+    final log = getLogger('MonsterButtonWidget', 'build');
     log.fine('Building..');
 
     return Container(

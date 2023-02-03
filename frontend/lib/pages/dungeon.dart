@@ -56,7 +56,7 @@ class DungeonScreen extends StatefulWidget {
 class _DungeonScreenState extends State<DungeonScreen> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('DungeonScreen');
+    final log = getLogger('DungeonScreen', 'build');
     log.fine('Building..');
 
     return Scaffold(

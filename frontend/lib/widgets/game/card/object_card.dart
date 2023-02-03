@@ -6,7 +6,7 @@ import 'package:go_mud_client/repository/repository.dart';
 
 void displayObjectCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
-  final log = getLogger('displayObjectCard');
+  final log = getLogger('Card', 'displayObjectCard');
 
   log.fine('Rendering look Object dialogue');
   Widget content = Container(

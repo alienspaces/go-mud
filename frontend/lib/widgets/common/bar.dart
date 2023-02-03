@@ -10,7 +10,7 @@ Widget bar(
   double? height,
   double? width,
 ) {
-  final log = getLogger('bar');
+  final log = getLogger('bar', null);
 
   height ??= 14;
   double widthFactor = currentValue / fullValue;

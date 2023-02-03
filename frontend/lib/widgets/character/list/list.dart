@@ -20,7 +20,7 @@ class CharacterListWidget extends StatefulWidget {
 class _CharacterListWidgetState extends State<CharacterListWidget> {
   @override
   void initState() {
-    final log = getLogger('CharacterListWidget');
+    final log = getLogger('CharacterListWidget', 'initState');
     log.fine('Initialising state..');
 
     super.initState();
@@ -29,7 +29,7 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
   }
 
   void _loadCharacters(BuildContext context) {
-    final log = getLogger('CharacterListWidget');
+    final log = getLogger('CharacterListWidget', '_loadCharacters');
     log.info('Loading characters');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
@@ -38,7 +38,7 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterListWidget');
+    final log = getLogger('CharacterListWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(

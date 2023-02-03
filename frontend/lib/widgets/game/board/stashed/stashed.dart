@@ -18,7 +18,7 @@ class GameStashedWidget extends StatefulWidget {
 class _GameStashedWidgetState extends State<GameStashedWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameStashedWidget');
+    final log = getLogger('GameStashedWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

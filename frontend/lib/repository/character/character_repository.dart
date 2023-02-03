@@ -27,7 +27,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
 
   @override
   Future<CharacterRecord?> createOne(CreateCharacterRecord createRecord) async {
-    final log = getLogger('CharacterRepository');
+    final log = getLogger('CharacterRepository', 'createOne');
     log.info('Creating character ${createRecord.characterName}');
 
     var response = await api.createCharacter(
@@ -66,7 +66,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
 
   @override
   Future<CharacterRecord?> getOne(String characterID) async {
-    final log = getLogger('CharacterRepository');
+    final log = getLogger('CharacterRepository', 'getOne');
 
     var response = await api.getCharacter(
       characterID,
@@ -97,7 +97,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
 
   @override
   Future<List<CharacterRecord>> getMany() async {
-    final log = getLogger('CharacterRepository');
+    final log = getLogger('CharacterRepository', 'getMany');
 
     var response = await api.getCharacters();
     if (response.error != null) {

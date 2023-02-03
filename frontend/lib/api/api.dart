@@ -19,7 +19,7 @@ class API {
   }
 
   Future<APIResponse> test() async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'test');
     final client = RetryClient(http.Client());
     log.warning('Testing _hostname $_hostname _port $_port');
 
@@ -47,7 +47,7 @@ class API {
   }
 
   Future<APIResponse> getDungeon(String dungeonID) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'getDungeon');
     final client = RetryClient(http.Client());
 
     http.Response? response;
@@ -78,7 +78,7 @@ class API {
   }
 
   Future<APIResponse> getDungeons() async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'getDungeons');
     final client = RetryClient(http.Client());
     http.Response? response;
     try {
@@ -113,7 +113,7 @@ class API {
     required int characterDexterity,
     required int characterIntelligence,
   }) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'createCharacter');
     final client = RetryClient(http.Client());
 
     http.Response? response;
@@ -164,7 +164,7 @@ class API {
   }
 
   Future<APIResponse> getCharacter(String characterID) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'getCharacter');
     final client = RetryClient(http.Client());
 
     http.Response? response;
@@ -204,7 +204,7 @@ class API {
   }
 
   Future<APIResponse> getCharacters() async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'getCharacters');
     final client = RetryClient(http.Client());
     http.Response? response;
     try {
@@ -242,7 +242,7 @@ class API {
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'enterDungeonCharacter');
     final client = RetryClient(http.Client());
 
     http.Response? response;
@@ -283,7 +283,7 @@ class API {
 
   Future<APIResponse> getDungeonCharacter(
       String dungeonID, String characterID) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'getDungeonCharacter');
     final client = RetryClient(http.Client());
 
     http.Response? response;
@@ -326,7 +326,7 @@ class API {
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'exitDungeonCharacter');
     final client = RetryClient(http.Client());
 
     http.Response? response;
@@ -365,7 +365,7 @@ class API {
     String characterID,
     String sentence,
   ) async {
-    final log = getLogger('API');
+    final log = getLogger('API', 'createDungeonAction');
     final client = RetryClient(http.Client());
 
     http.Response? response;

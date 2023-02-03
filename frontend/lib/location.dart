@@ -11,8 +11,11 @@ class LocationContent {
   int index;
   String name;
   ContentType type;
-  LocationContent(
-      {required this.index, required this.name, required this.type});
+  LocationContent({
+    required this.index,
+    required this.name,
+    required this.type,
+  });
 }
 
 Map<String, Map<int, LocationContent>> locationPopulatedByIndex = {};
@@ -20,7 +23,7 @@ Map<String, Map<String, int>> locationPopulatedByName = {};
 Map<String, List<int>> locationUnpopulated = {};
 
 Map<int, LocationContent> getLocationContents(LocationData locationData) {
-  final log = getLogger('GetLocationContents');
+  final log = getLogger('getLocationContents', null);
 
   Map<int, LocationContent> populatedByIndex =
       locationPopulatedByIndex[locationData.locationName] ?? {};

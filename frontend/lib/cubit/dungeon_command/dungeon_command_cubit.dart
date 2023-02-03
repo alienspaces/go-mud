@@ -23,7 +23,7 @@ class DungeonCommandCubit extends Cubit<DungeonCommandState> {
   }
 
   void unselectAll() {
-    final log = getLogger('DungeonCommandCubit');
+    final log = getLogger('DungeonCommandCubit', 'unselectAll');
     log.fine('Unselecting action >$action< and target >$target<');
     action = null;
     target = null;
@@ -31,14 +31,14 @@ class DungeonCommandCubit extends Cubit<DungeonCommandState> {
   }
 
   Future<void> selectAction(String selectAction) async {
-    final log = getLogger('DungeonCommandCubit');
+    final log = getLogger('DungeonCommandCubit', 'selectAction');
     log.fine('Selecting action >$selectAction<');
     action = selectAction;
     emit(DungeonCommandStatePreparing(action: action, target: target));
   }
 
   Future<void> unselectAction() async {
-    final log = getLogger('DungeonCommandCubit');
+    final log = getLogger('DungeonCommandCubit', 'unselectAction');
     log.fine('Unselecting action >$action<');
     action = null;
     target = null;
@@ -46,14 +46,14 @@ class DungeonCommandCubit extends Cubit<DungeonCommandState> {
   }
 
   Future<void> selectTarget(String selectTarget) async {
-    final log = getLogger('DungeonCommandCubit');
+    final log = getLogger('DungeonCommandCubit', 'selectTarget');
     log.fine('Selecting target >$selectTarget<');
     target = selectTarget;
     emit(DungeonCommandStatePreparing(action: action, target: target));
   }
 
   Future<void> unselectTarget() async {
-    final log = getLogger('DungeonCommandCubit');
+    final log = getLogger('DungeonCommandCubit', 'unselectTarget');
     log.fine('Unselecting target >$target<');
     target = null;
     emit(DungeonCommandStatePreparing(action: action, target: target));

@@ -9,7 +9,7 @@ import 'package:go_mud_client/widgets/game/card/equipped.dart';
 
 void displayCharacterCard(
     BuildContext context, DungeonActionRecord dungeonActionRecord) {
-  final log = getLogger('displayCharacterCard');
+  final log = getLogger('Card', 'displayCharacterCard');
 
   log.fine('Rendering look character dialogue');
 

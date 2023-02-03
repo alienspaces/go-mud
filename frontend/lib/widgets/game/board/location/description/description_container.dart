@@ -18,7 +18,7 @@ class _GameLocationDescriptionContainerWidgetState
     extends State<GameLocationDescriptionContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationDescriptionContainerWidget');
+    final log = getLogger('GameLocationDescriptionContainerWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

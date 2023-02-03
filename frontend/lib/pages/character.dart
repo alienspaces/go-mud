@@ -56,7 +56,7 @@ class CharacterScreen extends StatefulWidget {
 class _CharacterScreenState extends State<CharacterScreen> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterScreen');
+    final log = getLogger('CharacterScreen', 'build');
     log.fine('Building..');
 
     return Scaffold(
