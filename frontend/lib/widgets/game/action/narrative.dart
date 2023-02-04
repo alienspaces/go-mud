@@ -47,6 +47,15 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
           setState(() {
             lines.add(lineWidget);
           });
+        } else if (state is DungeonActionStateError) {
+          var lineWidget = GameActionNarrativeLineWidget(
+            key: UniqueKey(),
+            width: width,
+            line: state.message,
+          );
+          setState(() {
+            lines.add(lineWidget);
+          });
         }
       },
       builder: (BuildContext context, DungeonActionState state) {

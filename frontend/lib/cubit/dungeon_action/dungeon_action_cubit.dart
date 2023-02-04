@@ -34,6 +34,11 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
           .create(dungeonID, characterID, command);
     } catch (e) {
       log.warning('failed $e');
+      if (e is RepositoryException) {
+        emit(DungeonActionStateError(
+          message: e.message,
+        ));
+      }
     }
 
     log.info(

@@ -34,12 +34,23 @@ class DungeonActionStateCreating extends DungeonActionState {
 }
 
 @immutable
+class DungeonActionStateError extends DungeonActionState {
+  final String message;
+
+  const DungeonActionStateError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+@immutable
 class DungeonActionStateCreated extends DungeonActionState {
   final DungeonActionRecord current;
   final String action;
   final String? direction;
 
-  const DungeonActionStateCreated({required this.current, required this.action, this.direction});
+  const DungeonActionStateCreated(
+      {required this.current, required this.action, this.direction});
 
   @override
   List<Object?> get props => [current, action, direction];

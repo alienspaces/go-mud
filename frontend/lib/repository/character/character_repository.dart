@@ -55,7 +55,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
         log.fine('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
-          throw RecordCountException('Unexpected number of records returned');
+          throw RecordCountException('CharacterRecord');
         }
         record = CharacterRecord.fromJson(data[0]);
       }
