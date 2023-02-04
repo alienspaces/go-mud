@@ -70,7 +70,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
 	err = r.CreateOne(rec)
 	if err != nil {
-		if strings.Contains(err.Error(), "dungeon_character_name_key") {
+		if strings.Contains(err.Error(), "character_name_uq") {
 			return NewCharacterNameTakenError(rec)
 		}
 	}

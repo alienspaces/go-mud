@@ -21,9 +21,6 @@ class GameLocationDescriptionWidget extends StatefulWidget {
       _GameLocationDescriptionWidgetState();
 }
 
-typedef DungeonDescriptionMemberFunction = Widget Function(
-    DungeonActionRecord record, String key);
-
 class _GameLocationDescriptionWidgetState
     extends State<GameLocationDescriptionWidget> with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(

@@ -22,6 +22,14 @@ class BoardLocationWidget extends StatelessWidget {
       listener: (BuildContext context, DungeonActionState state) {
         log.fine('listener...');
       },
+      // Do not re-render the location grid when there is an error with
+      // submitted an action.
+      buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
+        if (currState is DungeonActionStateError) {
+          return false;
+        }
+        return true;
+      },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
 

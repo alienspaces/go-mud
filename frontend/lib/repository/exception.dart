@@ -13,9 +13,16 @@ class RepositoryException implements Exception {
         message = json['message'];
 }
 
-class DuplicateValueException extends RepositoryException {
-  DuplicateValueException(String code, String message) : super(code, message);
-  DuplicateValueException.fromJson(Map<String, dynamic> json)
+class ActionTooEarlyException extends RepositoryException {
+  ActionTooEarlyException(String code, String message) : super(code, message);
+  ActionTooEarlyException.fromJson(Map<String, dynamic> json)
+      : super.fromJson(json);
+}
+
+class DuplicateCharacterNameException extends RepositoryException {
+  DuplicateCharacterNameException(String code, String message)
+      : super(code, message);
+  DuplicateCharacterNameException.fromJson(Map<String, dynamic> json)
       : super.fromJson(json);
 }
 
@@ -32,15 +39,22 @@ class RecordEmptyException extends RepositoryException {
       : super.fromJson(json);
 }
 
-// Analyses the API error message string and return a specific error class
-RepositoryException resolveApiException(String message) {
-  Map<String, dynamic> json = jsonDecode(message);
+/// Examines the API error and return a specific error class
+RepositoryException resolveApiException(String jsonString) {
+  Map<String, dynamic> json = jsonDecode(jsonString);
 
-  // TODO: Specific error classes per error code we care about
-  if (message.contains(
-      'duplicate key value violates unique constraint \\"dungeon_character_name_key\\"')) {
-    var e = DuplicateValueException.fromJson(json);
-    e.message = 'Character name is taken, please try another.';
+  var code = json['code'];
+  var message = json['message'];
+
+  switch (code) {
+    case "character.name_taken":
+      {
+        return DuplicateCharacterNameException(code, message);
+      }
+    case "action.too_early":
+      {
+        return ActionTooEarlyException(code, message);
+      }
   }
 
   return RepositoryException.fromJson(json);

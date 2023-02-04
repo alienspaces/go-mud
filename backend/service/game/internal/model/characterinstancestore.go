@@ -23,7 +23,7 @@ func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*recor
 	}
 
 	if len(characterInstanceRecs) == 0 {
-		l.Warn("character with ID >%s< has no character instance record", characterID)
+		l.Info("character with ID >%s< has no character instance record", characterID)
 		return nil, nil
 	}
 

@@ -30,7 +30,7 @@ class CharacterCubit extends Cubit<CharacterState> {
     if (characterRecords == null) {
       return true;
     }
-    if (characterRecords != null && characterRecords!.length >= maxCharacters) {
+    if (characterRecords != null && characterRecords!.length <= maxCharacters) {
       return true;
     }
     return false;
@@ -64,8 +64,16 @@ class CharacterCubit extends Cubit<CharacterState> {
     try {
       createdCharacterRecord =
           await repositories.characterRepository.createOne(characterRecord);
-    } on RepositoryException catch (err) {
+    } on DuplicateCharacterNameException {
       log.warning('Throwing character create error');
+      emit(CharacterStateCreateError(
+        characterRecord: characterRecord,
+        message:
+            'Character name ${characterRecord.characterName} has been taken.',
+      ));
+      return;
+    } on RepositoryException catch (err) {
+      log.warning('Throwing character create error ${err.message}');
       emit(CharacterStateCreateError(
           characterRecord: characterRecord, message: err.message));
       return;

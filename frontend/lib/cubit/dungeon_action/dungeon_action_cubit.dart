@@ -32,13 +32,17 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     try {
       createdDungeonActionRecord = await repositories.dungeonActionRepository
           .create(dungeonID, characterID, command);
-    } catch (e) {
-      log.warning('failed $e');
-      if (e is RepositoryException) {
-        emit(DungeonActionStateError(
-          message: e.message,
-        ));
-      }
+    } on ActionTooEarlyException {
+      emit(const DungeonActionStateError(
+        message: 'Command too early, slow down...',
+      ));
+      return;
+    } on RepositoryException catch (err) {
+      log.warning('Throwing action state error ${err.message}');
+      emit(DungeonActionStateError(
+        message: err.message,
+      ));
+      return;
     }
 
     log.info(

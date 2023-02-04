@@ -25,8 +25,10 @@ class CharacterStateCreate extends CharacterState {
 class CharacterStateCreateError extends CharacterState {
   final CreateCharacterRecord characterRecord;
   final String message;
-  const CharacterStateCreateError(
-      {required this.characterRecord, required this.message});
+  const CharacterStateCreateError({
+    required this.characterRecord,
+    required this.message,
+  });
 
   @override
   List<Object> get props => [characterRecord, message];
