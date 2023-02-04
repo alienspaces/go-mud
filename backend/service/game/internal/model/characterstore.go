@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -67,7 +68,14 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 		return err
 	}
 
-	return r.CreateOne(rec)
+	err = r.CreateOne(rec)
+	if err != nil {
+		if strings.Contains(err.Error(), "dungeon_character_name_key") {
+			return NewCharacterNameTakenError(rec)
+		}
+	}
+
+	return nil
 }
 
 // UpdateCharacterRec -
