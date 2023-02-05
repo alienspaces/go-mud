@@ -29,19 +29,25 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
         return true;
       },
       builder: (BuildContext context, DungeonActionState state) {
-        if (state is DungeonActionStateCreated) {
+        List<Widget> widgets = [];
+
+        if (state is DungeonActionStateCreating) {
           log.info('dungeon state is created');
-          List<Widget> widgets = [];
+          var dungeonActionRecord = state.current;
+          if (dungeonActionRecord != null) {
+            widgets.add(GameLocationDescriptionWidget(
+              fade: DescriptionOpacity.fadeIn,
+              dungeonActionRecord: dungeonActionRecord,
+            ));
+          }
+        } else if (state is DungeonActionStateCreated) {
+          log.info('dungeon state is created');
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
             dungeonActionRecord: state.current,
           ));
-          return Stack(
-            children: widgets,
-          );
         } else if (state is DungeonActionStatePlaying) {
           log.info('dungeon state is playing');
-          List<Widget> widgets = [];
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeOut,
             dungeonActionRecord: state.previous,
@@ -50,11 +56,13 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
             fade: DescriptionOpacity.fadeIn,
             dungeonActionRecord: state.current,
           ));
-          return Stack(
-            children: widgets,
-          );
         }
-        return Container();
+
+        log.info('Rendering ${widgets.length} dungeon description widgets');
+
+        return Stack(
+          children: widgets,
+        );
       },
     );
   }

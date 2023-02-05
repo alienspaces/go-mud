@@ -61,7 +61,7 @@ class _GameWidgetState extends State<GameWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameWidget', 'build');
-    log.fine('Building..');
+    log.info('Building..');
 
     return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
       listener: (context, state) {

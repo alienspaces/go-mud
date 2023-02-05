@@ -91,7 +91,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     final log = getLogger('DungeonActionCubit', 'playAction');
 
     if (dungeonActionRecords.length < 2) {
-      log.fine('Not enough dungeon action records, not playing action');
+      log.info('Not enough dungeon action records, not playing action');
       return false;
     }
 

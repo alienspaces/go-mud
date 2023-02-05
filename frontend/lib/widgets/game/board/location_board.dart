@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-
 import 'package:go_mud_client/widgets/game/board/location/grid/grid.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_move.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_look.dart';
@@ -131,7 +129,7 @@ class BoardLocationWidget extends StatelessWidget {
           }
         }
 
-        log.fine('Rendering ${widgets.length} dungeon grid panels');
+        log.info('Rendering ${widgets.length} dungeon grid widgets');
 
         return Stack(
           clipBehavior: Clip.antiAlias,
