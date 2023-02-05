@@ -40,7 +40,6 @@ func TestGetOne(t *testing.T) {
 			params: func(d harness.Data) map[string]interface{} {
 				return nil
 			},
-			// TODO: 8-implement-turns: Complete query test
 			expectRecs: func(d harness.Data) []*record.DungeonEntityInstanceTurn {
 				dir, _ := d.GetDungeonInstanceRecByName(harness.DungeonNameCave)
 				cir, _ := d.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)

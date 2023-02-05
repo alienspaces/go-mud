@@ -28,8 +28,17 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 			return err
 		}
 	} else {
-		// TODO: 8-implement-turns: Validate turn duration
 		l.Debug("turn duration >%d", m.turnDuration)
+		currRec, err := m.GetTurnRec(rec.ID, false)
+		if err != nil {
+			l.Warn("failed getting existing turn record >%v<", err)
+			return err
+		}
+		if rec.TurnNumber != currRec.TurnNumber+1 {
+			err := fmt.Errorf("updated turn number >%d< is not an increment of current turn number >%d<", rec.TurnNumber, currRec.TurnNumber)
+			l.Warn(err.Error())
+			return err
+		}
 	}
 
 	if rec.DungeonInstanceID == "" {
