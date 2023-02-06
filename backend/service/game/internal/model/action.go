@@ -7,10 +7,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// TODO: 8-implement-turns: check whether the character can perform a turn
-// yet based on what the current turn is and whether the character already
-// has a processed action for the current turn.
-
 type EntityType string
 
 const EntityTypeMonster EntityType = "monster"
