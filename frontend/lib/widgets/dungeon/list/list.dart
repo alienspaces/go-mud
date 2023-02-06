@@ -20,18 +20,18 @@ class DungeonListWidget extends StatefulWidget {
 class _DungeonListWidgetState extends State<DungeonListWidget> {
   @override
   void initState() {
-    final log = getLogger('DungeonListWidget');
+    final log = getLogger('DungeonListWidget', 'initState');
     log.fine('Initialising state..');
 
     super.initState();
 
-    // TODO: Verify we have a current character and navigate when not.
+    // TODO: (client) Verify we have a current character and navigate when not.
 
     _loadDungeons(context);
   }
 
   void _loadDungeons(BuildContext context) {
-    final log = getLogger('DungeonListWidget');
+    final log = getLogger('DungeonListWidget', '_loadDungeons');
     log.fine('Loading dungeons');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -40,7 +40,7 @@ class _DungeonListWidgetState extends State<DungeonListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('DungeonListWidget');
+    final log = getLogger('DungeonListWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonCubit, DungeonState>(

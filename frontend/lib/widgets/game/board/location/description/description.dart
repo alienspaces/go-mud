@@ -21,9 +21,6 @@ class GameLocationDescriptionWidget extends StatefulWidget {
       _GameLocationDescriptionWidgetState();
 }
 
-typedef DungeonDescriptionMemberFunction = Widget Function(
-    DungeonActionRecord record, String key);
-
 class _GameLocationDescriptionWidgetState
     extends State<GameLocationDescriptionWidget> with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
@@ -45,7 +42,7 @@ class _GameLocationDescriptionWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationDescriptionWidget');
+    final log = getLogger('GameLocationDescriptionWidget', 'build');
     log.fine('Building.. ${widget.fade}');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

@@ -11,7 +11,7 @@ void displayMonsterCard(
   BuildContext context,
   DungeonActionRecord dungeonActionRecord,
 ) {
-  final log = getLogger('displayMonsterCard');
+  final log = getLogger('Card', 'displayMonsterCard');
 
   log.info(
     'Rendering look monster dialogue',

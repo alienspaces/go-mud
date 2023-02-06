@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 )
 
 // Authen -
@@ -29,7 +29,7 @@ func (rnr *Runner) Authen(hc HandlerConfig, h Handle) (Handle, error) {
 			return rnr.handleAuthByAPIKey(w, r, pp, qp, l, m, h, apiKey.String())
 		}
 
-		err := coreerror.NewUnauthenticatedError("X-Authorization header value is missing or invalid.")
+		err := coreerror.NewClientUnauthenticatedError("X-Authorization header value is missing or invalid.")
 		l.Warn(err.Error())
 		WriteError(l, w, err)
 
@@ -60,7 +60,7 @@ func (rnr *Runner) handleAuthByAPIKey(w http.ResponseWriter, r *http.Request, pp
 	}
 
 	m.Rollback()
-	err = coreerror.NewUnauthenticatedError("X-Authorization header API key is missing or invalid.")
+	err = coreerror.NewClientUnauthenticatedError("X-Authorization header API key is missing or invalid.")
 	WriteError(l, w, err)
 	return err
 }

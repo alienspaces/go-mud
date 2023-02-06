@@ -5,14 +5,14 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 	putCharacter  server.HandlerConfigKey = "put-character"
 )
 
-// TODO: Add character instance data to all responses as there may only be a single
+// TODO: (game) Add character instance data to all responses as there may only be a single
 // character instance.
 func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
 
@@ -127,7 +127,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 
 // GetCharacterHandler -
 func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "GetCharacterHandler")
+	l = loggerWithContext(l, "GetCharacterHandler")
 	l.Info("** Get character handler **")
 
 	var recs []*record.Character
@@ -137,11 +137,11 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	characterID := pp.ByName("character_id")
 
 	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamInvalidTypeError("character_id", characterID)
+		err := coreerror.NewValidationPathParamTypeError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -157,7 +157,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -176,7 +176,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		}
 
 		// Response data
-		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
+		responseData, err := characterResponseData(l, rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -200,7 +200,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 // GetCharactersHandler -
 func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "GetCharactersHandler")
+	l = loggerWithContext(l, "GetCharactersHandler")
 	l.Info("** Get characters handler **")
 
 	var recs []*record.Character
@@ -234,7 +234,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 		}
 
 		// Response data
-		responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
+		responseData, err := characterResponseData(l, rec, instanceViewRecordSet)
 		if err != nil {
 			server.WriteError(l, w, err)
 			return err
@@ -260,7 +260,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 
 // PostCharacterHandler -
 func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "PostCharacterHandler")
+	l = loggerWithContext(l, "PostCharacterHandler")
 	l.Info("** Post character handler **")
 
 	req := schema.CharacterRequest{}
@@ -295,7 +295,7 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(rec, instanceViewRecordSet)
+	responseData, err := characterResponseData(l, &rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -321,18 +321,18 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 
 // PutCharactersHandler -
 func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "PutCharacterHandler")
+	l = loggerWithContext(l, "PutCharacterHandler")
 	l.Info("** Put character handler **")
 
 	// Path parameters
 	id := pp.ByName("character_id")
 
 	if id == "" {
-		err := coreerror.NewNotFoundError("character", id)
+		err := coreerror.NewResourceNotFoundError("character", id)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamInvalidTypeError("character_id", id)
+		err := coreerror.NewValidationPathParamTypeError("character_id", id)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -347,7 +347,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("character", id)
+		err := coreerror.NewResourceNotFoundError("character", id)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -381,7 +381,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	}
 
 	// Response data
-	responseData, err := rnr.CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(*rec, instanceViewRecordSet)
+	responseData, err := characterResponseData(l, rec, instanceViewRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

@@ -30,7 +30,7 @@ class CharacterCubit extends Cubit<CharacterState> {
     if (characterRecords == null) {
       return true;
     }
-    if (characterRecords != null && characterRecords!.length >= maxCharacters) {
+    if (characterRecords != null && characterRecords!.length <= maxCharacters) {
       return true;
     }
     return false;
@@ -43,7 +43,7 @@ class CharacterCubit extends Cubit<CharacterState> {
   }
 
   Future<void> createCharacter(CreateCharacterRecord characterRecord) async {
-    final log = getLogger('CharacterCubit');
+    final log = getLogger('CharacterCubit', 'createCharacter');
     log.fine('Creating character $characterRecord');
 
     emit(const CharacterStateCreate());
@@ -64,8 +64,16 @@ class CharacterCubit extends Cubit<CharacterState> {
     try {
       createdCharacterRecord =
           await repositories.characterRepository.createOne(characterRecord);
-    } on RepositoryException catch (err) {
+    } on DuplicateCharacterNameException {
       log.warning('Throwing character create error');
+      emit(CharacterStateCreateError(
+        characterRecord: characterRecord,
+        message:
+            'Character name ${characterRecord.characterName} has been taken.',
+      ));
+      return;
+    } on RepositoryException catch (err) {
+      log.warning('Throwing character create error ${err.message}');
       emit(CharacterStateCreateError(
           characterRecord: characterRecord, message: err.message));
       return;
@@ -81,7 +89,7 @@ class CharacterCubit extends Cubit<CharacterState> {
   }
 
   Future<void> loadCharacters() async {
-    final log = getLogger('CharacterCubit');
+    final log = getLogger('CharacterCubit', 'loadCharacters');
     log.fine('Loading characters...');
     emit(const CharacterStateLoading());
 
@@ -98,7 +106,7 @@ class CharacterCubit extends Cubit<CharacterState> {
   }
 
   Future<void> loadCharacter(String characterID) async {
-    final log = getLogger('CharacterCubit');
+    final log = getLogger('CharacterCubit', 'loadCharacter');
     log.fine('Creating character ID $characterID');
 
     emit(const CharacterStateLoading());

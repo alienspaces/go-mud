@@ -1,54 +1,65 @@
 package model
 
 import (
+	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/jmoiron/sqlx"
-	"gitlab.com/alienspaces/go-mud/server/core/type/querier"
 
-	"gitlab.com/alienspaces/go-mud/server/core/model"
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/repositor"
-	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/backend/core/model"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/repositor"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/query/dungeoninstancecapacity"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/action"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actioncharacter"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actioncharacterobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actionmonster"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actionmonsterobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/actionobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/character"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterinstance"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterinstanceview"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/characterobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeon"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoninstance"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/dungeoninstanceview"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/location"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstance"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationinstanceview"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationmonster"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/locationobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monster"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monsterinstance"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monsterinstanceview"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/monsterobject"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/object"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/objectinstance"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/repository/objectinstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/config"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeonentityinstanceturn"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeoninstancecapacity"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/action"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actioncharacter"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actioncharacterobject"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actionmonster"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actionmonsterobject"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actionobject"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/character"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/characterinstance"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/characterinstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/characterobject"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/dungeon"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/dungeoninstance"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/dungeoninstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/location"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/locationinstance"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/locationinstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/locationmonster"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/locationobject"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monster"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterinstance"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterinstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterobject"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/object"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/objectinstance"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/objectinstanceview"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/turn"
 )
 
 // Model -
 type Model struct {
+	turnDuration time.Duration
 	model.Model
 }
+
+var _ modeller.Modeller = &Model{}
 
 // NewModel -
 func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model, error) {
 
 	m := &Model{
-		model.Model{
+		Model: model.Model{
 			Config: c,
 			Log:    l,
 			Store:  s,
@@ -57,6 +68,17 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 
 	m.RepositoriesFunc = m.NewRepositories
 	m.QueriesFunc = m.NewQueries
+
+	turnDuration, err := strconv.Atoi(c.Get(config.AppServerTurnDuration))
+	if err != nil {
+		return nil, err
+	}
+	if turnDuration == 0 {
+		err := fmt.Errorf("missing configuration variable >%s<", config.AppServerTurnDuration)
+		return nil, err
+	}
+
+	m.turnDuration = time.Duration(turnDuration) * time.Millisecond
 
 	return m, nil
 }
@@ -71,6 +93,13 @@ func (m *Model) NewQueries(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, er
 		return nil, err
 	}
 	queryList = append(queryList, dungeonInstanceCapacityQuery)
+
+	dungeonEntityInstanceTurnQuery, err := dungeonentityinstanceturn.NewQuery(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed new dungeon entity instance turn query >%v<", err)
+		return nil, err
+	}
+	queryList = append(queryList, dungeonEntityInstanceTurnQuery)
 
 	return queryList, nil
 }
@@ -213,19 +242,19 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, objectInstanceViewRepo)
 
-	dungeonActionRepo, err := action.NewRepository(m.Log, p, tx)
+	actionRepo, err := action.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionRepo)
+	repositoryList = append(repositoryList, actionRepo)
 
-	dungeonActionCharacterRepo, err := actioncharacter.NewRepository(m.Log, p, tx)
+	actionCharacterRepo, err := actioncharacter.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action character repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionCharacterRepo)
+	repositoryList = append(repositoryList, actionCharacterRepo)
 
 	dungeonActionCharacterObjectRepo, err := actioncharacterobject.NewRepository(m.Log, p, tx)
 	if err != nil {
@@ -234,26 +263,33 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, dungeonActionCharacterObjectRepo)
 
-	dungeonActionMonsterRepo, err := actionmonster.NewRepository(m.Log, p, tx)
+	actionMonsterRepo, err := actionmonster.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionMonsterRepo)
+	repositoryList = append(repositoryList, actionMonsterRepo)
 
-	dungeonActionMonsterObjectRepo, err := actionmonsterobject.NewRepository(m.Log, p, tx)
+	actionMonsterObjectRepo, err := actionmonsterobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action monster object repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionMonsterObjectRepo)
+	repositoryList = append(repositoryList, actionMonsterObjectRepo)
 
-	dungeonActionObjectRepo, err := actionobject.NewRepository(m.Log, p, tx)
+	actionObjectRepo, err := actionobject.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new dungeon action object repository >%v<", err)
 		return nil, err
 	}
-	repositoryList = append(repositoryList, dungeonActionObjectRepo)
+	repositoryList = append(repositoryList, actionObjectRepo)
+
+	turnRepo, err := turn.NewRepository(m.Log, p, tx)
+	if err != nil {
+		m.Log.Warn("Failed turn repository >%v<", err)
+		return nil, err
+	}
+	repositoryList = append(repositoryList, turnRepo)
 
 	return repositoryList, nil
 }
@@ -558,6 +594,18 @@ func (m *Model) ActionObjectRepository() *actionobject.Repository {
 	return r.(*actionobject.Repository)
 }
 
+// TurnRepository -
+func (m *Model) TurnRepository() *turn.Repository {
+
+	r := m.Repositories[turn.TableName]
+	if r == nil {
+		m.Log.Warn("Repository >%s< is nil", turn.TableName)
+		return nil
+	}
+
+	return r.(*turn.Repository)
+}
+
 // DungeonInstanceCapacityQuery -
 func (m *Model) DungeonInstanceCapacityQuery() *dungeoninstancecapacity.Query {
 
@@ -568,6 +616,18 @@ func (m *Model) DungeonInstanceCapacityQuery() *dungeoninstancecapacity.Query {
 	}
 
 	return q.(*dungeoninstancecapacity.Query)
+}
+
+// DungeonEntityInstanceTurnQuery -
+func (m *Model) DungeonEntityInstanceTurnQuery() *dungeonentityinstanceturn.Query {
+
+	q := m.Queries[dungeonentityinstanceturn.QueryName]
+	if q == nil {
+		m.Log.Warn("Query >%s< is nil", dungeonentityinstanceturn.QueryName)
+		return nil
+	}
+
+	return q.(*dungeonentityinstanceturn.Query)
 }
 
 // Logger -

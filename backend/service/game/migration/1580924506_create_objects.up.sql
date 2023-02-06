@@ -317,128 +317,16 @@ CREATE TABLE "object_instance" (
   )
 );
 
--- --
--- -- Views
--- --
-
--- view dungeon_instance_view
-CREATE OR REPLACE VIEW "dungeon_instance_view" AS
-SELECT 
-  di.id,
-  di.dungeon_id,
-  d.name,
-  d.description,
-  di.created_at,
-  di.updated_at,
-  di.deleted_at
-FROM "dungeon_instance" di
-JOIN "dungeon" d on d.id = di.dungeon_id
-;
-
--- view location_instance_view
-CREATE OR REPLACE VIEW "location_instance_view" AS
-SELECT 
-  li.id,
-  l.dungeon_id,
-  li.location_id,
-  li.dungeon_instance_id,
-  l.name,
-  l.description,
-  l.is_default,
-  li.north_location_instance_id,
-  li.northeast_location_instance_id,
-  li.east_location_instance_id,
-  li.southeast_location_instance_id,
-  li.south_location_instance_id,
-  li.southwest_location_instance_id,
-  li.west_location_instance_id,
-  li.northwest_location_instance_id,
-  li.up_location_instance_id,
-  li.down_location_instance_id,  
-  li.created_at,
-  li.updated_at,
-  li.deleted_at
-FROM "location_instance" li
-JOIN "location" l on l.id = li.location_id
-;
-
--- view character_instance_view
-CREATE OR REPLACE VIEW "character_instance_view" AS
-SELECT 
-  ci.id,
-  ci.character_id,
-  ci.dungeon_instance_id,
-  ci.location_instance_id,
-  c.name,
-  c.strength,
-  c.dexterity,
-  c.intelligence,
-  ci.strength     as "current_strength",
-  ci.dexterity    as "current_dexterity",
-  ci.intelligence as "current_intelligence",
-  c.health,
-  c.fatigue,
-  ci.health  as "current_health",
-  ci.fatigue as "current_fatigue",
-  ci.coins,
-  ci.experience_points,
-  ci.attribute_points,
-  ci.created_at,
-  ci.updated_at,
-  ci.deleted_at
-FROM "character_instance" ci
-JOIN "character" c on c.id = ci.character_id
-;
-
--- view monster_instance_view
-CREATE OR REPLACE VIEW "monster_instance_view" AS
-SELECT 
-  mi.id,
-  mi.monster_id,
-  mi.dungeon_instance_id,
-  mi.location_instance_id,
-  m.name,
-  m.strength,
-  m.dexterity,
-  m.intelligence,
-  mi.strength     as "current_strength",
-  mi.dexterity    as "current_dexterity",
-  mi.intelligence as "current_intelligence",
-  m.health,
-  m.fatigue,
-  mi.health  as "current_health",
-  mi.fatigue as "current_fatigue",
-  mi.coins,
-  mi.experience_points,
-  mi.attribute_points,
-  mi.created_at,
-  mi.updated_at,
-  mi.deleted_at
-FROM "monster_instance" mi
-JOIN "monster" m on m.id = mi.monster_id
-;
-
-
--- view object_instance_view
-CREATE OR REPLACE VIEW "object_instance_view" AS
-SELECT 
-  oi.id,
-  oi.object_id,
-  oi.dungeon_instance_id,
-  oi.location_instance_id,
-  oi.character_instance_id,
-  oi.monster_instance_id,
-  o.name,
-  o.description,
-  o.description_detailed,
-  oi.is_stashed,
-  oi.is_equipped,
-  oi.created_at,
-  oi.updated_at,
-  oi.deleted_at
-FROM "object_instance" oi
-JOIN "object" o on o.id = oi.object_id
-;
+CREATE TABLE "turn" (
+  "id"                  uuid CONSTRAINT turn_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "dungeon_instance_id" uuid NOT NULL,
+  "turn_number"         integer NOT NULL DEFAULT 1,
+  "incremented_at"      timestamp WITH TIME ZONE, 
+  "created_at"          timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at"          timestamp WITH TIME ZONE,
+  "deleted_at"          timestamp WITH TIME ZONE,
+  CONSTRAINT "turn_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id)
+);
 
 -- --
 -- -- Actions
@@ -446,21 +334,22 @@ JOIN "object" o on o.id = oi.object_id
 
 -- table action
 CREATE TABLE "action" (
-  "id"                                           uuid CONSTRAINT action_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "dungeon_instance_id"                          uuid NOT NULL,
-  "location_instance_id"                         uuid NOT NULL,
-  "character_instance_id"                        uuid,
-  "monster_instance_id"                          uuid,
-  "serial_id"                                    SERIAL,
-  "resolved_command"                             text NOT NULL,
-  "resolved_equipped_object_instance_id"         uuid,
-  "resolved_stashed_object_instance_id"          uuid,
-  "resolved_dropped_object_instance_id"          uuid,
-  "resolved_target_object_instance_id"           uuid,
-  "resolved_target_character_instance_id"        uuid,
-  "resolved_target_monster_instance_id"          uuid,
-  "resolved_target_location_direction"   text,
-  "resolved_target_location_instance_id" uuid,
+  "id"                                     uuid CONSTRAINT action_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "dungeon_instance_id"                    uuid NOT NULL,
+  "location_instance_id"                   uuid NOT NULL,
+  "character_instance_id"                  uuid,
+  "monster_instance_id"                    uuid,
+  "serial_number"                          SERIAL,
+  "turn_number"                            integer NOT NULL DEFAULT 0,
+  "resolved_command"                       text NOT NULL,
+  "resolved_equipped_object_instance_id"   uuid,
+  "resolved_stashed_object_instance_id"    uuid,
+  "resolved_dropped_object_instance_id"    uuid,
+  "resolved_target_object_instance_id"     uuid,
+  "resolved_target_character_instance_id"  uuid,
+  "resolved_target_monster_instance_id"    uuid,
+  "resolved_target_location_direction"     text,
+  "resolved_target_location_instance_id"   uuid,
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
@@ -485,6 +374,11 @@ CREATE TABLE "action" (
     num_nonnulls(resolved_target_object_instance_id, resolved_target_character_instance_id, resolved_target_monster_instance_id, resolved_target_location_instance_id) = 1
   )
 );
+
+CREATE INDEX action_dungeon_instance_id_idx ON action(dungeon_instance_id);
+CREATE INDEX action_location_instance_id_idx ON action(location_instance_id);
+CREATE INDEX action_character_instance_id_idx ON action(character_instance_id);
+CREATE INDEX action_monster_instance_id_idx ON action(monster_instance_id);
 
 -- table action_character
 CREATE TABLE "action_character" (
@@ -605,5 +499,179 @@ CREATE TABLE "action_object" (
     record_type = 'dropped' OR 
     record_type = 'target' OR 
     record_type = 'occupant'
+  )
+);
+
+-- --
+-- -- Views
+-- --
+
+-- view dungeon_instance_view
+CREATE OR REPLACE VIEW "dungeon_instance_view" AS
+SELECT 
+  di.id,
+  di.dungeon_id,
+  d.name,
+  d.description,
+  di.created_at,
+  di.updated_at,
+  di.deleted_at
+FROM "dungeon_instance" di
+JOIN "dungeon" d on d.id = di.dungeon_id
+;
+
+-- view location_instance_view
+CREATE OR REPLACE VIEW "location_instance_view" AS
+SELECT 
+  li.id,
+  l.dungeon_id,
+  li.location_id,
+  li.dungeon_instance_id,
+  l.name,
+  l.description,
+  l.is_default,
+  li.north_location_instance_id,
+  li.northeast_location_instance_id,
+  li.east_location_instance_id,
+  li.southeast_location_instance_id,
+  li.south_location_instance_id,
+  li.southwest_location_instance_id,
+  li.west_location_instance_id,
+  li.northwest_location_instance_id,
+  li.up_location_instance_id,
+  li.down_location_instance_id,  
+  li.created_at,
+  li.updated_at,
+  li.deleted_at
+FROM "location_instance" li
+JOIN "location" l on l.id = li.location_id
+;
+
+-- view character_instance_view
+CREATE OR REPLACE VIEW "character_instance_view" AS
+SELECT 
+  ci.id,
+  ci.character_id,
+  ci.dungeon_instance_id,
+  ci.location_instance_id,
+  c.name,
+  c.strength,
+  c.dexterity,
+  c.intelligence,
+  ci.strength     as "current_strength",
+  ci.dexterity    as "current_dexterity",
+  ci.intelligence as "current_intelligence",
+  c.health,
+  c.fatigue,
+  ci.health  as "current_health",
+  ci.fatigue as "current_fatigue",
+  ci.coins,
+  ci.experience_points,
+  ci.attribute_points,
+  ci.created_at,
+  ci.updated_at,
+  ci.deleted_at
+FROM "character_instance" ci
+JOIN "character" c on c.id = ci.character_id
+;
+
+-- view monster_instance_view
+CREATE OR REPLACE VIEW "monster_instance_view" AS
+SELECT 
+  mi.id,
+  mi.monster_id,
+  mi.dungeon_instance_id,
+  mi.location_instance_id,
+  m.name,
+  m.strength,
+  m.dexterity,
+  m.intelligence,
+  mi.strength     as "current_strength",
+  mi.dexterity    as "current_dexterity",
+  mi.intelligence as "current_intelligence",
+  m.health,
+  m.fatigue,
+  mi.health  as "current_health",
+  mi.fatigue as "current_fatigue",
+  mi.coins,
+  mi.experience_points,
+  mi.attribute_points,
+  mi.created_at,
+  mi.updated_at,
+  mi.deleted_at
+FROM "monster_instance" mi
+JOIN "monster" m on m.id = mi.monster_id
+;
+
+-- view object_instance_view
+CREATE OR REPLACE VIEW "object_instance_view" AS
+SELECT 
+  oi.id,
+  oi.object_id,
+  oi.dungeon_instance_id,
+  oi.location_instance_id,
+  oi.character_instance_id,
+  oi.monster_instance_id,
+  o.name,
+  o.description,
+  o.description_detailed,
+  oi.is_stashed,
+  oi.is_equipped,
+  oi.created_at,
+  oi.updated_at,
+  oi.deleted_at
+FROM "object_instance" oi
+JOIN "object" o on o.id = oi.object_id
+;
+
+CREATE VIEW dungeon_entity_instance_turn_view AS (
+  SELECT 
+     a1.dungeon_instance_id,
+     d.name as "dungeon_name",
+     t.turn_number as "dungeon_instance_turn_number",
+     'character' as "entity_type",
+     a1.character_instance_id as "entity_instance_id",
+     c.name as "entity_name",
+     a1.turn_number as "entity_instance_turn_number"
+  FROM action a1
+  JOIN dungeon_instance di ON
+     di.id = a1.dungeon_instance_id
+  JOIN dungeon d ON
+     d.id = di.dungeon_id
+  JOIN turn t ON
+     t.dungeon_instance_id = di.id
+  JOIN character_instance ci ON
+     ci.id = a1.character_instance_id
+  JOIN character c ON
+     c.id = ci.character_id    
+  WHERE a1.serial_number = (
+     SELECT max(a2.serial_number)
+     FROM action a2 
+     WHERE a2.character_instance_id = a1.character_instance_id
+  )
+  UNION
+  SELECT 
+     a1.dungeon_instance_id,
+     d.name as "dungeon_name",
+     t.turn_number as "dungeon_instance_turn_number",
+     'monster' as "entity_type",
+     a1.monster_instance_id as "entity_instance_id",
+     m.name as "entity_name",
+     a1.turn_number as "entity_instance_turn_number"
+  FROM action a1
+  JOIN dungeon_instance di ON
+    di.id = a1.dungeon_instance_id
+  JOIN dungeon d ON
+    d.id = di.dungeon_id
+  JOIN turn t ON
+    t.dungeon_instance_id = di.id
+  JOIN monster_instance mi ON
+    mi.id = a1.monster_instance_id
+  JOIN monster m ON
+    m.id = mi.monster_id    
+  WHERE a1.serial_number = (
+    SELECT max(a2.serial_number)
+    FROM action a2 
+    WHERE a2.monster_instance_id = a1.monster_instance_id
   )
 );

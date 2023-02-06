@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 )
 
 func TestSetupTeardown(t *testing.T) {

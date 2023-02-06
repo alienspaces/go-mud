@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 
 class CharacterListItemWidget extends StatelessWidget {
@@ -21,7 +20,7 @@ class CharacterListItemWidget extends StatelessWidget {
     BuildContext context,
     CharacterRecord characterRecord,
   ) async {
-    final log = getLogger('CharacterListItemWidget');
+    final log = getLogger('CharacterListItemWidget', '_selectCharacter');
     log.info(
         'Select character >${characterRecord.characterID}< >${characterRecord.characterName}< dungeon >${characterRecord.dungeonID}< >${characterRecord.dungeonName}<');
 
@@ -34,7 +33,7 @@ class CharacterListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterListItemWidget');
+    final log = getLogger('CharacterListItemWidget', 'build');
     log.info(
         'Display ${characterRecord.characterID} ${characterRecord.characterName}');
 
@@ -43,7 +42,7 @@ class CharacterListItemWidget extends StatelessWidget {
       textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
     );
 
-    // TODO: When the character is already in a dungeon display the dungeon
+    // TODO: (client) When the character is already in a dungeon display the dungeon
     // information, the play button should also just drop the player
     // straight into the game without choosing the dungeon to play in..
     List<Widget> actionWidgets = <Widget>[

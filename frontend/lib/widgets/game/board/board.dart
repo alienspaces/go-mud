@@ -40,7 +40,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     BuildContext context,
     BoardButtonType boardButtonType,
   ) {
-    final log = getLogger('buildBoardButton');
+    final log = getLogger('GameBoardWidget', 'buildBoardButton');
     log.fine('Building..');
 
     return LayoutBuilder(
@@ -78,7 +78,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   Widget buildBoardPanel(BuildContext context, {required Widget panel}) {
-    final log = getLogger('buildBoardPanel');
+    final log = getLogger('GameBoardWidget', 'buildBoardPanel');
     log.fine('Building..');
 
     return LayoutBuilder(
@@ -115,7 +115,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameBoardWidget');
+    final log = getLogger('GameBoardWidget', 'build');
     log.fine('Building..');
 
     return Row(

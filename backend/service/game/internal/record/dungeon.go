@@ -1,7 +1,7 @@
 package record
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 )
 
 // Repository record types
@@ -21,12 +21,4 @@ type DungeonInstanceView struct {
 	Name        string `db:"name"`
 	Description string `db:"description"`
 	repository.Record
-}
-
-// Query record types
-type DungeonInstanceCapacity struct {
-	DungeonInstanceID             string `db:"dungeon_instance_id"`
-	DungeonInstanceCharacterCount int    `db:"dungeon_instance_character_count"`
-	DungeonID                     string `db:"dungeon_id"`
-	DungeonLocationCount          int    `db:"dungeon_location_count"`
 }

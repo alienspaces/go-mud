@@ -1,4 +1,4 @@
-module gitlab.com/alienspaces/go-mud/server/service/template
+module gitlab.com/alienspaces/go-mud/backend/service/template
 
 go 1.18
 
@@ -8,8 +8,8 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/cli/v2 v2.3.0
-	gitlab.com/alienspaces/go-mud/server/core v1.0.0
-	gitlab.com/alienspaces/go-mud/server/schema v1.0.0
+	gitlab.com/alienspaces/go-mud/backend/core v1.0.0
+	gitlab.com/alienspaces/go-mud/backend/schema v1.0.0
 )
 
 require (
@@ -30,8 +30,8 @@ require (
 )
 
 replace (
-	gitlab.com/alienspaces/go-mud/server/constant => ../../constant
-	gitlab.com/alienspaces/go-mud/server/core => ../../core
-	gitlab.com/alienspaces/go-mud/server/schema => ../../schema
-	gitlab.com/alienspaces/go-mud/server/service/template => ../../service/template
+	gitlab.com/alienspaces/go-mud/backend/constant => ../../constant
+	gitlab.com/alienspaces/go-mud/backend/core => ../../core
+	gitlab.com/alienspaces/go-mud/backend/schema => ../../schema
+	gitlab.com/alienspaces/go-mud/backend/service/template => ../../service/template
 )

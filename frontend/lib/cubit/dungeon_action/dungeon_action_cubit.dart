@@ -20,36 +20,49 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
 
   Future<void> createAction(
       String dungeonID, String characterID, String command) async {
-    final log = getLogger('DungeonActionCubit');
-    log.fine('(createAction) Creating dungeon action command >$command<');
+    final log = getLogger('DungeonActionCubit', 'createAction');
+    log.fine('Creating dungeon action command >$command<');
 
     emit(DungeonActionStateCreating(
       sentence: command,
       current: dungeonActionRecord,
     ));
 
-    DungeonActionRecord? createdDungeonActionRecord = await repositories
-        .dungeonActionRepository
-        .create(dungeonID, characterID, command);
+    DungeonActionRecord? createdDungeonActionRecord;
+    try {
+      createdDungeonActionRecord = await repositories.dungeonActionRepository
+          .create(dungeonID, characterID, command);
+    } on ActionTooEarlyException {
+      emit(const DungeonActionStateError(
+        message: 'Command too early, slow down...',
+      ));
+      return;
+    } on RepositoryException catch (err) {
+      log.warning('Throwing action state error ${err.message}');
+      emit(DungeonActionStateError(
+        message: err.message,
+      ));
+      return;
+    }
 
     log.info(
-        '(createAction) location ${createdDungeonActionRecord?.actionLocation.locationName}');
+        'location ${createdDungeonActionRecord?.actionLocation.locationName}');
 
     if (createdDungeonActionRecord?.actionTargetLocation != null) {
       log.info(
-          '(createAction) targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
+          'targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
     }
     if (createdDungeonActionRecord?.actionTargetCharacter != null) {
       log.info(
-          '(createAction) targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.toJson()}');
+          'targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.toJson()}');
     }
     if (createdDungeonActionRecord?.actionTargetMonster != null) {
       log.info(
-          '(createAction) targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.toJson()}');
+          'targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.toJson()}');
     }
     if (createdDungeonActionRecord?.actionTargetObject != null) {
       log.info(
-          '(createAction) targetObject ${createdDungeonActionRecord?.actionTargetObject?.toJson()}');
+          'targetObject ${createdDungeonActionRecord?.actionTargetObject?.toJson()}');
     }
 
     if (createdDungeonActionRecord != null) {
@@ -75,11 +88,10 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
 
   /// Returns true when there are more actions in history to play
   bool playAction() {
-    final log = getLogger('DungeonActionCubit');
+    final log = getLogger('DungeonActionCubit', 'playAction');
 
     if (dungeonActionRecords.length < 2) {
-      log.fine(
-          '(playAction) Not enough dungeon action records, not playing action');
+      log.info('Not enough dungeon action records, not playing action');
       return false;
     }
 
@@ -92,22 +104,22 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
 
     if (current.actionTargetLocation != null) {
       log.fine(
-          '(playAction) Play action command >${current.actionCommand}< direction >$direction<');
+          'Play action command >${current.actionCommand}< direction >$direction<');
     }
 
     if (current.actionTargetCharacter != null) {
       log.fine(
-          '(playAction) Play action command >${current.actionCommand}< character >${current.actionTargetCharacter?.characterName}<');
+          'Play action command >${current.actionCommand}< character >${current.actionTargetCharacter?.characterName}<');
     }
 
     if (current.actionTargetMonster != null) {
       log.fine(
-          '(playAction) Play action command >${current.actionCommand}< monster >${current.actionTargetMonster?.monsterName}<');
+          'Play action command >${current.actionCommand}< monster >${current.actionTargetMonster?.monsterName}<');
     }
 
     if (current.actionTargetObject != null) {
       log.fine(
-          '(playAction) Play action command >${current.actionCommand}< object >${current.actionTargetObject?.objectName}<');
+          'Play action command >${current.actionCommand}< object >${current.actionTargetObject?.objectName}<');
     }
 
     emit(

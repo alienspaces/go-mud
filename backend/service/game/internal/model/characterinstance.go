@@ -3,8 +3,9 @@ package model
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/server/core/nullstring"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 type CharacterInstanceRecordSet struct {
@@ -55,8 +56,106 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*Character
 func (m *Model) CharacterExitDungeon(characterID string) error {
 	l := m.Logger("CharacterExitDungeon")
 
-	// TODO: (game) Implement exiting a dungeon instance..
-	l.Warn("Not implemented")
+	// Update character record
+	characterInstanceRec, err := m.GetCharacterInstanceRecByCharacterID(characterID)
+	if err != nil {
+		l.Warn("failed to get character ID >%s< instance view record >%v<", characterID, err)
+		return err
+	}
+
+	if characterInstanceRec == nil {
+		l.Warn("character instance record is nil")
+		err := coreerror.NewServerInternalError()
+		return err
+	}
+
+	characterRec, err := m.GetCharacterRec(characterID, true)
+	if err != nil {
+		l.Warn("failed to get character ID >%s< record >%v<", characterID, err)
+		return err
+	}
+
+	characterRec.ExperiencePoints = characterInstanceRec.ExperiencePoints
+	characterRec.AttributePoints = characterInstanceRec.AttributePoints
+	characterRec.Coins = characterInstanceRec.Coins
+
+	err = m.UpdateCharacterRec(characterRec)
+	if err != nil {
+		l.Warn("failed to update character ID >%s< record >%v<", characterID, err)
+		return err
+	}
+
+	// Replace character object records
+	characterObjectRecs, err := m.GetCharacterObjectRecs(
+		map[string]interface{}{
+			"character_id": characterID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed to get character ID >%s< object records >%v<", characterID, err)
+		return err
+	}
+
+	characterObjectInstanceRecs, err := m.GetCharacterInstanceObjectInstanceRecs(characterInstanceRec.ID)
+	if err != nil {
+		l.Warn("failed to get character ID >%s< object instance records >%v<", characterID, err)
+		return err
+	}
+
+	// Delete character object records for objects the character no longer has
+CHARACTER_OBJECT_RECS:
+	for idx := range characterObjectRecs {
+		for iidx := range characterObjectInstanceRecs {
+			if characterObjectRecs[idx].ObjectID == characterObjectInstanceRecs[iidx].ObjectID {
+				continue CHARACTER_OBJECT_RECS
+			}
+		}
+		l.Info("Deleting character object record ID >%s<", characterObjectRecs[idx].ID)
+		err := m.DeleteCharacterObjectRec(characterObjectRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed deleting character ID >%s< object ID >%s< record >%v<", characterObjectRecs[idx].CharacterID, characterObjectRecs[idx].ObjectID, err)
+			return err
+		}
+	}
+
+	// Update character object reocrds or create missing character object records the character now has
+CHARACTER_OBJECT_INSTANCE_RECS:
+	for iidx := range characterObjectInstanceRecs {
+		for idx := range characterObjectRecs {
+			if characterObjectRecs[idx].ObjectID == characterObjectInstanceRecs[iidx].ObjectID {
+				l.Info("Updating character object record ID >%s<", characterObjectRecs[idx].ID)
+				characterObjectRec := characterObjectRecs[idx]
+				characterObjectRec.IsStashed = characterObjectInstanceRecs[iidx].IsStashed
+				characterObjectRec.IsEquipped = characterObjectInstanceRecs[iidx].IsEquipped
+				err := m.UpdateCharacterObjectRec(characterObjectRec)
+				if err != nil {
+					l.Warn("failed updating character ID >%s< object ID >%s< record >%v<", characterObjectRec.CharacterID, characterObjectRec.ObjectID, err)
+					return err
+				}
+				continue CHARACTER_OBJECT_INSTANCE_RECS
+			}
+		}
+
+		l.Info("Creating character ID >5s< object record ID >%s<", characterID, characterObjectInstanceRecs[iidx].ObjectID)
+		characterObjectRec := record.CharacterObject{
+			CharacterID: characterID,
+			ObjectID:    characterObjectInstanceRecs[iidx].ObjectID,
+			IsStashed:   characterObjectInstanceRecs[iidx].IsStashed,
+			IsEquipped:  characterObjectInstanceRecs[iidx].IsEquipped,
+		}
+		err := m.CreateCharacterObjectRec(&characterObjectRec)
+		if err != nil {
+			l.Warn("failed creating character ID >%s< object ID >%s< record >%v<", characterObjectRec.CharacterID, characterObjectRec.ObjectID, err)
+			return err
+		}
+	}
+
+	// Delete character instance
+	err = m.DeleteCharacterInstance(characterID)
+	if err != nil {
+		l.Warn("failed to delete character ID >%s< instance records >%v<", characterID, err)
+		return err
+	}
 
 	return nil
 }
@@ -140,6 +239,39 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 	}
 
 	return &characterInstanceRecordSet, nil
+}
+
+// DeleteCharacterInstance -
+func (m *Model) DeleteCharacterInstance(characterID string) error {
+	l := m.Logger("DeleteCharacterInstance")
+
+	characterInstanceRec, err := m.GetCharacterInstanceViewRecByCharacterID(characterID)
+	if err != nil {
+		l.Warn("failed getting character instance view record >%v<", err)
+		return err
+	}
+
+	characterObjectInstanceRecs, err := m.GetCharacterInstanceObjectInstanceRecs(characterInstanceRec.CharacterID)
+	if err != nil {
+		l.Warn("failed getting character object instance view records >%v<", err)
+		return err
+	}
+
+	for idx := range characterObjectInstanceRecs {
+		err := m.DeleteObjectInstanceRec(characterObjectInstanceRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed deleting character object instance record >%v<", err)
+			return err
+		}
+	}
+
+	err = m.DeleteCharacterInstanceRec(characterInstanceRec.ID)
+	if err != nil {
+		l.Warn("failed deleting character instance record >%v<", err)
+		return err
+	}
+
+	return nil
 }
 
 // GetCharacterInstanceObjectInstanceRecs -

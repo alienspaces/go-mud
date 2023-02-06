@@ -11,15 +11,15 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
-	"gitlab.com/alienspaces/go-mud/server/core/prepare"
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
-	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/prepare"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/runnable"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 const (
@@ -188,7 +188,7 @@ var _ runnable.Runnable = &Runner{}
 
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
-	l := Logger(rnr.Log, "Init")
+	l := loggerWithContext(rnr.Log, "Init")
 
 	if rnr.Log == nil {
 		return fmt.Errorf("logger is nil, cannot initialise server runner")
@@ -260,7 +260,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	// HTTP server - router
 	if rnr.RouterFunc == nil {
-		rnr.RouterFunc = rnr.Router
+		rnr.RouterFunc = rnr.DefaultRouterFunc
 	}
 
 	// HTTP server - middleware
@@ -344,19 +344,19 @@ func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 		return nil, err
 	}
 	if m == nil {
-		l.Warn("modeller is nil, cannot continue")
+		l.Warn("ModellerFunc returned nil, cannot continue")
 		return nil, err
 	}
 
 	tx, err := rnr.Store.GetTx()
 	if err != nil {
-		l.Warn("failed getting DB connection >%v<", err)
+		l.Warn("failed Store GetTx >%v<", err)
 		return m, err
 	}
 
 	err = m.Init(p, pCfg, tx)
 	if err != nil {
-		l.Warn("failed init modeller >%v<", err)
+		l.Warn("failed model Init >%v<", err)
 		return m, err
 	}
 
@@ -366,7 +366,7 @@ func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 // Run starts the HTTP server and daemon processes. Override to implement a custom run function.
 func (rnr *Runner) Run(args map[string]interface{}) error {
 
-	rnr.Log.Debug("** Run **")
+	rnr.Log.Info("** Run **")
 
 	// signal channel
 	sigChan := make(chan os.Signal, 1)
@@ -374,22 +374,22 @@ func (rnr *Runner) Run(args map[string]interface{}) error {
 
 	// run HTTP server
 	go func() {
-		rnr.Log.Debug("** Running HTTP server process **")
+		rnr.Log.Info("** Running HTTP server process **")
 		if err := rnr.RunHTTPFunc(args); err != nil {
 			rnr.Log.Error("Failed run server >%v<", err)
 			sigChan <- syscall.SIGTERM
 		}
-		rnr.Log.Debug("** HTTP server process ended **")
+		rnr.Log.Info("** HTTP server process ended **")
 	}()
 
 	// run daemon server
 	go func() {
-		rnr.Log.Debug("** Running daemon process **")
+		rnr.Log.Info("** Running daemon process **")
 		if err := rnr.RunDaemonFunc(args); err != nil {
 			rnr.Log.Error("Failed run daemon >%v<", err)
 			sigChan <- syscall.SIGTERM
 		}
-		rnr.Log.Debug("** Daemon process ended **")
+		rnr.Log.Info("** Daemon process ended **")
 	}()
 
 	// wait

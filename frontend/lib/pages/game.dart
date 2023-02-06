@@ -56,7 +56,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameScreen');
+    final log = getLogger('GameScreen', 'build');
     log.fine('Building..');
 
     return Scaffold(

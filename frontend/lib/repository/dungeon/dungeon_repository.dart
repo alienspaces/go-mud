@@ -22,7 +22,7 @@ class DungeonRepository implements DungeonRepositoryInterface {
 
   @override
   Future<DungeonRecord?> getOne(String dungeonID) async {
-    final log = getLogger('DungeonRepository');
+    final log = getLogger('DungeonRepository', 'getOne');
 
     var response = await api.getDungeon(dungeonID);
     if (response.error != null) {
@@ -51,7 +51,7 @@ class DungeonRepository implements DungeonRepositoryInterface {
 
   @override
   Future<List<DungeonRecord>> getMany() async {
-    final log = getLogger('DungeonRepository');
+    final log = getLogger('DungeonRepository', 'getMany');
 
     var response = await api.getDungeons();
     if (response.error != null) {

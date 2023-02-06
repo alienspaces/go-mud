@@ -1,4 +1,4 @@
-module gitlab.com/alienspaces/go-mud/server/schema
+module gitlab.com/alienspaces/go-mud/backend/schema
 
 go 1.15
 

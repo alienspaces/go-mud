@@ -3,10 +3,10 @@ package model
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// validateObjectInstanceRec - validates creating and updating a game record
+// validateObjectInstanceRec - validates creating and updating an object instance record
 func (m *Model) validateObjectInstanceRec(rec *record.ObjectInstance) error {
 
 	if rec.ID == "" {
@@ -23,7 +23,7 @@ func (m *Model) validateObjectInstanceRec(rec *record.ObjectInstance) error {
 	return nil
 }
 
-// validateDeleteObjectInstanceRec - validates it is okay to delete a game record
+// validateDeleteObjectInstanceRec - validates it is okay to delete an object instance record
 func (m *Model) validateDeleteObjectInstanceRec(recID string) error {
 
 	return nil

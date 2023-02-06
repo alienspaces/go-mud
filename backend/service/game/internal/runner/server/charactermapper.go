@@ -1,12 +1,13 @@
 package runner
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData
-func (rnr *Runner) CharacterRecordWithInstanceViewRecordSetToDungeonCharacterResponseData(characterRec record.Character, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
+// characterResponseData
+func characterResponseData(l logger.Logger, characterRec *record.Character, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
 		CharacterID:               characterRec.ID,

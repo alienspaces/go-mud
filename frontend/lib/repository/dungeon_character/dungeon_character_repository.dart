@@ -10,15 +10,15 @@ import 'package:go_mud_client/repository/repository.dart';
 part 'dungeon_character_record.dart';
 
 abstract class DungeonCharacterRepositoryInterface {
-  Future<DungeonCharacterRecord?> createOne(
+  Future<DungeonCharacterRecord?> enterDungeonCharacter(
     String dungeonID,
     String characterID,
   );
-  Future<DungeonCharacterRecord?> getOne(
+  Future<DungeonCharacterRecord?> getDungeonCharacter(
     String dungeonID,
     String characterID,
   );
-  Future<void> deleteOne(
+  Future<void> exitDungeonCharacter(
     String dungeonID,
     String characterID,
   );
@@ -32,13 +32,14 @@ class DungeonCharacterRepository
   DungeonCharacterRepository({required this.config, required this.api});
 
   @override
-  Future<DungeonCharacterRecord?> createOne(
+  Future<DungeonCharacterRecord?> enterDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonCharacterRepository');
+    final log =
+        getLogger('DungeonCharacterRepository', 'enterDungeonCharacter');
 
-    var response = await api.createDungeonCharacter(
+    var response = await api.enterDungeonCharacter(
       dungeonID,
       characterID,
     );
@@ -71,11 +72,11 @@ class DungeonCharacterRepository
   }
 
   @override
-  Future<DungeonCharacterRecord?> getOne(
+  Future<DungeonCharacterRecord?> getDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonCharacterRepository');
+    final log = getLogger('DungeonCharacterRepository', 'getDungeonCharacter');
 
     var response = await api.getDungeonCharacter(
       dungeonID,
@@ -106,13 +107,13 @@ class DungeonCharacterRepository
   }
 
   @override
-  Future<void> deleteOne(
+  Future<void> exitDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonCharacterRepository');
+    final log = getLogger('DungeonCharacterRepository', 'exitDungeonCharacter');
 
-    var response = await api.deleteDungeonCharacter(
+    var response = await api.exitDungeonCharacter(
       dungeonID,
       characterID,
     );

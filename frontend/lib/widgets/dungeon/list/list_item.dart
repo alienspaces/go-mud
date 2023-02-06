@@ -21,7 +21,7 @@ class DungeonListItemWidget extends StatelessWidget {
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonListItemWidget');
+    final log = getLogger('DungeonListItemWidget', '_enterDungeon');
     log.info('Enter dungeon $dungeonID with character $characterID');
 
     final dungeonCharacterCubit =
@@ -38,7 +38,7 @@ class DungeonListItemWidget extends StatelessWidget {
     String dungeonID,
     String characterID,
   ) async {
-    final log = getLogger('DungeonListItemWidget');
+    final log = getLogger('DungeonListItemWidget', '_exitDungeon');
     log.info('Exit dungeon $dungeonID with character $characterID');
 
     final dungeonCharacterCubit =
@@ -52,7 +52,7 @@ class DungeonListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('DungeonListItemWidget');
+    final log = getLogger('DungeonListItemWidget', 'build');
     log.fine(
         'Select current dungeon ${dungeonRecord.dungeonID} ${dungeonRecord.dungeonName}');
 
@@ -68,7 +68,7 @@ class DungeonListItemWidget extends StatelessWidget {
     }
     if (characterRecord.dungeonID != null &&
         characterRecord.dungeonID != dungeonRecord.dungeonID) {
-      // TODO: Could choose to not display dungeon list item at all under this scenario
+      // TODO: (client) Could choose to not display dungeon list item at all under this scenario
     }
 
     List<Widget> children = [];

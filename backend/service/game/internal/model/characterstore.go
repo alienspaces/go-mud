@@ -3,8 +3,9 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const defaultCoins = 100
@@ -67,7 +68,14 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 		return err
 	}
 
-	return r.CreateOne(rec)
+	err = r.CreateOne(rec)
+	if err != nil {
+		if strings.Contains(err.Error(), "character_name_uq") {
+			return NewCharacterNameTakenError(rec)
+		}
+	}
+
+	return nil
 }
 
 // UpdateCharacterRec -

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 )
 
 func TestNewSchemaError(t *testing.T) {
@@ -235,8 +235,8 @@ func TestNewSchemaError(t *testing.T) {
 
 	for i := range tests {
 		tests[i].want.HttpStatusCode = http.StatusBadRequest
-		tests[i].want.ErrorCode = SchemaValidation
-		tests[i].want.Message = registry[SchemaValidation].Message
+		tests[i].want.ErrorCode = ErrorCodeValidationSchema
+		tests[i].want.Message = registry[ErrorCodeValidationSchema].Message
 	}
 
 	cwd, err := os.Getwd()

@@ -43,7 +43,7 @@ void _showDialogue(
 }
 
 void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
-  final log = getLogger('Header');
+  final log = getLogger('Header', '_navigateHome');
 
   // Confirmation dialogue example
   // _showDialogue(context, 'Exit the game?', () {
@@ -61,14 +61,14 @@ void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
 }
 
 void _navigateCharacter(BuildContext context, NavigationCallbacks callbacks) {
-  final log = getLogger('Header');
+  final log = getLogger('Header', '_navigateCharacter');
 
   log.fine('Navigating to character page...');
   callbacks.openCharacterPage(context);
 }
 
 void _navigateGame(BuildContext context, NavigationCallbacks callbacks) {
-  final log = getLogger('Header');
+  final log = getLogger('Header', '_navigateGame');
 
   log.fine('Navigating to game page...');
   callbacks.openGamePage(context);

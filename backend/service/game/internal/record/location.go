@@ -3,7 +3,7 @@ package record
 import (
 	"database/sql"
 
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 )
 
 type Location struct {

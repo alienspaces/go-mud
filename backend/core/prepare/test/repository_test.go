@@ -9,17 +9,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/config"
-	"gitlab.com/alienspaces/go-mud/server/core/log"
-	"gitlab.com/alienspaces/go-mud/server/core/prepare"
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
-	"gitlab.com/alienspaces/go-mud/server/core/store"
-	"gitlab.com/alienspaces/go-mud/server/core/tag"
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparable"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/storer"
+	"gitlab.com/alienspaces/go-mud/backend/core/config"
+	"gitlab.com/alienspaces/go-mud/backend/core/log"
+	"gitlab.com/alienspaces/go-mud/backend/core/prepare"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/core/store"
+	"gitlab.com/alienspaces/go-mud/backend/core/tag"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparable"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 func setupRepository(l logger.Logger, p preparer.Repository, db *sqlx.DB) (preparable.Repository, func() error, error) {

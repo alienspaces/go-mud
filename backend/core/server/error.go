@@ -5,17 +5,17 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 func WriteError(l logger.Logger, w http.ResponseWriter, e error) {
-	l = Logger(l, "WriteError")
+	l = loggerWithContext(l, "WriteError")
 
 	eres, err := coreerror.ToError(e)
 	if err != nil {
 		l.Error("System error >%v<", err)
-		err = coreerror.GetRegistryError(coreerror.Internal)
+		err = coreerror.GetRegistryError(coreerror.ErrorCodeServerInternal)
 		WriteSystemError(l, w, err)
 		return
 	}
@@ -29,32 +29,32 @@ func WriteError(l logger.Logger, w http.ResponseWriter, e error) {
 
 	if err := json.NewEncoder(w).Encode(e); err != nil {
 		l.Error("failed writing response >%v<", err)
-		err = coreerror.GetRegistryError(coreerror.Internal)
+		err = coreerror.GetRegistryError(coreerror.ErrorCodeServerInternal)
 		WriteSystemError(l, w, err)
 		return
 	}
 }
 
 func WriteNotFoundError(l logger.Logger, w http.ResponseWriter, entity string, id string) {
-	l = Logger(l, "WriteNotFoundError")
+	l = loggerWithContext(l, "WriteNotFoundError")
 
-	e := coreerror.NewNotFoundError(entity, id)
+	e := coreerror.NewResourceNotFoundError(entity, id)
 	l.Warn("Resource not found >%v<", e)
 
 	WriteError(l, w, e)
 }
 
 func WriteUnavailableError(l logger.Logger, w http.ResponseWriter, err error) {
-	l = Logger(l, "WriteUnavailableError")
+	l = loggerWithContext(l, "WriteUnavailableError")
 
-	e := coreerror.NewUnavailableError()
+	e := coreerror.NewServerUnavailableError()
 	l.Error("Service unavailable >%v< >%v<", err, e)
 
 	WriteError(l, w, e)
 }
 
 func WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
-	l = Logger(l, "WriteSystemError")
+	l = loggerWithContext(l, "WriteSystemError")
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
@@ -76,7 +76,7 @@ func WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
 
 // WriteXMLErrorResponse responds with an 200 HTTP Status Code. For Service Cloud to retry message delivery, a nack (false) should be sent instead.
 func WriteXMLErrorResponse(l logger.Logger, w http.ResponseWriter, s interface{}, err error) {
-	l = Logger(l, "WriteXMLErrorResponse")
+	l = loggerWithContext(l, "WriteXMLErrorResponse")
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 

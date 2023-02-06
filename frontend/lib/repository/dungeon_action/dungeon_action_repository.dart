@@ -23,7 +23,7 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
   @override
   Future<DungeonActionRecord?> create(
       String dungeonID, String characterID, String sentence) async {
-    final log = getLogger('DungeonActionRepository');
+    final log = getLogger('DungeonActionRepository', 'create');
 
     var response = await api.createDungeonAction(
       dungeonID,
@@ -46,7 +46,7 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
         if (data.length > 1) {
           // TODO: (client) Add support for multiple dungeon actions in response
           log.warning('Unexpected number of records returned');
-          throw RecordCountException('Unexpected number of records returned');
+          throw RecordCountException('DungeonActionRecord');
         }
         record = DungeonActionRecord.fromJson(data[0]);
       }

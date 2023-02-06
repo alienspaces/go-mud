@@ -27,7 +27,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
 
   @override
   Future<CharacterRecord?> createOne(CreateCharacterRecord createRecord) async {
-    final log = getLogger('CharacterRepository');
+    final log = getLogger('CharacterRepository', 'createOne');
     log.info('Creating character ${createRecord.characterName}');
 
     var response = await api.createCharacter(
@@ -55,7 +55,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
         log.fine('Decoded response $data');
         if (data.length > 1) {
           log.warning('Unexpected number of records returned');
-          throw RecordCountException('Unexpected number of records returned');
+          throw RecordCountException('CharacterRecord');
         }
         record = CharacterRecord.fromJson(data[0]);
       }
@@ -66,7 +66,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
 
   @override
   Future<CharacterRecord?> getOne(String characterID) async {
-    final log = getLogger('CharacterRepository');
+    final log = getLogger('CharacterRepository', 'getOne');
 
     var response = await api.getCharacter(
       characterID,
@@ -97,7 +97,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
 
   @override
   Future<List<CharacterRecord>> getMany() async {
-    final log = getLogger('CharacterRepository');
+    final log = getLogger('CharacterRepository', 'getMany');
 
     var response = await api.getCharacters();
     if (response.error != null) {

@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/alienspaces/go-mud/server/schema"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
 
 	"github.com/stretchr/testify/require"
-	"gitlab.com/alienspaces/go-mud/server/core/auth"
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
+	"gitlab.com/alienspaces/go-mud/backend/core/auth"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 )
 
 func TestPostActionHandler(t *testing.T) {

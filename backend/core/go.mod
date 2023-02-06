@@ -1,4 +1,4 @@
-module gitlab.com/alienspaces/go-mud/server/core
+module gitlab.com/alienspaces/go-mud/backend/core
 
 go 1.18
 
@@ -28,4 +28,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
 
-replace gitlab.com/alienspaces/go-mud/server/core => ../../core
+replace gitlab.com/alienspaces/go-mud/backend/core => ../../core

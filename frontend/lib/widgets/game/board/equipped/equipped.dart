@@ -18,7 +18,7 @@ class GameEquippedWidget extends StatefulWidget {
 class _GameEquippedWidgetState extends State<GameEquippedWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameEquippedWidget');
+    final log = getLogger('GameEquippedWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(

@@ -18,7 +18,7 @@ class ObjectButtonWidget extends StatefulWidget {
 class _ObjectButtonWidgetState extends State<ObjectButtonWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('ObjectButtonWidget');
+    final log = getLogger('ObjectButtonWidget', 'build');
     log.fine('Building..');
 
     return Container(

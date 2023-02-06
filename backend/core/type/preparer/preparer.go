@@ -3,7 +3,7 @@ package preparer
 import (
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparable"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparable"
 )
 
 type ExcludePreparation struct {

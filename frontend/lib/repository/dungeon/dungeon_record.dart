@@ -14,7 +14,7 @@ class DungeonRecord extends Equatable {
 
   factory DungeonRecord.fromJson(Map<String, dynamic> json) {
     if (json.isEmpty) {
-      throw RecordEmptyException('JSON data is empty');
+      throw RecordEmptyException('DungeonRecord');
     }
     return DungeonRecord(
       dungeonID: json['dungeon_id'],

@@ -1,7 +1,7 @@
 package harness
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // DataConfig -
@@ -87,7 +87,7 @@ type LocationObjectConfig struct {
 // DungeonInstanceConfig -
 type DungeonInstanceConfig struct {
 	CharacterInstanceConfig []CharacterInstanceConfig
-	ActionConfig            []ActionConfig
+	TurnConfig              []TurnConfig
 }
 
 // CharacterInstanceConfig -
@@ -100,4 +100,10 @@ type ActionConfig struct {
 	CharacterName string
 	MonsterName   string
 	Command       string
+}
+
+// TurnConfig -
+type TurnConfig struct {
+	Record       record.Turn
+	ActionConfig []ActionConfig
 }

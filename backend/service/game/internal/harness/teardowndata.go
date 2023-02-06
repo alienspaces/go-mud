@@ -1,9 +1,9 @@
 package harness
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // teardownData -
@@ -39,6 +39,9 @@ type teardownData struct {
 	ActionMonsterRecs         []*record.ActionMonster
 	ActionMonsterObjectRecs   []*record.ActionMonsterObject
 	ActionObjectRecs          []*record.ActionObject
+
+	// Turn
+	TurnRecs []*record.Turn
 }
 
 func (d *teardownData) AddDungeonInstanceRecordSet(rs *model.DungeonInstanceRecordSet) {
@@ -242,6 +245,15 @@ func (d *teardownData) AddActionObjectRec(rec *record.ActionObject) {
 		}
 	}
 	d.ActionObjectRecs = append(d.ActionObjectRecs, &record.ActionObject{Record: repository.Record{ID: rec.ID}})
+}
+
+func (d *teardownData) AddTurnRec(rec *record.Turn) {
+	for _, r := range d.TurnRecs {
+		if r.ID == rec.ID {
+			return
+		}
+	}
+	d.TurnRecs = append(d.TurnRecs, &record.Turn{Record: repository.Record{ID: rec.ID}})
 }
 
 func (d *teardownData) AddActionLocationRecordSet(alrs *record.ActionLocationRecordSet) {

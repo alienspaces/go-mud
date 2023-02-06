@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/prepare"
-	"gitlab.com/alienspaces/go-mud/server/core/query"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparable"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/prepare"
+	"gitlab.com/alienspaces/go-mud/backend/core/query"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparable"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
 )
 
 func setupQuery(l logger.Logger, pq preparer.Query, db *sqlx.DB) (preparable.Query, func() error, error) {

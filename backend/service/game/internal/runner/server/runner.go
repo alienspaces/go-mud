@@ -3,12 +3,12 @@ package runner
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/core/type/runnable"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/runnable"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 // Runner -
@@ -47,6 +47,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	r.MiddlewareFunc = r.Middleware
 	r.HandlerFunc = r.Handler
 	r.ModellerFunc = r.Modeller
+	r.RunDaemonFunc = r.RunDaemon
 
 	// Handler config
 	hc := r.CharacterHandlerConfig(nil)
@@ -63,17 +64,25 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
 // Modeller -
 func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
-
 	m, err := model.NewModel(rnr.Config, l, rnr.Store)
 	if err != nil {
 		l.Warn("failed new model >%v<", err)
 		return nil, err
 	}
-
 	return m, nil
 }
 
-func Logger(l logger.Logger, functionName string) logger.Logger {
+func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
+	m, err := rnr.InitModeller(l)
+	if err != nil {
+		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
+		return nil, err
+	}
+	return m.(*model.Model), nil
+}
+
+// loggerWithContext provides a logger with function context
+func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}

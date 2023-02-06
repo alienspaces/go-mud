@@ -6,14 +6,13 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/mapper"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 const (
@@ -66,7 +65,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 
 // PostActionHandler -
 func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "PostActionHandler")
+	l = loggerWithContext(l, "PostActionHandler")
 	l.Info("** Post action handler **")
 
 	// Path parameters
@@ -74,21 +73,21 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	characterID := pp.ByName("character_id")
 
 	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamInvalidTypeError("character_id", characterID)
+		err := coreerror.NewValidationPathParamTypeError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -104,7 +103,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -120,7 +119,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if characterRec == nil {
-		err := coreerror.NewNotFoundError("character", characterID)
+		err := coreerror.NewResourceNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -148,14 +147,14 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if len(characterInstanceRecs) == 0 {
-		err := coreerror.NewPathParamInvalidError("character_id", characterID, "character has not entered a dungeon")
+		err := coreerror.NewValidationPathParamError("character_id", characterID, "character has not entered a dungeon")
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if len(characterInstanceRecs) > 1 {
 		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewInternalError()
+		err := coreerror.NewServerInternalError()
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -169,7 +168,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if dungeonInstanceRec == nil {
-		err := coreerror.NewPathParamInvalidError("dungeon_id", dungeonID, "dungeon does not exists")
+		err := coreerror.NewValidationPathParamError("dungeon_id", dungeonID, "dungeon does not exists")
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -193,7 +192,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	l.Debug("Resulting action monster >%#v<", dungeonActionRecordSet.ActionMonsterRec)
 
 	// Response data
-	responseData, err := mapper.ActionRecordSetToActionResponse(l, *dungeonActionRecordSet)
+	responseData, err := actionResponseData(l, *dungeonActionRecordSet)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err

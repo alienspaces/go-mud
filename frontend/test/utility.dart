@@ -84,7 +84,7 @@ class MockAPI implements API {
   }
 
   @override
-  Future<APIResponse> createDungeonCharacter(
+  Future<APIResponse> enterDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
@@ -98,7 +98,7 @@ class MockAPI implements API {
   }
 
   @override
-  Future<APIResponse> deleteDungeonCharacter(
+  Future<APIResponse> exitDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {

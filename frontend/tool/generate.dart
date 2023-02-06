@@ -9,7 +9,7 @@ import 'package:go_mud_client/logger.dart';
 // USAGE: dart tool/generate_config.dart
 Future<void> main() async {
   initLogger();
-  final log = getLogger('main');
+  final log = getLogger('main', null);
 
   var env = DotEnv(includePlatformEnvironment: true);
   env.load();

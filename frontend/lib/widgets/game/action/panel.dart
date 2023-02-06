@@ -38,7 +38,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
       height: gridMemberHeight,
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameActionPanelWidget');
+          final log = getLogger('GameActionPanelWidget', '_actionWidget');
           log.fine('Selecting action >$action<');
           _selectAction(context, action);
         },
@@ -57,7 +57,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
       margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameActionPanelWidget');
+          final log = getLogger('GameActionPanelWidget', '_submitActionWidget');
           log.fine('Submitting action');
           _submitAction(context);
         },
@@ -70,7 +70,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
   }
 
   void _selectAction(BuildContext context, String action) {
-    final log = getLogger('GameActionPanelWidget');
+    final log = getLogger('GameActionPanelWidget', '_selectAction');
     log.fine('Selecting action..');
 
     final dungeonCharacterCubit =
@@ -93,7 +93,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
   }
 
   void _submitAction(BuildContext context) async {
-    final log = getLogger('GameActionPanelWidget');
+    final log = getLogger('GameActionPanelWidget', '_submitAction');
     log.fine('Submitting action..');
 
     final dungeonCharacterCubit =
@@ -122,7 +122,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameActionPanelWidget');
+    final log = getLogger('GameActionPanelWidget', 'build');
     log.fine('Building..');
 
     return LayoutBuilder(

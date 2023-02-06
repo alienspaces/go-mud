@@ -4,28 +4,28 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/dependencies"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/runner"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/dependencies"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/runner"
 )
 
 func main() {
 
 	c, l, s, err := dependencies.Default()
 	if err != nil {
-		fmt.Printf("Failed default dependencies >%v<", err)
+		fmt.Printf("Failed default dependencies >%v<\n", err)
 		os.Exit(0)
 	}
 
 	r, err := runner.NewRunner(c, l)
 	if err != nil {
-		fmt.Printf("Failed new runner >%v<", err)
+		fmt.Printf("Failed new runner >%v<\n", err)
 		os.Exit(0)
 	}
 
 	svc, err := server.NewServer(c, l, s, r)
 	if err != nil {
-		fmt.Printf("Failed new server >%v<", err)
+		fmt.Printf("Failed new server >%v<\n", err)
 		os.Exit(0)
 	}
 
@@ -33,7 +33,7 @@ func main() {
 
 	err = svc.Run(args)
 	if err != nil {
-		fmt.Printf("Failed server run >%v<", err)
+		fmt.Printf("Failed server run >%v<\n", err)
 		os.Exit(0)
 	}
 

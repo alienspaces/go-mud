@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/dependencies"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 func TestCreateDungeonRec(t *testing.T) {

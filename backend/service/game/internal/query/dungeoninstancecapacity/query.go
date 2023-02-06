@@ -3,11 +3,11 @@ package dungeoninstancecapacity
 import (
 	"github.com/jmoiron/sqlx"
 
-	"gitlab.com/alienspaces/go-mud/server/core/query"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/preparer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/querier"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/core/query"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (
@@ -90,7 +90,8 @@ func (q *Query) GetMany(
 
 func (q *Query) SQL() string {
 	return `
-WITH "dungeon_capacity" AS (
+WITH 
+"dungeon_capacity" AS (
     SELECT 
         d.id        AS dungeon_id, 
         count(l.id) AS dungeon_location_count
@@ -98,7 +99,8 @@ WITH "dungeon_capacity" AS (
     JOIN location l 
         ON l.dungeon_id = d.id
     GROUP BY d.id
-), "dungeon_instance_capacity" AS (
+), 
+"dungeon_instance_capacity" AS (
     SELECT 
         di.id         AS dungeon_instance_id,
         di.dungeon_id AS dungeon_id,

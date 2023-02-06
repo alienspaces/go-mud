@@ -11,7 +11,7 @@ class FontScale {
 }
 
 FontScale getFontScale() {
-  final log = getLogger('getFontScale');
+  final log = getLogger('FontScale', 'getFontScale');
 
   // Font scaling
   double sizeFactor = 1;

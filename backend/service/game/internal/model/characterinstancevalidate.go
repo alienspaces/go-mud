@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // validateCreateCharacterInstanceRec - validates creating a character instance record
@@ -24,7 +24,7 @@ func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance
 	if len(characterInstanceRecs) > 0 {
 		msg := fmt.Sprintf("character with ID >%s< is already inside a dungeon", rec.CharacterID)
 		l.Warn(msg)
-		err := coreerror.NewInvalidError("character_id", msg)
+		err := coreerror.NewValidationInvalidError("character_id", msg)
 		return err
 	}
 
@@ -63,7 +63,7 @@ func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
 	if rec == nil {
 		msg := fmt.Sprintf("failed validation, character instance ID >%s< does not exist", recID)
 		l.Warn(msg)
-		err := coreerror.NewInvalidError("id", msg)
+		err := coreerror.NewValidationInvalidError("id", msg)
 		return err
 	}
 

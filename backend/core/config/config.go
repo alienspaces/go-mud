@@ -6,6 +6,25 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+)
+
+const (
+	AppServerHome                 string = "APP_SERVER_HOME"
+	AppServerEnv                  string = "APP_SERVER_ENV"
+	AppServerPort                 string = "APP_SERVER_PORT"
+	AppServerLogLevel             string = "APP_SERVER_LOG_LEVEL"
+	AppServerLogPretty            string = "APP_SERVER_LOG_PRETTY"
+	AppServerDbHost               string = "APP_SERVER_DB_HOST"
+	AppServerDbPort               string = "APP_SERVER_DB_PORT"
+	AppServerDbName               string = "APP_SERVER_DB_NAME"
+	AppServerDbUser               string = "APP_SERVER_DB_USER"
+	AppServerDbPassword           string = "APP_SERVER_DB_PASSWORD"
+	AppServerDbMaxOpenConnections string = "APP_SERVER_DB_MAX_OPEN_CONNECTIONS"
+	AppServerDbMaxIdleConnections string = "APP_SERVER_DB_MAX_IDLE_CONNECTIONS"
+	AppServerDbMaxIdleTimeMins    string = "APP_SERVER_DB_MAX_IDLE_TIME_MINS"
+	AppServerSchemaPath           string = "APP_SERVER_SCHEMA_PATH"
+	AppServerJwtSigningKey        string = "APP_SERVER_JWT_SIGNING_KEY"
 )
 
 // Config defines a container of Items and corresponding Values. Items specifies whether the Item.Key is required.
@@ -14,38 +33,40 @@ type Config struct {
 	Values   map[string]string
 }
 
+var _ configurer.Configurer = &Config{}
+
 // NewConfig creates a new environment object
 func NewConfig(items []Item, dotEnv bool) (*Config, error) {
 
-	e := Config{
+	c := Config{
 		Required: make(map[string]bool),
 		Values:   make(map[string]string),
 	}
 
-	err := e.Init(items, dotEnv)
+	err := c.Init(items, dotEnv)
 	if err != nil {
 		return nil, fmt.Errorf("NewConfig failed init >%v<", err)
 	}
 
-	return &e, nil
+	return &c, nil
 }
 
 // Init initialises and checks environment values
 func (e *Config) Init(items []Item, dotEnv bool) (err error) {
 
 	// app home
-	dir := os.Getenv("APP_SERVER_HOME")
+	dir := os.Getenv(AppServerHome)
 	if dir == "" {
 		dir, err = os.Getwd()
 		if err != nil {
 			return err
 		}
-		err := os.Setenv("APP_SERVER_HOME", dir)
+		err := os.Setenv(AppServerHome, dir)
 		if err != nil {
 			return err
 		}
 	}
-	err = e.Add("APP_SERVER_HOME", true)
+	err = e.Add(AppServerHome, true)
 	if err != nil {
 		return err
 	}

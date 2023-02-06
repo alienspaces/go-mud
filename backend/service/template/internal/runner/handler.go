@@ -5,13 +5,13 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 // GetTemplatesHandler -
@@ -40,7 +40,7 @@ func (rnr *Runner) GetTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 
 		// Resource not found
 		if rec == nil {
-			err := coreerror.NewNotFoundError("template", id)
+			err := coreerror.NewResourceNotFoundError("template", id)
 			server.WriteError(l, w, err)
 			return err
 		}
@@ -166,7 +166,7 @@ func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("template", id)
+		err := coreerror.NewResourceNotFoundError("template", id)
 		server.WriteError(l, w, err)
 		return err
 	}

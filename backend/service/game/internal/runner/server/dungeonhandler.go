@@ -5,14 +5,14 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/schema"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (
@@ -80,18 +80,18 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 
 // GetDungeonHandler -
 func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "GetDungeonHandler")
+	l = loggerWithContext(l, "GetDungeonHandler")
 	l.Info("** Get dungeon handler **")
 
 	// Path parameters
 	id := pp.ByName("dungeon_id")
 
 	if id == "" {
-		err := coreerror.NewNotFoundError("dungeon", id)
+		err := coreerror.NewResourceNotFoundError("dungeon", id)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamInvalidTypeError("dungeon_id", id)
+		err := coreerror.NewValidationPathParamTypeError("dungeon_id", id)
 		server.WriteError(l, w, err)
 		return err
 
@@ -107,7 +107,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewNotFoundError("dungeon", id)
+		err := coreerror.NewResourceNotFoundError("dungeon", id)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -136,7 +136,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 // GetDungeonsHandler -
 func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = Logger(l, "GetDungeonsHandler")
+	l = loggerWithContext(l, "GetDungeonsHandler")
 	l.Info("** Get dungeons handler **")
 
 	var recs []*record.Dungeon

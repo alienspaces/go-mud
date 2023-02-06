@@ -7,8 +7,8 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"gitlab.com/alienspaces/go-mud/server/core/type/configurer"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 // Log -

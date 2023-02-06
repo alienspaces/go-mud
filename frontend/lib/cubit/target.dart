@@ -9,7 +9,7 @@ import 'dungeon_character/dungeon_character_cubit.dart';
 import 'dungeon_command/dungeon_command_cubit.dart';
 
 void selectTarget(BuildContext context, String target) {
-  final log = getLogger('selectTarget');
+  final log = getLogger('Cubit', 'selectTarget');
   log.fine('Submitting move action..');
 
   final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);

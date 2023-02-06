@@ -50,5 +50,3 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
     fi
 
 done
-
-

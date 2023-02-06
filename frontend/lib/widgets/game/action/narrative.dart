@@ -19,7 +19,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
 
   @override
   void dispose() {
-    final log = getLogger('GameActionNarrativeWidget');
+    final log = getLogger('GameActionNarrativeWidget', 'dispose');
     if (!mounted) {
       log.info('### Not mounted, not disposing..');
       return;
@@ -30,7 +30,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameActionNarrativeWidget');
+    final log = getLogger('GameActionNarrativeWidget', 'build');
     log.info('Building..');
     double width = MediaQuery.of(context).size.width;
 
@@ -43,6 +43,15 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
             key: UniqueKey(),
             width: width,
             line: state.current.actionNarrative,
+          );
+          setState(() {
+            lines.add(lineWidget);
+          });
+        } else if (state is DungeonActionStateError) {
+          var lineWidget = GameActionNarrativeLineWidget(
+            key: UniqueKey(),
+            width: width,
+            line: state.message,
           );
           setState(() {
             lines.add(lineWidget);
@@ -81,7 +90,7 @@ class _GameActionNarrativeLineWidgetState
   late Timer animationTimer;
   @override
   initState() {
-    final log = getLogger('GameActionNarrativeLineWidget - (line)');
+    final log = getLogger('GameActionNarrativeLineWidget', 'initState');
 
     super.initState();
 
@@ -105,7 +114,7 @@ class _GameActionNarrativeLineWidgetState
 
   @override
   void dispose() {
-    final log = getLogger('GameActionNarrativeLineWidget - (line)');
+    final log = getLogger('GameActionNarrativeLineWidget', 'dispose');
 
     if (!mounted) {
       log.info('### Not mounted, not disposing..');
@@ -119,7 +128,7 @@ class _GameActionNarrativeLineWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameActionNarrativeLineWidget - (line)');
+    final log = getLogger('GameActionNarrativeLineWidget', 'build');
 
     if (!mounted) {
       log.info('^^^ Not mounted, not building with line "${widget.line}"');

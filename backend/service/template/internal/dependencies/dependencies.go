@@ -3,9 +3,9 @@ package dependencies
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/server/core/config"
-	"gitlab.com/alienspaces/go-mud/server/core/log"
-	"gitlab.com/alienspaces/go-mud/server/core/store"
+	"gitlab.com/alienspaces/go-mud/backend/core/config"
+	"gitlab.com/alienspaces/go-mud/backend/core/log"
+	"gitlab.com/alienspaces/go-mud/backend/core/store"
 )
 
 func Default() (*config.Config, *log.Log, *store.Store, error) {

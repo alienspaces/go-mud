@@ -3,12 +3,13 @@ package record
 import (
 	"database/sql"
 
-	"gitlab.com/alienspaces/go-mud/server/core/repository"
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 )
 
 const (
 	ActionCommandMove   string = "move"
 	ActionCommandLook   string = "look"
+	ActionCommandUse    string = "use"
 	ActionCommandEquip  string = "equip"
 	ActionCommandStash  string = "stash"
 	ActionCommandDrop   string = "drop"
@@ -16,7 +17,8 @@ const (
 )
 
 type Action struct {
-	SerialID                          sql.NullInt16  `db:"serial_id"`
+	SerialNumber                      sql.NullInt16  `db:"serial_number"`
+	TurnNumber                        int            `db:"turn_number"`
 	DungeonInstanceID                 string         `db:"dungeon_instance_id"`
 	LocationInstanceID                string         `db:"location_instance_id"`
 	CharacterInstanceID               sql.NullString `db:"character_instance_id"`

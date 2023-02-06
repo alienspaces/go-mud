@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-
 import 'package:go_mud_client/widgets/game/board/location/grid/grid.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_move.dart';
 import 'package:go_mud_client/widgets/game/board/location/grid/grid_look.dart';
@@ -15,12 +13,20 @@ class BoardLocationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationWidget');
+    final log = getLogger('BoardLocationWidget', 'build');
     log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
         log.fine('listener...');
+      },
+      // Do not re-render the location grid when there is an error with
+      // submitted an action.
+      buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
+        if (currState is DungeonActionStateError) {
+          return false;
+        }
+        return true;
       },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
@@ -123,7 +129,7 @@ class BoardLocationWidget extends StatelessWidget {
           }
         }
 
-        log.fine('Rendering ${widgets.length} dungeon grid panels');
+        log.info('Rendering ${widgets.length} dungeon grid widgets');
 
         return Stack(
           clipBehavior: Clip.antiAlias,

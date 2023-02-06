@@ -1,10 +1,11 @@
 package server
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
-func Logger(l logger.Logger, functionName string) logger.Logger {
+// loggerWithContext provides a logger with function context
+func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}

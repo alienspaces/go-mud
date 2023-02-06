@@ -20,7 +20,7 @@ class GameCardEquippedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameCardEquippedWidget');
+    final log = getLogger('GameCardEquippedWidget', 'build');
 
     log.fine('Building..');
 

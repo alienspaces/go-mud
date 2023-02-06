@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 )
 
 func Test_validateQueryParameters(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_validateQueryParameters(t *testing.T) {
 		name    string
 		args    args
 		want    map[string]interface{}
-		errCode coreerror.Code
+		errCode coreerror.ErrorCode
 	}
 	tests := []testcase{
 		{
@@ -74,7 +74,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"string": []string{""},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.GetRegistryError(coreerror.ErrorCodeValidationSchema).ErrorCode,
 		},
 		{
 			name: "number invalid below min",
@@ -83,7 +83,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"number": []string{"0"},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.GetRegistryError(coreerror.ErrorCodeValidationSchema).ErrorCode,
 		},
 		{
 			name: "number array",
@@ -92,7 +92,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"number": []string{"0", "1"},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.GetRegistryError(coreerror.ErrorCodeValidationSchema).ErrorCode,
 		},
 		{
 			name: "multiple",
@@ -102,7 +102,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"number": []string{"0", "1"},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.GetRegistryError(coreerror.ErrorCodeValidationSchema).ErrorCode,
 		},
 		{
 			name: "additional property",
@@ -111,7 +111,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"asdf": []string{"0"},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.GetRegistryError(coreerror.ErrorCodeValidationSchema).ErrorCode,
 		},
 	}
 
@@ -147,7 +147,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"asdf": []string{"0"},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.InvalidQueryParam).ErrorCode,
+			errCode: coreerror.GetRegistryError(coreerror.ErrorCodeValidationQueryParam).ErrorCode,
 		},
 		{
 			name: "no query param with no schema",
@@ -167,11 +167,11 @@ func Test_validateQueryParameters(t *testing.T) {
 
 				require.Equal(t, tt.errCode, coreerrorErr.ErrorCode)
 
-				e := coreerror.ProcessQueryParamError(err)
+				e := coreerror.ProcessValidationQueryParamError(err)
 				coreerrorErr, conversionErr = coreerror.ToError(e)
 				require.Nil(t, conversionErr, "should not have an err that is not wrapped")
 
-				require.Equal(t, coreerror.GetRegistryError(coreerror.InvalidQueryParam).ErrorCode, coreerrorErr.ErrorCode)
+				require.Equal(t, coreerror.GetRegistryError(coreerror.ErrorCodeValidationQueryParam).ErrorCode, coreerrorErr.ErrorCode)
 				return
 			}
 

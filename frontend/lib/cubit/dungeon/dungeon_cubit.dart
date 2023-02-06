@@ -18,14 +18,14 @@ class DungeonCubit extends Cubit<DungeonState> {
   DungeonCubit({required this.config, required this.repositories})
       : super(const DungeonStateInitial());
 
-  // TODO: Unused
+  // TODO: (client) Unused, remove this?
   void clearDungeon() {
     dungeonRecord = null;
     emit(DungeonStateLoaded(dungeonRecords: dungeonRecords));
   }
 
   Future<void> loadDungeons() async {
-    final log = getLogger('DungeonCubit');
+    final log = getLogger('DungeonCubit', 'loadDungeons');
     log.fine('Loading dungeons...');
     emit(const DungeonStateLoading());
 

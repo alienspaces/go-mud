@@ -14,9 +14,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/server/core/jsonschema"
-	"gitlab.com/alienspaces/go-mud/server/core/server"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/harness"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 )
 
 // TestCaser is the interface required by the RunTestCase function
@@ -223,8 +223,8 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		require.NoError(t, err, "Validates against schema without error")
 		t.Logf("Validation result errors >%+v< valid >%t<", result.Errors(), result.Valid())
 
-		// TODO: Test response schema validation is true
-		//		require.True(t, result.Valid(), "Validates against schema")
+		// TODO: (game) Test response schema validation is true
+		require.True(t, result.Valid(), "Validates against schema")
 	}
 
 	tf(handlerConfig.Method, responseBody)

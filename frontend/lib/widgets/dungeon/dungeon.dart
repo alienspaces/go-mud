@@ -18,7 +18,7 @@ class DungeonContainerWidget extends StatefulWidget {
 class _DungeonContainerWidgetState extends State<DungeonContainerWidget> {
   @override
   void initState() {
-    final log = getLogger('DungeonContainerWidget');
+    final log = getLogger('DungeonContainerWidget', 'initState');
     log.fine('Initialising state..');
 
     super.initState();
@@ -26,7 +26,7 @@ class _DungeonContainerWidgetState extends State<DungeonContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('DungeonContainerWidget');
+    final log = getLogger('DungeonContainerWidget', 'build');
     log.fine('Building..');
 
     // ignore: avoid_unnecessary_containers

@@ -1,8 +1,8 @@
 package harness
 
 import (
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/template/internal/record"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 func (t *Testing) createTemplateRec(templateConfig TemplateConfig) (record.Template, error) {

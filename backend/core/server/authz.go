@@ -6,9 +6,9 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 )
 
 // Authz -
@@ -40,7 +40,7 @@ func (rnr *Runner) Authz(hc HandlerConfig, h Handle) (Handle, error) {
 
 		for p := range authzPermissions {
 			if _, ok := auth.Permissions[string(p)]; !ok {
-				err := coreerror.NewUnauthorizedError()
+				err := coreerror.NewClientUnauthorizedError()
 				l.Error(err.Error())
 				WriteError(l, w, err)
 				return err

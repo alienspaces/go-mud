@@ -1,11 +1,11 @@
 package runner
 
 import (
-	coreerror "gitlab.com/alienspaces/go-mud/server/core/error"
-	"gitlab.com/alienspaces/go-mud/server/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/server/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/server/service/game/internal/record"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 type InstanceViewRecordSet struct {
@@ -15,51 +15,41 @@ type InstanceViewRecordSet struct {
 }
 
 func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m modeller.Modeller, characterID string) (*InstanceViewRecordSet, error) {
-	l = Logger(l, "getInstanceViewRecordSetByCharacterID")
+	l = loggerWithContext(l, "getInstanceViewRecordSetByCharacterID")
 
-	characterInstanceViewRecs, err := m.(*model.Model).GetCharacterInstanceViewRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil,
-	)
+	characterInstanceViewRec, err := m.(*model.Model).GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {
+		l.Warn("failed getting character ID >%s< instance view reocrd >%v<", characterID, err)
 		return nil, err
 	}
 
-	if len(characterInstanceViewRecs) == 0 {
-		l.Warn("Character with ID %s has not entered a dungeon", characterID)
+	// Intentionally not an error when there is no character instance
+	if characterInstanceViewRec == nil {
+		l.Info("character ID >%s< has no character instance record", characterID)
 		return nil, nil
 	}
 
-	if len(characterInstanceViewRecs) > 1 {
-		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceViewRecs))
-		err := coreerror.NewInternalError()
-		return nil, err
-	}
-
-	characterInstanceViewRec := characterInstanceViewRecs[0]
-
 	dungeonInstanceViewRec, err := m.(*model.Model).GetDungeonInstanceViewRec(characterInstanceViewRec.DungeonInstanceID)
 	if err != nil {
-		l.Warn("Failed to get dungeon instance view record ID >%s<", characterInstanceViewRec.DungeonInstanceID)
+		l.Warn("failed to get dungeon instance view record ID >%s<", characterInstanceViewRec.DungeonInstanceID)
 		return nil, err
 	}
 
 	if dungeonInstanceViewRec == nil {
-		l.Warn("Dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID)
-		err := coreerror.NewInternalError()
+		l.Warn("dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID)
+		err := coreerror.NewServerInternalError()
 		return nil, err
 	}
 
 	locationInstanceViewRec, err := m.(*model.Model).GetLocationInstanceViewRec(characterInstanceViewRec.LocationInstanceID)
 	if err != nil {
-		l.Warn("Failed to get location instance record ID >%s<", characterInstanceViewRec.LocationInstanceID)
+		l.Warn("failed to get location instance record ID >%s<", characterInstanceViewRec.LocationInstanceID)
 		return nil, err
 	}
 
 	if locationInstanceViewRec == nil {
-		l.Warn("Location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID)
-		err := coreerror.NewInternalError()
+		l.Warn("location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID)
+		err := coreerror.NewServerInternalError()
 		return nil, err
 	}
 
