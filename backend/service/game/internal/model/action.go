@@ -195,6 +195,11 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 		return nil, fmt.Errorf(msg)
 	}
 
+	l.Info("Location instance ID >%s< name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.ID, locationInstanceRecordSet.LocationInstanceViewRec.Name)
+	l.Info("Location instance ID >%s< record set character instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.CharacterInstanceViewRecs))
+	l.Info("Location instance ID >%s< record set monster instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.MonsterInstanceViewRecs))
+	l.Info("Location instance ID >%s< record set object instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.ObjectInstanceViewRecs))
+
 	sentence, err := m.decideAction(&DeciderArgs{
 		MonsterInstanceViewRec:    rec,
 		LocationInstanceRecordSet: locationInstanceRecordSet,

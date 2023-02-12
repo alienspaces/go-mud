@@ -1,6 +1,9 @@
 package model
 
 import (
+	"fmt"
+	"math/rand"
+
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -26,18 +29,23 @@ type DeciderArgs struct {
 func (m *Model) decideAction(args *DeciderArgs) (string, error) {
 	l := m.Logger("decideAction")
 
-	l.Info("deciding action args >%#v<", args)
+	l.Info("Deciding action args >%#v<", args)
 
 	if args.MonsterInstanceViewRec != nil {
-		l.Info("deciding action for monster name >%s<", args.MonsterInstanceViewRec.Name)
+		l.Info("Deciding action for monster name >%s<", args.MonsterInstanceViewRec.Name)
 	} else {
-		l.Info("deciding action for character name >%s<", args.CharacterInstanceViewRec.Name)
+		l.Info("Deciding action for character name >%s<", args.CharacterInstanceViewRec.Name)
 	}
 
+	// Decider functions are typically prioritised as attack if anything is
+	// worth attacking, then grab anything thats worth grabbing, look into
+	// other rooms to find someone to attack, and then the move if there's
+	// somewhere worth moving to.
 	deciderFuncs := []func(args *DeciderArgs) (string, error){
-		m.decideActionMove,
-		m.decideActionStash,
 		m.decideActionAttack,
+		m.decideActionStash,
+		m.decideActionLook,
+		m.decideActionMove,
 	}
 
 	var err error
@@ -56,9 +64,23 @@ func (m *Model) decideAction(args *DeciderArgs) (string, error) {
 	return sentence, nil
 }
 
-// TODO: 9-implement-monster-actions
-func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
-	return "", nil
+func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
+	l := m.Logger("decideActionAttack")
+
+	lirs := args.LocationInstanceRecordSet
+
+	action := ""
+	if args.MonsterInstanceViewRec != nil {
+		l.Info("Character instance count >%d<", len(lirs.CharacterInstanceViewRecs))
+		if len(lirs.CharacterInstanceViewRecs) != 0 {
+			v := rand.Intn(len(lirs.CharacterInstanceViewRecs))
+			action = fmt.Sprintf("attack %s", lirs.CharacterInstanceViewRecs[v].Name)
+		}
+	}
+
+	l.Info("Returning action >%s<", action)
+
+	return action, nil
 }
 
 // TODO: 9-implement-monster-actions
@@ -67,6 +89,12 @@ func (m *Model) decideActionStash(args *DeciderArgs) (string, error) {
 }
 
 // TODO: 9-implement-monster-actions
-func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
+func (m *Model) decideActionLook(args *DeciderArgs) (string, error) {
+
+	return "", nil
+}
+
+// TODO: 9-implement-monster-actions
+func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
 	return "", nil
 }

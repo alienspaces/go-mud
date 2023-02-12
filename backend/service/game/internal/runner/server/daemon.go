@@ -84,6 +84,9 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 			return err
 		}
 
+		// TODO: When there are no characters instances in a particular dungeon instance
+		// for a certain period of time, delete the dungeon instance.
+
 		// Merge any new dungeon instance records with existing dungeon instance states
 		dungeonInstanceStates = mergeDungeonInstanceStates(dungeonInstanceStates, diRecs)
 
@@ -131,7 +134,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 						return
 					}
 
-					if result.Incremented {
+					if result.incrementTurnResult.Incremented {
 						err = m.Commit()
 						if err != nil {
 							handleErr(err)
@@ -147,7 +150,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 					c <- dungeonInstanceProcessingResult{
 						DungeonInstanceID: dungeonInstanceID,
-						Turn:              result.Record.TurnNumber,
+						Turn:              result.incrementTurnResult.Record.TurnNumber,
 					}
 
 				}(dungeonInstanceID)
@@ -182,16 +185,20 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 	return nil
 }
 
-func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*model.IncrementDungeonInstanceTurnResult, error) {
+type processDungeonInstanceTurnResult struct {
+	incrementTurnResult             *model.IncrementDungeonInstanceTurnResult
+	monsterInstanceActionRecordSets []*record.ActionRecordSet
+}
+
+func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*processDungeonInstanceTurnResult, error) {
 	l = loggerWithContext(l, "processDungeonInstanceTurn")
 
-	var iditResult *model.IncrementDungeonInstanceTurnResult
-	var err error
+	pditr := processDungeonInstanceTurnResult{}
 
 WHILE_RESULT_NOT_INCREMENTED:
-	for iditResult == nil || !iditResult.Incremented {
+	for pditr.incrementTurnResult == nil || !pditr.incrementTurnResult.Incremented {
 		// Increment turn
-		iditResult, err = m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
+		iditr, err := m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
 			DungeonInstanceID: dungeonInstanceID,
 		})
 		if err != nil {
@@ -199,11 +206,13 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		if !iditResult.Incremented && iditResult.WaitMilliseconds > 0 {
-			l.Debug("Sleeping for >%d< milliseconds", iditResult.WaitMilliseconds)
-			time.Sleep(time.Duration(iditResult.WaitMilliseconds) * time.Millisecond)
+		if !iditr.Incremented && iditr.WaitMilliseconds > 0 {
+			l.Debug("Sleeping for >%d< milliseconds", iditr.WaitMilliseconds)
+			time.Sleep(time.Duration(iditr.WaitMilliseconds) * time.Millisecond)
 			continue WHILE_RESULT_NOT_INCREMENTED
 		}
+
+		pditr.incrementTurnResult = iditr
 
 		// Process monster instances
 		recs, err := m.GetMonsterInstanceRecs(map[string]interface{}{
@@ -214,26 +223,41 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		l.Info("Processing turn >%d< with >%d< monster instance records", iditResult.Record.TurnNumber, len(recs))
+		l.Info("Processing turn >%d< with >%d< monster instance records", iditr.Record.TurnNumber, len(recs))
 
-		// TODO: 9-implement-monster-actions
 		for idx := range recs {
 			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
-			dmicResult, err := m.DecideMonsterAction(recs[idx].ID)
+			dmar, err := m.DecideMonsterAction(recs[idx].ID)
 			if err != nil {
 				l.Warn("failed deciding monster instance ID >%s< action >%v<", recs[idx].ID, err)
 				return nil, err
 			}
 
-			l.Info("Monster instance ID >%s< Sentence >%s<", recs[idx].ID, dmicResult.Sentence)
+			l.Info("Monster instance ID >%s< Sentence >%s<", dmar.MonsterInstanceID, dmar.Sentence)
+
+			if dmar.Sentence == "" {
+				l.Info("Monster instance ID >%s< not doing anything this turn", dmar.MonsterInstanceID)
+				continue
+			}
+
+			ars, err := m.ProcessMonsterAction(dmar.DungeonInstanceID, dmar.MonsterInstanceID, dmar.Sentence)
+			if err != nil {
+				l.Warn("failed processing monster action >%s< action >%v<", dmar.Sentence, err)
+				return nil, err
+			}
+
+			l.Info("Processed monster instance ID >%s< action >%#v<", ars)
+			pditr.monsterInstanceActionRecordSets = append(pditr.monsterInstanceActionRecordSets, ars)
 		}
 	}
 
-	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, iditResult.Record.TurnNumber)
+	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, pditr.incrementTurnResult.Record.TurnNumber)
 
-	return iditResult, nil
+	return &pditr, nil
 }
 
+// keepRunning decides whether the server should continue
+// to run based on current state etc..
 func keepRunning() bool {
 	return true
 }
