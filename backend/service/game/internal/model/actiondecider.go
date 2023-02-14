@@ -1,14 +1,16 @@
 package model
 
 import (
+	"database/sql"
 	"fmt"
 	"math/rand"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // TODO: 9-implement-monster-actions
-// NOTES: Monsters should behave based on their statistics and capabilities.
+// NOTES: Monsters should ultimately behave based on their statistics and capabilities.
 // Examples:
 // - Intelligent humanoid monsters with no equipped weapon should attempt to equip any
 //   weapons left lying in the current location.
@@ -73,8 +75,11 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 	if args.MonsterInstanceViewRec != nil {
 		l.Info("Character instance count >%d<", len(lirs.CharacterInstanceViewRecs))
 		if len(lirs.CharacterInstanceViewRecs) != 0 {
-			v := rand.Intn(len(lirs.CharacterInstanceViewRecs))
-			action = fmt.Sprintf("attack %s", lirs.CharacterInstanceViewRecs[v].Name)
+			// TODO: This is currently a random target however it would be cool
+			// if a monster "stuck" to a target unless something even better came
+			// along. Define "better"!
+			rIdx := rand.Intn(len(lirs.CharacterInstanceViewRecs))
+			action = fmt.Sprintf("attack %s", lirs.CharacterInstanceViewRecs[rIdx].Name)
 		}
 	}
 
@@ -94,7 +99,43 @@ func (m *Model) decideActionLook(args *DeciderArgs) (string, error) {
 	return "", nil
 }
 
-// TODO: 9-implement-monster-actions
 func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
-	return "", nil
+	l := m.Logger("decideActionAttack")
+
+	lirs := args.LocationInstanceRecordSet
+
+	var possibleDirections []string
+	directions := map[string]sql.NullString{
+		"north":     lirs.LocationInstanceViewRec.NorthLocationInstanceID,
+		"northeast": lirs.LocationInstanceViewRec.NortheastLocationInstanceID,
+		"east":      lirs.LocationInstanceViewRec.EastLocationInstanceID,
+		"southeast": lirs.LocationInstanceViewRec.SoutheastLocationInstanceID,
+		"south":     lirs.LocationInstanceViewRec.SouthLocationInstanceID,
+		"southwest": lirs.LocationInstanceViewRec.SouthwestLocationInstanceID,
+		"west":      lirs.LocationInstanceViewRec.WestLocationInstanceID,
+		"northwest": lirs.LocationInstanceViewRec.NorthwestLocationInstanceID,
+		"up":        lirs.LocationInstanceViewRec.UpLocationInstanceID,
+		"down":      lirs.LocationInstanceViewRec.DownLocationInstanceID,
+	}
+
+	for direction := range directions {
+		if nullstring.IsValid(directions[direction]) {
+			possibleDirections = append(possibleDirections, direction)
+		}
+	}
+
+	l.Info("Have possible directions >%v<", possibleDirections)
+
+	action := ""
+	if len(possibleDirections) != 0 {
+		// TODO: This is currently a random direction however it would be cool
+		// if a monster was chasing a target for it to look in various directions
+		// for that target before deciding which direction to move.
+		rIdx := rand.Intn(len(possibleDirections))
+		action = fmt.Sprintf("move %s", possibleDirections[rIdx])
+	}
+
+	l.Info("Returning action >%s<", action)
+
+	return action, nil
 }

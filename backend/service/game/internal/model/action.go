@@ -275,8 +275,6 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	l.Warn("Action record turn >%d<", actionRec.TurnNumber)
-
 	// Perform the submitted monster action
 	actionRec, err = m.performAction(&PerformActionArgs{
 		ActionRec:                 actionRec,

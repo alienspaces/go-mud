@@ -246,7 +246,7 @@ WHILE_RESULT_NOT_INCREMENTED:
 				return nil, err
 			}
 
-			l.Info("Processed monster instance ID >%s< action >%#v<", ars)
+			l.Info("Processed monster instance ID >%s< action >%#v<", dmar.MonsterInstanceID, ars.ActionRec)
 			pditr.monsterInstanceActionRecordSets = append(pditr.monsterInstanceActionRecordSets, ars)
 		}
 	}
