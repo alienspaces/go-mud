@@ -12,6 +12,8 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
 
+  /// DungeonCharacterRecord will be populated when there is a character
+  /// being played and they have entered into a dungeon instance.
   DungeonCharacterRecord? dungeonCharacterRecord;
 
   DungeonCharacterCubit({required this.config, required this.repositories})
@@ -32,7 +34,9 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     } on RepositoryException catch (err) {
       log.warning('Throwing dungeon character load error');
       emit(DungeonCharacterStateLoadError(
-          characterID: characterID, message: err.message));
+        characterID: characterID,
+        message: err.message,
+      ));
       return Future<DungeonCharacterRecord?>.value(null);
     }
 

@@ -117,7 +117,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
     // TODO: (client) Loop this using a timer allowing animations to complete
     var moreActions = dungeonActionCubit.playAction();
-    log.fine('++ More actions >$moreActions<');
+    log.info('++ More actions >$moreActions<');
   }
 
   @override

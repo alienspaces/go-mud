@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/loop.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
 import 'package:go_mud_client/widgets/game/action/narrative.dart';
@@ -28,34 +27,7 @@ class _GameWidgetState extends State<GameWidget> {
 
     super.initState();
 
-    _initAction(context);
-  }
-
-  void _initAction(BuildContext context) {
-    final log = getLogger('GameWidget', '_initAction');
-    log.fine('Initialising action..');
-
-    final dungeonCharacterCubit =
-        BlocProvider.of<DungeonCharacterCubit>(context);
-    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
-      log.warning(
-          'Dungeon character cubit missing dungeon character record, cannot initialise action');
-      return;
-    }
-
-    final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
-    dungeonCommandCubit.selectAction(
-      'look',
-    );
-
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    dungeonActionCubit.createAction(
-      dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-      dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
-      dungeonCommandCubit.command(),
-    );
-
-    dungeonCommandCubit.unselectAction();
+    initLoop(context);
   }
 
   @override
