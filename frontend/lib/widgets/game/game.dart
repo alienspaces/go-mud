@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/loop.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
@@ -20,16 +19,6 @@ class GameWidget extends StatefulWidget {
 }
 
 class _GameWidgetState extends State<GameWidget> {
-  @override
-  void initState() {
-    final log = getLogger('GameWidget', 'initState');
-    log.fine('Initialising state..');
-
-    super.initState();
-
-    initLoop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameWidget', 'build');
