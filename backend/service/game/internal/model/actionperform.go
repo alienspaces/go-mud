@@ -465,6 +465,12 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				return nil, err
 			}
 
+			if tciRec == nil {
+				err := fmt.Errorf("failed getting character instance record ID >%s<", nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+				l.Warn(err.Error())
+				return nil, err
+			}
+
 			tciRec.Health -= 1
 
 			err = m.UpdateCharacterInstanceRec(tciRec)

@@ -7,23 +7,30 @@ import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.da
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
-void submitCubitLookAction(BuildContext context) async {
+void submitLookAction(BuildContext context) async {
   final log = getLogger('GameWidget', '_initAction');
   log.fine('Initialising action..');
 
-  final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
-  dungeonCommandCubit.selectAction(
-    'look',
-  );
+  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
+  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+    log.warning(
+        'Dungeon character cubit missing dungeon character record, cannot initialise action');
+    return;
+  }
 
-  await submitCubitAction(context);
+  final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
 
-  dungeonCommandCubit.unselectAction();
+  return dungeonActionCubit
+      .createAction(
+        dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
+        dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
+        "look",
+      )
+      .then((v) => playAction(context));
 }
 
-Future<void> submitCubitAction(BuildContext context) async {
+Future<void> submitAction(BuildContext context) async {
   final log = getLogger('Action', 'submitAction');
-  log.fine('Submitting action..');
 
   final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
   if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
@@ -35,9 +42,21 @@ Future<void> submitCubitAction(BuildContext context) async {
   final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
   final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
-  return dungeonActionCubit.createAction(
-    dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-    dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
-    dungeonCommandCubit.command(),
-  );
+  log.warning('Submitting action ${dungeonCommandCubit.command()}');
+
+  return dungeonActionCubit
+      .createAction(
+        dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
+        dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
+        dungeonCommandCubit.command(),
+      )
+      .then((v) => playAction(context));
+}
+
+Future<void> playAction(BuildContext context) async {
+  final log = getLogger('Action', 'playAction');
+
+  final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
+  var moreActions = dungeonActionCubit.playAction();
+  log.info('++ More actions >$moreActions<');
 }

@@ -107,20 +107,11 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
     }
 
     log.fine('++ Submitting action');
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
-    // await dungeonActionCubit.createAction(
-    //   dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-    //   dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
-    //   dungeonCommandCubit.command(),
-    // );
-    await submitCubitAction(context);
-    dungeonCommandCubit.unselectAll();
+    await submitAction(context);
 
-    // TODO: (client) Loop this using a timer allowing animations to complete
-    var moreActions = dungeonActionCubit.playAction();
-    log.info('++ More actions >$moreActions<');
+    dungeonCommandCubit.unselectAll();
   }
 
   @override

@@ -22,17 +22,17 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
       // submitted an action.
       buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
         if (currState is DungeonActionStateError) {
-          log.info('Skipping build..');
+          log.fine('Skipping build..');
           return false;
         }
-        log.info('Not skipping build..');
+        log.fine('Not skipping build..');
         return true;
       },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
 
         if (state is DungeonActionStateCreating) {
-          log.info('dungeon state is created');
+          log.fine('dungeon state is created');
           var dungeonActionRecord = state.current;
           if (dungeonActionRecord != null) {
             widgets.add(GameLocationDescriptionWidget(
@@ -41,13 +41,13 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
             ));
           }
         } else if (state is DungeonActionStateCreated) {
-          log.info('dungeon state is created');
+          log.fine('dungeon state is created');
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
             dungeonActionRecord: state.current,
           ));
         } else if (state is DungeonActionStatePlaying) {
-          log.info('dungeon state is playing');
+          log.fine('dungeon state is playing');
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeOut,
             dungeonActionRecord: state.previous,
@@ -58,7 +58,7 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
           ));
         }
 
-        log.info('Rendering ${widgets.length} dungeon description widgets');
+        log.fine('Rendering ${widgets.length} dungeon description widgets');
 
         return Stack(
           children: widgets,

@@ -92,7 +92,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 		// When there is nothing to process, wait and check for new instances again
 		if len(dungeonInstanceStates) == 0 {
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(3000 * time.Millisecond)
 			continue
 		}
 
