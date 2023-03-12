@@ -72,7 +72,7 @@ class _CharacterTrainWidgetState extends State<CharacterTrainWidget> {
                     Container(
                       child: Text(
                         'Train: ${state.characterRecord.characterName}',
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                     Container(

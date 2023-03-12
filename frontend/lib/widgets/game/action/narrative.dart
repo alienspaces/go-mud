@@ -153,7 +153,7 @@ class _GameActionNarrativeLineWidgetState
             child: Text(
               ': ${widget.line}'.trimRight(),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontSize: 30,
                     color: Colors.brown[800],
                   ),

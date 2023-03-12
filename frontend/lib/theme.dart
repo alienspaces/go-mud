@@ -55,55 +55,55 @@ ThemeData getTheme(BuildContext context) {
 
   return ThemeData(
     textTheme: TextTheme(
-      headline1: Theme.of(context).textTheme.headline1!.apply(
+      displayLarge: Theme.of(context).textTheme.displayLarge!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      headline2: Theme.of(context).textTheme.headline2!.apply(
+      displayMedium: Theme.of(context).textTheme.displayMedium!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      headline3: Theme.of(context).textTheme.headline3!.apply(
+      displaySmall: Theme.of(context).textTheme.displaySmall!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      headline4: Theme.of(context).textTheme.headline4!.apply(
+      headlineMedium: Theme.of(context).textTheme.headlineMedium!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      headline5: Theme.of(context).textTheme.headline5!.apply(
+      headlineSmall: Theme.of(context).textTheme.headlineSmall!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      headline6: Theme.of(context).textTheme.headline6!.apply(
+      titleLarge: Theme.of(context).textTheme.titleLarge!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      subtitle1: Theme.of(context).textTheme.subtitle1!.apply(
+      titleMedium: Theme.of(context).textTheme.titleMedium!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      subtitle2: Theme.of(context).textTheme.subtitle2!.apply(
+      titleSmall: Theme.of(context).textTheme.titleSmall!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      bodyText1: Theme.of(context).textTheme.bodyText1!.apply(
+      bodyLarge: Theme.of(context).textTheme.bodyLarge!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      bodyText2: Theme.of(context).textTheme.bodyText2!.apply(
+      bodyMedium: Theme.of(context).textTheme.bodyMedium!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      caption: Theme.of(context).textTheme.caption!.apply(
+      bodySmall: Theme.of(context).textTheme.bodySmall!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      button: Theme.of(context).textTheme.button!.apply(
+      labelLarge: Theme.of(context).textTheme.labelLarge!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),
-      overline: Theme.of(context).textTheme.overline!.apply(
+      labelSmall: Theme.of(context).textTheme.labelSmall!.apply(
             fontSizeFactor: fontScale.sizeFactor,
             fontSizeDelta: fontScale.sizeDelta,
           ),

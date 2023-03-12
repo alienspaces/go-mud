@@ -87,7 +87,7 @@ Widget _buildLink(
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.button!.copyWith(
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(
               fontSize: 14,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
@@ -129,14 +129,14 @@ AppBar header(BuildContext context, NavigationCallbacks callbacks) {
         children: <Widget>[
           Text(
             "Dungeon",
-            style: Theme.of(context).textTheme.headline6!.copyWith(
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 16,
                 ),
           ),
           Text(
             "Doom",
-            style: Theme.of(context).textTheme.headline6!.copyWith(
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 16,
                 ),

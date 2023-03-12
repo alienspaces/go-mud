@@ -119,7 +119,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
+      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
     );
 
     const double fieldHeight = 50;
@@ -185,7 +185,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
             // ignore: avoid_unnecessary_containers
             Container(
               child: Text('Create Character',
-                  style: Theme.of(context).textTheme.headline3),
+                  style: Theme.of(context).textTheme.displaySmall),
             )
           ];
 

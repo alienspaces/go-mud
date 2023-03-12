@@ -39,7 +39,7 @@ class CharacterListItemWidget extends StatelessWidget {
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
+      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
     );
 
     // TODO: (client) When the character is already in a dungeon display the dungeon
@@ -75,7 +75,7 @@ class CharacterListItemWidget extends StatelessWidget {
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Text(
               characterRecord.characterName,
-              style: Theme.of(context).textTheme.headline3,
+              style: Theme.of(context).textTheme.displaySmall,
             ),
           ),
           Container(

@@ -28,7 +28,7 @@ class CharacterCreateButtonWidget extends StatelessWidget {
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.button!.copyWith(fontSize: 18),
+      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
     );
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
