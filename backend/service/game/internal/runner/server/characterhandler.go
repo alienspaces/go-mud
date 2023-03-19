@@ -35,6 +35,12 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenTypePublic,
 				},
+				ValidateQueryParams: jsonschema.SchemaWithReferences{
+					Main: jsonschema.Schema{
+						Location: "schema/docs/character",
+						Name:     "query.schema.json",
+					},
+				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/docs/character",
@@ -198,6 +204,11 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	return nil
 }
 
+var paramNameMap map[string]string = map[string]string{
+	"character_id":   "id",
+	"character_name": "name",
+}
+
 // GetCharactersHandler -
 func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "GetCharactersHandler")
@@ -206,13 +217,13 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 	var recs []*record.Character
 	var err error
 
-	l.Info("Querying character records")
+	l.Info("Querying character records with params >%#v<", qp)
 
 	// Add query parameters
 	params := make(map[string]interface{})
 	for paramName, paramValue := range qp {
 		l.Info("Querying dungeon records with param name >%s< value >%v<", paramName, paramValue)
-		params[paramName] = paramValue
+		params[paramNameMap[paramName]] = paramValue
 	}
 
 	recs, err = m.(*model.Model).GetCharacterRecs(params, nil, false)

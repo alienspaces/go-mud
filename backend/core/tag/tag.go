@@ -7,6 +7,7 @@ import (
 )
 
 var nonRecurseTypeNames = map[interface{}]struct{}{
+	getTypeName(sql.NullInt16{}):  {},
 	getTypeName(sql.NullString{}): {},
 	getTypeName(sql.NullTime{}):   {},
 	getTypeName(sql.NullBool{}):   {},

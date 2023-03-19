@@ -405,15 +405,17 @@ CREATE TABLE "action_character" (
   CONSTRAINT "action_character_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id),
   CONSTRAINT "action_character_character_instance_id_fk" FOREIGN KEY (character_instance_id) REFERENCES character_instance(id),
   CONSTRAINT "action_character_record_type_ck" CHECK (
-    record_type = 'source' OR record_type = 'target' OR record_type = 'occupant'
+    record_type = 'source' OR
+    record_type = 'target' OR
+    record_type = 'current_location' OR
+    record_type = 'target_location'
   )
 );
 
 -- table action_character_object
 CREATE TABLE "action_character_object" (
   "id"                    uuid CONSTRAINT action_character_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "action_id"             uuid NOT NULL,
-  "character_instance_id" uuid NOT NULL,
+  "action_character_id"   uuid NOT NULL,
   "object_instance_id"    uuid NOT NULL,
   "name"                  text NOT NULL,
   "is_stashed"            boolean NOT NULL,
@@ -421,8 +423,7 @@ CREATE TABLE "action_character_object" (
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "action_character_object_action_id_fk" FOREIGN KEY (action_id) REFERENCES action(id),
-  CONSTRAINT "action_character_object_character_instance_id_fk" FOREIGN KEY (character_instance_id) REFERENCES character_instance(id),
+  CONSTRAINT "action_character_object_action_character_id_fk" FOREIGN KEY (action_character_id) REFERENCES action_character(id),
   CONSTRAINT "action_character_object_object_instance_id_fk" FOREIGN KEY (object_instance_id) REFERENCES object_instance(id),
   CONSTRAINT "action_character_object_equipped_stashed_ck" CHECK (
     is_stashed != is_equipped
@@ -453,14 +454,18 @@ CREATE TABLE "action_monster" (
   CONSTRAINT "action_monster_action_id_fk" FOREIGN KEY (action_id) REFERENCES action(id),
   CONSTRAINT "action_monster_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id),
   CONSTRAINT "action_monster_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES monster_instance(id),
-  CONSTRAINT "action_monster_record_type_ck" CHECK (record_type = 'source' OR record_type = 'target' OR record_type = 'occupant')
+  CONSTRAINT "action_monster_record_type_ck" CHECK (
+    record_type = 'source' OR
+    record_type = 'target' OR
+    record_type = 'current_location' OR
+    record_type = 'target_location'
+  )
 );
 
 -- table action_monster_object
 CREATE TABLE "action_monster_object" (
   "id"                  uuid CONSTRAINT action_monster_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "action_id"           uuid NOT NULL,
-  "monster_instance_id" uuid NOT NULL,
+  "action_monster_id"   uuid NOT NULL,
   "object_instance_id"  uuid NOT NULL,
   "name"                text NOT NULL,
   "is_stashed"          boolean NOT NULL,
@@ -468,8 +473,7 @@ CREATE TABLE "action_monster_object" (
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "action_monster_object_action_id_fk" FOREIGN KEY (action_id) REFERENCES action(id),
-  CONSTRAINT "action_monster_object_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES monster_instance(id),
+  CONSTRAINT "action_monster_object_action_monster_id_fk" FOREIGN KEY (action_monster_id) REFERENCES action_monster(id),
   CONSTRAINT "action_monster_object_object_instance_id_fk" FOREIGN KEY (object_instance_id) REFERENCES object_instance(id),
   CONSTRAINT "action_monster_object_equipped_stashed_ck" CHECK (
     is_stashed != is_equipped
@@ -478,15 +482,15 @@ CREATE TABLE "action_monster_object" (
 
 -- table action_object
 CREATE TABLE "action_object" (
-  "id"                           uuid CONSTRAINT action_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "record_type"                  text NOT NULL,
-  "action_id"                    uuid NOT NULL,
-  "location_instance_id"         uuid NOT NULL,
-  "object_instance_id"           uuid NOT NULL,
-  "name"                         text NOT NULL,
-  "description"                  text NOT NULL,
-  "is_stashed"                   boolean NOT NULL DEFAULT FALSE,
-  "is_equipped"                  boolean NOT NULL DEFAULT FALSE,
+  "id"                    uuid CONSTRAINT action_object_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "record_type"           text NOT NULL,
+  "action_id"             uuid NOT NULL,
+  "location_instance_id"  uuid NOT NULL,
+  "object_instance_id"    uuid NOT NULL,
+  "name"                  text NOT NULL,
+  "description"           text NOT NULL,
+  "is_stashed"            boolean NOT NULL DEFAULT FALSE,
+  "is_equipped"           boolean NOT NULL DEFAULT FALSE,
   "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
   "updated_at" timestamp WITH TIME ZONE,
   "deleted_at" timestamp WITH TIME ZONE,
@@ -494,11 +498,12 @@ CREATE TABLE "action_object" (
   CONSTRAINT "action_object_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id),
   CONSTRAINT "action_object_object_instance_id_fk" FOREIGN KEY (object_instance_id) REFERENCES object_instance(id),
   CONSTRAINT "action_object_record_type_ck" CHECK (
-    record_type = 'equipped' OR 
-    record_type = 'stashed' OR 
-    record_type = 'dropped' OR 
-    record_type = 'target' OR 
-    record_type = 'occupant'
+    record_type = 'equipped' OR
+    record_type = 'stashed' OR
+    record_type = 'dropped' OR
+    record_type = 'target' OR
+    record_type = 'current_location' OR
+    record_type = 'target_location'
   )
 );
 

@@ -1,4 +1,4 @@
-# Nest M.U.D - API
+# Go M.U.D - API
 
 - [Getting Started](README.md)
 - [How to Play](README-HOWTOPLAY.md)
@@ -80,38 +80,38 @@ GET /api/v1/characters/{:character_id}
 PUT /api/v1/characters/{:character_id}
 ```
 
-## Dungeon Instances
+## Dungeon characters
 
 Dungeon instances are created to accomodate a maximum number of characters per dungeon.
 
 **Enter dungeon:**
 
-Entering a dungeon returns the specific dungeon instance the character entered.
+A character enters into a dungeon.
 
-- [Response Schema](backend/schema/docs/dungeoninstance/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeoncharacter/response.schema.json)
 
 ```bash
-POST /api/v1/dungeons/{:dungeon_id}/enter
+POST /api/v1/dungeons/{:dungeon_id}/character/{:character_id}/enter
 ```
 
-**List dungeon instances:**
+**Exit dungeon:**
+
+A character exits from a dungeon.
+
+- [Response Schema](backend/schema/docs/character/response.schema.json)
+
+```bash
+POST /api/v1/dungeons/{:dungeon_id}/character/{:character_id}/exit
+```
+
+**Get dungeon character:**
 
 Lists the currently running dungeon instances.
 
-- [Response Schema](backend/schema/docs/dungeoninstance/response.schema.json)
+- [Response Schema](backend/schema/docs/dungeoncharacter/response.schema.json)
 
 ```bash
-GET /api/v1/dungeons/{:dungeon_id}/instances
-```
-
-**Get dungeon instances:**
-
-Returns a specific running dungeon instance.
-
-- [Response Schema](backend/schema/docs/dungeoninstance/response.schema.json)
-
-```bash
-GET /api/v1/dungeons/{:dungeon_id}/instances/{:dungeon_instance_id}
+GET /api/v1/dungeons/{:dungeon_id}/characters/{:character_id}
 ```
 
 ## Actions
@@ -124,5 +124,5 @@ Characters are controlled by performing actions.
 - [Response Schema](backend/schema/docs/action/response.schema.json)
 
 ```bash
-POST /api/v1/dungeons/{:dungeon_id}/instances/{:dungeon_instance_id}/actions
+POST /api/v1/dungeons/{:dungeon_id}/characters/{:character}/actions
 ```

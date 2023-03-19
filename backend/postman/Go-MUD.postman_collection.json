@@ -7,6 +7,39 @@
 	"item": [
 		{
 			"name": "GET - /api/v1/dungeons",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ",
+							"pm.test('Get dungeons', function() {",
+							"    try {",
+							"        pm.expect(pm.response.code).to.equal(200);",
+							"    } catch (e) {",
+							"        throw new Error(`${e.message}: ${JSON.stringify(pm.response.json())}`);",
+							"    }",
+							"",
+							"    const respJSON = pm.response.json();",
+							"    pm.expect(respJSON, \"Response JSON\").to.not.be.empty;",
+							"    pm.expect(respJSON.data, \"Response JSON data\").to.not.be.empty;",
+							"    pm.expect(respJSON.data.length, \"Response JSON data length\").to.equal(2);",
+							"",
+							"    respJSON.data.forEach(function(e) {",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_id');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_name');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_description');",
+							"    });  ",
+							"",
+							"    // Use first returned dungeon ID for additional tests",
+							"    pm.collectionVariables.set(\"dungeon_id\", respJSON.data[0].dungeon_id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -26,11 +59,41 @@
 		},
 		{
 			"name": "GET - /api/v1/dungeons/:dungeon_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ",
+							"pm.test('Get dungeons', function() {",
+							"    try {",
+							"        pm.expect(pm.response.code).to.equal(200);",
+							"    } catch (e) {",
+							"        throw new Error(`${e.message}: ${JSON.stringify(pm.response.json())}`);",
+							"    }",
+							"",
+							"    const respJSON = pm.response.json();",
+							"    pm.expect(respJSON, \"Response JSON\").to.not.be.empty;",
+							"    pm.expect(respJSON.data, \"Response JSON data\").to.not.be.empty;",
+							"    pm.expect(respJSON.data.length, \"Response JSON data length\").to.equal(1);",
+							"",
+							"    respJSON.data.forEach(function(e) {",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_id');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_name');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_description');",
+							"    });  ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{hostname}}/api/v1/dungeons/55087d68-dc17-41ed-bb53-12dc636ac196",
+					"raw": "{{hostname}}/api/v1/dungeons/{{dungeon_id}}",
 					"host": [
 						"{{hostname}}"
 					],
@@ -38,7 +101,7 @@
 						"api",
 						"v1",
 						"dungeons",
-						"55087d68-dc17-41ed-bb53-12dc636ac196"
+						"{{dungeon_id}}"
 					]
 				}
 			},
@@ -66,10 +129,49 @@
 			"response": []
 		},
 		{
-			"name": "GET - /api/v1/characters",
+			"name": "POST - /api/v1/characters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ",
+							"pm.test('Post character', function() {",
+							"    try {",
+							"        pm.expect(pm.response.code).to.equal(200);",
+							"    } catch (e) {",
+							"        throw new Error(`${e.message}: ${JSON.stringify(pm.response.json())}`);",
+							"    }",
+							"",
+							"    const respJSON = pm.response.json();",
+							"    pm.expect(respJSON, \"Response JSON\").to.not.be.empty;",
+							"    pm.expect(respJSON.data, \"Response JSON data\").to.not.be.empty;",
+							"    pm.expect(respJSON.data.length, \"Response JSON data length\").to.equal(1);",
+							"",
+							"    respJSON.data.forEach(function(e) {",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_id');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_name');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_strength');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_dexterity');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_intelligence');",
+							"    });  ",
+							"",
+							"    // Use first returned character ID for additional tests",
+							"    pm.collectionVariables.set(\"character_id\", respJSON.data[0].character_id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"character_name\": \"{{$randomFirstName}}\",\n        \"character_strength\": 10,\n        \"character_dexterity\": 10,\n        \"character_intelligence\": 10\n    }\n}"
+				},
 				"url": {
 					"raw": "{{hostname}}/api/v1/characters",
 					"host": [
@@ -79,6 +181,133 @@
 						"api",
 						"v1",
 						"characters"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - /api/v1/characters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ",
+							"pm.test('Get character', function() {",
+							"    try {",
+							"        pm.expect(pm.response.code).to.equal(200);",
+							"    } catch (e) {",
+							"        throw new Error(`${e.message}: ${JSON.stringify(pm.response.json())}`);",
+							"    }",
+							"",
+							"    const respJSON = pm.response.json();",
+							"    pm.expect(respJSON, \"Response JSON\").to.not.be.empty;",
+							"    pm.expect(respJSON.data, \"Response JSON data\").to.not.be.empty;",
+							"    pm.expect(respJSON.data.length, \"Response JSON data length\").to.equal(1);",
+							"",
+							"    respJSON.data.forEach(function(e) {",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_id');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_name');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_strength');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_dexterity');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_intelligence');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_health');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_fatigue');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_coins');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_experience_points');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_attribute_points');",
+							"    });  ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/api/v1/characters/{{character_id}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"characters",
+						"{{character_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST - /api/v1/dungeons/:dungeon_id/characters/:character_id/name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ",
+							"pm.test('Post character enters dungeon', function() {",
+							"    try {",
+							"        pm.expect(pm.response.code).to.equal(200);",
+							"    } catch (e) {",
+							"        throw new Error(`${e.message}: ${JSON.stringify(pm.response.json())}`);",
+							"    }",
+							"",
+							"    const respJSON = pm.response.json();",
+							"    pm.expect(respJSON, \"Response JSON\").to.not.be.empty;",
+							"    pm.expect(respJSON.data, \"Response JSON data\").to.not.be.empty;",
+							"    pm.expect(respJSON.data.length, \"Response JSON data length\").to.equal(1);",
+							"",
+							"    respJSON.data.forEach(function(e) {",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_id');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_name');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_description');",
+							"        pm.expect(e, \"Location has property\").to.have.property('location_id');",
+							"        pm.expect(e, \"Location has property\").to.have.property('location_name');",
+							"        pm.expect(e, \"Location has property\").to.have.property('location_description');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_id');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_name');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_strength');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_dexterity');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_intelligence');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_health');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_fatigue');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_coins');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_experience_points');",
+							"        pm.expect(e, \"Character has property\").to.have.property('character_attribute_points');",
+							"    });  ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{hostname}}/api/v1/dungeons/{{dungeon_id}}/characters/{{character_id}}/enter",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"dungeons",
+						"{{dungeon_id}}",
+						"characters",
+						"{{character_id}}",
+						"enter"
 					]
 				}
 			},
@@ -110,6 +339,18 @@
 			"key": "hostname",
 			"value": "http://localhost:8084",
 			"type": "default"
+		},
+		{
+			"key": "dungeonId",
+			"value": ""
+		},
+		{
+			"key": "dungeon_id",
+			"value": ""
+		},
+		{
+			"key": "character_id",
+			"value": ""
 		}
 	]
 }

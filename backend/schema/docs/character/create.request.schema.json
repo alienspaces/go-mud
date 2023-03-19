@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/docs/dungeoncharacter/create.request.schema.json",
-  "title": "Create Dungeon Character",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/docs/character/create.request.schema.json",
+  "title": "Create Character",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "data": {
       "$ref": "#/definitions/data"
@@ -14,16 +15,16 @@
       "type": "object",
       "required": ["character_name", "character_strength", "character_dexterity", "character_intelligence"],
       "properties": {
-        "name": {
+        "character_name": {
           "type": "string"
         },
-        "strength": {
+        "character_strength": {
           "type": "number"
         },
-        "dexterity": {
+        "character_dexterity": {
           "type": "number"
         },
-        "intelligence": {
+        "character_intelligence": {
           "type": "number"
         }
       }

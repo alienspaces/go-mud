@@ -191,27 +191,54 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	l.Debug("Resulting action character >%#v<", dungeonActionRecordSet.ActionCharacterRec)
 	l.Debug("Resulting action monster >%#v<", dungeonActionRecordSet.ActionMonsterRec)
 
-	// Response data
-	responseData, err := actionResponseData(l, *dungeonActionRecordSet)
+	// Get every action that occured between this characters previous action and this action
+	actionRecs, err := m.(*model.Model).GetActionRecsSincePreviousAction(dungeonActionRecordSet.ActionRec)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	// Assign response properties
-	res := schema.ActionResponse{
-		Data: []schema.ActionResponseData{
-			*responseData,
-		},
+	l.Info("Responding with >%d< action records", len(actionRecs))
+
+	// Response data
+	data := []schema.ActionResponseData{}
+	for _, rec := range actionRecs {
+
+		rs, err := m.(*model.Model).GetActionRecordSet(rec.ID)
+		if err != nil {
+			server.WriteError(l, w, err)
+			return err
+		}
+
+		responseData, err := actionResponseData(l, *rs)
+		if err != nil {
+			server.WriteError(l, w, err)
+			return err
+		}
+
+		data = append(data, *responseData)
 	}
 
-	l.Info("Response >%#v<", res)
-	if len(res.Data) != 0 {
-		l.Info("Response character >%#v<", res.Data[0].ActionCharacter)
-		l.Info("Response monster >%#v<", res.Data[0].ActionMonster)
-		l.Info("Response target character >%#v<", res.Data[0].ActionTargetCharacter)
-		l.Info("Response target monster >%#v<", res.Data[0].ActionTargetMonster)
-		l.Info("Response target object >%#v<", res.Data[0].ActionTargetObject)
+	// Assign response properties
+	res := schema.ActionResponse{
+		Data: data,
+	}
+
+	for idx := range res.Data {
+		if res.Data[idx].ActionCharacter != nil {
+			l.Info("Response ActionCharacter >%s<", res.Data[idx].ActionCharacter.CharacterName)
+			for oidx := range res.Data[idx].ActionCharacter.CharacterEquippedObjects {
+				l.Info("         -   >%#v<", res.Data[idx].ActionCharacter.CharacterEquippedObjects[oidx])
+			}
+		}
+		if res.Data[idx].ActionMonster != nil {
+			l.Info("Response ActionMonster >%s<", res.Data[idx].ActionMonster.MonsterName)
+		}
+		l.Info("Response ActionLocation LocationName >%s<", res.Data[idx].ActionLocation.LocationName)
+		l.Info("Response - Action ID >%s<", res.Data[idx].ActionID)
+		l.Info("Response - Action Command >%s<", res.Data[idx].ActionCommand)
+		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].ActionTurnNumber)
+		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].ActionSerialNumber)
 	}
 
 	err = server.WriteResponse(l, w, res)

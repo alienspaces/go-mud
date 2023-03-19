@@ -16,12 +16,15 @@ import (
 
 // Repository -
 type Repository struct {
-	Config           Config
-	Log              logger.Logger
-	Tx               *sqlx.Tx
-	Prepare          preparer.Repository
-	RecordParams     map[string]*RecordParam
+	Config       Config
+	Log          logger.Logger
+	Tx           *sqlx.Tx
+	Prepare      preparer.Repository
+	RecordParams map[string]*RecordParam
+
+	attributes       []string
 	updateAttributes []string
+	createAttributes []string
 }
 
 var _ repositor.Repositor = &Repository{}
@@ -60,15 +63,40 @@ func (r *Repository) Init() error {
 		return errors.New("repository Attributes are empty, cannot initialise")
 	}
 
+	attributes := []string{}
+	createAttributes := []string{}
 	updateAttributes := []string{}
+
 	for _, attribute := range r.Attributes() {
-		if attribute == "id" ||
-			attribute == "created_at" ||
-			attribute == "deleted_at" {
+		attributeParts := strings.Split(attribute, ",")
+		attributeName := attributeParts[0]
+
+		// All attributes for queries and returning clauses
+		attributes = append(attributes, attributeName)
+
+		// Readonly attribute check
+		if len(attributeParts) > 1 {
+			if attributeParts[1] == "readonly" {
+				continue
+			}
+		}
+
+		// Create attributes
+		createAttributes = append(createAttributes, attributeName)
+
+		// Standard not updateable attribute check
+		if attributeName == "id" ||
+			attributeName == "created_at" ||
+			attributeName == "deleted_at" {
 			continue
 		}
-		updateAttributes = append(updateAttributes, attribute)
+
+		// Update attributes
+		updateAttributes = append(updateAttributes, attributeName)
 	}
+
+	r.attributes = attributes
+	r.createAttributes = createAttributes
 	r.updateAttributes = updateAttributes
 
 	return nil
@@ -115,7 +143,7 @@ func (r *Repository) GetOneRec(recordID string, rec interface{}, forUpdate bool)
 		return err
 	}
 
-	l.Debug("Record fetched")
+	l.Debug("Record fetched >%#v<", rec)
 
 	return nil
 }
@@ -287,7 +315,7 @@ func (r *Repository) GetOneSQL() string {
 	return fmt.Sprintf(`
 SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL
 `,
-		commaSeparated(r.Attributes()),
+		commaSeparated(r.attributes),
 		r.TableName())
 }
 
@@ -296,7 +324,7 @@ func (r *Repository) GetOneForUpdateSQL() string {
 	return fmt.Sprintf(`
 SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL FOR UPDATE SKIP LOCKED
 `,
-		commaSeparated(r.Attributes()),
+		commaSeparated(r.attributes),
 		r.TableName())
 }
 
@@ -305,7 +333,7 @@ func (r *Repository) GetManySQL() string {
 	return fmt.Sprintf(`
 SELECT %s FROM %s WHERE deleted_at IS NULL
 `,
-		commaSeparated(r.Attributes()),
+		commaSeparated(r.attributes),
 		r.TableName())
 }
 
@@ -334,9 +362,9 @@ INSERT INTO %s (
 RETURNING %s
 `,
 		r.TableName(),
-		commaNewlineSeparated(r.Attributes()),
-		colonPrefixedCommaNewlineSeparated(r.Attributes()),
-		commaSeparated(r.Attributes()))
+		commaNewlineSeparated(r.createAttributes),
+		colonPrefixedCommaNewlineSeparated(r.createAttributes),
+		commaSeparated(r.attributes))
 }
 
 func commaNewlineSeparated(attributes []string) string {
@@ -381,7 +409,7 @@ RETURNING %s
 `,
 		r.TableName(),
 		equalsAndNewlineSeparated(r.updateAttributes),
-		commaSeparated(r.Attributes()))
+		commaSeparated(r.attributes))
 }
 
 func equalsAndNewlineSeparated(attributes []string) string {
@@ -412,7 +440,7 @@ func (r *Repository) DeleteOneSQL() string {
 UPDATE %s SET deleted_at = :deleted_at WHERE id = :id AND deleted_at IS NULL RETURNING %s
 `,
 		r.TableName(),
-		commaSeparated(r.Attributes()),
+		commaSeparated(r.attributes),
 	)
 }
 

@@ -16,6 +16,8 @@ type ActionResponseData struct {
 	ActionID              string           `json:"action_id"`
 	ActionCommand         string           `json:"action_command"`
 	ActionNarrative       string           `json:"action_narrative"`
+	ActionTurnNumber      int              `json:"action_turn_number"`
+	ActionSerialNumber    int16            `json:"action_serial_number"`
 	ActionLocation        ActionLocation   `json:"action_location"`
 	ActionCharacter       *ActionCharacter `json:"action_character,omitempty"`
 	ActionMonster         *ActionMonster   `json:"action_monster,omitempty"`

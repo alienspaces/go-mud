@@ -223,7 +223,6 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		require.NoError(t, err, "Validates against schema without error")
 		t.Logf("Validation result errors >%+v< valid >%t<", result.Errors(), result.Valid())
 
-		// TODO: (game) Test response schema validation is true
 		require.True(t, result.Valid(), "Validates against schema")
 	}
 

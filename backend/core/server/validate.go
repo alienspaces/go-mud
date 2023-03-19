@@ -91,6 +91,8 @@ func validateQueryParameters(l logger.Logger, q url.Values, paramSchema jsonsche
 	}
 
 	qJSON := queryParamsToJSON(q)
+	l.Info("Validating query JSON >%#v<", qJSON)
+
 	result, err := jsonschema.Validate(paramSchema, qJSON)
 	if err != nil {
 		l.Warn("failed validate query params due to schema validation logic >%v<", err)
@@ -103,7 +105,7 @@ func validateQueryParameters(l logger.Logger, q url.Values, paramSchema jsonsche
 		return nil, err
 	}
 
-	l.Info("all parameters okay")
+	l.Info("All parameters okay")
 
 	return buildQueryParams(q), nil
 }

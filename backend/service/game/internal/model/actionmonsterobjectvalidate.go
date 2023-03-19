@@ -9,11 +9,8 @@ import (
 // validateActionMonsterObjectRec - validates creating and updating an action monster object record
 func (m *Model) validateActionMonsterObjectRec(rec *record.ActionMonsterObject) error {
 
-	if rec.ActionID == "" {
-		return fmt.Errorf("failed validation, ActionID is empty")
-	}
-	if rec.MonsterInstanceID == "" {
-		return fmt.Errorf("failed validation, MonsterInstanceID is empty")
+	if rec.ActionMonsterID == "" {
+		return fmt.Errorf("failed validation, ActionMonsterID is empty")
 	}
 	if rec.ObjectInstanceID == "" {
 		return fmt.Errorf("failed validation, ObjectInstanceID is empty")

@@ -17,12 +17,12 @@ const (
 )
 
 type Action struct {
-	SerialNumber                      sql.NullInt16  `db:"serial_number"`
-	TurnNumber                        int            `db:"turn_number"`
 	DungeonInstanceID                 string         `db:"dungeon_instance_id"`
 	LocationInstanceID                string         `db:"location_instance_id"`
 	CharacterInstanceID               sql.NullString `db:"character_instance_id"`
 	MonsterInstanceID                 sql.NullString `db:"monster_instance_id"`
+	SerialNumber                      sql.NullInt16  `db:"serial_number,readonly"`
+	TurnNumber                        int            `db:"turn_number"`
 	ResolvedCommand                   string         `db:"resolved_command"`
 	ResolvedEquippedObjectInstanceID  sql.NullString `db:"resolved_equipped_object_instance_id"`
 	ResolvedStashedObjectInstanceID   sql.NullString `db:"resolved_stashed_object_instance_id"`
@@ -36,9 +36,10 @@ type Action struct {
 }
 
 const (
-	ActionCharacterRecordTypeSource   string = "source"
-	ActionCharacterRecordTypeTarget   string = "target"
-	ActionCharacterRecordTypeOccupant string = "occupant"
+	ActionCharacterRecordTypeSource          string = "source"
+	ActionCharacterRecordTypeTarget          string = "target"
+	ActionCharacterRecordTypeCurrentLocation string = "current_location"
+	ActionCharacterRecordTypeTargetLocation  string = "target_location"
 )
 
 type ActionCharacter struct {
@@ -61,19 +62,19 @@ type ActionCharacter struct {
 }
 
 type ActionCharacterObject struct {
-	ActionID            string `db:"action_id"`
-	CharacterInstanceID string `db:"character_instance_id"`
-	ObjectInstanceID    string `db:"object_instance_id"`
-	Name                string `db:"name"`
-	IsStashed           bool   `db:"is_stashed"`
-	IsEquipped          bool   `db:"is_equipped"`
+	ActionCharacterID string `db:"action_character_id"`
+	ObjectInstanceID  string `db:"object_instance_id"`
+	Name              string `db:"name"`
+	IsStashed         bool   `db:"is_stashed"`
+	IsEquipped        bool   `db:"is_equipped"`
 	repository.Record
 }
 
 const (
-	ActionMonsterRecordTypeSource   string = "source"
-	ActionMonsterRecordTypeTarget   string = "target"
-	ActionMonsterRecordTypeOccupant string = "occupant"
+	ActionMonsterRecordTypeSource          string = "source"
+	ActionMonsterRecordTypeTarget          string = "target"
+	ActionMonsterRecordTypeCurrentLocation string = "current_location"
+	ActionMonsterRecordTypeTargetLocation  string = "target_location"
 )
 
 type ActionMonster struct {
@@ -96,12 +97,11 @@ type ActionMonster struct {
 }
 
 type ActionMonsterObject struct {
-	ActionID          string `db:"action_id"`
-	MonsterInstanceID string `db:"monster_instance_id"`
-	ObjectInstanceID  string `db:"object_instance_id"`
-	Name              string `db:"name"`
-	IsStashed         bool   `db:"is_stashed"`
-	IsEquipped        bool   `db:"is_equipped"`
+	ActionMonsterID  string `db:"action_monster_id"`
+	ObjectInstanceID string `db:"object_instance_id"`
+	Name             string `db:"name"`
+	IsStashed        bool   `db:"is_stashed"`
+	IsEquipped       bool   `db:"is_equipped"`
 	repository.Record
 }
 
@@ -114,8 +114,10 @@ const (
 	ActionObjectRecordTypeDropped string = "dropped"
 	// Target objects are are being actively looked at, used, equipped or stashed
 	ActionObjectRecordTypeTarget string = "target"
-	// Occupant objects are present at a location
-	ActionObjectRecordTypeOccupant string = "occupant"
+	// Current location objects
+	ActionObjectRecordTypeCurrentLocation string = "current_location"
+	// Target location objects
+	ActionObjectRecordTypeTargetLocation string = "target_location"
 )
 
 type ActionObject struct {
