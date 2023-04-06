@@ -9,30 +9,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-func (rnr *Runner) getDungeonInstanceRecs() ([]*record.DungeonInstance, error) {
-	l := loggerWithContext(rnr.Log, "getDungeonInstanceRecs")
-
-	m, err := rnr.initModeller(l)
-	if err != nil {
-		l.Warn("failed initialising modeller >%v<", err)
-		return nil, err
-	}
-
-	diRecs, err := m.GetDungeonInstanceRecs(nil, nil, false)
-	if err != nil {
-		l.Warn("failed getting dungeon instance records >%v<", err)
-		return nil, err
-	}
-
-	err = m.Rollback()
-	if err != nil {
-		l.Warn("failed model rollback >%v<", err)
-		return nil, err
-	}
-
-	return diRecs, nil
-}
-
 type processState string
 
 const (
@@ -54,7 +30,7 @@ type dungeonInstanceProcessingResult struct {
 	Turn              int
 }
 
-func mergeDungeonInstanceStates(dungeonInstanceStates map[string]*dungeonInstanceState, diRecs []*record.DungeonInstance) map[string]*dungeonInstanceState {
+func daemonMergeDungeonInstanceStates(dungeonInstanceStates map[string]*dungeonInstanceState, diRecs []*record.DungeonInstance) map[string]*dungeonInstanceState {
 	for idx := range diRecs {
 		if _, ok := dungeonInstanceStates[diRecs[idx].ID]; !ok {
 			dungeonInstanceStates[diRecs[idx].ID] = &dungeonInstanceState{
@@ -63,6 +39,111 @@ func mergeDungeonInstanceStates(dungeonInstanceStates map[string]*dungeonInstanc
 		}
 	}
 	return dungeonInstanceStates
+}
+
+func daemonRemoveDungeonInstanceState(dungeonInstanceStates map[string]*dungeonInstanceState, diRec *record.DungeonInstance) map[string]*dungeonInstanceState {
+
+	delete(dungeonInstanceStates, diRec.ID)
+
+	return dungeonInstanceStates
+}
+
+func daemonGetDungeonInstanceRecs(l logger.Logger, m *model.Model) ([]*record.DungeonInstance, error) {
+	l = loggerWithContext(l, "daemonGetDungeonInstanceRecs")
+
+	diRecs, err := m.GetDungeonInstanceRecs(nil, nil, false)
+	if err != nil {
+		l.Warn("failed getting dungeon instance records >%v<", err)
+		return nil, err
+	}
+
+	return diRecs, nil
+}
+
+func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.DungeonInstance) (empty bool, err error) {
+	l = loggerWithContext(l, "daemonDungeonInstanceEmpty")
+
+	ciRecs, err := m.GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dir.ID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting many character instance records >%v<", err)
+		return empty, err
+	}
+
+	l.Info("Dungeon instance ID >%s< character instance count >%d<", dir.ID, len(ciRecs))
+
+	return len(ciRecs) == 0, nil
+}
+
+func daemonShutdownDungeonInstance(l logger.Logger, m *model.Model, dir *record.DungeonInstance) error {
+	l = loggerWithContext(l, "daemonShutdownDungeonInstance")
+
+	err := m.DeleteDungeonInstance(dir.ID)
+	if err != nil {
+		l.Warn("failed deleting dungeon instance >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
+func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInstanceState) (map[string]*dungeonInstanceState, error) {
+	l = loggerWithContext(l, "daemonInitCycle")
+
+	m, err := rnr.initModeller(l)
+	if err != nil {
+		l.Warn("failed initialising modeller >%v<", err)
+		return nil, err
+	}
+
+	// Fetch all current dungeon instance records
+	diRecs, err := daemonGetDungeonInstanceRecs(l, m)
+	if err != nil {
+		err = m.Rollback()
+		if err != nil {
+			l.Warn("failed model rollback >%v<", err)
+			return nil, err
+		}
+		l.Warn("failed getting dungeon instance recs >%v<", err)
+		return nil, err
+	}
+
+	// When there are no characters instances in a particular dungeon instance
+	// for a certain period of time, delete the dungeon instance.
+	for idx := range diRecs {
+		empty, err := daemonDungeonInstanceEmpty(l, m, diRecs[idx])
+		if err != nil {
+			err = m.Rollback()
+			if err != nil {
+				l.Warn("failed model rollback >%v<", err)
+				return nil, err
+			}
+			l.Warn("failed check if dungeon instance ID >%s< is empty >%v<", diRecs[idx].ID, err)
+			return nil, err
+		}
+
+		if empty {
+			err := daemonShutdownDungeonInstance(l, m, diRecs[idx])
+			if err != nil {
+				err = m.Rollback()
+				if err != nil {
+					l.Warn("failed model rollback >%v<", err)
+					return nil, err
+				}
+				l.Warn("failed shutting down dungeon instance ID >%s< >%v<", diRecs[idx].ID, err)
+				return nil, err
+			}
+			dis = daemonRemoveDungeonInstanceState(dis, diRecs[idx])
+		}
+	}
+
+	// Merge any new dungeon instance records with existing dungeon instance states
+	dis = daemonMergeDungeonInstanceStates(dis, diRecs)
+
+	return dis, nil
 }
 
 // RunDaemon - Starts the daemon process. Override to implement a custom daemon run function.
@@ -77,18 +158,11 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 	for keepRunning() {
 
-		// Fetch all current dungeon instance records
-		diRecs, err := rnr.getDungeonInstanceRecs()
+		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
-			l.Warn("failed getting dungeon instance recs >%v<", err)
+			l.Warn("failed daemin init cycle  >%v<", err)
 			return err
 		}
-
-		// TODO: When there are no characters instances in a particular dungeon instance
-		// for a certain period of time, delete the dungeon instance.
-
-		// Merge any new dungeon instance records with existing dungeon instance states
-		dungeonInstanceStates = mergeDungeonInstanceStates(dungeonInstanceStates, diRecs)
 
 		// When there is nothing to process, wait and check for new instances again
 		if len(dungeonInstanceStates) == 0 {
