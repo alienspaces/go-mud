@@ -22,8 +22,6 @@ const (
 	putCharacter  server.HandlerConfigKey = "put-character"
 )
 
-// TODO: (game) Add character instance data to all responses as there may only be a single
-// character instance.
 func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
 
 	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{

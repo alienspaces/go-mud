@@ -66,15 +66,7 @@ func (e Error) Error() string {
 }
 
 // Request -
-type Request struct {
-	Pagination *RequestPagination `json:"pagination,omitempty"`
-}
-
-// RequestPagination -
-type RequestPagination struct {
-	PageNumber int `json:"page_number"`
-	PageSize   int `json:"page_size"`
-}
+type Request struct{}
 
 // Response -
 type Response struct {

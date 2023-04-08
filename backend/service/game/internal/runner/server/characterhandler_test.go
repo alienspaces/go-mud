@@ -103,8 +103,6 @@ func TestPostCharacterHandler(t *testing.T) {
 					require.False(t, data.CharacterCreatedAt.IsZero(), "CreatedAt is not zero")
 					if method == http.MethodPost {
 						require.True(t, data.CharacterUpdatedAt.IsZero(), "UpdatedAt is zero")
-						// t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
-						// th.AddCharacterTeardownID(data.ID)
 					}
 				}
 			}

@@ -185,6 +185,8 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 		jsonData, err := json.Marshal(data)
 		require.NoError(t, err, "Marshal returns without error")
 
+		t.Logf("++++ Posting JSON data >%s<", jsonData)
+
 		req, err = http.NewRequest(handlerConfig.Method, requestPath, bytes.NewBuffer(jsonData))
 		require.NoError(t, err, "NewRequest returns without error")
 	} else {
