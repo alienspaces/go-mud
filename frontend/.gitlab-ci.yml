@@ -28,3 +28,6 @@ test-frontend:
     - flutter pub get
     - dart ./tool/generate.dart
     - flutter test
+  tags:
+    - go-mud
+    - docker
