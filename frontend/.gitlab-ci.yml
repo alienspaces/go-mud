@@ -7,8 +7,8 @@ test-frontend:
     APP_SERVER_SCHEMA_PATH: "./schema/docs"
     APP_SERVER_JWT_SIGNING_KEY: "!notTherealSecretNoob!"
     APP_SERVER_DB_HOST: localhost
-    APP_SERVER_DB_NAME: "go-mud"
     APP_SERVER_DB_PORT: 5432
+    APP_SERVER_DB_NAME: "go-mud"
     APP_SERVER_DB_USER: "go-mud-user"
     APP_SERVER_DB_PASSWORD: "go-mud-pass"
     APP_SERVER_DB_MAX_OPEN_CONNECTIONS: 50
