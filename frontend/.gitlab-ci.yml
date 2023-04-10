@@ -30,3 +30,4 @@ test-frontend:
     - flutter test --reporter expanded --concurrency 1
   tags:
     - docker
+    - alienspaces

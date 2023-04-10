@@ -18,6 +18,7 @@ test-backend:
     - ./script/test-ci
   tags:
     - docker
+    - alienspaces
 
 build-backend:
   image: $CI_REGISTRY/alienspaces/go-mud/docker:20.10.17
@@ -33,3 +34,4 @@ build-backend:
     - ./script/build
   tags:
     - docker
+    - alienspaces
