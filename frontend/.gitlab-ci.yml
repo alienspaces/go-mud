@@ -18,7 +18,6 @@ test-frontend:
     APP_CLIENT_API_SCHEME: "http"
     APP_CLIENT_API_HOST: game-server
     APP_CLIENT_API_PORT: 8084
-    CI_DEBUG_SERVICES: "true"
   image: $CI_REGISTRY/alienspaces/go-mud/cirrusci/flutter:3.3.9
   stage: test-frontend
   services:
