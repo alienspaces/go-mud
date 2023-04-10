@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+if [ -z "$APP_CLIENT_API_SCHEME" ]; then
+    echo "Missing environment variable APP_CLIENT_API_SCHEME, cannot run tests"
+    exit 0
+fi
+
+if [ -z "$APP_CLIENT_API_HOST" ]; then
+    echo "Missing environment variable APP_CLIENT_API_HOST, cannot run tests"
+    exit 0
+fi
+
+if [ -z "$APP_CLIENT_API_PORT" ]; then
+    echo "Missing environment variable APP_CLIENT_API_PORT, cannot run tests"
+    exit 0
+fi
+
+
+flutter pub get
+dart ./tool/generate.dart
+flutter test --reporter expanded --concurrency 1

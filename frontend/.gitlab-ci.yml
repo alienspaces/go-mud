@@ -25,9 +25,7 @@ test-frontend:
       alias: game-server
   script:
     - cd frontend
-    - flutter pub get
-    - dart ./tool/generate.dart
-    - flutter test --reporter expanded --concurrency 1
+    - ./script/test
   tags:
     - docker
     - alienspaces
