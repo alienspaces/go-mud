@@ -25,7 +25,8 @@ build-backend:
   stage: build-backend
   services:
     - name: $CI_REGISTRY/alienspaces/go-mud/docker:23.0.3-dind
-      alias: docker
+      entrypoint: [ "dockerd-entrypoint.sh", "--tls=false" ]
+#      alias: docker
   before_script:
     - apk add git
     - apk add bash
