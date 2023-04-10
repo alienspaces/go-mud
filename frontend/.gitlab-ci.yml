@@ -2,7 +2,7 @@ test-frontend:
   variables:
     APP_SERVER_ENV: ci
     APP_SERVER_PORT: 8084
-    APP_SERVER_LOG_LEVEL: warn
+    APP_SERVER_LOG_LEVEL: info
     APP_SERVER_LOG_PRETTY: "true"
     APP_SERVER_SCHEMA_PATH: "./schema/docs"
     APP_SERVER_JWT_SIGNING_KEY: "!notTherealSecretNoob!"
@@ -23,6 +23,8 @@ test-frontend:
   services:
     - name: $CI_REGISTRY/alienspaces/go-mud/game-server:$CI_COMMIT_SHORT_SHA
       alias: game-server
+  variables:
+      CI_DEBUG_SERVICES: "true"
   script:
     - cd frontend
     - flutter pub get

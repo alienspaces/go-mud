@@ -39,7 +39,6 @@ if [ -z "$COMMAND" ]; then
     export POSTGRES_DB=$APP_SERVER_DB_NAME
     export POSTGRES_USER=$APP_SERVER_DB_USER
     export POSTGRES_PASSWORD=$APP_SERVER_DB_PASSWORD
-    export POSTGRES_HOST_AUTH_METHOD="trust"
 
     echo "=> (entrypoint) POSTGRES_DB: ${POSTGRES_DB}"
     echo "=> (entrypoint) POSTGRES_USER: ${POSTGRES_USER}"
