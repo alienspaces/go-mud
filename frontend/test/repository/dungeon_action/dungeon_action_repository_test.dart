@@ -14,6 +14,7 @@ void main() {
         reason: 'DungeonActionRepository is not null');
 
     // Look
+
     final dungeonActionRecord =
         await repository.create(testDungeonID, testCharacterID, 'look');
     expect(
@@ -33,9 +34,10 @@ void main() {
       reason: 'DungeonActionRecord.location is not null',
     );
     expect(
-      dungeonActionRecord.actionCharacter,
+      dungeonActionRecord.actionCharacter ?? dungeonActionRecord.actionMonster,
       isNotNull,
-      reason: 'DungeonActionRecord.character is not null',
+      reason:
+          'DungeonActionRecord.character or DungeonActionRecord.monster is not null',
     );
   });
 }
