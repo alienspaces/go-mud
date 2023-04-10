@@ -33,17 +33,10 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -71,17 +64,10 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -108,17 +94,10 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -151,9 +130,6 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       String bodyData = jsonEncode({
         "data": {
           "character_name": characterName,
@@ -173,10 +149,6 @@ class API {
       );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -186,10 +158,6 @@ class API {
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       log.warning('Failed: $responseBody');
-
-      // TODO: Remove
-      print('Failed with response: $responseBody');
-
       return APIResponse(error: responseBody);
     }
 
@@ -213,9 +181,6 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.get(
         uri,
         headers: {
@@ -224,10 +189,6 @@ class API {
       );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -237,10 +198,6 @@ class API {
 
     if (response.statusCode != 200) {
       log.warning('Failed: $responseBody');
-
-      // TODO: Remove
-      print('Failed with response: $responseBody');
-
       return APIResponse(error: responseBody);
     }
 
@@ -263,17 +220,10 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -283,10 +233,6 @@ class API {
 
     if (response.statusCode != 200) {
       log.warning('Failed: $responseBody');
-
-      // TODO: Remove
-      print('Failed with response: $responseBody');
-
       return APIResponse(error: responseBody);
     }
 
@@ -313,9 +259,6 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.post(
         uri,
         headers: {
@@ -324,10 +267,6 @@ class API {
       );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -339,10 +278,6 @@ class API {
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       log.warning('Failed: $responseBody');
-
-      // TODO: Remove
-      print('Failed with response: $responseBody');
-
       return APIResponse(error: responseBody);
     }
 
@@ -365,9 +300,6 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.get(
         uri,
         headers: {
@@ -376,10 +308,6 @@ class API {
       );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -389,10 +317,6 @@ class API {
 
     if (response.statusCode != 200) {
       log.warning('Failed: $responseBody');
-
-      // TODO: Remove
-      print('Failed with response: $responseBody');
-
       return APIResponse(error: responseBody);
     }
 
@@ -419,9 +343,6 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       response = await client.post(
         uri,
         headers: {
@@ -430,10 +351,6 @@ class API {
       );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -465,9 +382,6 @@ class API {
 
       log.info('URI $uri');
 
-      // TODO: Remove
-      print('URI $uri');
-
       String bodyData = jsonEncode({
         "data": {
           "sentence": sentence,
@@ -484,10 +398,6 @@ class API {
       );
     } catch (err) {
       log.warning('Failed: ${err.toString()}');
-
-      // TODO: Remove
-      print('Failed: ${err.toString()}');
-
       return APIResponse(error: err.toString());
     } finally {
       client.close();
@@ -497,10 +407,6 @@ class API {
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       log.warning('Failed: $responseBody');
-
-      // TODO: Remove
-      print('Failed with response: $responseBody');
-
       return APIResponse(error: responseBody);
     }
 

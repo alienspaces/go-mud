@@ -102,10 +102,6 @@ class CharacterRepository implements CharacterRepositoryInterface {
     var response = await api.getCharacters();
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');
-
-      // TODO: Remove
-      print('Failed with error: ${response.error}');
-
       RepositoryException exception = resolveApiException(response.error!);
       throw exception;
     }
