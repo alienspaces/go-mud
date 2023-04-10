@@ -90,6 +90,11 @@ func daemonShutdownDungeonInstance(l logger.Logger, m *model.Model, dir *record.
 	return nil
 }
 
+// daemonInitCycle initialises a new database transaction and must commit or
+// rollback before returning. It takes an existing set of dungeon instance states,
+// fetches all existing dungeon instances, checks whether they are empty, and updates
+// the set of dungeon instance states by removing empty dungeon instances and adding
+// new dungeon instances.
 func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInstanceState) (map[string]*dungeonInstanceState, error) {
 	l = loggerWithContext(l, "daemonInitCycle")
 
@@ -143,12 +148,16 @@ func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInsta
 	// Merge any new dungeon instance records with existing dungeon instance states
 	dis = daemonMergeDungeonInstanceStates(dis, diRecs)
 
+	err = m.Commit()
+	if err != nil {
+		l.Warn("failed model commit >%v<", err)
+		return nil, err
+	}
+
 	return dis, nil
 }
 
-// RunDaemon - Starts the daemon process. Override to implement a custom daemon run function.
-// The daemon process is a long running background process intended to listen or poll for events
-// and then process those events.
+// RunDaemon is a long running background process that manages the server game loop.
 func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 	l := loggerWithContext(rnr.Log, "RunDaemon")
 
@@ -160,7 +169,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
-			l.Warn("failed daemin init cycle  >%v<", err)
+			l.Warn("failed daemon init cycle  >%v<", err)
 			return err
 		}
 

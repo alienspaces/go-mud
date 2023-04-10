@@ -171,10 +171,12 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 			} else {
 				requestPath = requestPath + `&`
 			}
-			t.Logf("> Adding parameter key >%s< param >%s<", paramKey, paramValue)
+			t.Logf(">>> Adding parameter key >%s< param >%s<", paramKey, paramValue)
 			requestPath = fmt.Sprintf("%s%s=%s", requestPath, paramKey, url.QueryEscape(paramValue))
 		}
 	}
+
+	t.Logf(">>> Request path >%s<", requestPath)
 
 	// Request data
 	data := tc.TestRequestBody(th.Data)
@@ -223,7 +225,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 
 		result, err := jsonschema.Validate(handlerConfig.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
 		require.NoError(t, err, "Validates against schema without error")
-		t.Logf("Validation result errors >%+v< valid >%t<", result.Errors(), result.Valid())
+		t.Logf(">>> Schema validation errors >%+v< valid >%t<", result.Errors(), result.Valid())
 
 		require.True(t, result.Valid(), "Validates against schema")
 	}
