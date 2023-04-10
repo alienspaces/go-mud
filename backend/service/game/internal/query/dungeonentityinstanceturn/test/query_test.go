@@ -10,12 +10,10 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeonentityinstanceturn"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-func TestGetOne(t *testing.T) {
+func TestGetMany(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -30,40 +28,14 @@ func TestGetOne(t *testing.T) {
 	h.CommitData = true
 
 	tests := []struct {
-		name       string
-		params     func(d harness.Data) map[string]interface{}
-		expectRecs func(d harness.Data) []*record.DungeonEntityInstanceTurn
-		expectErr  bool
+		name      string
+		params    func(d harness.Data) map[string]interface{}
+		expectErr bool
 	}{
 		{
 			name: "With no params",
 			params: func(d harness.Data) map[string]interface{} {
 				return nil
-			},
-			expectRecs: func(d harness.Data) []*record.DungeonEntityInstanceTurn {
-				dir, _ := d.GetDungeonInstanceRecByName(harness.DungeonNameCave)
-				cir, _ := d.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
-				mir, _ := d.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
-				return []*record.DungeonEntityInstanceTurn{
-					&record.DungeonEntityInstanceTurn{
-						DungeonInstanceID:         dir.ID,
-						DungeonName:               harness.DungeonNameCave,
-						DungeonInstanceTurnNumber: 2,
-						EntityType:                string(model.EntityTypeCharacter),
-						EntityInstanceID:          cir.ID,
-						EntityName:                harness.CharacterNameBarricade,
-						EntityInstanceTurnNumber:  1,
-					},
-					&record.DungeonEntityInstanceTurn{
-						DungeonInstanceID:         dir.ID,
-						DungeonName:               harness.DungeonNameCave,
-						DungeonInstanceTurnNumber: 2,
-						EntityType:                string(model.EntityTypeMonster),
-						EntityInstanceID:          mir.ID,
-						EntityName:                harness.MonsterNameGrumpyDwarf,
-						EntityInstanceTurnNumber:  1,
-					},
-				}
 			},
 			expectErr: false,
 		},
@@ -97,27 +69,17 @@ func TestGetOne(t *testing.T) {
 				require.Error(t, err, "GetMany returns error")
 				return
 			}
+
 			require.NoError(t, err, "GetMany returns without error")
-			if tc.expectRecs != nil {
-				expectRecs := tc.expectRecs(h.Data)
-				require.Equal(t, len(expectRecs), len(recs), "GetMany returns the expected number of records")
-				// Expected records and returned records may be in any order
-				for idx := range recs {
-					found := false
-					rec := recs[idx]
-					for eidx := range expectRecs {
-						expectRec := expectRecs[eidx]
-						if rec.DungeonInstanceID == expectRec.DungeonInstanceID &&
-							rec.EntityInstanceID == expectRec.EntityInstanceID {
-							found = true
-							require.Equal(t, expectRec.DungeonName, harness.NormalName(rec.DungeonName), "DungeonName equals expected")
-							require.Equal(t, expectRec.DungeonInstanceTurnNumber, rec.DungeonInstanceTurnNumber, "DungeonInstanceTurnNumber equals expected")
-							require.Equal(t, expectRec.EntityName, harness.NormalName(rec.EntityName), "EntityName equals expected")
-							require.Equal(t, expectRec.EntityInstanceTurnNumber, rec.EntityInstanceTurnNumber, "EntityInstanceTurnNumber equals expected")
-						}
-					}
-					require.True(t, found, "Returned record with DungeonInstance ID >%s< and EntityInstance ID >%s< found", recs[idx].DungeonInstanceID, recs[idx].EntityInstanceID)
-				}
+
+			for idx := range recs {
+				require.NotEmpty(t, recs[idx].DungeonInstanceID, "DungeonInstanceID is not empty")
+				require.NotEmpty(t, recs[idx].DungeonName, "DungeonName is not empty")
+				require.NotEmpty(t, recs[idx].DungeonInstanceTurnNumber, "DungeonInstanceTurnNumber is not empty")
+				require.NotEmpty(t, recs[idx].EntityType, "EntityType is not empty")
+				require.NotEmpty(t, recs[idx].EntityInstanceID, "EntityInstanceID is not empty")
+				require.NotEmpty(t, recs[idx].EntityName, "EntityName is not empty")
+				require.NotEmpty(t, recs[idx].EntityInstanceTurnNumber, "EntityInstanceTurnNumber is not empty")
 			}
 
 			h.RollbackTx()

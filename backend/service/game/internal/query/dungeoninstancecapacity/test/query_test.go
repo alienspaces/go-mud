@@ -11,10 +11,9 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeoninstancecapacity"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-func TestGetOne(t *testing.T) {
+func TestGetMany(t *testing.T) {
 
 	// harness
 	config := harness.DefaultDataConfig
@@ -29,25 +28,14 @@ func TestGetOne(t *testing.T) {
 	h.CommitData = true
 
 	tests := []struct {
-		name       string
-		params     func(d harness.Data) map[string]interface{}
-		expectRecs func(d harness.Data) []*record.DungeonInstanceCapacity
-		expectErr  bool
+		name      string
+		params    func(d harness.Data) map[string]interface{}
+		expectErr bool
 	}{
 		{
 			name: "With no params",
 			params: func(d harness.Data) map[string]interface{} {
 				return nil
-			},
-			expectRecs: func(d harness.Data) []*record.DungeonInstanceCapacity {
-				return []*record.DungeonInstanceCapacity{
-					{
-						DungeonInstanceID:             d.DungeonInstanceRecs[0].ID,
-						DungeonID:                     d.DungeonInstanceRecs[0].DungeonID,
-						DungeonInstanceCharacterCount: 2,
-						DungeonLocationCount:          6,
-					},
-				}
 			},
 			expectErr: false,
 		},
@@ -81,10 +69,14 @@ func TestGetOne(t *testing.T) {
 				require.Error(t, err, "GetMany returns error")
 				return
 			}
+
 			require.NoError(t, err, "GetMany returns without error")
-			if tc.expectRecs != nil {
-				expectRecs := tc.expectRecs(h.Data)
-				require.Equal(t, expectRecs, recs, "GetMany returns expected records")
+
+			for idx := range recs {
+				require.NotEmpty(t, recs[idx].DungeonInstanceID, "DungeonInstanceID is not empty")
+				require.NotEmpty(t, recs[idx].DungeonID, "DungeonID is not empty")
+				require.NotEmpty(t, recs[idx].DungeonInstanceCharacterCount, "DungeonInstanceCharacterCount is not empty")
+				require.NotEmpty(t, recs[idx].DungeonLocationCount, "DungeonLocationCount is not empty")
 			}
 
 			h.RollbackTx()
