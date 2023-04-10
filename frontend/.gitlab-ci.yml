@@ -27,6 +27,6 @@ test-frontend:
     - cd frontend
     - flutter pub get
     - dart ./tool/generate.dart
-    - flutter test
+    - flutter test --reporter expanded --concurrency 1
   tags:
     - docker
