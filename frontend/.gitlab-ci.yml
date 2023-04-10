@@ -26,6 +26,3 @@ test-frontend:
   script:
     - cd frontend
     - ./script/test
-  tags:
-    - docker
-    - alienspaces

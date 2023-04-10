@@ -16,9 +16,6 @@ test-backend:
   script:
     - cd backend
     - ./script/test-ci
-  tags:
-    - docker
-    - alienspaces
 
 build-backend:
   image: $CI_REGISTRY/alienspaces/go-mud/docker:23.0.3
@@ -32,6 +29,3 @@ build-backend:
   script:
     - cd backend
     - ./script/build
-  tags:
-    - docker
-    - alienspaces
