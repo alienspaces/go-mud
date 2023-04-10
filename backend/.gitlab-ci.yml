@@ -21,10 +21,10 @@ test-backend:
     - alienspaces
 
 build-backend:
-  image: $CI_REGISTRY/alienspaces/go-mud/docker:20.10.17
+  image: $CI_REGISTRY/alienspaces/go-mud/docker:23.03
   stage: build-backend
   services:
-    - name: $CI_REGISTRY/alienspaces/go-mud/docker:20.10.17-dind
+    - name: $CI_REGISTRY/alienspaces/go-mud/docker:23.03-dind
       alias: docker
   before_script:
     - apk add git
