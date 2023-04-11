@@ -14,30 +14,37 @@ void main() {
         reason: 'DungeonActionRepository is not null');
 
     // Look
-
-    final dungeonActionRecord =
+    final actionRecs =
         await repository.create(testDungeonID, testCharacterID, 'look');
     expect(
-      dungeonActionRecord,
+      actionRecs,
       isNotNull,
       reason:
-          'DungeonActionRepository create "look" command returns a dungeon action record',
+          'var DungeonActionRepository create "look" command returns a dungeon action record',
     );
-    expect(
-      dungeonActionRecord!.actionCommand,
-      isNotNull,
-      reason: 'DungeonActionRecord.command is not null',
-    );
-    expect(
-      dungeonActionRecord.actionLocation,
-      isNotNull,
-      reason: 'DungeonActionRecord.location is not null',
-    );
-    expect(
-      dungeonActionRecord.actionCharacter ?? dungeonActionRecord.actionMonster,
-      isNotNull,
-      reason:
-          'DungeonActionRecord.character or DungeonActionRecord.monster is not null',
-    );
+
+    // TODO: Oddly, we are getting a hell of a lot more actions in the response
+    // than what we are expecting. It seems all actions are being returned with
+    // every request, not just those since the last action..
+    print('ActionRecs length ${actionRecs?.length}');
+
+    for (var actionRec in actionRecs!) {
+      expect(
+        actionRec.actionCommand,
+        isNotNull,
+        reason: 'DungeonActionRecord.command is not null',
+      );
+      expect(
+        actionRec.actionLocation,
+        isNotNull,
+        reason: 'DungeonActionRecord.location is not null',
+      );
+      expect(
+        actionRec.actionCharacter ?? actionRec.actionMonster,
+        isNotNull,
+        reason:
+            'DungeonActionRecord.character or DungeonActionRecord.monster is not null',
+      );
+    }
   });
 }

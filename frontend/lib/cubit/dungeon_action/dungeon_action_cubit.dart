@@ -28,9 +28,9 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       current: dungeonActionRecord,
     ));
 
-    DungeonActionRecord? createdDungeonActionRecord;
+    List<DungeonActionRecord>? createdRecs;
     try {
-      createdDungeonActionRecord = await repositories.dungeonActionRepository
+      createdRecs = await repositories.dungeonActionRepository
           .create(dungeonID, characterID, command);
     } on ActionTooEarlyException {
       emit(const DungeonActionStateError(
@@ -45,39 +45,43 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       return;
     }
 
-    log.info(
-        'location ${createdDungeonActionRecord?.actionLocation.locationName}');
-
-    if (createdDungeonActionRecord?.actionTargetLocation != null) {
-      log.info(
-          'targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
-    }
-    if (createdDungeonActionRecord?.actionTargetCharacter != null) {
-      log.info(
-          'targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.toJson()}');
-    }
-    if (createdDungeonActionRecord?.actionTargetMonster != null) {
-      log.info(
-          'targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.toJson()}');
-    }
-    if (createdDungeonActionRecord?.actionTargetObject != null) {
-      log.info(
-          'targetObject ${createdDungeonActionRecord?.actionTargetObject?.toJson()}');
+    if (createdRecs == null || createdRecs.isEmpty) {
+      log.warning('No action records returned');
+      return;
     }
 
-    if (createdDungeonActionRecord != null) {
-      dungeonActionRecord = createdDungeonActionRecord;
-      dungeonActionRecords.add(createdDungeonActionRecord);
+    DungeonActionRecord currentRec = createdRecs.removeLast();
+    List<DungeonActionRecord>? previousRecs = createdRecs;
 
-      emit(
-        DungeonActionStateCreated(
-          current: createdDungeonActionRecord,
-          action: createdDungeonActionRecord.actionCommand,
-          direction: createdDungeonActionRecord
-              .actionTargetLocation?.locationDirection,
-        ),
-      );
+    for (var previousRec in previousRecs) {
+      log.info(
+          'Previous record turn ${previousRec.actionTurnNumber} serial ${previousRec.actionSerialNumber}');
+      log.info('-- location ${previousRec.actionLocation.locationName}');
+      if (previousRec.actionTargetLocation != null) {
+        log.info(
+            '-- targetLocation ${previousRec.actionTargetLocation?.locationName}');
+      }
+      if (previousRec.actionTargetCharacter != null) {
+        log.info(
+            '-- targetCharacter ${previousRec.actionTargetCharacter?.toJson()}');
+      }
+      if (previousRec.actionTargetMonster != null) {
+        log.info(
+            '-- targetMonster ${previousRec.actionTargetMonster?.toJson()}');
+      }
+      if (previousRec.actionTargetObject != null) {
+        log.info('-- targetObject ${previousRec.actionTargetObject?.toJson()}');
+      }
     }
+
+    emit(
+      DungeonActionStateCreated(
+        current: currentRec,
+        previous: previousRecs,
+        action: currentRec.actionCommand,
+        direction: currentRec.actionTargetLocation?.locationDirection,
+      ),
+    );
   }
 
   /// Clear dungeon action history, typically called when returning to the dungeon page

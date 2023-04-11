@@ -23,6 +23,8 @@ class DungeonActionRecord extends Equatable {
   final String actionID;
   final String actionCommand;
   final String actionNarrative;
+  final int actionTurnNumber;
+  final int actionSerialNumber;
   final LocationData actionLocation;
   final CharacterDetailedData? actionCharacter;
   final MonsterDetailedData? actionMonster;
@@ -38,6 +40,8 @@ class DungeonActionRecord extends Equatable {
     required this.actionID,
     required this.actionCommand,
     required this.actionNarrative,
+    required this.actionTurnNumber,
+    required this.actionSerialNumber,
     required this.actionLocation,
     required this.actionCharacter,
     required this.actionMonster,
@@ -131,6 +135,8 @@ class DungeonActionRecord extends Equatable {
       actionID: json['action_id'],
       actionCommand: json['action_command'],
       actionNarrative: json['action_narrative'],
+      actionTurnNumber: json['action_turn_number'],
+      actionSerialNumber: json['action_serial_number'],
       actionLocation: locationData,
       actionCharacter: characterData,
       actionMonster: monsterData,

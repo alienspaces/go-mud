@@ -10,7 +10,7 @@ import 'package:go_mud_client/repository/repository.dart';
 part 'dungeon_action_record.dart';
 
 abstract class DungeonActionRepositoryInterface {
-  Future<DungeonActionRecord?> create(
+  Future<List<DungeonActionRecord>?> create(
       String dungeonID, String characterID, String sentence);
 }
 
@@ -20,9 +20,8 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
 
   DungeonActionRepository({required this.config, required this.api});
 
-  // TODO: Handle many dungeon action records in response
   @override
-  Future<DungeonActionRecord?> create(
+  Future<List<DungeonActionRecord>?> create(
       String dungeonID, String characterID, String sentence) async {
     final log = getLogger('DungeonActionRepository', 'create');
 
@@ -37,17 +36,20 @@ class DungeonActionRepository implements DungeonActionRepositoryInterface {
       throw exception;
     }
 
-    DungeonActionRecord? record;
+    List<DungeonActionRecord>? records = [];
     String? responseBody = response.body;
     if (responseBody != null && responseBody.isNotEmpty) {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
       if (decoded['data'] != null) {
         List<dynamic> data = decoded['data'];
         log.fine('Decoded response $data');
-        record = DungeonActionRecord.fromJson(data[0]);
+        for (var actionJSON in data) {
+          DungeonActionRecord record = DungeonActionRecord.fromJson(actionJSON);
+          records.add(record);
+        }
       }
     }
 
-    return record;
+    return records;
   }
 }

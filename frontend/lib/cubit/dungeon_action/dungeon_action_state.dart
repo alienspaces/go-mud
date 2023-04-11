@@ -46,14 +46,19 @@ class DungeonActionStateError extends DungeonActionState {
 @immutable
 class DungeonActionStateCreated extends DungeonActionState {
   final DungeonActionRecord current;
+  final List<DungeonActionRecord>? previous;
   final String action;
   final String? direction;
 
-  const DungeonActionStateCreated(
-      {required this.current, required this.action, this.direction});
+  const DungeonActionStateCreated({
+    required this.current,
+    required this.previous,
+    required this.action,
+    this.direction,
+  });
 
   @override
-  List<Object?> get props => [current, action, direction];
+  List<Object?> get props => [current, previous, action, direction];
 }
 
 @immutable
