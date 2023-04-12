@@ -839,12 +839,12 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 		return nil, nil
 	}
 
-	l.Warn("Current action record ID >%s<", rec.ID)
-	l.Warn("Current action record location instance ID >%s<", rec.LocationInstanceID)
-	l.Warn("Current action record turn number >%d<", rec.TurnNumber)
-	l.Warn("Current action record serial number >%d<", nullint.ToInt16(rec.SerialNumber))
-	l.Warn("Current action record character instance ID >%s<", nullstring.ToString(rec.CharacterInstanceID))
-	l.Warn("Current action record monster instance ID >%s<", nullstring.ToString(rec.MonsterInstanceID))
+	l.Info("Current action record ID >%s<", rec.ID)
+	l.Info("Current action record location instance ID >%s<", rec.LocationInstanceID)
+	l.Info("Current action record turn number >%d<", rec.TurnNumber)
+	l.Info("Current action record serial number >%d<", nullint.ToInt16(rec.SerialNumber))
+	l.Info("Current action record character instance ID >%s<", nullstring.ToString(rec.CharacterInstanceID))
+	l.Info("Current action record monster instance ID >%s<", nullstring.ToString(rec.MonsterInstanceID))
 
 	actionRecs, err := m.GetActionRecs(
 		map[string]interface{}{
@@ -871,12 +871,12 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 
 	prevActionRec := actionRecs[0]
 
-	l.Warn("Previous action record ID >%s<", prevActionRec.ID)
-	l.Warn("Previous action record location instance ID >%s<", prevActionRec.LocationInstanceID)
-	l.Warn("Previous action record turn number >%d<", prevActionRec.TurnNumber)
-	l.Warn("Previous action record serial number >%d<", nullint.ToInt16(prevActionRec.SerialNumber))
-	l.Warn("Previous action record character instance ID >%s<", nullstring.ToString(prevActionRec.CharacterInstanceID))
-	l.Warn("Previous action record monster instance ID >%s<", nullstring.ToString(prevActionRec.MonsterInstanceID))
+	l.Info("Previous action record ID >%s<", prevActionRec.ID)
+	l.Info("Previous action record location instance ID >%s<", prevActionRec.LocationInstanceID)
+	l.Info("Previous action record turn number >%d<", prevActionRec.TurnNumber)
+	l.Info("Previous action record serial number >%d<", nullint.ToInt16(prevActionRec.SerialNumber))
+	l.Info("Previous action record character instance ID >%s<", nullstring.ToString(prevActionRec.CharacterInstanceID))
+	l.Info("Previous action record monster instance ID >%s<", nullstring.ToString(prevActionRec.MonsterInstanceID))
 
 	// We add one to the previous action serial number and subtract one from the current action
 	// serial number so we exclude those specific records when looking between.
