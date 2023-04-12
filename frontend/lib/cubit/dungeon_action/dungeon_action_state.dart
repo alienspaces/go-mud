@@ -26,11 +26,14 @@ class DungeonActionStatePreparing extends DungeonActionState {
 @immutable
 class DungeonActionStateCreating extends DungeonActionState {
   final String sentence;
-  final DungeonActionRecord? current;
-  const DungeonActionStateCreating({required this.sentence, this.current});
+  // TODO: 9-implement-moster-actions - Remove comments
+  // final DungeonActionRecord? current;
+  // const DungeonActionStateCreating({required this.sentence, this.current});
+  const DungeonActionStateCreating({required this.sentence});
 
   @override
-  List<Object?> get props => [sentence, current];
+  // List<Object?> get props => [sentence, current];
+  List<Object?> get props => [sentence];
 }
 
 @immutable

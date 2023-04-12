@@ -36,7 +36,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
-        log.info('listener... width $width');
+        log.fine('listener... width $width');
         if (state is DungeonActionStatePlaying) {
           // Add narrative line
           var lineWidget = GameActionNarrativeLineWidget(

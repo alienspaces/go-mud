@@ -13,7 +13,6 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   final RepositoryCollection repositories;
 
   List<DungeonActionRecord> dungeonActionRecords = [];
-  DungeonActionRecord? dungeonActionRecord;
 
   DungeonActionCubit({required this.config, required this.repositories})
       : super(const DungeonActionStateInitial());
@@ -23,9 +22,10 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     final log = getLogger('DungeonActionCubit', 'createAction');
     log.fine('Creating dungeon action command >$command<');
 
+    // TODO: This state is not used by any widgets to do anything
+    // meaningful at the moment..
     emit(DungeonActionStateCreating(
       sentence: command,
-      current: dungeonActionRecord,
     ));
 
     List<DungeonActionRecord>? createdRecs;
@@ -51,29 +51,34 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     }
 
     DungeonActionRecord currentRec = createdRecs.removeLast();
+
     List<DungeonActionRecord>? previousRecs = createdRecs;
 
     for (var previousRec in previousRecs) {
-      log.info(
+      log.fine(
           'Previous record turn ${previousRec.actionTurnNumber} serial ${previousRec.actionSerialNumber}');
-      log.info('-- location ${previousRec.actionLocation.locationName}');
+      log.fine('-- location ${previousRec.actionLocation.locationName}');
       if (previousRec.actionTargetLocation != null) {
-        log.info(
+        log.fine(
             '-- targetLocation ${previousRec.actionTargetLocation?.locationName}');
       }
       if (previousRec.actionTargetCharacter != null) {
-        log.info(
+        log.fine(
             '-- targetCharacter ${previousRec.actionTargetCharacter?.toJson()}');
       }
       if (previousRec.actionTargetMonster != null) {
-        log.info(
+        log.fine(
             '-- targetMonster ${previousRec.actionTargetMonster?.toJson()}');
       }
       if (previousRec.actionTargetObject != null) {
-        log.info('-- targetObject ${previousRec.actionTargetObject?.toJson()}');
+        log.fine('-- targetObject ${previousRec.actionTargetObject?.toJson()}');
       }
     }
 
+    dungeonActionRecords.add(currentRec);
+
+    // TODO: 9-implement-monster-actions: The following should possibly be
+    // current = playerAction and previous = otherPlayerAndMonsterActions
     emit(
       DungeonActionStateCreated(
         current: currentRec,
@@ -86,7 +91,6 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
 
   /// Clear dungeon action history, typically called when returning to the dungeon page
   void clearActions() {
-    dungeonActionRecord = null;
     dungeonActionRecords = [];
   }
 
@@ -94,6 +98,9 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   bool playAction() {
     final log = getLogger('DungeonActionCubit', 'playAction');
 
+    // TODO: Is this totally necessary? On the first action there is no
+    // previous action, can we skip setting previous here and assign current?
+    // What breaks if we change the following check to < 1 ?
     if (dungeonActionRecords.length < 2) {
       log.info('Not enough dungeon action records, not playing action');
       return false;
@@ -126,6 +133,12 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
           'Play action command >${current.actionCommand}< object >${current.actionTargetObject?.objectName}<');
     }
 
+    // TODO: 9-implement-monster-actions: We should probably split this out
+    // into two different states, one for the player character and another
+    // for actions which are other character and monster actions. The previous
+    // action record is necessary for rendering the scrolling animation when
+    // moving between rooms but shouldn't be necessary for other player or
+    // monster action animations?
     emit(
       DungeonActionStatePlaying(
         previous: previous,

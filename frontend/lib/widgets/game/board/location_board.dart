@@ -23,7 +23,8 @@ class BoardLocationWidget extends StatelessWidget {
       // Do not re-render the location grid when there is an error with
       // submitted an action.
       buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
-        if (currState is DungeonActionStateError) {
+        if (currState is DungeonActionStateError ||
+            currState is DungeonActionStateCreating) {
           return false;
         }
         return true;
@@ -31,33 +32,7 @@ class BoardLocationWidget extends StatelessWidget {
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
 
-        // Creating state is emitted with every action
-        if (state is DungeonActionStateCreating) {
-          var dungeonActionRecord = state.current;
-
-          if (dungeonActionRecord != null) {
-            log.fine(
-                'DungeonActionStateCreating - Rendering command ${dungeonActionRecord.actionCommand}');
-            widgets.add(
-              GameLocationGridWidget(
-                key: UniqueKey(),
-                action: null,
-                locationData: dungeonActionRecord.actionLocation,
-              ),
-            );
-          } else {
-            log.fine(
-                'DungeonActionStateCreating - Rendering loading container..');
-            widgets.add(
-              Container(
-                color: Colors.blueAccent,
-                child: const Text('Loading'),
-              ),
-            );
-          }
-        }
-        // Created state is emitted with every action
-        else if (state is DungeonActionStateCreated) {
+        if (state is DungeonActionStateCreated) {
           var dungeonActionRecord = state.current;
 
           log.fine(

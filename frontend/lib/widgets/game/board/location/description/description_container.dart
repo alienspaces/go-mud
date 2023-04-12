@@ -21,7 +21,8 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
       // Do not re-render the location description when there is an error with
       // submitted an action.
       buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
-        if (currState is DungeonActionStateError) {
+        if (currState is DungeonActionStateError ||
+            currState is DungeonActionStateCreating) {
           log.fine('Skipping build..');
           return false;
         }
@@ -31,16 +32,8 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
 
-        if (state is DungeonActionStateCreating) {
-          log.fine('dungeon state is created');
-          var dungeonActionRecord = state.current;
-          if (dungeonActionRecord != null) {
-            widgets.add(GameLocationDescriptionWidget(
-              fade: DescriptionOpacity.fadeIn,
-              dungeonActionRecord: dungeonActionRecord,
-            ));
-          }
-        } else if (state is DungeonActionStateCreated) {
+        // TODO: This is flashing
+        if (state is DungeonActionStateCreated) {
           log.fine('dungeon state is created');
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
