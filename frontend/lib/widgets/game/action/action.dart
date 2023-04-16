@@ -26,7 +26,7 @@ void submitLookAction(BuildContext context) async {
         dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
         "look",
       )
-      .then((v) => playAction(context));
+      .then((v) => playActions(context));
 }
 
 Future<void> submitAction(BuildContext context) async {
@@ -50,13 +50,18 @@ Future<void> submitAction(BuildContext context) async {
         dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
         dungeonCommandCubit.command(),
       )
-      .then((v) => playAction(context));
+      .then((v) => playActions(context));
 }
 
-Future<void> playAction(BuildContext context) async {
+// playActions plays all character and other available actions
+Future<void> playActions(BuildContext context) async {
   final log = getLogger('Action', 'playAction');
 
   final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-  var moreActions = dungeonActionCubit.playAction();
-  log.info('++ More actions >$moreActions<');
+
+  log.info('Playing character action');
+  dungeonActionCubit.playCharacterAction();
+
+  log.info('Playing other actions');
+  dungeonActionCubit.playOtherActions();
 }

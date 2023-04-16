@@ -75,7 +75,7 @@ class _NavigationState extends State<Navigation> {
     // Clear all dungeon actions
     final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     log.fine(
-        'Dungeon action record count ${dungeonActionCubit.dungeonActionRecords.length}');
+        'Dungeon action record count ${dungeonActionCubit.otherActionRecs.length}');
     dungeonActionCubit.clearActions();
 
     setState(() {

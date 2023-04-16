@@ -32,22 +32,23 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
 
-        // TODO: This is flashing
         if (state is DungeonActionStateCreated) {
           log.fine('dungeon state is created');
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
-            dungeonActionRecord: state.current,
+            dungeonActionRecord: state.action,
           ));
         } else if (state is DungeonActionStatePlaying) {
           log.fine('dungeon state is playing');
-          widgets.add(GameLocationDescriptionWidget(
-            fade: DescriptionOpacity.fadeOut,
-            dungeonActionRecord: state.previous,
-          ));
+          if (state.previousActionRec != null) {
+            widgets.add(GameLocationDescriptionWidget(
+              fade: DescriptionOpacity.fadeOut,
+              dungeonActionRecord: state.previousActionRec!,
+            ));
+          }
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
-            dungeonActionRecord: state.current,
+            dungeonActionRecord: state.currentActionRec,
           ));
         }
 

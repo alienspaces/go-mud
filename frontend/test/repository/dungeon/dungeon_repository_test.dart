@@ -7,7 +7,7 @@ import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 import '../../utility.dart';
 
 void main() {
-  test('DungeonRepository should', () async {
+  test('DungeonRepository', () async {
     final repository = DungeonRepository(config: getConfig(), api: getAPI());
     expect(repository, isNotNull, reason: 'DungeonRepository is not null');
 

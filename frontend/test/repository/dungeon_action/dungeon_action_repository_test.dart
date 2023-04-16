@@ -7,7 +7,7 @@ import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repositor
 import '../../utility.dart';
 
 void main() {
-  test('DungeonActionRepository should', () async {
+  test('DungeonActionRepository', () async {
     final repository =
         DungeonActionRepository(config: getConfig(), api: getAPI());
     expect(repository, isNotNull,
@@ -22,11 +22,6 @@ void main() {
       reason:
           'var DungeonActionRepository create "look" command returns a dungeon action record',
     );
-
-    // TODO: Oddly, we are getting a hell of a lot more actions in the response
-    // than what we are expecting. It seems all actions are being returned with
-    // every request, not just those since the last action..
-    print('ActionRecs length ${actionRecs?.length}');
 
     for (var actionRec in actionRecs!) {
       expect(

@@ -50,9 +50,6 @@ void submitAction(BuildContext context) async {
     dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
     dungeonCommandCubit.command(),
   );
-  dungeonCommandCubit.unselectAll();
 
-  // TODO: (client) Loop this using a timer allowing animations to complete
-  var moreActions = dungeonActionCubit.playAction();
-  log.fine('++ More actions >$moreActions<');
+  dungeonCommandCubit.unselectAll();
 }

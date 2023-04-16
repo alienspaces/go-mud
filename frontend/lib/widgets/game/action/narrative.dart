@@ -7,6 +7,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
+class NarrativeLineFormat {
+  final Color colour;
+  const NarrativeLineFormat({required this.colour});
+}
+
+const NarrativeLineFormat characterNarrativeLineFormat = NarrativeLineFormat(
+  colour: Colors.brown,
+);
+
+const NarrativeLineFormat otherNarrativeLineFormat = NarrativeLineFormat(
+  colour: Colors.orange,
+);
+
+const NarrativeLineFormat errorNarrativeLineFormat = NarrativeLineFormat(
+  colour: Colors.red,
+);
+
 class GameActionNarrativeWidget extends StatefulWidget {
   const GameActionNarrativeWidget({Key? key}) : super(key: key);
   @override
@@ -41,8 +58,20 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
           // Add narrative line
           var lineWidget = GameActionNarrativeLineWidget(
             key: UniqueKey(),
+            line: state.currentActionRec.actionNarrative,
+            format: characterNarrativeLineFormat,
             width: width,
-            line: state.current.actionNarrative,
+          );
+          setState(() {
+            lines.add(lineWidget);
+          });
+        } else if (state is DungeonActionStatePlayingOther) {
+          // Add narrative line
+          var lineWidget = GameActionNarrativeLineWidget(
+            key: UniqueKey(),
+            line: state.actionRec.actionNarrative,
+            format: otherNarrativeLineFormat,
+            width: width,
           );
           setState(() {
             lines.add(lineWidget);
@@ -50,8 +79,9 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
         } else if (state is DungeonActionStateError) {
           var lineWidget = GameActionNarrativeLineWidget(
             key: UniqueKey(),
-            width: width,
             line: state.message,
+            format: errorNarrativeLineFormat,
+            width: width,
           );
           setState(() {
             lines.add(lineWidget);
@@ -73,11 +103,15 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
 
 class GameActionNarrativeLineWidget extends StatefulWidget {
   final String line;
+  final NarrativeLineFormat format;
   final double width;
 
-  const GameActionNarrativeLineWidget(
-      {Key? key, required this.line, required this.width})
-      : super(key: key);
+  const GameActionNarrativeLineWidget({
+    Key? key,
+    required this.line,
+    required this.format,
+    required this.width,
+  }) : super(key: key);
   @override
   State<GameActionNarrativeLineWidget> createState() =>
       _GameActionNarrativeLineWidgetState();
@@ -155,7 +189,7 @@ class _GameActionNarrativeLineWidgetState
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontSize: 30,
-                    color: Colors.brown[800],
+                    color: widget.format.colour,
                   ),
             ),
           ),

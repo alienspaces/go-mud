@@ -20,8 +20,8 @@ class BoardLocationWidget extends StatelessWidget {
       listener: (BuildContext context, DungeonActionState state) {
         log.fine('listener...');
       },
-      // Do not re-render the location grid when there is an error with
-      // submitted an action.
+      // Does not render the location grid when there the action
+      // is being created or has an error.
       buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
         if (currState is DungeonActionStateError ||
             currState is DungeonActionStateCreating) {
@@ -33,72 +33,74 @@ class BoardLocationWidget extends StatelessWidget {
         List<Widget> widgets = [];
 
         if (state is DungeonActionStateCreated) {
-          var dungeonActionRecord = state.current;
+          var actionRec = state.action;
 
           log.fine(
-              'DungeonActionStateCreated - Rendering action ${dungeonActionRecord.actionCommand}');
+              'DungeonActionStateCreated - Rendering action ${actionRec.actionCommand}');
 
           widgets.add(
             GameLocationGridWidget(
               key: UniqueKey(),
-              action: state.action,
-              locationData: dungeonActionRecord.actionLocation,
+              action: actionRec.actionCommand,
+              locationData: actionRec.actionLocation,
             ),
           );
-        }
-        // Playing state is emitted only when there is at least one previous action
-        else if (state is DungeonActionStatePlaying) {
-          var dungeonActionRecord = state.current;
+        } else if (state is DungeonActionStatePlaying) {
+          var currentActionRec = state.currentActionRec;
+          var previousActionRec = state.previousActionRec;
 
           log.fine(
-              'DungeonActionStatePlaying - Rendering action ${dungeonActionRecord.actionCommand}');
+              'DungeonActionStatePlaying - Rendering action ${currentActionRec.actionCommand}');
 
-          if (dungeonActionRecord.actionCommand == 'move') {
+          if (currentActionRec.actionCommand == 'move' &&
+              previousActionRec != null) {
+            // Slides the previous location out
             widgets.add(
               GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideOut,
-                direction: state.direction,
-                action: state.action,
-                locationData: state.previous.actionLocation,
+                direction: state.actionDirection,
+                action: currentActionRec.actionCommand,
+                locationData: previousActionRec.actionLocation,
               ),
             );
+            // Slides the current location in
             widgets.add(
               GameLocationGridMoveWidget(
                 key: UniqueKey(),
                 slide: Slide.slideIn,
-                direction: state.direction,
-                action: state.action,
-                locationData: state.current.actionLocation,
+                direction: state.actionDirection,
+                action: state.actionCommand,
+                locationData: currentActionRec.actionLocation,
               ),
             );
-          } else if (dungeonActionRecord.actionCommand == 'look' ||
-              dungeonActionRecord.actionCommand == 'attack') {
+          } else if (currentActionRec.actionCommand == 'look' ||
+              currentActionRec.actionCommand == 'attack') {
             widgets.add(
               GameLocationGridWidget(
                 key: UniqueKey(),
-                action: state.action,
-                locationData: state.current.actionLocation,
+                action: currentActionRec.actionCommand,
+                locationData: currentActionRec.actionLocation,
               ),
             );
-            if (dungeonActionRecord.actionTargetLocation != null) {
+            if (currentActionRec.actionTargetLocation != null) {
               log.fine('Rendering look target location');
               widgets.add(
                 GameLocationGridLookWidget(
                   key: UniqueKey(),
-                  direction: state.direction,
-                  action: state.action,
-                  locationData: state.current.actionTargetLocation!,
+                  direction: state.actionDirection,
+                  action: currentActionRec.actionCommand,
+                  locationData: currentActionRec.actionTargetLocation!,
                 ),
               );
             }
           } else if (['stash', 'equip', 'drop']
-              .contains(dungeonActionRecord.actionCommand)) {
+              .contains(currentActionRec.actionCommand)) {
             widgets.add(
               GameLocationGridWidget(
                 key: UniqueKey(),
-                action: state.action,
-                locationData: state.current.actionLocation,
+                action: currentActionRec.actionCommand,
+                locationData: currentActionRec.actionLocation,
               ),
             );
           }
