@@ -32,23 +32,44 @@ class GameActionNarrativeWidget extends StatefulWidget {
 }
 
 class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
-  List<Widget> lines = [];
+  List<GameActionNarrativeLineWidget> lines = [];
+  Timer? _timer;
+
+  @override
+  void initState() {
+    // TODO: Work out a way to remove lines when they've finished animating
+    // because this not really accomplishing much...
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (lines.isNotEmpty) {
+        setState(() {
+          lines.removeLast();
+        });
+      }
+    });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
     final log = getLogger('GameActionNarrativeWidget', 'dispose');
     if (!mounted) {
-      log.info('### Not mounted, not disposing..');
+      log.warning('Not mounted, not disposing..');
       return;
     }
-    log.info('### Disposing...');
+
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+
+    log.info('Disposing...');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameActionNarrativeWidget', 'build');
-    log.info('Building..');
+
     double width = MediaQuery.of(context).size.width;
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
@@ -89,7 +110,9 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
         }
       },
       builder: (BuildContext context, DungeonActionState state) {
-        // ignore: avoid_unnecessary_containers
+        // TODO: Rendering too many lines
+        log.fine('Rendering ${lines.length} naarative lines');
+
         return IgnorePointer(
           ignoring: true,
           child: Stack(
@@ -112,6 +135,7 @@ class GameActionNarrativeLineWidget extends StatefulWidget {
     required this.format,
     required this.width,
   }) : super(key: key);
+
   @override
   State<GameActionNarrativeLineWidget> createState() =>
       _GameActionNarrativeLineWidgetState();
@@ -122,27 +146,25 @@ class _GameActionNarrativeLineWidgetState
   double opacity = 1.0;
   double bottom = 0.0;
   late Timer animationTimer;
+
   @override
   initState() {
     final log = getLogger('GameActionNarrativeLineWidget', 'initState');
 
     super.initState();
-
     if (!mounted) {
-      log.info('### Not mounted, not initialising..');
+      log.warning('Not mounted, not initialising..');
       return;
     }
 
-    log.info('### Initialising..');
-
-    animationTimer = Timer(const Duration(milliseconds: 200), () {
+    animationTimer = Timer(const Duration(milliseconds: 500), () {
       double newOpacity = 0.0;
-      double newBottom = 1500;
+      double newBottom = 1700;
       setState(() {
         opacity = newOpacity;
         bottom = newBottom;
       });
-      log.info('^^^ Updated opacity "$newOpacity" bottom "$newBottom"');
+      log.fine('Updated opacity "$newOpacity" bottom "$newBottom"');
     });
   }
 
@@ -151,11 +173,10 @@ class _GameActionNarrativeLineWidgetState
     final log = getLogger('GameActionNarrativeLineWidget', 'dispose');
 
     if (!mounted) {
-      log.info('### Not mounted, not disposing..');
+      log.warning('Not mounted, not disposing..');
       return;
     }
 
-    log.info('### Disposing..');
     animationTimer.cancel();
     super.dispose();
   }
@@ -165,12 +186,13 @@ class _GameActionNarrativeLineWidgetState
     final log = getLogger('GameActionNarrativeLineWidget', 'build');
 
     if (!mounted) {
-      log.info('^^^ Not mounted, not building with line "${widget.line}"');
+      log.warning('Not mounted, not building with line "${widget.line}"');
       return Container();
     }
 
-    log.info(
-        '^^^ Building with line "${widget.line}" opacity "$opacity" bottom "$bottom"');
+    log.fine(
+      'Building with line "${widget.line}" opacity "$opacity" bottom "$bottom"',
+    );
 
     return AnimatedPositioned(
       bottom: bottom,

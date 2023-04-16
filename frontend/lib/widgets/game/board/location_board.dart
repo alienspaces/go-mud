@@ -24,7 +24,8 @@ class BoardLocationWidget extends StatelessWidget {
       // is being created or has an error.
       buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
         if (currState is DungeonActionStateError ||
-            currState is DungeonActionStateCreating) {
+            currState is DungeonActionStateCreating ||
+            currState is DungeonActionStatePlayingOther) {
           return false;
         }
         return true;
@@ -35,8 +36,9 @@ class BoardLocationWidget extends StatelessWidget {
         if (state is DungeonActionStateCreated) {
           var actionRec = state.action;
 
-          log.fine(
-              'DungeonActionStateCreated - Rendering action ${actionRec.actionCommand}');
+          log.warning(
+            'DungeonActionStateCreated - Rendering action ${actionRec.actionCommand}',
+          );
 
           widgets.add(
             GameLocationGridWidget(
@@ -49,7 +51,7 @@ class BoardLocationWidget extends StatelessWidget {
           var currentActionRec = state.currentActionRec;
           var previousActionRec = state.previousActionRec;
 
-          log.fine(
+          log.info(
               'DungeonActionStatePlaying - Rendering action ${currentActionRec.actionCommand}');
 
           if (currentActionRec.actionCommand == 'move' &&
@@ -83,7 +85,11 @@ class BoardLocationWidget extends StatelessWidget {
                 locationData: currentActionRec.actionLocation,
               ),
             );
-            if (currentActionRec.actionTargetLocation != null) {
+
+            // Only render look grid when the target is not the current room
+            if (currentActionRec.actionTargetLocation != null &&
+                currentActionRec.actionLocation.locationName !=
+                    currentActionRec.actionTargetLocation!.locationName) {
               log.fine('Rendering look target location');
               widgets.add(
                 GameLocationGridLookWidget(

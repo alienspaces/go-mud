@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
+import 'dart:async';
 
 // Application
 import 'package:go_mud_client/logger.dart';
@@ -68,9 +69,14 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     while (previousOtherActionRecs.isNotEmpty) {
       // Add from the earliest other action
       var actionRec = previousOtherActionRecs.removeAt(0);
-      logActionRec(log, actionRec);
+
+      // TODO: 9-implement-monster-actions: Uncomment
+      // logActionRec(log, actionRec);
+
       otherActionRecs.add(actionRec);
     }
+
+    log.warning('**** Emitting DungeonActionStateCreated');
 
     emit(
       DungeonActionStateCreated(
@@ -83,7 +89,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     );
   }
 
-  /// Clear dungeon action history, typically called when returning to the dungeon page
+  /// Clears all action records
   void clearActions() {
     currentCharacterActionRec = null;
     previousCharacterActionRec = null;
@@ -131,11 +137,15 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       return;
     }
 
+    log.warning('Other actions length ${otherActionRecs.length}');
+
+    var milliseconds = 350;
     while (otherActionRecs.isNotEmpty) {
       // Play from the earliest other action
       DungeonActionRecord actionRec = otherActionRecs.removeAt(0);
 
-      await logActionRec(log, actionRec);
+      // TODO: 9-implement-monster-actions: Uncomment
+      //  logActionRec(log, actionRec);
 
       String? actionDirection;
       if (actionRec.actionCommand == 'move' ||
@@ -143,13 +153,18 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
         actionDirection = actionRec.actionTargetLocation?.locationDirection;
       }
 
-      emit(
-        DungeonActionStatePlayingOther(
-          actionRec: actionRec,
-          actionCommand: actionRec.actionCommand,
-          actionDirection: actionDirection,
-        ),
-      );
+      // Do not spam events, otherwise we probably need to look at streaming
+      Timer(Duration(milliseconds: milliseconds), () {
+        emit(
+          DungeonActionStatePlayingOther(
+            actionRec: actionRec,
+            actionCommand: actionRec.actionCommand,
+            actionDirection: actionDirection,
+          ),
+        );
+      });
+
+      milliseconds += 350;
     }
 
     return;
@@ -163,29 +178,29 @@ Future<void> logActionRec(Logger log, DungeonActionRecord actionRec) async {
           actionRec.actionCommand == 'look') &&
       actionRec.actionTargetLocation != null) {
     direction = actionRec.actionTargetLocation?.locationDirection;
-    log.fine(
-      'Play command >${actionRec.actionCommand}< direction >$direction<',
+    log.info(
+      'Command >${actionRec.actionCommand}< direction >$direction<',
     );
   }
 
   if (actionRec.actionTargetCharacter != null) {
     var target = actionRec.actionTargetCharacter;
-    log.fine(
-      'Play command >${actionRec.actionCommand}< character >${target?.characterName}<',
+    log.info(
+      'Command >${actionRec.actionCommand}< character >${target?.characterName}<',
     );
   }
 
   if (actionRec.actionTargetMonster != null) {
     var target = actionRec.actionTargetMonster;
-    log.fine(
-      'Play command >${actionRec.actionCommand}< monster >${target?.monsterName}<',
+    log.info(
+      'Command >${actionRec.actionCommand}< monster >${target?.monsterName}<',
     );
   }
 
   if (actionRec.actionTargetObject != null) {
     var target = actionRec.actionTargetObject;
-    log.fine(
-      'Play command >${actionRec.actionCommand}< object >${target?.objectName}<',
+    log.info(
+      'Command >${actionRec.actionCommand}< object >${target?.objectName}<',
     );
   }
 }
