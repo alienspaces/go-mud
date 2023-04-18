@@ -9,7 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// TODO: 9-implement-monster-actions
+// TODO: 14-implement-smarter-monsters
 // NOTES: Monsters should ultimately behave based on their statistics and capabilities.
 // Examples:
 // - Intelligent humanoid monsters with no equipped weapon should attempt to equip any
@@ -75,8 +75,9 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 	if args.MonsterInstanceViewRec != nil {
 		l.Info("Character instance count >%d<", len(lirs.CharacterInstanceViewRecs))
 		if len(lirs.CharacterInstanceViewRecs) != 0 {
-			// TODO: This is currently a random target however it would be cool
-			// if a monster "stuck" to a target unless something even better came
+			// TODO: 14-implement-smarter-monsters
+			// This is currently a random target however it would be cool if a
+			// monster "stuck" to a target unless something even better came
 			// along. Define "better"!
 			rIdx := rand.Intn(len(lirs.CharacterInstanceViewRecs))
 			action = fmt.Sprintf("attack %s", lirs.CharacterInstanceViewRecs[rIdx].Name)
@@ -88,15 +89,62 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 	return action, nil
 }
 
-// TODO: 9-implement-monster-actions
 func (m *Model) decideActionStash(args *DeciderArgs) (string, error) {
-	return "", nil
+	l := m.Logger("decideActionStash")
+
+	lirs := args.LocationInstanceRecordSet
+
+	action := ""
+	if len(lirs.ObjectInstanceViewRecs) != 0 {
+		// TODO: 14-implement-smarter-monsters
+		// This is currently a random object however it would be cool if a
+		// monster which was smart enough took the time to look through
+		// object in the room and decide which was better than what it has!
+		rIdx := rand.Intn(len(lirs.ObjectInstanceViewRecs))
+		action = fmt.Sprintf("stash %s", lirs.ObjectInstanceViewRecs[rIdx].Name)
+	}
+
+	l.Info("Returning action >%s<", action)
+
+	return action, nil
 }
 
-// TODO: 9-implement-monster-actions
 func (m *Model) decideActionLook(args *DeciderArgs) (string, error) {
+	l := m.Logger("decideActionLook")
 
-	return "", nil
+	lirs := args.LocationInstanceRecordSet
+
+	action := ""
+
+	// TODO: 14-implement-smarter-monsters
+	// Monsters should remember what they've looked at in a room
+	// and make better decisions around whether something they've
+	// just looked at is interesting or not.
+
+	things := []string{}
+	if len(lirs.ObjectInstanceViewRecs) != 0 {
+		rIdx := rand.Intn(len(lirs.ObjectInstanceViewRecs))
+		things = append(things, lirs.ObjectInstanceViewRecs[rIdx].Name)
+	}
+
+	if len(lirs.MonsterInstanceViewRecs) != 0 {
+		rIdx := rand.Intn(len(lirs.MonsterInstanceViewRecs))
+		things = append(things, lirs.MonsterInstanceViewRecs[rIdx].Name)
+	}
+
+	if len(lirs.CharacterInstanceViewRecs) != 0 {
+		rIdx := rand.Intn(len(lirs.CharacterInstanceViewRecs))
+		things = append(things, lirs.CharacterInstanceViewRecs[rIdx].Name)
+	}
+
+	if len(things) > 0 {
+		rIdx := rand.Intn(len(things))
+		action = fmt.Sprintf("look %s", things[rIdx])
+	}
+
+	l.Info("Returning action >%s<", action)
+
+	return action, nil
 }
 
 func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
@@ -128,8 +176,9 @@ func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
 
 	action := ""
 	if len(possibleDirections) != 0 {
-		// TODO: This is currently a random direction however it would be cool
-		// if a monster was chasing a target for it to look in various directions
+		// TODO: 14-implement-smarter-monsters
+		// This is currently a random direction however it would be cool if a
+		// monster was chasing a target for it to look in various directions
 		// for that target before deciding which direction to move.
 		rIdx := rand.Intn(len(possibleDirections))
 		action = fmt.Sprintf("move %s", possibleDirections[rIdx])

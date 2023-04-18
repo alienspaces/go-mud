@@ -69,10 +69,6 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     while (previousOtherActionRecs.isNotEmpty) {
       // Add from the earliest other action
       var actionRec = previousOtherActionRecs.removeAt(0);
-
-      // TODO: 9-implement-monster-actions: Uncomment
-      // logActionRec(log, actionRec);
-
       otherActionRecs.add(actionRec);
     }
 
@@ -143,9 +139,6 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     while (otherActionRecs.isNotEmpty) {
       // Play from the earliest other action
       DungeonActionRecord actionRec = otherActionRecs.removeAt(0);
-
-      // TODO: 9-implement-monster-actions: Uncomment
-      //  logActionRec(log, actionRec);
 
       String? actionDirection;
       if (actionRec.actionCommand == 'move' ||

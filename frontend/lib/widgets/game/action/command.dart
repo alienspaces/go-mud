@@ -14,9 +14,6 @@ class GameActionCommandWidget extends StatefulWidget {
       _GameActionCommandWidgetState();
 }
 
-// TODO: 9-implement-monster-actions: Timer with animation that submits a
-// look action an action is not performed by the player.
-
 class _GameActionCommandWidgetState extends State<GameActionCommandWidget>
     with SingleTickerProviderStateMixin {
   late Animation<double> animation;
@@ -44,9 +41,6 @@ class _GameActionCommandWidgetState extends State<GameActionCommandWidget>
     animation.addStatusListener((status) {
       final log = getLogger('Command', 'animationStatusListener');
       log.warning("** Animation status $status");
-      if (status == AnimationStatus.forward) {
-        // submitLookAction(context);
-      }
     });
 
     controller.forward();
