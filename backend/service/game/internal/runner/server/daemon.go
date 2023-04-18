@@ -9,30 +9,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-func (rnr *Runner) getDungeonInstanceRecs() ([]*record.DungeonInstance, error) {
-	l := loggerWithContext(rnr.Log, "getDungeonInstanceRecs")
-
-	m, err := rnr.initModeller(l)
-	if err != nil {
-		l.Warn("failed initialising modeller >%v<", err)
-		return nil, err
-	}
-
-	diRecs, err := m.GetDungeonInstanceRecs(nil, nil, false)
-	if err != nil {
-		l.Warn("failed getting dungeon instance records >%v<", err)
-		return nil, err
-	}
-
-	err = m.Rollback()
-	if err != nil {
-		l.Warn("failed model rollback >%v<", err)
-		return nil, err
-	}
-
-	return diRecs, nil
-}
-
 type processState string
 
 const (
@@ -54,7 +30,7 @@ type dungeonInstanceProcessingResult struct {
 	Turn              int
 }
 
-func mergeDungeonInstanceStates(dungeonInstanceStates map[string]*dungeonInstanceState, diRecs []*record.DungeonInstance) map[string]*dungeonInstanceState {
+func daemonMergeDungeonInstanceStates(dungeonInstanceStates map[string]*dungeonInstanceState, diRecs []*record.DungeonInstance) map[string]*dungeonInstanceState {
 	for idx := range diRecs {
 		if _, ok := dungeonInstanceStates[diRecs[idx].ID]; !ok {
 			dungeonInstanceStates[diRecs[idx].ID] = &dungeonInstanceState{
@@ -65,9 +41,123 @@ func mergeDungeonInstanceStates(dungeonInstanceStates map[string]*dungeonInstanc
 	return dungeonInstanceStates
 }
 
-// RunDaemon - Starts the daemon process. Override to implement a custom daemon run function.
-// The daemon process is a long running background process intended to listen or poll for events
-// and then process those events.
+func daemonRemoveDungeonInstanceState(dungeonInstanceStates map[string]*dungeonInstanceState, diRec *record.DungeonInstance) map[string]*dungeonInstanceState {
+
+	delete(dungeonInstanceStates, diRec.ID)
+
+	return dungeonInstanceStates
+}
+
+func daemonGetDungeonInstanceRecs(l logger.Logger, m *model.Model) ([]*record.DungeonInstance, error) {
+	l = loggerWithContext(l, "daemonGetDungeonInstanceRecs")
+
+	diRecs, err := m.GetDungeonInstanceRecs(nil, nil, false)
+	if err != nil {
+		l.Warn("failed getting dungeon instance records >%v<", err)
+		return nil, err
+	}
+
+	return diRecs, nil
+}
+
+func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.DungeonInstance) (empty bool, err error) {
+	l = loggerWithContext(l, "daemonDungeonInstanceEmpty")
+
+	ciRecs, err := m.GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dir.ID,
+		}, nil, false,
+	)
+	if err != nil {
+		l.Warn("failed getting many character instance records >%v<", err)
+		return empty, err
+	}
+
+	l.Info("Dungeon instance ID >%s< character instance count >%d<", dir.ID, len(ciRecs))
+
+	return len(ciRecs) == 0, nil
+}
+
+func daemonShutdownDungeonInstance(l logger.Logger, m *model.Model, dir *record.DungeonInstance) error {
+	l = loggerWithContext(l, "daemonShutdownDungeonInstance")
+
+	err := m.DeleteDungeonInstance(dir.ID)
+	if err != nil {
+		l.Warn("failed deleting dungeon instance >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
+// daemonInitCycle initialises a new database transaction and must commit or
+// rollback before returning. It takes an existing set of dungeon instance states,
+// fetches all existing dungeon instances, checks whether they are empty, and updates
+// the set of dungeon instance states by removing empty dungeon instances and adding
+// new dungeon instances.
+func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInstanceState) (map[string]*dungeonInstanceState, error) {
+	l = loggerWithContext(l, "daemonInitCycle")
+
+	m, err := rnr.initModeller(l)
+	if err != nil {
+		l.Warn("failed initialising modeller >%v<", err)
+		return nil, err
+	}
+
+	// Fetch all current dungeon instance records
+	diRecs, err := daemonGetDungeonInstanceRecs(l, m)
+	if err != nil {
+		err = m.Rollback()
+		if err != nil {
+			l.Warn("failed model rollback >%v<", err)
+			return nil, err
+		}
+		l.Warn("failed getting dungeon instance recs >%v<", err)
+		return nil, err
+	}
+
+	// When there are no characters instances in a particular dungeon instance
+	// for a certain period of time, delete the dungeon instance.
+	for idx := range diRecs {
+		empty, err := daemonDungeonInstanceEmpty(l, m, diRecs[idx])
+		if err != nil {
+			err = m.Rollback()
+			if err != nil {
+				l.Warn("failed model rollback >%v<", err)
+				return nil, err
+			}
+			l.Warn("failed check if dungeon instance ID >%s< is empty >%v<", diRecs[idx].ID, err)
+			return nil, err
+		}
+
+		if empty {
+			err := daemonShutdownDungeonInstance(l, m, diRecs[idx])
+			if err != nil {
+				err = m.Rollback()
+				if err != nil {
+					l.Warn("failed model rollback >%v<", err)
+					return nil, err
+				}
+				l.Warn("failed shutting down dungeon instance ID >%s< >%v<", diRecs[idx].ID, err)
+				return nil, err
+			}
+			dis = daemonRemoveDungeonInstanceState(dis, diRecs[idx])
+		}
+	}
+
+	// Merge any new dungeon instance records with existing dungeon instance states
+	dis = daemonMergeDungeonInstanceStates(dis, diRecs)
+
+	err = m.Commit()
+	if err != nil {
+		l.Warn("failed model commit >%v<", err)
+		return nil, err
+	}
+
+	return dis, nil
+}
+
+// RunDaemon is a long running background process that manages the server game loop.
 func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 	l := loggerWithContext(rnr.Log, "RunDaemon")
 
@@ -77,19 +167,15 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 	for keepRunning() {
 
-		// Fetch all current dungeon instance records
-		diRecs, err := rnr.getDungeonInstanceRecs()
+		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
-			l.Warn("failed getting dungeon instance recs >%v<", err)
+			l.Warn("failed daemon init cycle  >%v<", err)
 			return err
 		}
 
-		// Merge any new dungeon instance records with existing dungeon instance states
-		dungeonInstanceStates = mergeDungeonInstanceStates(dungeonInstanceStates, diRecs)
-
 		// When there is nothing to process, wait and check for new instances again
 		if len(dungeonInstanceStates) == 0 {
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(3000 * time.Millisecond)
 			continue
 		}
 
@@ -131,7 +217,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 						return
 					}
 
-					if result.Incremented {
+					if result.incrementTurnResult.Incremented {
 						err = m.Commit()
 						if err != nil {
 							handleErr(err)
@@ -147,7 +233,7 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 					c <- dungeonInstanceProcessingResult{
 						DungeonInstanceID: dungeonInstanceID,
-						Turn:              result.Record.TurnNumber,
+						Turn:              result.incrementTurnResult.Record.TurnNumber,
 					}
 
 				}(dungeonInstanceID)
@@ -182,16 +268,20 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 	return nil
 }
 
-func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*model.IncrementDungeonInstanceTurnResult, error) {
+type processDungeonInstanceTurnResult struct {
+	incrementTurnResult             *model.IncrementDungeonInstanceTurnResult
+	monsterInstanceActionRecordSets []*record.ActionRecordSet
+}
+
+func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*processDungeonInstanceTurnResult, error) {
 	l = loggerWithContext(l, "processDungeonInstanceTurn")
 
-	var iditResult *model.IncrementDungeonInstanceTurnResult
-	var err error
+	pditr := processDungeonInstanceTurnResult{}
 
 WHILE_RESULT_NOT_INCREMENTED:
-	for iditResult == nil || !iditResult.Incremented {
+	for pditr.incrementTurnResult == nil || !pditr.incrementTurnResult.Incremented {
 		// Increment turn
-		iditResult, err = m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
+		iditr, err := m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
 			DungeonInstanceID: dungeonInstanceID,
 		})
 		if err != nil {
@@ -199,11 +289,13 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		if !iditResult.Incremented && iditResult.WaitMilliseconds > 0 {
-			l.Debug("Sleeping for >%d< milliseconds", iditResult.WaitMilliseconds)
-			time.Sleep(time.Duration(iditResult.WaitMilliseconds) * time.Millisecond)
+		if !iditr.Incremented && iditr.WaitMilliseconds > 0 {
+			l.Debug("Sleeping for >%d< milliseconds", iditr.WaitMilliseconds)
+			time.Sleep(time.Duration(iditr.WaitMilliseconds) * time.Millisecond)
 			continue WHILE_RESULT_NOT_INCREMENTED
 		}
+
+		pditr.incrementTurnResult = iditr
 
 		// Process monster instances
 		recs, err := m.GetMonsterInstanceRecs(map[string]interface{}{
@@ -214,26 +306,41 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		l.Info("Processing turn >%d< with >%d< monster instance records", iditResult.Record.TurnNumber, len(recs))
+		l.Info("Processing turn >%d< with >%d< monster instance records", iditr.Record.TurnNumber, len(recs))
 
-		// TODO: 9-implement-monster-actions
 		for idx := range recs {
 			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
-			dmicResult, err := m.DecideMonsterAction(recs[idx].ID)
+			dmar, err := m.DecideMonsterAction(recs[idx].ID)
 			if err != nil {
 				l.Warn("failed deciding monster instance ID >%s< action >%v<", recs[idx].ID, err)
 				return nil, err
 			}
 
-			l.Info("Monster instance ID >%s< Sentence >%s<", recs[idx].ID, dmicResult.Sentence)
+			l.Info("Monster instance ID >%s< Sentence >%s<", dmar.MonsterInstanceID, dmar.Sentence)
+
+			if dmar.Sentence == "" {
+				l.Info("Monster instance ID >%s< not doing anything this turn", dmar.MonsterInstanceID)
+				continue
+			}
+
+			ars, err := m.ProcessMonsterAction(dmar.DungeonInstanceID, dmar.MonsterInstanceID, dmar.Sentence)
+			if err != nil {
+				l.Warn("failed processing monster action >%s< action >%v<", dmar.Sentence, err)
+				return nil, err
+			}
+
+			l.Info("Processed monster instance ID >%s< action >%#v<", dmar.MonsterInstanceID, ars.ActionRec)
+			pditr.monsterInstanceActionRecordSets = append(pditr.monsterInstanceActionRecordSets, ars)
 		}
 	}
 
-	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, iditResult.Record.TurnNumber)
+	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, pditr.incrementTurnResult.Record.TurnNumber)
 
-	return iditResult, nil
+	return &pditr, nil
 }
 
+// keepRunning decides whether the server should continue
+// to run based on current state etc..
 func keepRunning() bool {
 	return true
 }

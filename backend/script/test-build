@@ -29,6 +29,7 @@ docker run \
     --env APP_SERVER_DB_MAX_IDLE_CONNECTIONS="25" \
     --env APP_SERVER_DB_MAX_IDLE_TIME_MINS="15" \
     --env APP_SERVER_TURN_DURATION="2000" \
+	--publish 127.0.0.1:8084:8084 \
 	--interactive \
 	--tty \
 	--name game-server \

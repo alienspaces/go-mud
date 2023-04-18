@@ -39,9 +39,15 @@ if [ -z "$COMMAND" ]; then
     export POSTGRES_DB=$APP_SERVER_DB_NAME
     export POSTGRES_USER=$APP_SERVER_DB_USER
     export POSTGRES_PASSWORD=$APP_SERVER_DB_PASSWORD
-    
+
+    echo "=> (entrypoint) POSTGRES_DB: ${POSTGRES_DB}"
+    echo "=> (entrypoint) POSTGRES_USER: ${POSTGRES_USER}"
+    echo "=> (entrypoint) POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}"
+
     nohup /usr/local/bin/docker-entrypoint.sh postgres &
 
+    sleep 5
+  
     # extensions
     echo "=> (entrypoint) Creating extension pgcrypto"
     retry_cmd psql --host="$APP_SERVER_DB_HOST" --port="$APP_SERVER_DB_PORT" --username="$APP_SERVER_DB_USER" --command="CREATE EXTENSION pgcrypto;" "$APP_SERVER_DB_NAME"

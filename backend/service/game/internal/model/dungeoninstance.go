@@ -381,10 +381,91 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 }
 
 // DeleteDungeonInstance -
-func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) error {
+func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
+	l := m.Logger("DeleteDungeonInstance")
 
-	// TODO: (game) Impelement deleting a dungeon instance. Do things like check
-	// there are no character instances left inside etc..
+	oiRecs, err := m.GetObjectInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, true,
+	)
+	if err != nil {
+		l.Warn("failed to get dungeon instance object instance records >%v<", err)
+		return err
+	}
+
+	for idx := range oiRecs {
+		l.Info("Deleting object instance record ID >%s<", oiRecs[idx].ID)
+		err := m.DeleteObjectInstanceRec(oiRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed to delete object instance record >%v<", err)
+			return err
+		}
+	}
+
+	ciRecs, err := m.GetCharacterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, true,
+	)
+	if err != nil {
+		l.Warn("failed to get dungeon instance character instance records >%v<", err)
+		return err
+	}
+
+	for idx := range ciRecs {
+		l.Info("Deleting character instance record ID >%s<", ciRecs[idx].ID)
+		err := m.DeleteCharacterInstanceRec(ciRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed to delete character instance record >%v<", err)
+			return err
+		}
+	}
+
+	miRecs, err := m.GetMonsterInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, true,
+	)
+	if err != nil {
+		l.Warn("failed to get dungeon instance monster instance records >%v<", err)
+		return err
+	}
+
+	for idx := range miRecs {
+		l.Info("Deleting monster instance record ID >%s<", miRecs[idx].ID)
+		err := m.DeleteObjectInstanceRec(miRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed to delete monster instance record >%v<", err)
+			return err
+		}
+	}
+
+	liRecs, err := m.GetLocationInstanceRecs(
+		map[string]interface{}{
+			"dungeon_instance_id": dungeonInstanceID,
+		}, nil, true,
+	)
+	if err != nil {
+		l.Warn("failed to get dungeon instance location instance records >%v<", err)
+		return err
+	}
+
+	for idx := range liRecs {
+		l.Info("Deleting location instance record ID >%s<", liRecs[idx].ID)
+		err := m.DeleteLocationInstanceRec(liRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed to delete location instance record >%v<", err)
+			return err
+		}
+	}
+
+	l.Info("Deleting dungeon instance record ID >%s<", dungeonInstanceID)
+	err = m.DeleteDungeonInstanceRec(dungeonInstanceID)
+	if err != nil {
+		l.Warn("failed to delete dungeon instance record >%v<", err)
+		return err
+	}
 
 	return nil
 }
@@ -417,7 +498,6 @@ func makeLocationMap(locationRecs []*record.Location, locationInstanceRecs []*re
 
 // resolveLocationInstanceDirectionIdentifiers -
 func (m *Model) resolveLocationInstanceDirectionIdentifiers(locationMap map[string]LocationMapItem, locationInstanceRecs []*record.LocationInstance) ([]*record.LocationInstance, error) {
-
 	l := m.Logger("CreateDungeonInstance")
 
 	l.Debug("Resolving location instance direction identifiers")
@@ -462,20 +542,3 @@ func (m *Model) resolveLocationInstanceDirectionIdentifiers(locationMap map[stri
 
 	return locationInstanceRecs, nil
 }
-
-// // Resolve all location direction identifiers on all dungeon location instances
-// data, err = t.resolveLocationInstanceDirectionIdentifiers(data, dungeonConfig)
-// if err != nil {
-// 	t.Log.Warn("Failed resolving data location instance identifiers >%v<", err)
-// 	return err
-// }
-
-// // Update all previously created location instance records as they now have all their
-// // reference location instance identifiers now set.
-// for _, dungeonLocationInstanceRec := range data.LocationInstanceRecs {
-// 	err := t.updateLocationInstanceRec(dungeonLocationInstanceRec)
-// 	if err != nil {
-// 		t.Log.Warn("Failed updating location instance record >%v<", err)
-// 		return err
-// 	}
-// }

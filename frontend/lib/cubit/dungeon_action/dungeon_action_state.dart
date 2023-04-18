@@ -15,22 +15,21 @@ class DungeonActionStateInitial extends DungeonActionState {
 
 @immutable
 class DungeonActionStatePreparing extends DungeonActionState {
-  final String? action;
+  final String? actionCommand;
   final String? target;
-  const DungeonActionStatePreparing({this.action, this.target});
+  const DungeonActionStatePreparing({this.actionCommand, this.target});
 
   @override
-  List<Object?> get props => [action, target];
+  List<Object?> get props => [actionCommand, target];
 }
 
 @immutable
 class DungeonActionStateCreating extends DungeonActionState {
   final String sentence;
-  final DungeonActionRecord? current;
-  const DungeonActionStateCreating({required this.sentence, this.current});
+  const DungeonActionStateCreating({required this.sentence});
 
   @override
-  List<Object?> get props => [sentence, current];
+  List<Object?> get props => [sentence];
 }
 
 @immutable
@@ -45,36 +44,61 @@ class DungeonActionStateError extends DungeonActionState {
 
 @immutable
 class DungeonActionStateCreated extends DungeonActionState {
-  final DungeonActionRecord current;
-  final String action;
+  final DungeonActionRecord action;
+  final DungeonActionRecord? previousAction;
+  final String actionCommand;
   final String? direction;
 
-  const DungeonActionStateCreated(
-      {required this.current, required this.action, this.direction});
-
-  @override
-  List<Object?> get props => [current, action, direction];
-}
-
-@immutable
-class DungeonActionStatePlaying extends DungeonActionState {
-  final DungeonActionRecord previous;
-  final DungeonActionRecord current;
-  final String action;
-  final String? direction;
-
-  const DungeonActionStatePlaying({
-    required this.previous,
-    required this.current,
+  const DungeonActionStateCreated({
     required this.action,
+    this.previousAction,
+    required this.actionCommand,
     this.direction,
   });
 
   @override
+  List<Object?> get props => [action, previousAction, actionCommand, direction];
+}
+
+@immutable
+class DungeonActionStatePlaying extends DungeonActionState {
+  final DungeonActionRecord currentActionRec;
+  final DungeonActionRecord? previousActionRec;
+  final String actionCommand;
+  final String? actionDirection;
+
+  const DungeonActionStatePlaying({
+    required this.currentActionRec,
+    this.previousActionRec,
+    required this.actionCommand,
+    this.actionDirection,
+  });
+
+  @override
   List<Object?> get props => [
-        previous,
-        current,
-        action,
-        direction,
+        currentActionRec,
+        previousActionRec,
+        actionCommand,
+        actionDirection,
+      ];
+}
+
+@immutable
+class DungeonActionStatePlayingOther extends DungeonActionState {
+  final DungeonActionRecord actionRec;
+  final String actionCommand;
+  final String? actionDirection;
+
+  const DungeonActionStatePlayingOther({
+    required this.actionRec,
+    required this.actionCommand,
+    this.actionDirection,
+  });
+
+  @override
+  List<Object?> get props => [
+        actionRec,
+        actionCommand,
+        actionDirection,
       ];
 }

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/widgets/game/action/action.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/style.dart';
 
@@ -40,7 +40,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
         onPressed: () {
           final log = getLogger('GameActionPanelWidget', '_actionWidget');
           log.fine('Selecting action >$action<');
-          _selectAction(context, action);
+          _selectPanelAction(context, action);
         },
         style: gameButtonStyle,
         child: Text(
@@ -50,16 +50,17 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
     );
   }
 
-  Widget _submitActionWidget(BuildContext context) {
+  Widget _submitPanelActionWidget(BuildContext context) {
     return Container(
       width: gridMemberWidth * 2,
       height: gridMemberHeight * 2,
       margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: ElevatedButton(
         onPressed: () {
-          final log = getLogger('GameActionPanelWidget', '_submitActionWidget');
+          final log =
+              getLogger('GameActionPanelWidget', '_submitPanelActionWidget');
           log.fine('Submitting action');
-          _submitAction(context);
+          _submitPanelAction(context);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
@@ -69,8 +70,8 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
     );
   }
 
-  void _selectAction(BuildContext context, String action) {
-    final log = getLogger('GameActionPanelWidget', '_selectAction');
+  void _selectPanelAction(BuildContext context, String action) {
+    final log = getLogger('GameActionPanelWidget', '_selectPanelAction');
     log.fine('Selecting action..');
 
     final dungeonCharacterCubit =
@@ -92,8 +93,8 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
     dungeonCommandCubit.selectAction(action);
   }
 
-  void _submitAction(BuildContext context) async {
-    final log = getLogger('GameActionPanelWidget', '_submitAction');
+  void _submitPanelAction(BuildContext context) async {
+    final log = getLogger('GameActionPanelWidget', '_submitPanelAction');
     log.fine('Submitting action..');
 
     final dungeonCharacterCubit =
@@ -105,19 +106,11 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
     }
 
     log.fine('++ Submitting action');
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
-    await dungeonActionCubit.createAction(
-      dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-      dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
-      dungeonCommandCubit.command(),
-    );
-    dungeonCommandCubit.unselectAll();
+    await submitAction(context);
 
-    // TODO: (client) Loop this using a timer allowing animations to complete
-    var moreActions = dungeonActionCubit.playAction();
-    log.fine('++ More actions >$moreActions<');
+    dungeonCommandCubit.unselectAll();
   }
 
   @override
@@ -166,7 +159,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
               ),
               Expanded(
                 flex: 1,
-                child: _submitActionWidget(
+                child: _submitPanelActionWidget(
                   context,
                 ),
               ),

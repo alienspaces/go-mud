@@ -1,8 +1,8 @@
 {
     "$schema": "https://json-schema.org/draft-07/schema#",
-    "$id": "http://vet.com/jsonschema/main.schema.json",
+    "$id": "http://go-mud.com/jsonschema/main.schema.json",
     "title": "Test Main",
     "type": "object",
     "required": [],
-    "$ref": "http://vet.com/jsonschema/data.schema.json"
+    "$ref": "http://go-mud.com/jsonschema/data.schema.json"
 }

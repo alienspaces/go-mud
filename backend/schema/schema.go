@@ -1,9 +1,7 @@
 package schema
 
 // Request -
-type Request struct {
-	Pagination RequestPagination `json:"pagination"`
-}
+type Request struct{}
 
 // RequestPagination -
 type RequestPagination struct {

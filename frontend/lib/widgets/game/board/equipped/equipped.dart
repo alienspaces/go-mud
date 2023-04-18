@@ -29,15 +29,16 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
         log.fine('Rendering equipped inventory');
 
         List<Widget> equippedWidgets = [];
-        if (state is DungeonActionStatePlaying &&
-            state.current.actionCharacter != null &&
-            state.current.actionCharacter?.characterEquippedObjects != null) {
-          var equipped =
-              state.current.actionCharacter?.characterEquippedObjects;
-          for (var i = 0; i < equipped!.length; i++) {
-            equippedWidgets.add(
-              ObjectButtonWidget(objectName: equipped[i].objectName),
-            );
+        if (state is DungeonActionStatePlaying) {
+          var actionCharacter = state.currentActionRec.actionCharacter;
+          if (actionCharacter != null &&
+              actionCharacter.characterEquippedObjects != null) {
+            var equipped = actionCharacter.characterEquippedObjects;
+            for (var i = 0; i < equipped!.length; i++) {
+              equippedWidgets.add(
+                ObjectButtonWidget(objectName: equipped[i].objectName),
+              );
+            }
           }
         }
         return GridView.count(

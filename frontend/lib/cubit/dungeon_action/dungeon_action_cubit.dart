@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart';
+import 'dart:async';
 
 // Application
 import 'package:go_mud_client/logger.dart';
@@ -12,25 +14,29 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
 
-  List<DungeonActionRecord> dungeonActionRecords = [];
-  DungeonActionRecord? dungeonActionRecord;
+  DungeonActionRecord? currentCharacterActionRec;
+  DungeonActionRecord? previousCharacterActionRec;
+  List<DungeonActionRecord> otherActionRecs = [];
 
   DungeonActionCubit({required this.config, required this.repositories})
       : super(const DungeonActionStateInitial());
 
   Future<void> createAction(
-      String dungeonID, String characterID, String command) async {
+    String dungeonID,
+    String characterID,
+    String command,
+  ) async {
     final log = getLogger('DungeonActionCubit', 'createAction');
     log.fine('Creating dungeon action command >$command<');
 
+    // TODO: Not used by any widgets to do anything meaningful at the moment..
     emit(DungeonActionStateCreating(
       sentence: command,
-      current: dungeonActionRecord,
     ));
 
-    DungeonActionRecord? createdDungeonActionRecord;
+    List<DungeonActionRecord>? responseActionRecs;
     try {
-      createdDungeonActionRecord = await repositories.dungeonActionRepository
+      responseActionRecs = await repositories.dungeonActionRepository
           .create(dungeonID, characterID, command);
     } on ActionTooEarlyException {
       emit(const DungeonActionStateError(
@@ -45,96 +51,149 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
       return;
     }
 
-    log.info(
-        'location ${createdDungeonActionRecord?.actionLocation.locationName}');
-
-    if (createdDungeonActionRecord?.actionTargetLocation != null) {
-      log.info(
-          'targetLocation ${createdDungeonActionRecord?.actionTargetLocation?.locationName}');
-    }
-    if (createdDungeonActionRecord?.actionTargetCharacter != null) {
-      log.info(
-          'targetCharacter ${createdDungeonActionRecord?.actionTargetCharacter?.toJson()}');
-    }
-    if (createdDungeonActionRecord?.actionTargetMonster != null) {
-      log.info(
-          'targetMonster ${createdDungeonActionRecord?.actionTargetMonster?.toJson()}');
-    }
-    if (createdDungeonActionRecord?.actionTargetObject != null) {
-      log.info(
-          'targetObject ${createdDungeonActionRecord?.actionTargetObject?.toJson()}');
+    if (responseActionRecs == null || responseActionRecs.isEmpty) {
+      log.warning('No action records returned');
+      return;
     }
 
-    if (createdDungeonActionRecord != null) {
-      dungeonActionRecord = createdDungeonActionRecord;
-      dungeonActionRecords.add(createdDungeonActionRecord);
+    // The previous character action record is used for animating transitions
+    // from the previous character action to the current character action
+    previousCharacterActionRec = currentCharacterActionRec;
 
-      emit(
-        DungeonActionStateCreated(
-          current: createdDungeonActionRecord,
-          action: createdDungeonActionRecord.actionCommand,
-          direction: createdDungeonActionRecord
-              .actionTargetLocation?.locationDirection,
-        ),
-      );
+    // The first action record is always the character action
+    currentCharacterActionRec = responseActionRecs.removeLast();
+
+    // The remaining action records are always other character or monster actions
+    List<DungeonActionRecord>? previousOtherActionRecs = responseActionRecs;
+
+    while (previousOtherActionRecs.isNotEmpty) {
+      // Add from the earliest other action
+      var actionRec = previousOtherActionRecs.removeAt(0);
+      otherActionRecs.add(actionRec);
     }
+
+    log.warning('**** Emitting DungeonActionStateCreated');
+
+    emit(
+      DungeonActionStateCreated(
+        action: currentCharacterActionRec!,
+        previousAction: previousCharacterActionRec,
+        actionCommand: currentCharacterActionRec!.actionCommand,
+        direction:
+            currentCharacterActionRec!.actionTargetLocation?.locationDirection,
+      ),
+    );
   }
 
-  /// Clear dungeon action history, typically called when returning to the dungeon page
+  /// Clears all action records
   void clearActions() {
-    dungeonActionRecord = null;
-    dungeonActionRecords = [];
+    currentCharacterActionRec = null;
+    previousCharacterActionRec = null;
+    otherActionRecs = [];
   }
 
-  /// Returns true when there are more actions in history to play
-  bool playAction() {
-    final log = getLogger('DungeonActionCubit', 'playAction');
+  /// Plays the current player action
+  Future<void> playCharacterAction() async {
+    final log = getLogger('DungeonActionCubit', 'playCharacterAction');
 
-    if (dungeonActionRecords.length < 2) {
-      log.info('Not enough dungeon action records, not playing action');
-      return false;
+    if (currentCharacterActionRec == null) {
+      log.warning(
+          'Current character action is null, cannot play character action');
+      return;
     }
 
-    DungeonActionRecord previous = dungeonActionRecords.removeAt(0);
-    DungeonActionRecord current = dungeonActionRecords[0];
-    String? direction;
-    if (current.actionCommand == 'move' || current.actionCommand == 'look') {
-      direction = current.actionTargetLocation?.locationDirection;
+    DungeonActionRecord actionRec = currentCharacterActionRec!;
+
+    String? actionDirection;
+    if (actionRec.actionCommand == 'move' ||
+        actionRec.actionCommand == 'look') {
+      actionDirection = actionRec.actionTargetLocation?.locationDirection;
     }
 
-    if (current.actionTargetLocation != null) {
-      log.fine(
-          'Play action command >${current.actionCommand}< direction >$direction<');
-    }
-
-    if (current.actionTargetCharacter != null) {
-      log.fine(
-          'Play action command >${current.actionCommand}< character >${current.actionTargetCharacter?.characterName}<');
-    }
-
-    if (current.actionTargetMonster != null) {
-      log.fine(
-          'Play action command >${current.actionCommand}< monster >${current.actionTargetMonster?.monsterName}<');
-    }
-
-    if (current.actionTargetObject != null) {
-      log.fine(
-          'Play action command >${current.actionCommand}< object >${current.actionTargetObject?.objectName}<');
-    }
+    await logActionRec(log, actionRec);
 
     emit(
       DungeonActionStatePlaying(
-        previous: previous,
-        current: current,
-        action: current.actionCommand,
-        direction: direction,
+        currentActionRec: actionRec,
+        previousActionRec: previousCharacterActionRec,
+        actionCommand: actionRec.actionCommand,
+        actionDirection: actionDirection,
       ),
     );
 
-    if (dungeonActionRecords.length <= 1) {
-      return false;
+    return;
+  }
+
+  // Plays all existing other actions until none are left to play
+  Future<void> playOtherActions() async {
+    final log = getLogger('DungeonActionCubit', 'playOtherActions');
+
+    if (otherActionRecs.isEmpty) {
+      log.info('Other actions are empty, cannot play other action');
+      return;
     }
 
-    return true;
+    log.warning('Other actions length ${otherActionRecs.length}');
+
+    var milliseconds = 350;
+    while (otherActionRecs.isNotEmpty) {
+      // Play from the earliest other action
+      DungeonActionRecord actionRec = otherActionRecs.removeAt(0);
+
+      String? actionDirection;
+      if (actionRec.actionCommand == 'move' ||
+          actionRec.actionCommand == 'look') {
+        actionDirection = actionRec.actionTargetLocation?.locationDirection;
+      }
+
+      // Do not spam events, otherwise we probably need to look at streaming
+      Timer(Duration(milliseconds: milliseconds), () {
+        emit(
+          DungeonActionStatePlayingOther(
+            actionRec: actionRec,
+            actionCommand: actionRec.actionCommand,
+            actionDirection: actionDirection,
+          ),
+        );
+      });
+
+      milliseconds += 350;
+    }
+
+    return;
+  }
+}
+
+Future<void> logActionRec(Logger log, DungeonActionRecord actionRec) async {
+  String? direction;
+
+  if ((actionRec.actionCommand == 'move' ||
+          actionRec.actionCommand == 'look') &&
+      actionRec.actionTargetLocation != null) {
+    direction = actionRec.actionTargetLocation?.locationDirection;
+    log.info(
+      'Command >${actionRec.actionCommand}< direction >$direction<',
+    );
+  }
+
+  if (actionRec.actionTargetCharacter != null) {
+    var target = actionRec.actionTargetCharacter;
+    log.info(
+      'Command >${actionRec.actionCommand}< character >${target?.characterName}<',
+    );
+  }
+
+  if (actionRec.actionTargetMonster != null) {
+    var target = actionRec.actionTargetMonster;
+    log.info(
+      'Command >${actionRec.actionCommand}< monster >${target?.monsterName}<',
+    );
+  }
+
+  if (actionRec.actionTargetObject != null) {
+    var target = actionRec.actionTargetObject;
+    log.info(
+      'Command >${actionRec.actionCommand}< object >${target?.objectName}<',
+    );
   }
 }

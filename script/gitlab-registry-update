@@ -3,12 +3,12 @@
 # Update gitlab container registry with dependent images
 docker login registry.gitlab.com -u alienspaces@gmail.com -p "$GITLAB_PERSONAL_TOKEN"
 
-IMAGE="docker:20.10.17"
+IMAGE="docker:23.0.3"
 docker pull $IMAGE
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE
 
-IMAGE="docker:20.10.17-dind"
+IMAGE="docker:23.0.3-dind"
 docker pull $IMAGE
 docker tag $IMAGE registry.gitlab.com/alienspaces/go-mud/$IMAGE
 docker push registry.gitlab.com/alienspaces/go-mud/$IMAGE

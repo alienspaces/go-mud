@@ -18,10 +18,11 @@ test-backend:
     - ./script/test-ci
 
 build-backend:
-  image: $CI_REGISTRY/alienspaces/go-mud/docker:20.10.17
+  image: $CI_REGISTRY/alienspaces/go-mud/docker:23.0.3
   stage: build-backend
   services:
-    - name: $CI_REGISTRY/alienspaces/go-mud/docker:20.10.17-dind
+    - name: $CI_REGISTRY/alienspaces/go-mud/docker:23.0.3-dind
+      entrypoint: [ "dockerd-entrypoint.sh", "--tls=false" ]
       alias: docker
   before_script:
     - apk add git

@@ -30,6 +30,9 @@ class API {
         host: _hostname,
         port: int.parse(_port),
       );
+
+      log.info('URI $uri');
+
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
     } catch (err) {
@@ -59,7 +62,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -89,7 +92,7 @@ class API {
         path: '/api/v1/dungeons',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -135,7 +138,7 @@ class API {
           "character_intelligence": characterIntelligence,
         },
       });
-      log.warning('bodyData $bodyData');
+      log.info('bodyData $bodyData');
 
       response = await client.post(
         uri,
@@ -176,7 +179,7 @@ class API {
         path: '/api/v1/characters/$characterID',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.get(
         uri,
@@ -215,7 +218,7 @@ class API {
         path: '/api/v1/characters',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -295,7 +298,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.get(
         uri,
@@ -338,7 +341,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/exit',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       response = await client.post(
         uri,
@@ -377,14 +380,14 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/actions',
       );
 
-      log.fine('URI $uri');
+      log.info('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
           "sentence": sentence,
         },
       });
-      log.warning('bodyData $bodyData');
+      log.info('bodyData $bodyData');
 
       response = await client.post(
         uri,

@@ -9,11 +9,8 @@ import (
 // validateActionCharacterObjectRec - validates creating and updating an action character object record
 func (m *Model) validateActionCharacterObjectRec(rec *record.ActionCharacterObject) error {
 
-	if rec.ActionID == "" {
-		return fmt.Errorf("failed validation, ActionID is empty")
-	}
-	if rec.CharacterInstanceID == "" {
-		return fmt.Errorf("failed validation, CharacterInstanceID is empty")
+	if rec.ActionCharacterID == "" {
+		return fmt.Errorf("failed validation, ActionCharacterID is empty")
 	}
 	if rec.ObjectInstanceID == "" {
 		return fmt.Errorf("failed validation, ObjectInstanceID is empty")

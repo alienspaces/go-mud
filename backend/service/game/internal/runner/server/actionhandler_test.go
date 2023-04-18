@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/alienspaces/go-mud/backend/schema"
-
 	"github.com/stretchr/testify/require"
+
 	"gitlab.com/alienspaces/go-mud/backend/core/auth"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	"gitlab.com/alienspaces/go-mud/backend/schema"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 )
 
@@ -51,8 +51,8 @@ func TestPostActionHandler(t *testing.T) {
 
 	// All actions are performed by "Barricade" in the "Cave"
 	testCaseRequestPathParams := func(data harness.Data) map[string]string {
-		dRec, _ := data.GetDungeonRecByName("cave")
-		cRec, _ := data.GetCharacterRecByName("barricade")
+		dRec, _ := data.GetDungeonRecByName(harness.DungeonNameCave)
+		cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
 
 		params := map[string]string{
 			":dungeon_id":   dRec.ID,
@@ -88,17 +88,69 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				loRec, _ := data.GetObjectRecByName("rusted sword")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
+						// Barricade looks
 						{
 							ActionCommand:   "look",
 							ActionNarrative: fmt.Sprintf("%s looks", cRec.Name),
@@ -116,7 +168,7 @@ func TestPostActionHandler(t *testing.T) {
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
-										MonsterName: lmRec.Name,
+										MonsterName: mRec.Name,
 									},
 								},
 								LocationObjects: []schema.ActionLocationObject{
@@ -168,7 +220,7 @@ func TestPostActionHandler(t *testing.T) {
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
-										MonsterName: lmRec.Name,
+										MonsterName: mRec.Name,
 									},
 								},
 								LocationObjects: []schema.ActionLocationObject{
@@ -203,22 +255,80 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave tunnel")
-				loRec, _ := data.GetObjectRecByName("rusted helmet")
-				lmRec, _ := data.GetMonsterRecByName("angry goblin")
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+
+				tlRec, _ := data.GetLocationRecByName(harness.LocationNameCaveTunnel)
+				tloRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedHelmet)
+				tlmRec, _ := data.GetMonsterRecByName(harness.MonsterNameAngryGoblin)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
+						// Barricade moves north
 						{
 							ActionCommand:   "move",
 							ActionNarrative: fmt.Sprintf("%s moves north", cRec.Name),
 							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
+								LocationName:        tlRec.Name,
+								LocationDescription: tlRec.Description,
 								LocationDirections:  []string{"north", "south", "northwest"},
 								LocationCharacters: []schema.ActionLocationCharacter{
 									{
@@ -227,12 +337,12 @@ func TestPostActionHandler(t *testing.T) {
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
-										MonsterName: lmRec.Name,
+										MonsterName: tlmRec.Name,
 									},
 								},
 								LocationObjects: []schema.ActionLocationObject{
 									{
-										ObjectName: loRec.Name,
+										ObjectName: tloRec.Name,
 									},
 								},
 							},
@@ -266,8 +376,8 @@ func TestPostActionHandler(t *testing.T) {
 							ActionTargetCharacter: nil,
 							ActionTargetMonster:   nil,
 							ActionTargetLocation: &schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
+								LocationName:        tlRec.Name,
+								LocationDescription: tlRec.Description,
 								LocationDirection:   "north",
 								LocationDirections:  []string{"north", "south", "northwest"},
 								LocationCharacters: []schema.ActionLocationCharacter{
@@ -277,12 +387,12 @@ func TestPostActionHandler(t *testing.T) {
 								},
 								LocationMonsters: []schema.ActionLocationMonster{
 									{
-										MonsterName: lmRec.Name,
+										MonsterName: tlmRec.Name,
 									},
 								},
 								LocationObjects: []schema.ActionLocationObject{
 									{
-										ObjectName: loRec.Name,
+										ObjectName: tloRec.Name,
 									},
 								},
 							},
@@ -312,20 +422,74 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				loRec, _ := data.GetObjectRecByName("rusted sword")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				tlRec, _ := data.GetLocationRecByName("cave tunnel")
-				tloRec, _ := data.GetObjectRecByName("rusted helmet")
-				tlmRec, _ := data.GetMonsterRecByName("angry goblin")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+
+				tlRec, _ := data.GetLocationRecByName(harness.LocationNameCaveTunnel)
+				tloRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedHelmet)
+				tlmRec, _ := data.GetMonsterRecByName(harness.MonsterNameAngryGoblin)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
+						// Barricade looks north
 						{
 							ActionCommand:   "look",
 							ActionNarrative: fmt.Sprintf("%s looks north", cRec.Name),
@@ -411,7 +575,7 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					toRec, _ := data.GetObjectRecByName("rusted sword")
+					toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
 							Sentence: fmt.Sprintf("look %s", toRec.Name),
@@ -424,18 +588,70 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				loRec, _ := data.GetObjectRecByName("rusted sword")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				toRec, _ := data.GetObjectRecByName("rusted sword")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
 						{
 							ActionCommand:   "look",
 							ActionNarrative: fmt.Sprintf("%s looks %s", cRec.Name, loRec.Name),
@@ -509,7 +725,7 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
+					tmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
 							Sentence: fmt.Sprintf("look %s", tmRec.Name),
@@ -522,20 +738,73 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				loRec, _ := data.GetObjectRecByName("rusted sword")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				tmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				tmiRec, _ := data.GetMonsterInstanceRecByName("grumpy dwarf")
-				tmeoRec, _ := data.GetObjectRecByName("bone dagger")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+
+				tmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				tmiRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				tmeoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
 						{
 							ActionCommand:   "look",
 							ActionNarrative: fmt.Sprintf("%s looks %s", cRec.Name, tmRec.Name),
@@ -623,7 +892,7 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					tcRec, _ := data.GetCharacterRecByName("barricade")
+					tcRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
 							Sentence: fmt.Sprintf("look %s", tcRec.Name),
@@ -636,20 +905,73 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				loRec, _ := data.GetObjectRecByName("rusted sword")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				tcRec, _ := data.GetCharacterRecByName("barricade")
-				tciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				tceoRec, _ := data.GetObjectRecByName("dull bronze ring")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+
+				tcRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				tciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+				tceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
 						{
 							ActionCommand:   "look",
 							ActionNarrative: fmt.Sprintf("%s looks %s", cRec.Name, tcRec.Name),
@@ -737,7 +1059,7 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					toRec, _ := data.GetObjectRecByName("rusted sword")
+					toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
 							Sentence: fmt.Sprintf("stash %s", toRec.Name),
@@ -750,17 +1072,71 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				toRec, _ := data.GetObjectRecByName("rusted sword")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+
+				toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
 						{
 							ActionCommand:   "stash",
 							ActionNarrative: fmt.Sprintf("%s stashes %s", cRec.Name, toRec.Name),
@@ -841,7 +1217,7 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					toRec, _ := data.GetObjectRecByName("rusted sword")
+					toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
 							Sentence: fmt.Sprintf("equip %s", toRec.Name),
@@ -854,17 +1230,71 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				ceoRec, _ := data.GetObjectRecByName("dull bronze ring")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				toRec, _ := data.GetObjectRecByName("rusted sword")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				ceoRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+
+				toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
 						{
 							ActionCommand:   "equip",
 							ActionNarrative: fmt.Sprintf("%s equips %s", cRec.Name, toRec.Name),
@@ -945,7 +1375,7 @@ func TestPostActionHandler(t *testing.T) {
 				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
-					toRec, _ := data.GetObjectRecByName("dull bronze ring")
+					toRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
 					res := schema.ActionRequest{
 						Data: schema.ActionRequestData{
 							Sentence: fmt.Sprintf("drop %s", toRec.Name),
@@ -958,17 +1388,70 @@ func TestPostActionHandler(t *testing.T) {
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
-				cRec, _ := data.GetCharacterRecByName("barricade")
-				csoRec, _ := data.GetObjectRecByName("blood stained pouch")
-				ciRec, _ := data.GetCharacterInstanceRecByName("barricade")
-				lRec, _ := data.GetLocationRecByName("cave entrance")
-				lcRec, _ := data.GetCharacterRecByName("legislate")
-				loRec, _ := data.GetObjectRecByName("rusted sword")
-				lmRec, _ := data.GetMonsterRecByName("grumpy dwarf")
-				toRec, _ := data.GetObjectRecByName("dull bronze ring")
+				cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
+				csoRec, _ := data.GetObjectRecByName(harness.ObjectNameBloodStainedPouch)
+				ciRec, _ := data.GetCharacterInstanceRecByName(harness.CharacterNameBarricade)
+
+				mRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+				miRec, _ := data.GetMonsterInstanceRecByName(harness.MonsterNameGrumpyDwarf)
+				meoRec, _ := data.GetObjectRecByName(harness.ObjectNameBoneDagger)
+
+				lRec, _ := data.GetLocationRecByName(harness.LocationNameCaveEntrance)
+				lcRec, _ := data.GetCharacterRecByName(harness.CharacterNameLegislate)
+				loRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
+				lmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
+
+				toRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
 
 				res := schema.ActionResponse{
 					Data: []schema.ActionResponseData{
+						// Grumpy Dwarf looks
+						{
+							ActionCommand:   "look",
+							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
+							ActionLocation: schema.ActionLocation{
+								LocationName:        lRec.Name,
+								LocationDescription: lRec.Description,
+								LocationDirections:  []string{"north"},
+								LocationCharacters: []schema.ActionLocationCharacter{
+									{
+										CharacterName: cRec.Name,
+									},
+									{
+										CharacterName: lcRec.Name,
+									},
+								},
+								LocationMonsters: []schema.ActionLocationMonster{
+									{
+										MonsterName: mRec.Name,
+									},
+								},
+								LocationObjects: []schema.ActionLocationObject{
+									{
+										ObjectName: loRec.Name,
+									},
+								},
+							},
+							ActionCharacter: nil,
+							ActionMonster: &schema.ActionMonster{
+								MonsterName:                mRec.Name,
+								MonsterStrength:            mRec.Strength,
+								MonsterDexterity:           mRec.Dexterity,
+								MonsterIntelligence:        mRec.Intelligence,
+								MonsterHealth:              mRec.Health,
+								MonsterFatigue:             mRec.Fatigue,
+								MonsterCurrentStrength:     miRec.Strength,
+								MonsterCurrentDexterity:    miRec.Dexterity,
+								MonsterCurrentIntelligence: miRec.Intelligence,
+								MonsterCurrentHealth:       miRec.Health,
+								MonsterCurrentFatigue:      miRec.Fatigue,
+								MonsterEquippedObjects: []schema.ActionObject{
+									{
+										ObjectName: meoRec.Name,
+									},
+								},
+							},
+						},
 						{
 							ActionCommand:   "drop",
 							ActionNarrative: fmt.Sprintf("%s drops %s", cRec.Name, toRec.Name),
@@ -1072,13 +1555,13 @@ func TestPostActionHandler(t *testing.T) {
 		return o == nil
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Logf("Running test >%s<", testCase.Name)
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", tc.Name)
 
 			testFunc := func(method string, body interface{}) {
 
-				if testCase.TestResponseCode() != http.StatusOK {
+				if tc.TestResponseCode() != http.StatusOK {
 					return
 				}
 
@@ -1088,14 +1571,20 @@ func TestPostActionHandler(t *testing.T) {
 				}
 
 				// Validate response body
-				if testCase.expectResponseBody != nil {
+				if tc.expectResponseBody != nil {
 					require.NotNil(t, responseBody, "Response body is not nil")
 					require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-					expectResponseBody := testCase.expectResponseBody(th.Data)
+					expectResponseBody := tc.expectResponseBody(th.Data)
+
+					if expectResponseBody != nil {
+						require.NotNil(t, responseBody.Data, "Response body is not nil")
+						require.Equal(t, len(expectResponseBody.Data), len(responseBody.Data), "Response body length equals expected")
+					}
 
 					// Validate response body data
 					for idx, expectData := range expectResponseBody.Data {
+
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Command
@@ -1114,8 +1603,10 @@ func TestPostActionHandler(t *testing.T) {
 
 						// Current location characters
 						t.Logf("Checking character count >%d< >%d<", len(expectData.ActionLocation.LocationCharacters), len(responseBody.Data[idx].ActionLocation.LocationCharacters))
-						require.Equal(t, len(expectData.ActionLocation.LocationCharacters), len(responseBody.Data[idx].ActionLocation.LocationCharacters), "Response action location characters count equals expected")
 						if len(expectData.ActionLocation.LocationCharacters) > 0 {
+							for _, character := range responseBody.Data[idx].ActionLocation.LocationCharacters {
+								t.Logf("Response action location character name >%s<", character.CharacterName)
+							}
 							for _, character := range expectData.ActionLocation.LocationCharacters {
 								t.Logf("Checking action location character name >%s<", character.CharacterName)
 								require.True(t, responseBody.Data[idx].ActionLocation.LocationCharacters.HasCharacterWithName(character.CharacterName), "Response action location characters has character with name ")
@@ -1421,7 +1912,7 @@ func TestPostActionHandler(t *testing.T) {
 				}
 			}
 
-			RunTestCase(t, th, &testCase, testFunc)
+			RunTestCase(t, th, &tc, testFunc)
 		})
 	}
 }

@@ -38,12 +38,11 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.ActionMonsterObject {
 				return &record.ActionMonsterObject{
-					ActionID:          data.ActionRecs[0].ID,
-					MonsterInstanceID: data.MonsterInstanceRecs[0].ID,
-					ObjectInstanceID:  data.ObjectInstanceRecs[0].ID,
-					Name:              data.ObjectRecs[0].Name,
-					IsEquipped:        true,
-					IsStashed:         false,
+					ActionMonsterID:  data.ActionMonsterRecs[0].ID,
+					ObjectInstanceID: data.ObjectInstanceRecs[0].ID,
+					Name:             data.ObjectRecs[0].Name,
+					IsEquipped:       true,
+					IsStashed:        false,
 				}
 			},
 			err: false,
@@ -52,12 +51,11 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.ActionMonsterObject {
 				rec := &record.ActionMonsterObject{
-					ActionID:          data.ActionRecs[0].ID,
-					MonsterInstanceID: data.MonsterInstanceRecs[0].ID,
-					ObjectInstanceID:  data.ObjectInstanceRecs[0].ID,
-					Name:              data.ObjectRecs[0].Name,
-					IsEquipped:        true,
-					IsStashed:         false,
+					ActionMonsterID:  data.ActionMonsterRecs[0].ID,
+					ObjectInstanceID: data.ObjectInstanceRecs[0].ID,
+					Name:             data.ObjectRecs[0].Name,
+					IsEquipped:       true,
+					IsStashed:        false,
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

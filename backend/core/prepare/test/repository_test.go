@@ -22,7 +22,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
-func setupRepository(l logger.Logger, p preparer.Repository, db *sqlx.DB) (preparable.Repository, func() error, error) {
+func setupRepository(l logger.Logger, p preparer.Repository, db *sqlx.DB, tx *sqlx.Tx) (preparable.Repository, func() error, error) {
 
 	sql := `
 CREATE TABLE test (
@@ -53,7 +53,7 @@ CREATE TABLE test (
 		repository.Repository{
 			Log:     l,
 			Prepare: p,
-			Tx:      nil,
+			Tx:      tx,
 
 			// Config
 			Config: repository.Config{
@@ -61,6 +61,11 @@ CREATE TABLE test (
 				Attributes: tag.GetValues(Record{}, "db"),
 			},
 		},
+	}
+
+	err = r.Init()
+	if err != nil {
+		return nil, nil, err
 	}
 
 	return &r, teardown, nil
@@ -243,7 +248,7 @@ func TestPreparePrepare(t *testing.T) {
 	// NOTE: Following tests are testing function calls with a successfully
 	// prepared "preparable" thing
 
-	// run the following tests within a function, so we can utilise
+	// Run the following tests within a function, so we can utilise
 	// a deferred function to teardown any database setup
 	func() {
 		_, l, s, err := NewDependencies()
@@ -262,14 +267,18 @@ func TestPreparePrepare(t *testing.T) {
 		err = p.Init(db)
 		require.NoError(t, err, "Init preparer returns without error")
 
-		r, teardown, err := setupRepository(l, p, db)
+		// get tx
+		tx, err := s.GetTx()
+		require.NoError(t, err, "GetTx returns without error")
+
+		r, teardown, err := setupRepository(l, p, db, tx)
 		defer func() {
 			if teardown != nil {
 				teardown()
 			}
 		}()
 
-		require.NoError(t, err, "Init preparer returns without error")
+		require.NoError(t, err, "Setup repository returns without error")
 		require.NotNil(t, r, "Repository is not nil")
 
 		err = p.Prepare(r, preparer.ExcludePreparation{})
@@ -339,7 +348,11 @@ func TestPreparePrepare(t *testing.T) {
 		err = p.Init(db)
 		require.NoError(t, err, "Init preparer returns without error")
 
-		r, teardown, err := setupRepository(l, p, db)
+		// get tx
+		tx, err := s.GetTx()
+		require.NoError(t, err, "GetTx returns without error")
+
+		r, teardown, err := setupRepository(l, p, db, tx)
 		defer func() {
 			if teardown != nil {
 				teardown()

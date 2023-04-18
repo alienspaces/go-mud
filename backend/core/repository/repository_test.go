@@ -89,6 +89,18 @@ func NewDependencies() (configurer.Configurer, logger.Logger, storer.Storer, pre
 	return c, l, s, p, nil
 }
 
+func newDependencies(t *testing.T) (logger.Logger, preparer.Repository, *sqlx.Tx) {
+	_, l, s, p, err := NewDependencies()
+	require.NoError(t, err, "NewDependencies returns without error")
+
+	err = s.Init()
+	require.NoError(t, err, "Store Init returns without error")
+
+	tx, err := s.GetTx()
+	require.NoError(t, err, "Store NewTx returns without error")
+	return l, p, tx
+}
+
 func TestInit(t *testing.T) {
 	type fields struct {
 		Config Config
@@ -214,9 +226,11 @@ func TestGetOneSQL(t *testing.T) {
 		},
 	}
 
+	require.NoError(t, r.Init(), "Init returns without error")
+
 	require.Equal(t, fmt.Sprintf(`
 SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL
-`, r.Config.TableName), r.GetOneSQL())
+`, r.Config.TableName), r.GetOneSQL(), "GetOneSQL returns expected SQL")
 }
 
 func TestGetOneForUpdateSQL(t *testing.T) {
@@ -233,9 +247,11 @@ func TestGetOneForUpdateSQL(t *testing.T) {
 		},
 	}
 
+	require.NoError(t, r.Init(), "Init returns without error")
+
 	require.Equal(t, fmt.Sprintf(`
 SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL FOR UPDATE SKIP LOCKED
-`, r.Config.TableName), r.GetOneForUpdateSQL())
+`, r.Config.TableName), r.GetOneForUpdateSQL(), "GetOneForUpdateSQL returns expected SQL")
 }
 
 func TestGetManySQL(t *testing.T) {
@@ -252,9 +268,11 @@ func TestGetManySQL(t *testing.T) {
 		},
 	}
 
+	require.NoError(t, r.Init(), "Init returns without error")
+
 	require.Equal(t, fmt.Sprintf(`
 SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE deleted_at IS NULL
-`, r.Config.TableName), r.GetManySQL())
+`, r.Config.TableName), r.GetManySQL(), "GetManySQL returns expected SQL")
 }
 
 func TestCreateOneSQL(t *testing.T) {
@@ -271,7 +289,7 @@ func TestCreateOneSQL(t *testing.T) {
 		},
 	}
 
-	r.Init()
+	require.NoError(t, r.Init(), "Init returns without error")
 
 	require.Equal(t, fmt.Sprintf(`
 INSERT INTO %s (
@@ -296,7 +314,7 @@ INSERT INTO %s (
 	:db_time
 )
 RETURNING db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time
-`, r.Config.TableName), r.CreateOneSQL())
+`, r.Config.TableName), r.CreateOneSQL(), "CreateOneSQL returns expected SQL")
 }
 
 func TestUpdateOneSQL(t *testing.T) {
@@ -313,7 +331,7 @@ func TestUpdateOneSQL(t *testing.T) {
 		},
 	}
 
-	r.Init()
+	require.NoError(t, r.Init(), "Init returns without error")
 
 	require.Equal(t, fmt.Sprintf(`
 UPDATE %s SET
@@ -329,19 +347,7 @@ UPDATE %s SET
 WHERE id = :id
 AND   deleted_at IS NULL
 RETURNING db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time
-`, r.Config.TableName), r.UpdateOneSQL())
-}
-
-func newDependencies(t *testing.T) (logger.Logger, preparer.Repository, *sqlx.Tx) {
-	_, l, s, p, err := NewDependencies()
-	require.NoError(t, err, "NewDependencies returns without error")
-
-	err = s.Init()
-	require.NoError(t, err, "Store Init returns without error")
-
-	tx, err := s.GetTx()
-	require.NoError(t, err, "Store NewTx returns without error")
-	return l, p, tx
+`, r.Config.TableName), r.UpdateOneSQL(), "UpdateOneSQL returns expected SQL")
 }
 
 func TestDeleteOneSQL(t *testing.T) {
@@ -358,7 +364,9 @@ func TestDeleteOneSQL(t *testing.T) {
 		},
 	}
 
+	require.NoError(t, r.Init(), "Init returns without error")
+
 	require.Equal(t, fmt.Sprintf(`
 UPDATE %s SET deleted_at = :deleted_at WHERE id = :id AND deleted_at IS NULL RETURNING db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time
-`, r.Config.TableName), r.DeleteOneSQL())
+`, r.Config.TableName), r.DeleteOneSQL(), "DeleteOneSQL returns expected SQL")
 }

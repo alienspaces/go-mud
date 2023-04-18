@@ -29,14 +29,16 @@ class _GameStashedWidgetState extends State<GameStashedWidget> {
         log.fine('Rendering stashed inventory');
 
         List<Widget> stashedWidgets = [];
-        if (state is DungeonActionStatePlaying &&
-            state.current.actionCharacter != null &&
-            state.current.actionCharacter?.characterStashedObjects != null) {
-          var stashed = state.current.actionCharacter?.characterStashedObjects;
-          for (var i = 0; i < stashed!.length; i++) {
-            stashedWidgets.add(
-              ObjectButtonWidget(objectName: stashed[i].objectName),
-            );
+        if (state is DungeonActionStatePlaying) {
+          var actionCharacter = state.currentActionRec.actionCharacter;
+          if (actionCharacter != null &&
+              actionCharacter.characterStashedObjects != null) {
+            var stashed = actionCharacter.characterStashedObjects;
+            for (var i = 0; i < stashed!.length; i++) {
+              stashedWidgets.add(
+                ObjectButtonWidget(objectName: stashed[i].objectName),
+              );
+            }
           }
         }
         return GridView.count(

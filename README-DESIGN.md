@@ -1,4 +1,4 @@
-# Nest M.U.D - Design
+# Go M.U.D - Design
 
 - [Getting Started](README.md)
 - [How to Play](README-HOWTOPLAY.md)

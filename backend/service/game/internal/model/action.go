@@ -3,13 +3,11 @@ package model
 import (
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/nullint"
 	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
-
-// TODO: 8-implement-turns: check whether the character can perform a turn
-// yet based on what the current turn is and whether the character already
-// has a processed action for the current turn.
 
 type EntityType string
 
@@ -75,15 +73,17 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Warn("Character ID >%s< Name >%s< Action record turn >%d<", civRec.CharacterID, civRec.Name, actionRec.TurnNumber)
+	l.Info("Character ID >%s< Name >%s< Action record ID >%s< TurnNumber >%d<", civRec.CharacterID, civRec.Name, actionRec.ID, actionRec.TurnNumber)
 
 	// Perform the submitted character action
-	actionRec, err = m.performAction(&PerformActionArgs{
-		ActionRec:                 actionRec,
-		CharacterInstanceViewRec:  civRec,
-		MonsterInstanceViewRec:    nil,
-		LocationInstanceRecordSet: locationInstanceRecordSet,
-	})
+	actionRec, err = m.performAction(
+		&PerformActionArgs{
+			ActionRec:                 actionRec,
+			CharacterInstanceViewRec:  civRec,
+			MonsterInstanceViewRec:    nil,
+			LocationInstanceRecordSet: locationInstanceRecordSet,
+		},
+	)
 	if err != nil {
 		l.Warn("failed performing character action >%v<", err)
 		return nil, err
@@ -96,7 +96,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("Created action record ID >%s<", actionRec.ID)
+	l.Info("Created action record ID >%s< SerialNumber >%d<", actionRec.ID, nullint.ToInt16(actionRec.SerialNumber))
 
 	// TODO: (game) Maybe don't need to do this... Get the updated character record
 	civRec, err = m.GetCharacterInstanceViewRec(characterInstanceID)
@@ -124,13 +124,14 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		CurrentFatigue:      civRec.CurrentFatigue,
 	}
 
+	// Create source action character record
 	err = m.CreateActionCharacterRec(&actionCharacterRec)
 	if err != nil {
 		l.Warn("failed creating source action character record >%v<", err)
 		return nil, err
 	}
 
-	// Create action character object records
+	// Create source action character object records
 	oivRecs, err := m.GetCharacterInstanceObjectInstanceViewRecs(civRec.ID)
 	if err != nil {
 		l.Warn("failed getting source character object instance view records >%v<", err)
@@ -139,14 +140,13 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 
 	actionCharacterObjectRecs := []*record.ActionCharacterObject{}
 	for _, oivRec := range oivRecs {
-		l.Info("Adding character action object record >%#v<", oivRec)
+		l.Info("Adding source character action object >%s<", oivRec.Name)
 		dungeonCharacterObjectRec := record.ActionCharacterObject{
-			ActionID:            actionRec.ID,
-			CharacterInstanceID: civRec.ID,
-			ObjectInstanceID:    oivRec.ID,
-			Name:                oivRec.Name,
-			IsEquipped:          oivRec.IsEquipped,
-			IsStashed:           oivRec.IsStashed,
+			ActionCharacterID: actionCharacterRec.ID,
+			ObjectInstanceID:  oivRec.ID,
+			Name:              oivRec.Name,
+			IsEquipped:        oivRec.IsEquipped,
+			IsStashed:         oivRec.IsStashed,
 		}
 		err := m.CreateActionCharacterObjectRec(&dungeonCharacterObjectRec)
 		if err != nil {
@@ -198,6 +198,11 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
+
+	l.Info("Location instance ID >%s< name >%s<", locationInstanceRecordSet.LocationInstanceViewRec.ID, locationInstanceRecordSet.LocationInstanceViewRec.Name)
+	l.Info("Location instance ID >%s< record set character instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.CharacterInstanceViewRecs))
+	l.Info("Location instance ID >%s< record set monster instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.MonsterInstanceViewRecs))
+	l.Info("Location instance ID >%s< record set object instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.ObjectInstanceViewRecs))
 
 	sentence, err := m.decideAction(&DeciderArgs{
 		MonsterInstanceViewRec:    rec,
@@ -274,8 +279,6 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	l.Warn("Action record turn >%d<", actionRec.TurnNumber)
-
 	// Perform the submitted monster action
 	actionRec, err = m.performAction(&PerformActionArgs{
 		ActionRec:                 actionRec,
@@ -295,7 +298,14 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	l.Info("Created action record ID >%s<", actionRec.ID)
+	// Refetch the resulting action event record so we ave its serial number
+	actionRec, err = m.GetActionRec(actionRec.ID, false)
+	if err != nil {
+		l.Warn("failed refetching action record >%v<", err)
+		return nil, err
+	}
+
+	l.Info("Created action record ID >%s< SerialNumber >%d<", actionRec.ID, nullint.ToInt16(actionRec.SerialNumber))
 
 	// Get the updated monster record
 	mivRec, err = m.GetMonsterInstanceViewRec(monsterInstanceID)
@@ -340,12 +350,11 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	for _, oivRec := range oivRecs {
 		l.Info("Adding monster action object record >%#v<", oivRec)
 		dungeonMonsterObjectRec := record.ActionMonsterObject{
-			ActionID:          actionRec.ID,
-			MonsterInstanceID: mivRec.ID,
-			ObjectInstanceID:  oivRec.ID,
-			Name:              oivRec.Name,
-			IsEquipped:        oivRec.IsEquipped,
-			IsStashed:         oivRec.IsStashed,
+			ActionMonsterID:  actionMonsterRec.ID,
+			ObjectInstanceID: oivRec.ID,
+			Name:             oivRec.Name,
+			IsEquipped:       oivRec.IsEquipped,
+			IsStashed:        oivRec.IsStashed,
 		}
 		err := m.CreateActionMonsterObjectRec(&dungeonMonsterObjectRec)
 		if err != nil {
@@ -369,7 +378,6 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 }
 
 func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, error) {
-
 	l := m.Logger("GetActionRecordSet")
 
 	actionRecordSet := record.ActionRecordSet{}
@@ -402,8 +410,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		actionCharacterObjectRecs, err := m.GetActionCharacterObjectRecs(
 			map[string]interface{}{
-				"action_id":             actionID,
-				"character_instance_id": actionRec.CharacterInstanceID.String,
+				"action_character_id": actionRecordSet.ActionCharacterRec.ID,
 			}, nil, false)
 		if err != nil {
 			l.Warn("failed getting action character object records >%v<", err)
@@ -433,8 +440,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		actionMonsterObjectRecs, err := m.GetActionMonsterObjectRecs(
 			map[string]interface{}{
-				"action_id":           actionID,
-				"monster_instance_id": actionRec.MonsterInstanceID.String,
+				"action_monster_id": actionRecordSet.ActionMonsterRec.ID,
 			}, nil, false)
 		if err != nil {
 			l.Warn("failed getting action monster object records >%v<", err)
@@ -457,10 +463,10 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		ActionObjectRecs:        []*record.ActionObject{},
 	}
 
-	// Add the current location occupant action character records
+	// Add the current location action character records
 	actionCharacterRecs, err := m.GetActionCharacterRecs(
 		map[string]interface{}{
-			"record_type":          record.ActionCharacterRecordTypeOccupant,
+			"record_type":          record.ActionCharacterRecordTypeCurrentLocation,
 			"action_id":            actionID,
 			"location_instance_id": locationInstanceViewRec.ID,
 		},
@@ -471,12 +477,13 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		l.Warn("failed getting current location occupant action character records >%v<", err)
 		return nil, err
 	}
+
 	currentLocationRecordSet.ActionCharacterRecs = actionCharacterRecs
 
-	// Add the current location occupant action monster records
+	// Add the current location action monster records
 	actionMonsterRecs, err := m.GetActionMonsterRecs(
 		map[string]interface{}{
-			"record_type":          record.ActionMonsterRecordTypeOccupant,
+			"record_type":          record.ActionMonsterRecordTypeCurrentLocation,
 			"action_id":            actionID,
 			"location_instance_id": locationInstanceViewRec.ID,
 		},
@@ -487,12 +494,13 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		l.Warn("failed getting current location occupant action monster records >%v<", err)
 		return nil, err
 	}
+
 	currentLocationRecordSet.ActionMonsterRecs = actionMonsterRecs
 
-	// Add the current location occupant action object records
+	// Add the current location action object records
 	dungeonActionObjectRecs, err := m.GetActionObjectRecs(
 		map[string]interface{}{
-			"record_type":          record.ActionObjectRecordTypeOccupant,
+			"record_type":          record.ActionObjectRecordTypeCurrentLocation,
 			"action_id":            actionID,
 			"location_instance_id": locationInstanceViewRec.ID,
 		},
@@ -527,7 +535,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		// Add the target location occupant action character records
 		actionCharacterRecs, err := m.GetActionCharacterRecs(
 			map[string]interface{}{
-				"record_type":          record.ActionCharacterRecordTypeOccupant,
+				"record_type":          record.ActionCharacterRecordTypeTargetLocation,
 				"action_id":            actionID,
 				"location_instance_id": locationInstanceViewRec.ID,
 			},
@@ -543,7 +551,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		// Add the target location occupant action monster records
 		actionMonsterRecs, err := m.GetActionMonsterRecs(
 			map[string]interface{}{
-				"record_type":          record.ActionMonsterRecordTypeOccupant,
+				"record_type":          record.ActionMonsterRecordTypeTargetLocation,
 				"action_id":            actionID,
 				"location_instance_id": locationInstanceViewRec.ID,
 			},
@@ -557,9 +565,9 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		targetLocationRecordSet.ActionMonsterRecs = actionMonsterRecs
 
 		// Add the target location occupant action object records
-		dungeonActionObjectRecs, err := m.GetActionObjectRecs(
+		actionObjectRecs, err := m.GetActionObjectRecs(
 			map[string]interface{}{
-				"record_type":          record.ActionObjectRecordTypeOccupant,
+				"record_type":          record.ActionObjectRecordTypeTargetLocation,
 				"action_id":            actionID,
 				"location_instance_id": locationInstanceViewRec.ID,
 			},
@@ -570,7 +578,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 			l.Warn("failed getting target location occupant action monster records >%v<", err)
 			return nil, err
 		}
-		targetLocationRecordSet.ActionObjectRecs = dungeonActionObjectRecs
+		targetLocationRecordSet.ActionObjectRecs = actionObjectRecs
 
 		actionRecordSet.TargetLocation = &targetLocationRecordSet
 	}
@@ -596,8 +604,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		actionCharacterObjectRecs, err := m.GetActionCharacterObjectRecs(
 			map[string]interface{}{
-				"action_id":             actionID,
-				"character_instance_id": actionRec.ResolvedTargetCharacterInstanceID.String,
+				"action_character_id": actionRecordSet.TargetActionCharacterRec.ID,
 			}, nil, false)
 		if err != nil {
 			l.Warn("failed getting target character object records >%v<", err)
@@ -627,8 +634,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		actionMonsterObjectRecs, err := m.GetActionMonsterObjectRecs(
 			map[string]interface{}{
-				"action_id":           actionID,
-				"monster_instance_id": actionRec.ResolvedTargetMonsterInstanceID.String,
+				"action_monster_id": actionRecordSet.TargetActionMonsterRec.ID,
 			}, nil, false)
 		if err != nil {
 			l.Warn("failed getting target monster object records >%v<", err)
@@ -819,13 +825,90 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 	return locationInstanceRecordSet, nil
 }
 
+// Returns all action records that occurred at the location of the previous action
+// for the entity associated with the given action record. The given action record
+// is then appended to the result providing the full list.
+func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.Action, error) {
+	l := m.Logger("GetActionRecsSincePreviousAction")
+
+	if rec == nil {
+		return nil, fmt.Errorf("missing action record argument, cannot get action record since previous action")
+	}
+
+	if !nullstring.IsValid(rec.CharacterInstanceID) {
+		return nil, nil
+	}
+
+	l.Info("Current action record ID >%s<", rec.ID)
+	l.Info("Current action record location instance ID >%s<", rec.LocationInstanceID)
+	l.Info("Current action record turn number >%d<", rec.TurnNumber)
+	l.Info("Current action record serial number >%d<", nullint.ToInt16(rec.SerialNumber))
+	l.Info("Current action record character instance ID >%s<", nullstring.ToString(rec.CharacterInstanceID))
+	l.Info("Current action record monster instance ID >%s<", nullstring.ToString(rec.MonsterInstanceID))
+
+	actionRecs, err := m.GetActionRecs(
+		map[string]interface{}{
+			"character_instance_id": nullstring.ToString(rec.CharacterInstanceID),
+			"turn_number":           rec.TurnNumber,
+		},
+		map[string]string{
+			"turn_number":                     coresql.OperatorLessThan,
+			coresql.OperatorLimit:             "1",
+			coresql.OperatorOrderByDescending: "turn_number",
+		},
+		false,
+	)
+	if err != nil {
+		l.Warn("failed getting previous action record >%v<", err)
+		return nil, err
+	}
+
+	if len(actionRecs) != 1 {
+		l.Info("Character instance ID >%s< has no previous action records", nullstring.ToString(rec.CharacterInstanceID))
+		actionRecs = append(actionRecs, rec)
+		return actionRecs, nil
+	}
+
+	prevActionRec := actionRecs[0]
+
+	l.Info("Previous action record ID >%s<", prevActionRec.ID)
+	l.Info("Previous action record location instance ID >%s<", prevActionRec.LocationInstanceID)
+	l.Info("Previous action record turn number >%d<", prevActionRec.TurnNumber)
+	l.Info("Previous action record serial number >%d<", nullint.ToInt16(prevActionRec.SerialNumber))
+	l.Info("Previous action record character instance ID >%s<", nullstring.ToString(prevActionRec.CharacterInstanceID))
+	l.Info("Previous action record monster instance ID >%s<", nullstring.ToString(prevActionRec.MonsterInstanceID))
+
+	// We add one to the previous action serial number and subtract one from the current action
+	// serial number so we exclude those specific records when looking between.
+	var adjustAmount int16 = 1
+	actionRecs, err = m.GetActionRecs(
+		map[string]interface{}{
+			"location_instance_id": prevActionRec.LocationInstanceID,
+			"serial_number":        fmt.Sprintf("%d,%d", nullint.ToInt16(prevActionRec.SerialNumber)+adjustAmount, nullint.ToInt16(rec.SerialNumber)-adjustAmount),
+		},
+		map[string]string{
+			"serial_number": coresql.OperatorBetween,
+		},
+		false,
+	)
+	if err != nil {
+		l.Warn("failed getting action records since serial number >%s< >%v<", err)
+		return nil, err
+	}
+
+	// Append current action
+	actionRecs = append(actionRecs, rec)
+
+	return actionRecs, nil
+}
+
 func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecordSet) (*record.ActionRecordSet, error) {
 	l := m.Logger("createActionRecordSetRecords")
 
 	actionRec := actionRecordSet.ActionRec
 
 	// Create current location record set
-	currentLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
+	currentLocationRecordSet, err := m.createCurrentActionLocationRecordSet(actionRec.ID, actionRec.LocationInstanceID)
 	if err != nil {
 		l.Warn("failed creating action location record set >%v<", err)
 		return nil, err
@@ -834,7 +917,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 
 	// Create target location record set
 	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-		targetLocationRecordSet, err := m.createActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
+		targetLocationRecordSet, err := m.createTargetActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
 		if err != nil {
 			l.Warn("failed creating target action location record set >%v<", err)
 			return nil, err
@@ -927,9 +1010,23 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 	return actionRecordSet, nil
 }
 
-func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID string) (*record.ActionLocationRecordSet, error) {
+type LocationType string
+
+const LocationTypeCurrent LocationType = "current"
+const LocationTypeTarget LocationType = "target"
+
+func (m *Model) createCurrentActionLocationRecordSet(actionID, locationInstanceID string) (*record.ActionLocationRecordSet, error) {
+	return m.createActionLocationRecordSet(actionID, locationInstanceID, LocationTypeCurrent)
+}
+
+func (m *Model) createTargetActionLocationRecordSet(actionID, locationInstanceID string) (*record.ActionLocationRecordSet, error) {
+	return m.createActionLocationRecordSet(actionID, locationInstanceID, LocationTypeTarget)
+}
+
+func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID string, locationType LocationType) (*record.ActionLocationRecordSet, error) {
 	l := m.Logger("createActionLocationRecordSet")
 
+	// TODO: Think we should be using turn_number here to get relevant records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(locationInstanceID, true)
 	if err != nil {
 		l.Warn("failed getting dungeon location record set after performing action >%v<", err)
@@ -951,10 +1048,15 @@ func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID strin
 
 	// Character Occupants: Create the action character record for each character now at the current location
 	if len(locationInstanceRecordSet.CharacterInstanceViewRecs) > 0 {
-		for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
 
+		actionRecordType := record.ActionCharacterRecordTypeCurrentLocation
+		if locationType == LocationTypeTarget {
+			actionRecordType = record.ActionCharacterRecordTypeTargetLocation
+		}
+
+		for _, characterInstanceViewRec := range locationInstanceRecordSet.CharacterInstanceViewRecs {
 			actionCharacterRec := record.ActionCharacter{
-				RecordType:          record.ActionCharacterRecordTypeOccupant,
+				RecordType:          actionRecordType,
 				ActionID:            actionID,
 				LocationInstanceID:  locationInstanceViewRec.ID,
 				CharacterInstanceID: characterInstanceViewRec.ID,
@@ -984,9 +1086,15 @@ func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID strin
 
 	// Monster Occupants: Create the action monster record for each monster now at the current location
 	if len(locationInstanceRecordSet.MonsterInstanceViewRecs) > 0 {
+
+		actionRecordType := record.ActionMonsterRecordTypeCurrentLocation
+		if locationType == LocationTypeTarget {
+			actionRecordType = record.ActionMonsterRecordTypeTargetLocation
+		}
+
 		for _, monsterInstanceViewRec := range locationInstanceRecordSet.MonsterInstanceViewRecs {
 			actionMonsterRec := record.ActionMonster{
-				RecordType:          record.ActionMonsterRecordTypeOccupant,
+				RecordType:          actionRecordType,
 				ActionID:            actionID,
 				LocationInstanceID:  locationInstanceViewRec.ID,
 				MonsterInstanceID:   monsterInstanceViewRec.ID,
@@ -1015,9 +1123,15 @@ func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID strin
 
 	// Object Occupants: Create the action object record for each object now at the current location
 	if len(locationInstanceRecordSet.ObjectInstanceViewRecs) > 0 {
+
+		actionRecordType := record.ActionObjectRecordTypeCurrentLocation
+		if locationType == LocationTypeTarget {
+			actionRecordType = record.ActionObjectRecordTypeTargetLocation
+		}
+
 		for _, objectInstanceViewRec := range locationInstanceRecordSet.ObjectInstanceViewRecs {
 			dungeonActionObjectRec := record.ActionObject{
-				RecordType:         record.ActionObjectRecordTypeOccupant,
+				RecordType:         actionRecordType,
 				ActionID:           actionID,
 				LocationInstanceID: locationInstanceViewRec.ID,
 				ObjectInstanceID:   objectInstanceViewRec.ID,
@@ -1088,12 +1202,11 @@ func (m *Model) createActionTargetCharacterRecs(actionID, locationInstanceID, ch
 	for _, objectInstanceViewRec := range objectInstanceViewRecs {
 		l.Info("Adding target character object record >%v<", objectInstanceViewRecs)
 		dungeonCharacterObjectRec := record.ActionCharacterObject{
-			ActionID:            actionID,
-			CharacterInstanceID: targetCharacterInstanceViewRec.ID,
-			ObjectInstanceID:    objectInstanceViewRec.ID,
-			Name:                objectInstanceViewRec.Name,
-			IsEquipped:          objectInstanceViewRec.IsEquipped,
-			IsStashed:           objectInstanceViewRec.IsStashed,
+			ActionCharacterID: rec.ID,
+			ObjectInstanceID:  objectInstanceViewRec.ID,
+			Name:              objectInstanceViewRec.Name,
+			IsEquipped:        objectInstanceViewRec.IsEquipped,
+			IsStashed:         objectInstanceViewRec.IsStashed,
 		}
 		err := m.CreateActionCharacterObjectRec(&dungeonCharacterObjectRec)
 		if err != nil {
@@ -1154,12 +1267,11 @@ func (m *Model) createActionTargetMonsterRecs(actionID, locationInstanceID, mons
 	for _, objectInstanceViewRec := range objectInstanceViewRecs {
 		l.Info("Adding target monster object record >%v<", objectInstanceViewRecs)
 		dungeonMonsterObjectRec := record.ActionMonsterObject{
-			ActionID:          actionID,
-			MonsterInstanceID: targetMonsterInstanceViewRec.ID,
-			ObjectInstanceID:  objectInstanceViewRec.ID,
-			Name:              objectInstanceViewRec.Name,
-			IsEquipped:        objectInstanceViewRec.IsEquipped,
-			IsStashed:         objectInstanceViewRec.IsStashed,
+			ActionMonsterID:  rec.ID,
+			ObjectInstanceID: objectInstanceViewRec.ID,
+			Name:             objectInstanceViewRec.Name,
+			IsEquipped:       objectInstanceViewRec.IsEquipped,
+			IsStashed:        objectInstanceViewRec.IsStashed,
 		}
 		err := m.CreateActionMonsterObjectRec(&dungeonMonsterObjectRec)
 		if err != nil {

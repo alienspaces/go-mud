@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft-07/schema#",
-    "$id": "http://vet.com/jsonschema/data.schema.json",
+    "$id": "http://go-mud.com/jsonschema/data.schema.json",
     "title": "Test Data",
     "description": "Payload data for testing",
     "type": "object",

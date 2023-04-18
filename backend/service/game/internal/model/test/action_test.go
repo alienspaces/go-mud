@@ -310,11 +310,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -374,11 +373,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -439,11 +437,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, objectInstanceRec := range objectInstanceRecs {
 					oRec, _ := data.GetObjectRecByID(objectInstanceRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(objectInstanceRec.CharacterInstanceID),
-						ObjectInstanceID:    objectInstanceRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           objectInstanceRec.IsStashed,
-						IsEquipped:          objectInstanceRec.IsEquipped,
+						ObjectInstanceID: objectInstanceRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        objectInstanceRec.IsStashed,
+						IsEquipped:       objectInstanceRec.IsEquipped,
 					})
 				}
 
@@ -506,11 +503,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -519,11 +515,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					amoRecs = append(amoRecs, &record.ActionMonsterObject{
-						MonsterInstanceID: nullstring.ToString(oiRec.MonsterInstanceID),
-						ObjectInstanceID:  oiRec.ID,
-						Name:              oRec.Name,
-						IsStashed:         oiRec.IsStashed,
-						IsEquipped:        oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -594,11 +589,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -607,11 +601,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					tacoRecs = append(tacoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -687,11 +680,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -767,11 +759,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -845,11 +836,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -925,11 +915,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -1001,11 +990,10 @@ func TestProcessCharacterAction(t *testing.T) {
 					}
 					oRec, _ := data.GetObjectRecByID(oiRecs[i].ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRecs[i].CharacterInstanceID),
-						ObjectInstanceID:    oiRecs[i].ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRecs[i].IsStashed,
-						IsEquipped:          oiRecs[i].IsEquipped,
+						ObjectInstanceID: oiRecs[i].ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRecs[i].IsStashed,
+						IsEquipped:       oiRecs[i].IsEquipped,
 					})
 				}
 
@@ -1077,11 +1065,10 @@ func TestProcessCharacterAction(t *testing.T) {
 					}
 					oRec, _ := data.GetObjectRecByID(oiRecs[i].ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRecs[i].CharacterInstanceID),
-						ObjectInstanceID:    oiRecs[i].ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRecs[i].IsStashed,
-						IsEquipped:          oiRecs[i].IsEquipped,
+						ObjectInstanceID: oiRecs[i].ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRecs[i].IsStashed,
+						IsEquipped:       oiRecs[i].IsEquipped,
 					})
 				}
 
@@ -1148,11 +1135,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRec.CharacterInstanceID),
-						ObjectInstanceID:    oiRec.ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRec.IsStashed,
-						IsEquipped:          oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -1161,11 +1147,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					amoRecs = append(amoRecs, &record.ActionMonsterObject{
-						MonsterInstanceID: nullstring.ToString(oiRec.MonsterInstanceID),
-						ObjectInstanceID:  oiRec.ID,
-						Name:              oRec.Name,
-						IsStashed:         oiRec.IsStashed,
-						IsEquipped:        oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -1239,11 +1224,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for idx := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRecs[idx].ObjectID)
 					acoRecs = append(acoRecs, &record.ActionCharacterObject{
-						CharacterInstanceID: nullstring.ToString(oiRecs[idx].CharacterInstanceID),
-						ObjectInstanceID:    oiRecs[idx].ID,
-						Name:                oRec.Name,
-						IsStashed:           oiRecs[idx].IsStashed,
-						IsEquipped:          oiRecs[idx].IsEquipped,
+						ObjectInstanceID: oiRecs[idx].ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRecs[idx].IsStashed,
+						IsEquipped:       oiRecs[idx].IsEquipped,
 					})
 				}
 
@@ -1252,11 +1236,10 @@ func TestProcessCharacterAction(t *testing.T) {
 				for _, oiRec := range oiRecs {
 					oRec, _ := data.GetObjectRecByID(oiRec.ObjectID)
 					amoRecs = append(amoRecs, &record.ActionMonsterObject{
-						MonsterInstanceID: nullstring.ToString(oiRec.MonsterInstanceID),
-						ObjectInstanceID:  oiRec.ID,
-						Name:              oRec.Name,
-						IsStashed:         oiRec.IsStashed,
-						IsEquipped:        oiRec.IsEquipped,
+						ObjectInstanceID: oiRec.ID,
+						Name:             oRec.Name,
+						IsStashed:        oiRec.IsStashed,
+						IsEquipped:       oiRec.IsEquipped,
 					})
 				}
 
@@ -1394,6 +1377,8 @@ func TestProcessCharacterAction(t *testing.T) {
 							found = true
 							require.Equal(t, xrObjectRec.IsEquipped, rObjectRec.IsEquipped, "ActionCharacterObjectRec IsEquipped equals expected")
 							require.Equal(t, xrObjectRec.IsStashed, rObjectRec.IsStashed, "ActionCharacterObjectRec IsStashed equals expected")
+							require.NotEmpty(t, rObjectRec.ActionCharacterID, "ActionCharacterObjectRec ActionCharacterID is not empty")
+							require.NotEmpty(t, rObjectRec.ObjectInstanceID, "ActionCharacterObjectRec ObjectInstanceID is not empty")
 						}
 					}
 					require.True(t, found, fmt.Sprintf("ActionCharacterObjectRec >%s< found", xrObjectRec.Name))
@@ -1426,6 +1411,8 @@ func TestProcessCharacterAction(t *testing.T) {
 							found = true
 							require.Equal(t, xrObjectRec.IsEquipped, rObjectRec.IsEquipped, "ActionMonsterObjectRec IsEquipped equals expected")
 							require.Equal(t, xrObjectRec.IsStashed, rObjectRec.IsStashed, "ActionMonsterObjectRec IsStashed equals expected")
+							require.NotEmpty(t, rObjectRec.ActionMonsterID, "ActionMonsterObjectRec ActionMonsterID is not empty")
+							require.NotEmpty(t, rObjectRec.ObjectInstanceID, "ActionMonsterObjectRec ObjectInstanceID is not empty")
 						}
 					}
 					require.True(t, found, fmt.Sprintf("ActionMonsterObjectRec >%s< found", xrObjectRec.Name))
@@ -1498,6 +1485,8 @@ func TestProcessCharacterAction(t *testing.T) {
 							found = true
 							require.Equal(t, xrObjectRec.IsEquipped, rObjectRec.IsEquipped, "TargetActionCharacterObjectRec IsEquipped equals expected")
 							require.Equal(t, xrObjectRec.IsStashed, rObjectRec.IsStashed, "TargetActionCharacterObjectRec IsStashed equals expected")
+							require.NotEmpty(t, rObjectRec.ActionCharacterID, "TargetActionCharacterObjectRec ActionCharacterID is not empty")
+							require.NotEmpty(t, rObjectRec.ObjectInstanceID, "TargetActionCharacterObjectRec ObjectInstanceID is not empty")
 						}
 					}
 					require.True(t, found, fmt.Sprintf("TargetActionCharacterObjectRec >%s< found", xrObjectRec.Name))
@@ -1530,6 +1519,8 @@ func TestProcessCharacterAction(t *testing.T) {
 							found = true
 							require.Equal(t, xrObjectRec.IsEquipped, rObjectRec.IsEquipped, "TargetActionMonsterObjectRec IsEquipped equals expected")
 							require.Equal(t, xrObjectRec.IsStashed, rObjectRec.IsStashed, "TargetActionMonsterObjectRec IsStashed equals expected")
+							require.NotEmpty(t, rObjectRec.ActionMonsterID, "TargetActionMonsterObjectRec ActionMonsterID is not empty")
+							require.NotEmpty(t, rObjectRec.ObjectInstanceID, "TargetActionMonsterObjectRec ObjectInstanceID is not empty")
 						}
 					}
 					require.True(t, found, fmt.Sprintf("TargetActionMonsterObjectRec >%s< found", xrObjectRec.Name))

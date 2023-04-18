@@ -64,7 +64,7 @@ class _GameLocationDescriptionWidgetState
                 margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
                 child: Text(
                     widget.dungeonActionRecord.actionLocation.locationName,
-                    style: Theme.of(context).textTheme.headline5),
+                    style: Theme.of(context).textTheme.headlineSmall),
               ),
               Container(
                 alignment: Alignment.center,

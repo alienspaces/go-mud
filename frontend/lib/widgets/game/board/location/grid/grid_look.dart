@@ -70,7 +70,7 @@ class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
     final log = getLogger('GameLocationGridLookWidget', 'initState');
 
     if (!mounted) {
-      log.info('+++ Not mounted, not initialising state');
+      log.fine('Not mounted, not initialising state');
       return;
     }
 
@@ -79,8 +79,9 @@ class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
     Offset beginOffset = Offset.zero;
     Offset endOffset = Offset.zero;
 
-    log.info(
-        '+++ Initialising state, target dungeon location direction ${widget.direction}');
+    log.fine(
+      'Initialising state, target dungeon location direction ${widget.direction}',
+    );
 
     if (widget.direction != null) {
       beginOffset = slideInBeginOffset[widget.direction]!;
@@ -97,7 +98,7 @@ class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
       if (status == AnimationStatus.completed) {
         Future.delayed(const Duration(milliseconds: 1500), () {
           if (!mounted) {
-            log.info('+++ Not mounted, not fading out');
+            log.fine('Not mounted, not fading out');
             return;
           }
           setState(() {
@@ -124,11 +125,11 @@ class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
     final log = getLogger('GameLocationGridLookWidget', 'dispose');
 
     if (!mounted) {
-      log.info('### Not mounted, not disposing');
+      log.fine('Not mounted, not disposing');
       return;
     }
 
-    log.info('### Disposing..');
+    log.fine('Disposing..');
     _controller.dispose();
     super.dispose();
   }
@@ -138,11 +139,11 @@ class _GameLocationGridLookWidgetState extends State<GameLocationGridLookWidget>
     final log = getLogger('GameLocationGridLookWidget', 'build');
 
     if (!mounted) {
-      log.info('<<< Not mounted, not building grid..');
+      log.fine('Not mounted, not building grid..');
       return Container();
     }
 
-    log.info('<<< Building grid');
+    log.fine('Building grid');
 
     return AnimatedBuilder(
       animation: _controller,

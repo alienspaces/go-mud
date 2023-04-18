@@ -1,4 +1,4 @@
-# Nest M.U.D - How To Play
+# Go M.U.D - How To Play
 
 - [Getting Started](README.md)
 - [How to Play](README-HOWTOPLAY.md)

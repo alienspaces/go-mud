@@ -7,35 +7,39 @@ import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repositor
 import '../../utility.dart';
 
 void main() {
-  test('DungeonActionRepository should', () async {
+  test('DungeonActionRepository', () async {
     final repository =
         DungeonActionRepository(config: getConfig(), api: getAPI());
     expect(repository, isNotNull,
         reason: 'DungeonActionRepository is not null');
 
     // Look
-    final dungeonActionRecord =
+    final actionRecs =
         await repository.create(testDungeonID, testCharacterID, 'look');
     expect(
-      dungeonActionRecord,
+      actionRecs,
       isNotNull,
       reason:
-          'DungeonActionRepository create "look" command returns a dungeon action record',
+          'var DungeonActionRepository create "look" command returns a dungeon action record',
     );
-    expect(
-      dungeonActionRecord!.actionCommand,
-      isNotNull,
-      reason: 'DungeonActionRecord.command is not null',
-    );
-    expect(
-      dungeonActionRecord.actionLocation,
-      isNotNull,
-      reason: 'DungeonActionRecord.location is not null',
-    );
-    expect(
-      dungeonActionRecord.actionCharacter,
-      isNotNull,
-      reason: 'DungeonActionRecord.character is not null',
-    );
+
+    for (var actionRec in actionRecs!) {
+      expect(
+        actionRec.actionCommand,
+        isNotNull,
+        reason: 'DungeonActionRecord.command is not null',
+      );
+      expect(
+        actionRec.actionLocation,
+        isNotNull,
+        reason: 'DungeonActionRecord.location is not null',
+      );
+      expect(
+        actionRec.actionCharacter ?? actionRec.actionMonster,
+        isNotNull,
+        reason:
+            'DungeonActionRecord.character or DungeonActionRecord.monster is not null',
+      );
+    }
   });
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/docs/action/data.schema.json",
   "title": "Dungeon Action Data",
   "description": "Dungeon action data",
@@ -7,6 +7,8 @@
   "required": [
     "action_id",
     "action_command",
+    "action_turn_number",
+    "action_serial_number",
     "action_location",
     "action_created_at"
   ],
@@ -20,6 +22,12 @@
     },
     "action_narrative": {
       "type": "string"
+    },
+    "action_turn_number": {
+      "type": "integer"
+    },
+    "action_serial_number": {
+      "type": "integer"
     },
     "action_location": {
       "$ref": "#/$defs/action_location"
@@ -56,29 +64,34 @@
   "$defs": {
     "action_location": {
       "type": "object",
+      "required": [
+        "location_name",
+        "location_description",
+        "location_directions"
+      ],
       "properties": {
-        "name": {
+        "location_name": {
           "type": "string"
         },
-        "description": {
+        "location_description": {
           "type": "string"
         },
-        "directions": {
+        "location_directions": {
           "type": "array"
         },
-        "characters": {
+        "location_characters": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_location_character"
           }
         },
-        "monsters": {
+        "location_monsters": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_location_monster"
           }
         },
-        "objects": {
+        "location_objects": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/action_location_object"
@@ -89,11 +102,27 @@
     "action_location_character": {
       "type": "object",
       "required": [
-        "character_name"
+        "character_name",
+        "character_health",
+        "character_fatigue",
+        "character_current_health",
+        "character_current_fatigue"
       ],
       "properties": {
         "character_name": {
           "type": "string"
+        },
+        "character_health": {
+          "type": "integer"
+        },
+        "character_fatigue": {
+          "type": "integer"
+        },
+        "character_current_health": {
+          "type": "integer"
+        },
+        "character_current_fatigue": {
+          "type": "integer"
         }
       }
     },
@@ -161,13 +190,29 @@
     "action_location_monster": {
       "type": "object",
       "required": [
-        "monster_name"
+        "monster_name",
+        "monster_health",
+        "monster_fatigue",
+        "monster_current_health",
+        "monster_current_fatigue"
       ],
       "properties": {
         "monster_name": {
           "type": "string"
+        },
+        "monster_health": {
+          "type": "integer"
+        },
+        "monster_fatigue": {
+          "type": "integer"
+        },
+        "monster_current_health": {
+          "type": "integer"
+        },
+        "monster_current_fatigue": {
+          "type": "integer"
         }
-     }
+      }
     },
     "action_monster": {
       "type": "object",

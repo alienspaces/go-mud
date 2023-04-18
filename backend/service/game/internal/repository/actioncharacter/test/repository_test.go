@@ -38,7 +38,7 @@ func TestCreateOne(t *testing.T) {
 			name: "Without ID",
 			rec: func(data harness.Data) *record.ActionCharacter {
 				return &record.ActionCharacter{
-					RecordType:          record.ActionCharacterRecordTypeOccupant,
+					RecordType:          record.ActionCharacterRecordTypeCurrentLocation,
 					ActionID:            data.ActionRecs[0].ID,
 					LocationInstanceID:  data.LocationInstanceRecs[0].ID,
 					CharacterInstanceID: data.CharacterInstanceRecs[0].ID,
@@ -56,7 +56,7 @@ func TestCreateOne(t *testing.T) {
 			name: "With ID",
 			rec: func(data harness.Data) *record.ActionCharacter {
 				rec := &record.ActionCharacter{
-					RecordType:          record.ActionCharacterRecordTypeOccupant,
+					RecordType:          record.ActionCharacterRecordTypeCurrentLocation,
 					ActionID:            data.ActionRecs[0].ID,
 					LocationInstanceID:  data.LocationInstanceRecs[0].ID,
 					CharacterInstanceID: data.CharacterInstanceRecs[0].ID,

@@ -428,6 +428,9 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				l.Warn("failed updating character instance record >%s<", err)
 				return nil, err
 			}
+
+			// TODO: 12-implement-death: Remove character instance when dead
+
 		} else if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
 			l.Info("Character attacking monster")
 			tmiRec, err := m.GetMonsterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID), true)
@@ -443,6 +446,9 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				l.Warn("failed updating monster instance record >%s<", err)
 				return nil, err
 			}
+
+			// TODO: 12-implement-death: Remove monster instance when dead
+
 		}
 	} else if actionRec.MonsterInstanceID.Valid {
 
@@ -459,6 +465,12 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				return nil, err
 			}
 
+			if tciRec == nil {
+				err := fmt.Errorf("failed getting character instance record ID >%s<", nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+				l.Warn(err.Error())
+				return nil, err
+			}
+
 			tciRec.Health -= 1
 
 			err = m.UpdateCharacterInstanceRec(tciRec)
@@ -466,6 +478,9 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				l.Warn("failed updating character instance record >%s<", err)
 				return nil, err
 			}
+
+			// TODO: 12-implement-death: Remove character instance when dead
+
 		} else if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
 			l.Info("Monster attacking monster")
 			tmiRec, err := m.GetMonsterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID), true)
@@ -481,6 +496,8 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				l.Warn("failed updating monster instance record >%s<", err)
 				return nil, err
 			}
+
+			// TODO: 12-implement-death: Remove monster instance when dead
 		}
 	}
 

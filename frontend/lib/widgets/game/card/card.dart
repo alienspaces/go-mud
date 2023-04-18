@@ -22,7 +22,7 @@ class GameCardWidget extends StatelessWidget {
       },
       builder: (BuildContext context, DungeonActionState state) {
         if (state is DungeonActionStatePlaying) {
-          var dungeonActionRecord = state.current;
+          var dungeonActionRecord = state.currentActionRec;
           if (dungeonActionRecord.actionCommand == 'look') {
             if (dungeonActionRecord.actionTargetCharacter != null) {
               log.fine('Registering look character dialogue');

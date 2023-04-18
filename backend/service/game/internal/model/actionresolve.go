@@ -732,10 +732,11 @@ func (m *Model) getObjectFromSentence(sentence string, objectInstanceViewRecs []
 func (m *Model) resolveSentenceMonster(sentence string, monsterInstanceViewRecs []*record.MonsterInstanceView) (*record.MonsterInstanceView, error) {
 	l := m.Logger("resolveSentenceMonster")
 
-	for _, monsterInstanceViewRec := range monsterInstanceViewRecs {
-		l.Info("Sentence >%s< contains >%s<", strings.ToLower(monsterInstanceViewRec.Name))
-		if strings.Contains(strings.ToLower(sentence), strings.ToLower(monsterInstanceViewRec.Name)) {
-			return monsterInstanceViewRec, nil
+	for idx := range monsterInstanceViewRecs {
+		mivr := monsterInstanceViewRecs[idx]
+		l.Info("Sentence >%s< contains >%s<", sentence, strings.ToLower(mivr.Name))
+		if strings.Contains(strings.ToLower(sentence), strings.ToLower(mivr.Name)) {
+			return mivr, nil
 		}
 	}
 	return nil, nil
@@ -744,10 +745,11 @@ func (m *Model) resolveSentenceMonster(sentence string, monsterInstanceViewRecs 
 func (m *Model) resolveSentenceCharacter(sentence string, characterInstanceViewRecs []*record.CharacterInstanceView) (*record.CharacterInstanceView, error) {
 	l := m.Logger("resolveSentenceCharacter")
 
-	for _, characterInstanceViewRec := range characterInstanceViewRecs {
-		l.Info("Sentence >%s< contains >%s<", sentence, strings.ToLower(characterInstanceViewRec.Name))
-		if strings.Contains(strings.ToLower(sentence), strings.ToLower(characterInstanceViewRec.Name)) {
-			return characterInstanceViewRec, nil
+	for idx := range characterInstanceViewRecs {
+		civr := characterInstanceViewRecs[idx]
+		l.Info("Sentence >%s< contains >%s<", sentence, strings.ToLower(civr.Name))
+		if strings.Contains(strings.ToLower(sentence), strings.ToLower(civr.Name)) {
+			return civr, nil
 		}
 	}
 	return nil, nil

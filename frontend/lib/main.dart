@@ -51,24 +51,34 @@ class MainApp extends StatelessWidget {
       home: MultiBlocProvider(
         providers: [
           BlocProvider<DungeonCubit>(
-            create: (BuildContext context) =>
-                DungeonCubit(config: config, repositories: repositories),
+            create: (BuildContext context) => DungeonCubit(
+              config: config,
+              repositories: repositories,
+            ),
           ),
           BlocProvider<CharacterCubit>(
-            create: (BuildContext context) =>
-                CharacterCubit(config: config, repositories: repositories),
+            create: (BuildContext context) => CharacterCubit(
+              config: config,
+              repositories: repositories,
+            ),
           ),
           BlocProvider<DungeonCharacterCubit>(
             create: (BuildContext context) => DungeonCharacterCubit(
-                config: config, repositories: repositories),
+              config: config,
+              repositories: repositories,
+            ),
           ),
           BlocProvider<DungeonActionCubit>(
-            create: (BuildContext context) =>
-                DungeonActionCubit(config: config, repositories: repositories),
+            create: (BuildContext context) => DungeonActionCubit(
+              config: config,
+              repositories: repositories,
+            ),
           ),
           BlocProvider<DungeonCommandCubit>(
-            create: (BuildContext context) =>
-                DungeonCommandCubit(config: config, repositories: repositories),
+            create: (BuildContext context) => DungeonCommandCubit(
+              config: config,
+              repositories: repositories,
+            ),
           ),
         ],
         child: const Navigation(),

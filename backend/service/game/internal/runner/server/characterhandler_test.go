@@ -103,8 +103,6 @@ func TestPostCharacterHandler(t *testing.T) {
 					require.False(t, data.CharacterCreatedAt.IsZero(), "CreatedAt is not zero")
 					if method == http.MethodPost {
 						require.True(t, data.CharacterUpdatedAt.IsZero(), "UpdatedAt is zero")
-						// t.Logf("Adding dungeon character ID >%s< for teardown", data.ID)
-						// th.AddCharacterTeardownID(data.ID)
 					}
 				}
 			}
@@ -156,8 +154,10 @@ func TestGetCharacterHandler(t *testing.T) {
 					return rnr.HandlerConfig[getCharacters]
 				},
 				RequestHeaders: testCaseRequestHeaders,
-				RequestPathParams: func(data harness.Data) map[string]string {
-					params := map[string]string{}
+				RequestQueryParams: func(data harness.Data) map[string]string {
+					params := map[string]string{
+						"character_id": data.CharacterRecs[0].ID,
+					}
 					return params
 				},
 				RequestBody: func(data harness.Data) interface{} {
@@ -304,31 +304,36 @@ func TestGetCharacterHandler(t *testing.T) {
 
 				expectResponseBody := testCase.expectResponseBody(th.Data)
 
+				if expectResponseBody != nil {
+					require.NotNil(t, responseBody.Data, "Response body is not nil")
+					require.Equal(t, len(expectResponseBody.Data), len(responseBody.Data), "Response body length equals expected")
+				}
+
 				// Validate response body data
 				for idx, expectData := range expectResponseBody.Data {
 					require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 					// Validate character
 					t.Logf("Checking character name >%s< >%s<", expectData.CharacterName, responseBody.Data[idx].CharacterName)
-					require.Equal(t, expectData.CharacterName, responseBody.Data[idx].CharacterName)
+					require.Equal(t, expectData.CharacterName, responseBody.Data[idx].CharacterName, "Character name equals expected")
 					t.Logf("Checking character strength >%d< >%d<", expectData.CharacterStrength, responseBody.Data[idx].CharacterStrength)
-					require.Equal(t, expectData.CharacterStrength, responseBody.Data[idx].CharacterStrength)
+					require.Equal(t, expectData.CharacterStrength, responseBody.Data[idx].CharacterStrength, "Character strength equals expected")
 					t.Logf("Checking character dexterity >%d< >%d<", expectData.CharacterDexterity, responseBody.Data[idx].CharacterDexterity)
-					require.Equal(t, expectData.CharacterDexterity, responseBody.Data[idx].CharacterDexterity)
+					require.Equal(t, expectData.CharacterDexterity, responseBody.Data[idx].CharacterDexterity, "Character dexterity equals expected")
 					t.Logf("Checking character intelligence >%d< >%d<", expectData.CharacterIntelligence, responseBody.Data[idx].CharacterIntelligence)
-					require.Equal(t, expectData.CharacterIntelligence, responseBody.Data[idx].CharacterIntelligence)
+					require.Equal(t, expectData.CharacterIntelligence, responseBody.Data[idx].CharacterIntelligence, "Character intelligence equals expected")
 
 					t.Logf("Checking character health >%d< >%d<", expectData.CharacterHealth, responseBody.Data[idx].CharacterHealth)
-					require.Equal(t, expectData.CharacterHealth, responseBody.Data[idx].CharacterHealth)
+					require.Equal(t, expectData.CharacterHealth, responseBody.Data[idx].CharacterHealth, "Character health equals expected")
 					t.Logf("Checking character fatigue >%d< >%d<", expectData.CharacterFatigue, responseBody.Data[idx].CharacterFatigue)
-					require.Equal(t, expectData.CharacterFatigue, responseBody.Data[idx].CharacterFatigue)
+					require.Equal(t, expectData.CharacterFatigue, responseBody.Data[idx].CharacterFatigue, "Character fatigue equals expected")
 
 					t.Logf("Checking character coins >%d< >%d<", expectData.CharacterCoins, responseBody.Data[idx].CharacterCoins)
-					require.Equal(t, expectData.CharacterCoins, responseBody.Data[idx].CharacterCoins)
+					require.Equal(t, expectData.CharacterCoins, responseBody.Data[idx].CharacterCoins, "Character coins equals expected")
 					t.Logf("Checking character experience points >%d< >%d<", expectData.CharacterExperiencePoints, responseBody.Data[idx].CharacterExperiencePoints)
-					require.Equal(t, expectData.CharacterExperiencePoints, responseBody.Data[idx].CharacterExperiencePoints)
+					require.Equal(t, expectData.CharacterExperiencePoints, responseBody.Data[idx].CharacterExperiencePoints, "Character experience points equals expected")
 					t.Logf("Checking character attribute points >%d< >%d<", expectData.CharacterAttributePoints, responseBody.Data[idx].CharacterAttributePoints)
-					require.Equal(t, expectData.CharacterAttributePoints, responseBody.Data[idx].CharacterAttributePoints)
+					require.Equal(t, expectData.CharacterAttributePoints, responseBody.Data[idx].CharacterAttributePoints, "Character attribute points equals expected")
 				}
 			}
 

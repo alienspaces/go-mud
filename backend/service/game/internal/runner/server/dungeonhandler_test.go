@@ -102,13 +102,13 @@ func TestGetDungeonHandler(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Logf("Running test >%s<", testCase.Name)
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", tc.Name)
 
 			testFunc := func(method string, body interface{}) {
 
-				if testCase.TestResponseCode() != http.StatusOK {
+				if tc.TestResponseCode() != http.StatusOK {
 					return
 				}
 
@@ -118,11 +118,11 @@ func TestGetDungeonHandler(t *testing.T) {
 				}
 
 				// Validate response body
-				if testCase.expectResponseBody != nil {
+				if tc.expectResponseBody != nil {
 					require.NotNil(t, responseBody, "Response body is not nil")
 					require.GreaterOrEqual(t, len(responseBody.Data), 0, "Response body data ")
 
-					expectResponseBody := testCase.expectResponseBody(th.Data)
+					expectResponseBody := tc.expectResponseBody(th.Data)
 
 					// Validate response body data
 					for idx, expectData := range expectResponseBody.Data {
@@ -137,7 +137,7 @@ func TestGetDungeonHandler(t *testing.T) {
 				}
 			}
 
-			RunTestCase(t, th, &testCase, testFunc)
+			RunTestCase(t, th, &tc, testFunc)
 		})
 	}
 }

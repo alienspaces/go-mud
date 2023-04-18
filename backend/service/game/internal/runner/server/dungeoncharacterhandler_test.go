@@ -73,12 +73,12 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Logf("Running test >%s<", testCase.Name)
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", tc.Name)
 
 			testFunc := func(method string, body interface{}) {
-				if testCase.TestResponseCode() != http.StatusOK {
+				if tc.TestResponseCode() != http.StatusOK {
 					return
 				}
 
@@ -109,7 +109,7 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 					require.False(t, data.CharacterCreatedAt.IsZero(), "Data CreatedAt is not zero")
 				}
 			}
-			RunTestCase(t, th, &testCase, testFunc)
+			RunTestCase(t, th, &tc, testFunc)
 		})
 	}
 }
@@ -173,12 +173,12 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Logf("Running test >%s<", testCase.Name)
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Logf("Running test >%s<", tc.Name)
 
 			testFunc := func(method string, body interface{}) {
-				if testCase.TestResponseCode() != http.StatusOK {
+				if tc.TestResponseCode() != http.StatusOK {
 					return
 				}
 
@@ -203,7 +203,7 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 					require.False(t, data.CharacterUpdatedAt.IsZero(), "Data UpdatedAt is not zero")
 				}
 			}
-			RunTestCase(t, th, &testCase, testFunc)
+			RunTestCase(t, th, &tc, testFunc)
 		})
 	}
 }

@@ -348,12 +348,14 @@ func (rnr *Runner) InitModeller(l logger.Logger) (modeller.Modeller, error) {
 		return nil, err
 	}
 
+	l.Info("Getting database transaction")
 	tx, err := rnr.Store.GetTx()
 	if err != nil {
 		l.Warn("failed Store GetTx >%v<", err)
 		return m, err
 	}
 
+	l.Info("Initialising model")
 	err = m.Init(p, pCfg, tx)
 	if err != nil {
 		l.Warn("failed model Init >%v<", err)

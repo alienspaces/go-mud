@@ -12,53 +12,53 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameLocationDescriptionContainerWidget', 'build');
-    log.info('Building..');
+    log.fine('Building..');
 
     return BlocConsumer<DungeonActionCubit, DungeonActionState>(
       listener: (BuildContext context, DungeonActionState state) {
         log.fine('listener...');
       },
-      // Do not re-render the location description when there is an error with
-      // submitted an action.
+      // Does not render the location grid when there the action
+      // is being created or has an error.
       buildWhen: (DungeonActionState prevState, DungeonActionState currState) {
-        if (currState is DungeonActionStateError) {
-          log.info('Skipping build..');
+        if (currState is DungeonActionStateError ||
+            currState is DungeonActionStateCreating ||
+            currState is DungeonActionStatePlayingOther) {
           return false;
         }
-        log.info('Not skipping build..');
+
+        if (currState is DungeonActionStatePlaying &&
+            currState.currentActionRec.actionLocation.locationName !=
+                currState.currentActionRec.actionTargetLocation!.locationName) {
+          return false;
+        }
+
         return true;
       },
       builder: (BuildContext context, DungeonActionState state) {
         List<Widget> widgets = [];
 
-        if (state is DungeonActionStateCreating) {
-          log.info('dungeon state is created');
-          var dungeonActionRecord = state.current;
-          if (dungeonActionRecord != null) {
-            widgets.add(GameLocationDescriptionWidget(
-              fade: DescriptionOpacity.fadeIn,
-              dungeonActionRecord: dungeonActionRecord,
-            ));
-          }
-        } else if (state is DungeonActionStateCreated) {
-          log.info('dungeon state is created');
+        if (state is DungeonActionStateCreated) {
+          log.warning('dungeon state is created');
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
-            dungeonActionRecord: state.current,
+            dungeonActionRecord: state.action,
           ));
         } else if (state is DungeonActionStatePlaying) {
-          log.info('dungeon state is playing');
-          widgets.add(GameLocationDescriptionWidget(
-            fade: DescriptionOpacity.fadeOut,
-            dungeonActionRecord: state.previous,
-          ));
+          log.warning('dungeon state is playing');
+          if (state.previousActionRec != null) {
+            widgets.add(GameLocationDescriptionWidget(
+              fade: DescriptionOpacity.fadeOut,
+              dungeonActionRecord: state.previousActionRec!,
+            ));
+          }
           widgets.add(GameLocationDescriptionWidget(
             fade: DescriptionOpacity.fadeIn,
-            dungeonActionRecord: state.current,
+            dungeonActionRecord: state.currentActionRec,
           ));
         }
 
-        log.info('Rendering ${widgets.length} dungeon description widgets');
+        log.fine('Rendering ${widgets.length} dungeon description widgets');
 
         return Stack(
           children: widgets,
