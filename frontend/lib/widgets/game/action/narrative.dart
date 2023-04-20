@@ -13,11 +13,11 @@ class NarrativeLineFormat {
 }
 
 const NarrativeLineFormat characterNarrativeLineFormat = NarrativeLineFormat(
-  colour: Colors.brown,
+  colour: Colors.deepPurple,
 );
 
 const NarrativeLineFormat otherNarrativeLineFormat = NarrativeLineFormat(
-  colour: Colors.orange,
+  colour: Colors.black,
 );
 
 const NarrativeLineFormat errorNarrativeLineFormat = NarrativeLineFormat(
@@ -39,13 +39,13 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
   void initState() {
     // TODO: Work out a way to remove lines when they've finished animating
     // because this not really accomplishing much...
-    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (lines.isNotEmpty) {
-        setState(() {
-          lines.removeLast();
-        });
-      }
-    });
+    // _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+    //   if (lines.isNotEmpty) {
+    //     setState(() {
+    //       lines.removeLast();
+    //     });
+    //   }
+    // });
 
     super.initState();
   }
@@ -157,9 +157,9 @@ class _GameActionNarrativeLineWidgetState
       return;
     }
 
-    animationTimer = Timer(const Duration(milliseconds: 500), () {
-      double newOpacity = 0.0;
-      double newBottom = 1700;
+    animationTimer = Timer(const Duration(milliseconds: 100), () {
+      double newOpacity = 0.2;
+      double newBottom = 1800;
       setState(() {
         opacity = newOpacity;
         bottom = newBottom;
