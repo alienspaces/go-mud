@@ -42,6 +42,7 @@ func TestCreateOne(t *testing.T) {
 					DungeonInstanceID:                 data.DungeonInstanceRecs[0].ID,
 					LocationInstanceID:                data.LocationInstanceRecs[0].ID,
 					CharacterInstanceID:               nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					ResolvedCommand:                   record.ActionCommandAttack,
 					ResolvedTargetCharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
 				}
 			},
@@ -54,6 +55,7 @@ func TestCreateOne(t *testing.T) {
 					DungeonInstanceID:                 data.DungeonInstanceRecs[0].ID,
 					LocationInstanceID:                data.LocationInstanceRecs[0].ID,
 					CharacterInstanceID:               nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					ResolvedCommand:                   record.ActionCommandLook,
 					ResolvedTargetCharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
