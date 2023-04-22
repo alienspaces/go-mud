@@ -317,6 +317,50 @@ CREATE TABLE "object_instance" (
   )
 );
 
+-- --
+-- -- Monster memory
+-- --
+
+-- table monster_instance_memory
+CREATE TABLE "monster_instance_memory" (
+  "id"                           uuid CONSTRAINT monster_instance_memory_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "monster_instance_id"          uuid,
+  "memory_command"               text NOT NULL,
+  "memory_type"                  text NOT NULL,
+  "memory_location_instance_id"  uuid,
+  "memory_character_instance_id" uuid,
+  "memory_monster_instance_id"   uuid,
+  "memory_object_instance_id"    uuid,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "monster_instance_memory_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES "monster_instance"(id),
+  CONSTRAINT "monster_instance_memory_memory_command_ck" CHECK (
+    memory_type = 'move' OR
+    memory_type = 'look' OR
+    memory_type = 'use' OR
+    memory_type = 'stash' OR
+    memory_type = 'equip' OR
+    memory_type = 'drop' OR
+    memory_type = 'attack'
+  ),
+  CONSTRAINT "monster_instance_memory_memory_type_ck" CHECK (
+    memory_type = 'location' OR
+    memory_type = 'character' OR
+    memory_type = 'monster' OR
+    memory_type = 'object'
+  ),
+  CONSTRAINT "monster_instance_memory_memory_location_instance_id_fk" FOREIGN KEY (memory_location_instance_id) REFERENCES "location_instance"(id),
+  CONSTRAINT "monster_instance_memory_memory_character_instance_id_fk" FOREIGN KEY (memory_character_instance_id) REFERENCES "character_instance"(id),
+  CONSTRAINT "monster_instance_memory_memory_monster_instance_id_fk" FOREIGN KEY (memory_monster_instance_id) REFERENCES "monster_instance"(id),
+  CONSTRAINT "monster_instance_memory_memory_object_instance_id_fk" FOREIGN KEY (memory_object_instance_id) REFERENCES "object_instance"(id)
+);
+COMMENT ON TABLE "monster_instance_memory" IS 'An memory that is carried by a monster.';
+
+-- --
+-- -- Turn
+-- --
+
 CREATE TABLE "turn" (
   "id"                  uuid CONSTRAINT turn_pk PRIMARY KEY DEFAULT gen_random_uuid(),
   "dungeon_instance_id" uuid NOT NULL,
@@ -357,6 +401,15 @@ CREATE TABLE "action" (
   CONSTRAINT "action_location_instance_id_fk" FOREIGN KEY (location_instance_id) REFERENCES location_instance(id),
   CONSTRAINT "action_character_instance_id_fk" FOREIGN KEY (character_instance_id) REFERENCES character_instance(id),
   CONSTRAINT "action_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES monster_instance(id),
+  CONSTRAINT "action_resolved_command_ck" CHECK (
+    resolved_command = 'move' OR
+    resolved_command = 'look' OR
+    resolved_command = 'use' OR
+    resolved_command = 'stash' OR
+    resolved_command = 'equip' OR
+    resolved_command = 'drop' OR
+    resolved_command = 'attack'
+  ),
   CONSTRAINT "action_resolved_equipped_object_instance_id_fk" FOREIGN KEY (resolved_equipped_object_instance_id) REFERENCES object_instance(id),
   CONSTRAINT "action_resolved_stashed_object_instance_id_fk" FOREIGN KEY (resolved_stashed_object_instance_id) REFERENCES   object_instance(id),
   CONSTRAINT "action_resolved_dropped_object_instance_id_fk" FOREIGN KEY (resolved_dropped_object_instance_id) REFERENCES   object_instance(id),
