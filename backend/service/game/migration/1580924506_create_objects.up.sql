@@ -1,3 +1,6 @@
+-- --
+-- -- non-instance objects
+-- --
 
 -- table dungeon
 CREATE TABLE "dungeon" (
@@ -11,9 +14,8 @@ CREATE TABLE "dungeon" (
     char_length("name") BETWEEN 1 AND 256
   )
 );
-COMMENT ON TABLE "dungeon" IS 'A dungeon is a set of locations that contain objects and monsters.';
 
--- TODO: effects
+COMMENT ON TABLE "dungeon" IS 'A dungeon is a set of locations that contain objects and monsters.';
 
 -- table object
 CREATE TABLE "object" (
@@ -34,9 +36,8 @@ CREATE TABLE "object" (
     char_length("description_detailed") BETWEEN 1 AND 1024
   )
 );
-COMMENT ON TABLE "object" IS 'An object can be used, equipped, stashed or dropped.';
 
--- TODO: object effects
+COMMENT ON TABLE "object" IS 'An object can be used, equipped, stashed or dropped.';
 
 -- table monster
 CREATE TABLE "monster" (
@@ -62,6 +63,7 @@ CREATE TABLE "monster" (
     char_length("description") BETWEEN 1 AND 512
   )
 );
+
 COMMENT ON TABLE "monster" IS 'A monster can move, attack, converse with characters and interact objects.';
 
 -- table monster_object
@@ -80,6 +82,7 @@ CREATE TABLE "monster_object" (
     is_stashed != is_equipped
   )
 );
+
 COMMENT ON TABLE "monster_object" IS 'An object that is carried by a monster.';
 
 -- table character
@@ -102,6 +105,7 @@ CREATE TABLE "character" (
     char_length("name") BETWEEN 1 AND 256
   )
 );
+
 COMMENT ON TABLE "monster" IS 'A character is controlled by a player and can move, attack, converse with monsters and interact with objects.';
 
 -- table character_object
@@ -120,6 +124,7 @@ CREATE TABLE "character_object" (
     is_stashed != is_equipped
   )
 );
+
 COMMENT ON TABLE "character_object" IS 'An object that is carried by a character.';
 
 -- table location
@@ -160,6 +165,7 @@ CREATE TABLE "location" (
   CONSTRAINT location_up_location_id_fk FOREIGN KEY (up_location_id) REFERENCES location(id) INITIALLY DEFERRED,
   CONSTRAINT location_down_location_id_fk FOREIGN KEY (down_location_id) REFERENCES location(id) INITIALLY DEFERRED
 );
+
 COMMENT ON TABLE "location" IS 'A location is a room or place within a dungeon.';
 
 -- table location_object
@@ -181,6 +187,7 @@ CREATE TABLE "location_object" (
     spawn_percent_chance BETWEEN 1 AND 100
   )
 );
+
 COMMENT ON TABLE "location_object" IS 'An object that spawns at a location.';
 
 -- table location_monster
@@ -202,10 +209,11 @@ CREATE TABLE "location_monster" (
     spawn_percent_chance BETWEEN 1 AND 100
   )
 );
+
 COMMENT ON TABLE "location_monster" IS 'A monster that spawns at a location.';
 
 -- --
--- -- Instance objects
+-- -- instance objects
 -- --
 
 -- dungeon_instance
@@ -318,7 +326,7 @@ CREATE TABLE "object_instance" (
 );
 
 -- --
--- -- Monster memory
+-- -- monster memory
 -- --
 
 -- table monster_instance_memory
@@ -327,6 +335,7 @@ CREATE TABLE "monster_instance_memory" (
   "monster_instance_id"          uuid,
   "memory_command"               text NOT NULL,
   "memory_type"                  text NOT NULL,
+  "turn_number"                  integer NOT NULL,
   "memory_location_instance_id"  uuid,
   "memory_character_instance_id" uuid,
   "memory_monster_instance_id"   uuid,
@@ -355,10 +364,11 @@ CREATE TABLE "monster_instance_memory" (
   CONSTRAINT "monster_instance_memory_memory_monster_instance_id_fk" FOREIGN KEY (memory_monster_instance_id) REFERENCES "monster_instance"(id),
   CONSTRAINT "monster_instance_memory_memory_object_instance_id_fk" FOREIGN KEY (memory_object_instance_id) REFERENCES "object_instance"(id)
 );
-COMMENT ON TABLE "monster_instance_memory" IS 'An memory that is carried by a monster.';
+
+COMMENT ON TABLE "monster_instance_memory" IS 'A monsters memory is a stack of its most recent memories. A monster may only remember as many things as its intelligence allows. Older memories become forgotten.';
 
 -- --
--- -- Turn
+-- -- turn
 -- --
 
 CREATE TABLE "turn" (
@@ -373,7 +383,7 @@ CREATE TABLE "turn" (
 );
 
 -- --
--- -- Actions
+-- -- actions
 -- --
 
 -- table action
@@ -561,7 +571,7 @@ CREATE TABLE "action_object" (
 );
 
 -- --
--- -- Views
+-- -- views
 -- --
 
 -- view dungeon_instance_view
