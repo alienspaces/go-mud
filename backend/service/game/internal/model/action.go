@@ -374,6 +374,15 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
+	memoryRecs, err := m.memoriseAction(&MemoriserArgs{ActionRecordSet: actionRecordSet})
+	if err != nil {
+		l.Warn("failed memorising action >%v<", err)
+		return nil, err
+	}
+
+	// TODO: 14-implement-smarter-monsters - Return these records so they can be added to the test harness
+	l.Info("Recorded >%d< memory records", len(memoryRecs))
+
 	return actionRecordSet, nil
 }
 

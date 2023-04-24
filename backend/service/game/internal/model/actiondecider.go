@@ -9,18 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
-// TODO: 14-implement-smarter-monsters
-// NOTES: Monsters should ultimately behave based on their statistics and capabilities.
-// Examples:
-// - Intelligent humanoid monsters with no equipped weapon should attempt to equip any
-//   weapons left lying in the current location.
-//   -- Requires item types
-// - Intelligent monsters that are not defending anything other than themselves should
-//   attempt to run away when losing a fight
-//   -- Compare own health with health of characters in the room that have previously
-//      attacked it
-// - Intelligent monsters that are obviously out of their depth in a battle should run
-//   away.
+// TODO: 14-implement-smarter-monsters - Pass memories into the decider so smarter decisions can be made
 
 type DeciderArgs struct {
 	MonsterInstanceViewRec    *record.MonsterInstanceView
@@ -38,6 +27,8 @@ func (m *Model) decideAction(args *DeciderArgs) (string, error) {
 	} else {
 		l.Info("Deciding action for character name >%s<", args.CharacterInstanceViewRec.Name)
 	}
+
+	// TODO: 14-implement-smarter-monsters - Revise the following comment
 
 	// Decider functions are typically prioritised as attack if anything is
 	// worth attacking, then grab anything thats worth grabbing, look into

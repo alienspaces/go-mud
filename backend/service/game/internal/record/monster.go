@@ -43,6 +43,13 @@ type MonsterInstance struct {
 	repository.Record
 }
 
+const (
+	MemoryTypeLocation  string = "location"
+	MemoryTypeCharacter string = "character"
+	MemoryTypeMonster   string = "monster"
+	MemoryTypeObject    string = "object"
+)
+
 type MonsterInstanceMemory struct {
 	MonsterInstanceID         string         `db:"monster_instance_id"`
 	MemoryCommand             string         `db:"memory_command"`
