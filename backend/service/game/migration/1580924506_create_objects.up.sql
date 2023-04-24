@@ -345,13 +345,13 @@ CREATE TABLE "monster_instance_memory" (
   "deleted_at" timestamp WITH TIME ZONE,
   CONSTRAINT "monster_instance_memory_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES "monster_instance"(id),
   CONSTRAINT "monster_instance_memory_memory_command_ck" CHECK (
-    memory_type = 'move' OR
-    memory_type = 'look' OR
-    memory_type = 'use' OR
-    memory_type = 'stash' OR
-    memory_type = 'equip' OR
-    memory_type = 'drop' OR
-    memory_type = 'attack'
+    memory_command = 'move' OR
+    memory_command = 'look' OR
+    memory_command = 'use' OR
+    memory_command = 'stash' OR
+    memory_command = 'equip' OR
+    memory_command = 'drop' OR
+    memory_command = 'attack'
   ),
   CONSTRAINT "monster_instance_memory_memory_type_ck" CHECK (
     memory_type = 'location' OR

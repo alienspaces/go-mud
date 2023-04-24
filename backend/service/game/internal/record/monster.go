@@ -1,6 +1,10 @@
 package record
 
-import "gitlab.com/alienspaces/go-mud/backend/core/repository"
+import (
+	"database/sql"
+
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+)
 
 type Monster struct {
 	Name             string `db:"name"`
@@ -36,6 +40,18 @@ type MonsterInstance struct {
 	Coins              int    `db:"coins"`
 	ExperiencePoints   int    `db:"experience_points"`
 	AttributePoints    int    `db:"attribute_points"`
+	repository.Record
+}
+
+type MonsterInstanceMemory struct {
+	MonsterInstanceID         string         `db:"monster_instance_id"`
+	MemoryCommand             string         `db:"memory_command"`
+	MemoryType                string         `db:"memory_type"`
+	TurnNumber                int            `db:"turn_number"`
+	MemoryLocationInstanceID  sql.NullString `db:"memory_location_instance_id"`
+	MemoryCharacterInstanceID sql.NullString `db:"memory_character_instance_id"`
+	MemoryMonsterInstanceID   sql.NullString `db:"memory_monster_instance_id"`
+	MemoryObjectInstanceID    sql.NullString `db:"memory_object_instance_id"`
 	repository.Record
 }
 
