@@ -326,48 +326,6 @@ CREATE TABLE "object_instance" (
 );
 
 -- --
--- -- monster memory
--- --
-
--- table monster_instance_memory
-CREATE TABLE "monster_instance_memory" (
-  "id"                           uuid CONSTRAINT monster_instance_memory_pk PRIMARY KEY DEFAULT gen_random_uuid(),
-  "monster_instance_id"          uuid,
-  "memory_command"               text NOT NULL,
-  "memory_type"                  text NOT NULL,
-  "turn_number"                  integer NOT NULL,
-  "memory_location_instance_id"  uuid,
-  "memory_character_instance_id" uuid,
-  "memory_monster_instance_id"   uuid,
-  "memory_object_instance_id"    uuid,
-  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
-  "updated_at" timestamp WITH TIME ZONE,
-  "deleted_at" timestamp WITH TIME ZONE,
-  CONSTRAINT "monster_instance_memory_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES "monster_instance"(id),
-  CONSTRAINT "monster_instance_memory_memory_command_ck" CHECK (
-    memory_command = 'move' OR
-    memory_command = 'look' OR
-    memory_command = 'use' OR
-    memory_command = 'stash' OR
-    memory_command = 'equip' OR
-    memory_command = 'drop' OR
-    memory_command = 'attack'
-  ),
-  CONSTRAINT "monster_instance_memory_memory_type_ck" CHECK (
-    memory_type = 'location' OR
-    memory_type = 'character' OR
-    memory_type = 'monster' OR
-    memory_type = 'object'
-  ),
-  CONSTRAINT "monster_instance_memory_memory_location_instance_id_fk" FOREIGN KEY (memory_location_instance_id) REFERENCES "location_instance"(id),
-  CONSTRAINT "monster_instance_memory_memory_character_instance_id_fk" FOREIGN KEY (memory_character_instance_id) REFERENCES "character_instance"(id),
-  CONSTRAINT "monster_instance_memory_memory_monster_instance_id_fk" FOREIGN KEY (memory_monster_instance_id) REFERENCES "monster_instance"(id),
-  CONSTRAINT "monster_instance_memory_memory_object_instance_id_fk" FOREIGN KEY (memory_object_instance_id) REFERENCES "object_instance"(id)
-);
-
-COMMENT ON TABLE "monster_instance_memory" IS 'A monsters memory is a stack of its most recent memories. A monster may only remember as many things as its intelligence allows. Older memories become forgotten.';
-
--- --
 -- -- turn
 -- --
 
@@ -442,6 +400,57 @@ CREATE INDEX action_dungeon_instance_id_idx ON action(dungeon_instance_id);
 CREATE INDEX action_location_instance_id_idx ON action(location_instance_id);
 CREATE INDEX action_character_instance_id_idx ON action(character_instance_id);
 CREATE INDEX action_monster_instance_id_idx ON action(monster_instance_id);
+
+-- table action_memory
+CREATE TABLE "action_memory" (
+  "id"                           uuid CONSTRAINT action_memory_pk PRIMARY KEY DEFAULT gen_random_uuid(),
+  "record_type"                  text NOT NULL,
+  "character_instance_id"        uuid,
+  "monster_instance_id"          uuid,
+  "memory_command"               text NOT NULL,
+  "memory_type"                  text NOT NULL,
+  "turn_number"                  integer NOT NULL,
+  "memory_location_instance_id"  uuid,
+  "memory_character_instance_id" uuid,
+  "memory_monster_instance_id"   uuid,
+  "memory_object_instance_id"    uuid,
+  "created_at" timestamp WITH TIME ZONE NOT NULL DEFAULT (current_timestamp),
+  "updated_at" timestamp WITH TIME ZONE,
+  "deleted_at" timestamp WITH TIME ZONE,
+  CONSTRAINT "action_memory_record_type_ck" CHECK (
+    record_type = 'source' OR
+    record_type = 'target'
+  ),
+  CONSTRAINT "action_memory_character_instance_id_fk" FOREIGN KEY (character_instance_id) REFERENCES "character_instance"(id),
+  CONSTRAINT "action_memory_monster_instance_id_fk" FOREIGN KEY (monster_instance_id) REFERENCES "monster_instance"(id),
+  CONSTRAINT "action_memory_character_or_monster_ck" CHECK 
+  (
+      ( CASE WHEN character_instance_id IS NULL THEN 0 ELSE 1 END
+      + CASE WHEN monster_instance_id IS NULL THEN 0 ELSE 1 END
+      ) = 1
+  ),
+  CONSTRAINT "action_memory_memory_command_ck" CHECK (
+    memory_command = 'move' OR
+    memory_command = 'look' OR
+    memory_command = 'use' OR
+    memory_command = 'stash' OR
+    memory_command = 'equip' OR
+    memory_command = 'drop' OR
+    memory_command = 'attack'
+  ),
+  CONSTRAINT "action_memory_memory_type_ck" CHECK (
+    memory_type = 'location' OR
+    memory_type = 'character' OR
+    memory_type = 'monster' OR
+    memory_type = 'object'
+  ),
+  CONSTRAINT "action_memory_memory_location_instance_id_fk" FOREIGN KEY (memory_location_instance_id) REFERENCES "location_instance"(id),
+  CONSTRAINT "action_memory_memory_character_instance_id_fk" FOREIGN KEY (memory_character_instance_id) REFERENCES "character_instance"(id),
+  CONSTRAINT "action_memory_memory_monster_instance_id_fk" FOREIGN KEY (memory_monster_instance_id) REFERENCES "monster_instance"(id),
+  CONSTRAINT "action_memory_memory_object_instance_id_fk" FOREIGN KEY (memory_object_instance_id) REFERENCES "object_instance"(id)
+);
+
+COMMENT ON TABLE "action_memory" IS 'A monster or characters memory is a stack of their most recent memories. A monster or character may only remember as many things as their intelligence allows. Older memories become forgotten.';
 
 -- table action_character
 CREATE TABLE "action_character" (

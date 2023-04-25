@@ -40,7 +40,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/locationobject"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monster"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterinstance"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterinstancememory"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/actionmemory"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterinstanceview"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/monsterobject"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/repository/object"
@@ -219,7 +219,7 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 	}
 	repositoryList = append(repositoryList, monsterInstanceRepo)
 
-	monsterInstanceMemoryRepo, err := monsterinstancememory.NewRepository(m.Log, p, tx)
+	monsterInstanceMemoryRepo, err := actionmemory.NewRepository(m.Log, p, tx)
 	if err != nil {
 		m.Log.Warn("Failed new monster instance memory repository >%v<", err)
 		return nil, err
@@ -486,16 +486,16 @@ func (m *Model) MonsterInstanceRepository() *monsterinstance.Repository {
 	return r.(*monsterinstance.Repository)
 }
 
-// MonsterInstanceMemoryRepository -
-func (m *Model) MonsterInstanceMemoryRepository() *monsterinstancememory.Repository {
+// ActionMemoryRepository -
+func (m *Model) ActionMemoryRepository() *actionmemory.Repository {
 
-	r := m.Repositories[monsterinstancememory.TableName]
+	r := m.Repositories[actionmemory.TableName]
 	if r == nil {
-		m.Log.Warn("Repository >%s< is nil", monsterinstancememory.TableName)
+		m.Log.Warn("Repository >%s< is nil", actionmemory.TableName)
 		return nil
 	}
 
-	return r.(*monsterinstancememory.Repository)
+	return r.(*actionmemory.Repository)
 }
 
 // MonsterInstanceViewRepository -

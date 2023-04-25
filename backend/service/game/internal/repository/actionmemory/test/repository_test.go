@@ -31,20 +31,20 @@ func TestCreateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func(data harness.Data) *record.MonsterInstanceMemory
+		rec  func(data harness.Data) *record.ActionMemory
 		err  bool
 	}{
 		{
 			name: "Without ID",
-			rec: func(data harness.Data) *record.MonsterInstanceMemory {
-				return &record.MonsterInstanceMemory{}
+			rec: func(data harness.Data) *record.ActionMemory {
+				return &record.ActionMemory{}
 			},
 			err: false,
 		},
 		{
 			name: "With ID",
-			rec: func(data harness.Data) *record.MonsterInstanceMemory {
-				rec := &record.MonsterInstanceMemory{}
+			rec: func(data harness.Data) *record.ActionMemory {
+				rec := &record.ActionMemory{}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()
 				return rec
@@ -72,7 +72,7 @@ func TestCreateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).MonsterInstanceMemoryRepository()
+			r := h.Model.(*model.Model).ActionMemoryRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec(h.Data)
@@ -112,7 +112,7 @@ func TestGetOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.MonsterInstanceMemoryRecs[0].ID
+				return h.Data.ActionMemoryRecs[0].ID
 			},
 			err: false,
 		},
@@ -144,7 +144,7 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).MonsterInstanceMemoryRepository()
+			r := h.Model.(*model.Model).ActionMemoryRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec, err := r.GetOne(tc.id(), false)
@@ -179,20 +179,20 @@ func TestUpdateOne(t *testing.T) {
 
 	tests := []struct {
 		name string
-		rec  func() *record.MonsterInstanceMemory
+		rec  func() *record.ActionMemory
 		err  bool
 	}{
 		{
 			name: "With ID",
-			rec: func() *record.MonsterInstanceMemory {
-				return h.Data.MonsterInstanceMemoryRecs[0]
+			rec: func() *record.ActionMemory {
+				return h.Data.ActionMemoryRecs[0]
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			rec: func() *record.MonsterInstanceMemory {
-				rec := h.Data.MonsterInstanceMemoryRecs[0]
+			rec: func() *record.ActionMemory {
+				rec := h.Data.ActionMemoryRecs[0]
 				rec.ID = ""
 				return rec
 			},
@@ -219,7 +219,7 @@ func TestUpdateOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).MonsterInstanceMemoryRepository()
+			r := h.Model.(*model.Model).ActionMemoryRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			rec := tc.rec()
@@ -259,7 +259,7 @@ func TestDeleteOne(t *testing.T) {
 		{
 			name: "With ID",
 			id: func() string {
-				return h.Data.MonsterInstanceMemoryRecs[0].ID
+				return h.Data.ActionMemoryRecs[0].ID
 			},
 			err: false,
 		},
@@ -291,7 +291,7 @@ func TestDeleteOne(t *testing.T) {
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
-			r := h.Model.(*model.Model).MonsterInstanceMemoryRepository()
+			r := h.Model.(*model.Model).ActionMemoryRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
 			err := r.DeleteOne(tc.id())

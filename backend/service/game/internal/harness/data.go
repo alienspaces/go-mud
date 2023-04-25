@@ -29,15 +29,15 @@ type Data struct {
 	LocationMonsterRecs []*record.LocationMonster
 
 	// Instance
-	DungeonInstanceRecs       []*record.DungeonInstance
-	LocationInstanceRecs      []*record.LocationInstance
-	CharacterInstanceRecs     []*record.CharacterInstance
-	MonsterInstanceRecs       []*record.MonsterInstance
-	MonsterInstanceMemoryRecs []*record.MonsterInstanceMemory
-	ObjectInstanceRecs        []*record.ObjectInstance
+	DungeonInstanceRecs   []*record.DungeonInstance
+	LocationInstanceRecs  []*record.LocationInstance
+	CharacterInstanceRecs []*record.CharacterInstance
+	MonsterInstanceRecs   []*record.MonsterInstance
+	ObjectInstanceRecs    []*record.ObjectInstance
 
 	// Action
 	ActionRecs                []*record.Action
+	ActionMemoryRecs          []*record.ActionMemory
 	ActionCharacterRecs       []*record.ActionCharacter
 	ActionCharacterObjectRecs []*record.ActionCharacterObject
 	ActionMonsterRecs         []*record.ActionMonster

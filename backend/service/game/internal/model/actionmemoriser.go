@@ -13,7 +13,7 @@ type MemoriserArgs struct {
 	ActionRecordSet *record.ActionRecordSet
 }
 
-func (m *Model) memoriseAction(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseAction(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 	l := m.Logger("memoriseAction")
 
 	if args == nil || args.ActionRecordSet == nil ||
@@ -28,7 +28,7 @@ func (m *Model) memoriseAction(args *MemoriserArgs) ([]*record.MonsterInstanceMe
 	l.Info("Memorising action ID >%s<", args.ActionRecordSet.ActionRec)
 
 	// Memory mapper functions
-	memoryMapperFuncs := map[string]func(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error){
+	memoryMapperFuncs := map[string]func(args *MemoriserArgs) ([]*record.ActionMemory, error){
 		"move":   m.memoriseMoveActionMapper,
 		"look":   m.memoriseLookActionMapper,
 		"use":    m.memoriseUseActionMapper,
@@ -55,7 +55,7 @@ func (m *Model) memoriseAction(args *MemoriserArgs) ([]*record.MonsterInstanceMe
 
 	for idx := range recs {
 		rec := recs[idx]
-		err = m.CreateMonsterInstanceMemoryRec(rec)
+		err = m.CreateActionMemoryRec(rec)
 		if err != nil {
 			l.Warn("failed creating monster instance memory record >%v<", command, err)
 			return nil, err
@@ -66,10 +66,10 @@ func (m *Model) memoriseAction(args *MemoriserArgs) ([]*record.MonsterInstanceMe
 }
 
 // memoriseMoveActionMapper remembers locations a monster has moved from
-func (m *Model) memoriseMoveActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseMoveActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 	l := m.Logger("memoriseMoveActionMapper")
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	if args == nil || args.ActionRecordSet == nil ||
 		args.ActionRecordSet.ActionMonsterRec == nil ||
@@ -84,10 +84,10 @@ func (m *Model) memoriseMoveActionMapper(args *MemoriserArgs) ([]*record.Monster
 	livRec := args.ActionRecordSet.CurrentLocation.LocationInstanceViewRec
 
 	// Moved from a location
-	rec := &record.MonsterInstanceMemory{
+	rec := &record.ActionMemory{
 		MonsterInstanceID:        amRec.MonsterInstanceID,
 		MemoryCommand:            record.ActionCommandMove,
-		MemoryType:               record.MemoryTypeLocation,
+		MemoryType:               record.ActionMemoryTypeLocation,
 		MemoryLocationInstanceID: nullstring.FromString(livRec.ID),
 	}
 	recs = append(recs, rec)
@@ -96,10 +96,10 @@ func (m *Model) memoriseMoveActionMapper(args *MemoriserArgs) ([]*record.Monster
 }
 
 // memoriseLookActionMapper memorises things a monster has seen
-func (m *Model) memoriseLookActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseLookActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 	l := m.Logger("memoriseLookActionMapper")
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	if args == nil || args.ActionRecordSet == nil ||
 		args.ActionRecordSet.ActionMonsterRec == nil {
@@ -121,20 +121,20 @@ func (m *Model) memoriseLookActionMapper(args *MemoriserArgs) ([]*record.Monster
 	acRecs := tl.ActionCharacterRecs
 
 	// Looked into a location
-	rec := &record.MonsterInstanceMemory{
+	rec := &record.ActionMemory{
 		MonsterInstanceID:        amRec.MonsterInstanceID,
 		MemoryCommand:            record.ActionCommandLook,
-		MemoryType:               record.MemoryTypeLocation,
+		MemoryType:               record.ActionMemoryTypeLocation,
 		MemoryLocationInstanceID: nullstring.FromString(livRec.ID),
 	}
 	recs = append(recs, rec)
 
 	// Currently only remembering characters seen at a location
 	for idx := range acRecs {
-		rec := &record.MonsterInstanceMemory{
+		rec := &record.ActionMemory{
 			MonsterInstanceID:         amRec.MonsterInstanceID,
 			MemoryCommand:             record.ActionCommandLook,
-			MemoryType:                record.MemoryTypeLocation,
+			MemoryType:                record.ActionMemoryTypeCharacter,
 			MemoryLocationInstanceID:  nullstring.FromString(livRec.ID),
 			MemoryCharacterInstanceID: nullstring.FromString(acRecs[idx].CharacterInstanceID),
 		}
@@ -145,41 +145,41 @@ func (m *Model) memoriseLookActionMapper(args *MemoriserArgs) ([]*record.Monster
 }
 
 // memoriseUseActionMapper doesn't remember anything yet
-func (m *Model) memoriseUseActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseUseActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	return recs, nil
 }
 
 // memoriseStashActionMapper doesn't remember anything yet
-func (m *Model) memoriseStashActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseStashActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	return recs, nil
 }
 
 // memoriseEquipActionMapper doesn't remember anything yet
-func (m *Model) memoriseEquipActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseEquipActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	return recs, nil
 }
 
 // memoriseDropActionMapper doesn't remember anything yet
-func (m *Model) memoriseDropActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseDropActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	return recs, nil
 }
 
 // memoriseAttackActionMapper memorises characters the monster has attacked
-func (m *Model) memoriseAttackActionMapper(args *MemoriserArgs) ([]*record.MonsterInstanceMemory, error) {
+func (m *Model) memoriseAttackActionMapper(args *MemoriserArgs) ([]*record.ActionMemory, error) {
 
-	recs := []*record.MonsterInstanceMemory{}
+	recs := []*record.ActionMemory{}
 
 	return recs, nil
 }

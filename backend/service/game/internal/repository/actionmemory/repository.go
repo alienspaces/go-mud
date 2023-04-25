@@ -1,4 +1,4 @@
-package monsterinstancememory
+package actionmemory
 
 import (
 	"time"
@@ -37,7 +37,7 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 			// Config
 			Config: repository.Config{
 				TableName:  TableName,
-				Attributes: tag.GetValues(record.MonsterInstanceMemory{}, "db"),
+				Attributes: tag.GetValues(record.ActionMemory{}, "db"),
 			},
 		},
 	}
@@ -59,17 +59,17 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 }
 
 // NewRecord -
-func (r *Repository) NewRecord() *record.MonsterInstanceMemory {
-	return &record.MonsterInstanceMemory{}
+func (r *Repository) NewRecord() *record.ActionMemory {
+	return &record.ActionMemory{}
 }
 
 // NewRecordArray -
-func (r *Repository) NewRecordArray() []*record.MonsterInstanceMemory {
-	return []*record.MonsterInstanceMemory{}
+func (r *Repository) NewRecordArray() []*record.ActionMemory {
+	return []*record.ActionMemory{}
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.MonsterInstanceMemory, error) {
+func (r *Repository) GetOne(id string, forUpdate bool) (*record.ActionMemory, error) {
 	rec := r.NewRecord()
 	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
@@ -82,7 +82,7 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.MonsterInstanceM
 func (r *Repository) GetMany(
 	params map[string]interface{},
 	paramOperators map[string]string,
-	forUpdate bool) ([]*record.MonsterInstanceMemory, error) {
+	forUpdate bool) ([]*record.ActionMemory, error) {
 
 	recs := r.NewRecordArray()
 
@@ -109,7 +109,7 @@ func (r *Repository) GetMany(
 }
 
 // CreateOne -
-func (r *Repository) CreateOne(rec *record.MonsterInstanceMemory) error {
+func (r *Repository) CreateOne(rec *record.ActionMemory) error {
 
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
@@ -127,7 +127,7 @@ func (r *Repository) CreateOne(rec *record.MonsterInstanceMemory) error {
 }
 
 // UpdateOne -
-func (r *Repository) UpdateOne(rec *record.MonsterInstanceMemory) error {
+func (r *Repository) UpdateOne(rec *record.ActionMemory) error {
 
 	origUpdatedAt := rec.UpdatedAt
 	rec.UpdatedAt = repository.NewUpdatedAt()
