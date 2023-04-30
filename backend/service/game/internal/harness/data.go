@@ -37,7 +37,6 @@ type Data struct {
 
 	// Action
 	ActionRecs                []*record.Action
-	ActionMemoryRecs          []*record.ActionMemory
 	ActionCharacterRecs       []*record.ActionCharacter
 	ActionCharacterObjectRecs []*record.ActionCharacterObject
 	ActionMonsterRecs         []*record.ActionMonster
@@ -602,6 +601,10 @@ func (d *Data) AddActionLocationRecordSet(alrs *record.ActionLocationRecordSet) 
 func (d *Data) AddActionRecordSet(rs *record.ActionRecordSet) {
 
 	d.AddActionRec(rs.ActionRec)
+
+	for idx := range rs.ActionMemoryRecs {
+		d.AddActionMemoryRec(rs.ActionMemoryRecs[idx])
+	}
 
 	// Source
 	if rs.ActionCharacterRec != nil {

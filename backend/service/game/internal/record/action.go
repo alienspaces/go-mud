@@ -36,32 +36,6 @@ type Action struct {
 }
 
 const (
-	ActionMemoryRecordTypeSource string = "source"
-	ActionMemoryRecordTypeTarget string = "target"
-)
-
-const (
-	ActionMemoryTypeLocation  string = "location"
-	ActionMemoryTypeCharacter string = "character"
-	ActionMemoryTypeMonster   string = "monster"
-	ActionMemoryTypeObject    string = "object"
-)
-
-type ActionMemory struct {
-	RecordType                string         `db:"record_type"`
-	CharacterInstanceID       string         `db:"character_instance_id"`
-	MonsterInstanceID         string         `db:"monster_instance_id"`
-	MemoryCommand             string         `db:"memory_command"`
-	MemoryType                string         `db:"memory_type"`
-	TurnNumber                int            `db:"turn_number"`
-	MemoryLocationInstanceID  sql.NullString `db:"memory_location_instance_id"`
-	MemoryCharacterInstanceID sql.NullString `db:"memory_character_instance_id"`
-	MemoryMonsterInstanceID   sql.NullString `db:"memory_monster_instance_id"`
-	MemoryObjectInstanceID    sql.NullString `db:"memory_object_instance_id"`
-	repository.Record
-}
-
-const (
 	ActionCharacterRecordTypeSource          string = "source"
 	ActionCharacterRecordTypeTarget          string = "target"
 	ActionCharacterRecordTypeCurrentLocation string = "current_location"

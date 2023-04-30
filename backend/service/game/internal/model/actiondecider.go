@@ -15,6 +15,10 @@ type DeciderArgs struct {
 	MonsterInstanceViewRec    *record.MonsterInstanceView
 	CharacterInstanceViewRec  *record.CharacterInstanceView
 	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
+	// Memory action records are action records that the character or monster
+	// has recently performed or action records that were performed where the
+	// character or monster was the target.
+	MemoryActionRecs []*record.Action
 }
 
 func (m *Model) decideAction(args *DeciderArgs) (string, error) {
@@ -107,25 +111,42 @@ func (m *Model) decideActionLook(args *DeciderArgs) (string, error) {
 
 	action := ""
 
-	// TODO: 14-implement-smarter-monsters
-	// Monsters should remember what they've looked at in a room
-	// and make better decisions around whether something they've
-	// just looked at is interesting or not.
-
 	things := []string{}
 	if len(lirs.ObjectInstanceViewRecs) != 0 {
 		rIdx := rand.Intn(len(lirs.ObjectInstanceViewRecs))
 		things = append(things, lirs.ObjectInstanceViewRecs[rIdx].Name)
 	}
 
-	if len(lirs.MonsterInstanceViewRecs) != 0 {
-		rIdx := rand.Intn(len(lirs.MonsterInstanceViewRecs))
-		things = append(things, lirs.MonsterInstanceViewRecs[rIdx].Name)
+	// Exclude the monster looking from the list of monsters to possibly look at
+	var mivRecs []*record.MonsterInstanceView
+	if args.MonsterInstanceViewRec != nil && len(lirs.MonsterInstanceViewRecs) != 0 {
+		for idx := range lirs.MonsterInstanceViewRecs {
+			if lirs.MonsterInstanceViewRecs[idx].ID == args.MonsterInstanceViewRec.ID {
+				continue
+			}
+			mivRecs = append(mivRecs, lirs.MonsterInstanceViewRecs[idx])
+		}
 	}
 
-	if len(lirs.CharacterInstanceViewRecs) != 0 {
-		rIdx := rand.Intn(len(lirs.CharacterInstanceViewRecs))
-		things = append(things, lirs.CharacterInstanceViewRecs[rIdx].Name)
+	if len(mivRecs) != 0 {
+		rIdx := rand.Intn(len(mivRecs))
+		things = append(things, mivRecs[rIdx].Name)
+	}
+
+	// Exclude the character looking from the list of characters to possibly look at
+	var civRecs []*record.CharacterInstanceView
+	if args.CharacterInstanceViewRec != nil && len(lirs.CharacterInstanceViewRecs) != 0 {
+		for idx := range lirs.CharacterInstanceViewRecs {
+			if lirs.CharacterInstanceViewRecs[idx].ID == args.CharacterInstanceViewRec.ID {
+				continue
+			}
+			civRecs = append(civRecs, lirs.CharacterInstanceViewRecs[idx])
+		}
+	}
+
+	if len(civRecs) != 0 {
+		rIdx := rand.Intn(len(civRecs))
+		things = append(things, civRecs[rIdx].Name)
 	}
 
 	if len(things) > 0 {
@@ -138,12 +159,32 @@ func (m *Model) decideActionLook(args *DeciderArgs) (string, error) {
 	return action, nil
 }
 
+func getPreviousLocationInstanceID(args *DeciderArgs) string {
+
+	previousLocationInstanceID := ""
+	for idx := range args.MemoryActionRecs {
+		if args.MonsterInstanceViewRec != nil &&
+			nullstring.ToString(args.MemoryActionRecs[idx].MonsterInstanceID) == args.MonsterInstanceViewRec.ID &&
+			args.MemoryActionRecs[idx].LocationInstanceID != args.MonsterInstanceViewRec.LocationInstanceID {
+			previousLocationInstanceID = args.MemoryActionRecs[idx].LocationInstanceID
+			break
+		}
+		if args.CharacterInstanceViewRec != nil &&
+			nullstring.ToString(args.MemoryActionRecs[idx].CharacterInstanceID) == args.CharacterInstanceViewRec.ID &&
+			args.MemoryActionRecs[idx].LocationInstanceID != args.CharacterInstanceViewRec.LocationInstanceID {
+			previousLocationInstanceID = args.MemoryActionRecs[idx].LocationInstanceID
+			break
+		}
+	}
+
+	return previousLocationInstanceID
+}
+
 func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
 	l := m.Logger("decideActionAttack")
 
 	lirs := args.LocationInstanceRecordSet
 
-	var possibleDirections []string
 	directions := map[string]sql.NullString{
 		"north":     lirs.LocationInstanceViewRec.NorthLocationInstanceID,
 		"northeast": lirs.LocationInstanceViewRec.NortheastLocationInstanceID,
@@ -157,22 +198,34 @@ func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
 		"down":      lirs.LocationInstanceViewRec.DownLocationInstanceID,
 	}
 
+	var possibleDirections []string
 	for direction := range directions {
 		if nullstring.IsValid(directions[direction]) {
 			possibleDirections = append(possibleDirections, direction)
 		}
 	}
 
+	// Always prefer to not move back the direction we just came from by excluding that
+	// direction when there are multiple directions to choose from.
+	recentLocationInstanceID := getPreviousLocationInstanceID(args)
+
+	var availableDirections []string
+	if len(possibleDirections) > 1 && recentLocationInstanceID != "" {
+		for idx := range possibleDirections {
+			if possibleDirections[idx] != recentLocationInstanceID {
+				availableDirections = append(availableDirections, possibleDirections[idx])
+			}
+		}
+	} else {
+		availableDirections = possibleDirections
+	}
+
 	l.Info("Have possible directions >%v<", possibleDirections)
 
 	action := ""
-	if len(possibleDirections) != 0 {
-		// TODO: 14-implement-smarter-monsters
-		// This is currently a random direction however it would be cool if a
-		// monster was chasing a target for it to look in various directions
-		// for that target before deciding which direction to move.
-		rIdx := rand.Intn(len(possibleDirections))
-		action = fmt.Sprintf("move %s", possibleDirections[rIdx])
+	if len(availableDirections) != 0 {
+		rIdx := rand.Intn(len(availableDirections))
+		action = fmt.Sprintf("move %s", availableDirections[rIdx])
 	}
 
 	l.Info("Returning action >%s<", action)

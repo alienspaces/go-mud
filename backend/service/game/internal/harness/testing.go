@@ -507,6 +507,27 @@ func (t *Testing) RemoveData() error {
 
 	seen := map[string]bool{}
 
+	l.Debug("Removing >%d< action memory records", len(t.teardownData.ActionMemoryRecs))
+
+ACTION_MEMORY_RECS:
+	for {
+		if len(t.teardownData.ActionMemoryRecs) == 0 {
+			break ACTION_MEMORY_RECS
+		}
+		var rec *record.ActionMemory
+		rec, t.teardownData.ActionMemoryRecs = t.teardownData.ActionMemoryRecs[0], t.teardownData.ActionMemoryRecs[1:]
+		if seen[rec.ID] {
+			continue
+		}
+
+		err := t.Model.(*model.Model).RemoveActionMemoryRec(rec.ID)
+		if err != nil {
+			l.Warn("failed removing action memory record >%v<", err)
+			return err
+		}
+		seen[rec.ID] = true
+	}
+
 	l.Debug("Removing >%d< action character object records", len(t.teardownData.ActionCharacterObjectRecs))
 
 ACTION_CHARACTER_OBJECT_RECS:

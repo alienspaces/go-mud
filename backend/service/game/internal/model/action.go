@@ -374,15 +374,15 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	actionMemoryRecs, err := m.memoriseAction(&MemoriserArgs{ActionRecordSet: actionRecordSet})
-	if err != nil {
-		l.Warn("failed memorising action >%v<", err)
-		return nil, err
-	}
+	// actionMemoryRecs, err := m.memoriseAction(&MemoriserArgs{ActionRecordSet: actionRecordSet})
+	// if err != nil {
+	// 	l.Warn("failed memorising action >%v<", err)
+	// 	return nil, err
+	// }
 
-	l.Info("Recorded >%d< memory records", len(actionMemoryRecs))
+	// l.Info("Recorded >%d< memory records", len(actionMemoryRecs))
 
-	actionRecordSet.ActionMemoryRecs = actionMemoryRecs
+	// actionRecordSet.ActionMemoryRecs = actionMemoryRecs
 
 	return actionRecordSet, nil
 }

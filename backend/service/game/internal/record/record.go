@@ -1,9 +1,8 @@
 package record
 
 type ActionRecordSet struct {
+	// The current action record
 	ActionRec *Action
-	// Memories the action
-	ActionMemoryRecs []*ActionMemory
 	// The character performing the action
 	ActionCharacterRec *ActionCharacter
 	// The stashed and equipped objects of the character that is performing the action

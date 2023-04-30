@@ -15,7 +15,7 @@ import (
 
 const (
 	// TableName - underlying database table name used for configuration
-	TableName string = "monster_instance_memory"
+	TableName string = "action_memory"
 )
 
 // Repository -
