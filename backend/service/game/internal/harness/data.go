@@ -602,10 +602,6 @@ func (d *Data) AddActionRecordSet(rs *record.ActionRecordSet) {
 
 	d.AddActionRec(rs.ActionRec)
 
-	for idx := range rs.ActionMemoryRecs {
-		d.AddActionMemoryRec(rs.ActionMemoryRecs[idx])
-	}
-
 	// Source
 	if rs.ActionCharacterRec != nil {
 		d.AddActionCharacterRec(rs.ActionCharacterRec)
