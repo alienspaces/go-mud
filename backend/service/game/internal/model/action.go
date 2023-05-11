@@ -204,9 +204,17 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 	l.Info("Location instance ID >%s< record set monster instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.MonsterInstanceViewRecs))
 	l.Info("Location instance ID >%s< record set object instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.ObjectInstanceViewRecs))
 
+	// Get the monsters memory action records
+	maRecs, err := m.GetMonsterInstanceMemoryActionRecs(rec)
+	if err != nil {
+		l.Warn("failed getting monster instance action memory records >%v<", err)
+		return nil, err
+	}
+
 	sentence, err := m.decideAction(&DeciderArgs{
 		MonsterInstanceViewRec:    rec,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
+		MemoryActionRecs:          maRecs,
 	})
 	if err != nil {
 		l.Warn("failed deciding action >%v<", err)
@@ -910,6 +918,62 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 	actionRecs = append(actionRecs, rec)
 
 	return actionRecs, nil
+}
+
+func (m *Model) GetMonsterInstanceMemoryActionRecs(rec *record.MonsterInstanceView) ([]*record.Action, error) {
+	l := m.Logger("GetMonsterInstanceMemoryActionRecs")
+
+	// Maybe need a view here to make it easier to union monster actions and other actions?
+	maRecs, err := m.GetActionRecs(
+		map[string]interface{}{
+			"monster_instance_id": rec.ID,
+		},
+		map[string]string{
+			coresql.OperatorLimit:             fmt.Sprintf("%d", rec.CurrentIntelligence),
+			coresql.OperatorOrderByDescending: "created_at",
+		}, false,
+	)
+	if err != nil {
+		l.Warn("failed fetching monster action recs >%v<", err)
+		return nil, err
+	}
+
+	oaRecs, err := m.GetActionRecs(
+		map[string]interface{}{
+			"resolved_target_monster_instance_id": rec.ID,
+		},
+		map[string]string{
+			coresql.OperatorLimit:             fmt.Sprintf("%d", rec.CurrentIntelligence),
+			coresql.OperatorOrderByDescending: "created_at",
+		}, false,
+	)
+	if err != nil {
+		l.Warn("failed fetching resolved monster target action recs >%v<", err)
+		return nil, err
+	}
+
+	l.Info("Have >%d< monster action records", len(maRecs))
+	l.Info("Have >%d< resolved monster target action records", len(oaRecs))
+
+	aRecs := []*record.Action{}
+	for len(maRecs) > 0 {
+		if len(oaRecs) > 0 {
+			if nullint.ToInt16(maRecs[0].SerialNumber) > nullint.ToInt16(oaRecs[0].SerialNumber) {
+				aRecs = append(aRecs, maRecs[0])
+				maRecs = maRecs[1:]
+			} else {
+				aRecs = append(aRecs, oaRecs[0])
+				maRecs = maRecs[1:]
+			}
+			continue
+		}
+		aRecs = append(aRecs, maRecs[0])
+		maRecs = maRecs[1:]
+	}
+
+	l.Info("Have >%d< total memory records", len(aRecs))
+
+	return aRecs, nil
 }
 
 func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecordSet) (*record.ActionRecordSet, error) {
