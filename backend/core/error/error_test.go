@@ -20,52 +20,52 @@ func TestToError(t *testing.T) {
 		{
 			name: "invalid JSON",
 			args: args{
-				e: GetRegistryError(ErrorCodeValidationJSON),
+				e: GetRegistryError(InvalidJSON),
 			},
-			want: GetRegistryError(ErrorCodeValidationJSON),
+			want: GetRegistryError(InvalidJSON),
 		},
 		{
 			name: "invalid query param",
 			args: args{
-				e: GetRegistryError(ErrorCodeValidationQueryParam),
+				e: GetRegistryError(InvalidQueryParam),
 			},
-			want: GetRegistryError(ErrorCodeValidationQueryParam),
+			want: GetRegistryError(InvalidQueryParam),
 		},
 		{
 			name: "invalid path param",
 			args: args{
-				e: GetRegistryError(ErrorCodeValidationPathParam),
+				e: GetRegistryError(InvalidPathParam),
 			},
-			want: GetRegistryError(ErrorCodeValidationPathParam),
+			want: GetRegistryError(InvalidPathParam),
 		},
 		{
 			name: "unauthenticated",
 			args: args{
-				e: GetRegistryError(ErrorCodeClientUnauthenticated),
+				e: GetRegistryError(Unauthenticated),
 			},
-			want: GetRegistryError(ErrorCodeClientUnauthenticated),
+			want: GetRegistryError(Unauthenticated),
 		},
 		{
 
 			name: "unauthorized",
 			args: args{
-				e: GetRegistryError(ErrorCodeClientUnauthorized),
+				e: GetRegistryError(Unauthorized),
 			},
-			want: GetRegistryError(ErrorCodeClientUnauthorized),
+			want: GetRegistryError(Unauthorized),
 		},
 		{
 			name: "not found",
 			args: args{
-				e: GetRegistryError(ErrorCodeResourceNotFound),
+				e: GetRegistryError(NotFound),
 			},
-			want: GetRegistryError(ErrorCodeResourceNotFound),
+			want: GetRegistryError(NotFound),
 		},
 		{
 			name: "internal",
 			args: args{
-				e: GetRegistryError(ErrorCodeServerInternal),
+				e: GetRegistryError(Internal),
 			},
-			want: GetRegistryError(ErrorCodeServerInternal),
+			want: GetRegistryError(Internal),
 		},
 		{
 			name: "error",

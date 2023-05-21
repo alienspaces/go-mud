@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-database
+spec:
+  selector:
+    matchLabels:
+      app: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-database
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-database
+        app: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-database
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-database
+              topologyKey: "kubernetes.io/hostname"
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-api
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-database-container
+          image: {DOCKER_IMAGE_ECR_POSTGRES_FULL_NAME}
+          imagePullPolicy: IfNotPresent
+          startupProbe:
+            exec:
+              command: [ "psql", "-w", "-U", "{APP_SERVER_DB_OWNER_USER}", "-d", "{APP_SERVER_DB_NAME}", "-c", "SELECT 1" ]
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command: [ "psql", "-w", "-U", "{APP_SERVER_DB_OWNER_USER}", "-d", "{APP_SERVER_DB_NAME}", "-c", "SELECT 1" ]
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 15
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command: [ "psql", "-w", "-U", "{APP_SERVER_DB_OWNER_USER}", "-d", "{APP_SERVER_DB_NAME}", "-c", "SELECT 1" ]
+            timeoutSeconds: 3
+            periodSeconds: 15
+            failureThreshold: 10
+          ports:
+            - containerPort: {APP_SERVER_DB_PORT}
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "0.2"
+            limits:
+              memory: "500Mi"
+              cpu: "0.5"
+          env:
+            - name: POSTGRES_DB
+              value: {APP_SERVER_DB_NAME}
+            - name: POSTGRES_USER
+              value: {APP_SERVER_DB_OWNER_USER}
+            - name: POSTGRES_PASSWORD
+              value: {APP_SERVER_DB_OWNER_PASSWORD}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-volume
+      volumes:
+        - name: {APP_PROJECT_NAMESPACE}-{APP_ENV_NAME}-volume
+          emptyDir: {}

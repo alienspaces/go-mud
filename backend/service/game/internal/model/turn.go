@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -26,9 +27,14 @@ func (m *Model) IncrementDungeonInstanceTurn(args *IncrementDungeonInstanceTurnA
 	l.Info("Increment dungeon instance ID >%s< turn", args.DungeonInstanceID)
 
 	recs, err := m.GetTurnRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": args.DungeonInstanceID,
-		}, nil, true,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: args.DungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting turn records >%v<", err)

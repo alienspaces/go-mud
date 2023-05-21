@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/tag"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
@@ -36,8 +37,9 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 
 			// Config
 			Config: repository.Config{
-				TableName:  TableName,
-				Attributes: tag.GetValues(record.Monster{}, "db"),
+				TableName:   TableName,
+				Attributes:  tag.GetFieldTagValues(record.Monster{}, "db"),
+				ArrayFields: tag.GetArrayFieldTagValues(record.Monster{}, "db"),
 			},
 		},
 	}
@@ -69,9 +71,9 @@ func (r *Repository) NewRecordArray() []*record.Monster {
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.Monster, error) {
+func (r *Repository) GetOne(id string, lock *coresql.Lock) (*record.Monster, error) {
 	rec := r.NewRecord()
-	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
+	if err := r.GetOneRec(id, rec, lock); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
 		return nil, err
 	}
@@ -79,14 +81,11 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.Monster, error) 
 }
 
 // GetMany -
-func (r *Repository) GetMany(
-	params map[string]interface{},
-	paramOperators map[string]string,
-	forUpdate bool) ([]*record.Monster, error) {
+func (r *Repository) GetMany(opts *coresql.Options) ([]*record.Monster, error) {
 
 	recs := r.NewRecordArray()
 
-	rows, err := r.GetManyRecs(params, paramOperators, forUpdate)
+	rows, err := r.GetManyRecs(opts)
 	if err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
 		return nil, err
@@ -114,7 +113,7 @@ func (r *Repository) CreateOne(rec *record.Monster) error {
 	if rec.ID == "" {
 		rec.ID = repository.NewRecordID()
 	}
-	rec.CreatedAt = repository.NewCreatedAt()
+	rec.CreatedAt = repository.NewRecordTimestamp()
 
 	err := r.CreateOneRec(rec)
 	if err != nil {
@@ -130,7 +129,7 @@ func (r *Repository) CreateOne(rec *record.Monster) error {
 func (r *Repository) UpdateOne(rec *record.Monster) error {
 
 	origUpdatedAt := rec.UpdatedAt
-	rec.UpdatedAt = repository.NewUpdatedAt()
+	rec.UpdatedAt = repository.NewRecordNullTimestamp()
 
 	err := r.UpdateOneRec(rec)
 	if err != nil {
@@ -141,4 +140,3 @@ func (r *Repository) UpdateOne(rec *record.Monster) error {
 
 	return nil
 }
-

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -12,10 +13,15 @@ func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance
 	l := m.Logger("validateCreateCharacterInstanceRec")
 
 	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"character_id": rec.CharacterID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: rec.CharacterID,
+				},
+			},
 		},
-		nil, false)
+	)
 	if err != nil {
 		l.Warn("failed getting character instance record >%v<", err)
 		return err
@@ -24,7 +30,7 @@ func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance
 	if len(characterInstanceRecs) > 0 {
 		msg := fmt.Sprintf("character with ID >%s< is already inside a dungeon", rec.CharacterID)
 		l.Warn(msg)
-		err := coreerror.NewValidationInvalidError("character_id", msg)
+		err := coreerror.NewInvalidError("character_id", msg)
 		return err
 	}
 
@@ -54,7 +60,7 @@ func (m *Model) validateUpdateCharacterInstanceRec(rec *record.CharacterInstance
 func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
 	l := m.Logger("validateDeleteCharacterInstanceRec")
 
-	rec, err := m.GetCharacterInstanceRec(recID, false)
+	rec, err := m.GetCharacterInstanceRec(recID, nil)
 	if err != nil {
 		l.Warn("failed getting character instance record >%v<", err)
 		return err
@@ -63,7 +69,7 @@ func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
 	if rec == nil {
 		msg := fmt.Sprintf("failed validation, character instance ID >%s< does not exist", recID)
 		l.Warn(msg)
-		err := coreerror.NewValidationInvalidError("id", msg)
+		err := coreerror.NewInvalidError("id", msg)
 		return err
 	}
 

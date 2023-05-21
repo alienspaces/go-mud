@@ -27,6 +27,7 @@ type Model struct {
 	// composable functions
 	RepositoriesFunc func(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error)
 	QueriesFunc      func(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error)
+	SetRLSFunc       func(identifiers map[string][]string)
 }
 
 var _ modeller.Modeller = &Model{}
@@ -54,16 +55,20 @@ func (m *Model) Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) 
 	}
 
 	if m.RepositoriesFunc == nil {
-		m.RepositoriesFunc = m.DefaultRepositoriesFunc
+		m.RepositoriesFunc = m.NewRepositories
 	}
 
 	if m.QueriesFunc == nil {
-		m.QueriesFunc = m.DefaultQueriesFunc
+		m.QueriesFunc = m.NewQueriers
+	}
+
+	if m.SetRLSFunc == nil {
+		m.SetRLSFunc = m.SetRLS
 	}
 
 	m.Tx = tx
 
-	// Repositories
+	// repositories
 	repositories, err := m.RepositoriesFunc(pRepo, tx)
 	if err != nil {
 		m.Log.Warn("failed repositories func >%v<", err)
@@ -75,52 +80,81 @@ func (m *Model) Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) 
 		m.Repositories[r.TableName()] = r
 	}
 
-	// Queries
-	queries, err := m.QueriesFunc(pQ, tx)
+	queriers, err := m.QueriesFunc(pQ, tx)
 	if err != nil {
 		m.Log.Warn("failed queries func >%v<", err)
+		return err
 	}
 
 	m.Queries = make(map[string]querier.Querier)
-	for _, q := range queries {
+	for _, q := range queriers {
 		m.Queries[q.Name()] = q
 	}
 
 	return nil
 }
 
-// DefaultRepositoriesFunc - default repositor.RepositoriesFunc, override this function for custom repositories
-func (m *Model) DefaultRepositoriesFunc(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
+// NewRepositories - default repositor.RepositoriesFunc, override this function for custom repositories
+func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
 
 	m.Log.Info("** repositor.Repositories **")
 
 	return nil, nil
 }
 
-// DefaultQueriesFunc - default repositor.QueriesFunc, override this function for custom queries
-func (m *Model) DefaultQueriesFunc(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error) {
+// NewQueriers - default repositor.QueriesFunc, override this function for custom queriers
+func (m *Model) NewQueriers(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error) {
 
 	m.Log.Info("** querier.Queriers **")
 
 	return nil, nil
 }
 
+func (m *Model) SetRLS(identifiers map[string][]string) {
+	m.Log.Info("** set RLS not implemented **")
+}
+
 // Commit -
 func (m *Model) Commit() error {
-	if m.Tx == nil {
-		msg := "cannot commit, database Tx is nil"
-		m.Log.Warn(msg)
-		return fmt.Errorf(msg)
+	if m.Tx != nil {
+		m.Tx.Commit()
+		return nil
 	}
-	return m.Tx.Commit()
+	msg := "cannot commit, database Tx is nil"
+	m.Log.Warn(msg)
+	return fmt.Errorf(msg)
+}
+
+// SetTxLockTimeout -
+func (m *Model) SetTxLockTimeout(timeoutSecs float64) error {
+	if m.Tx == nil {
+		err := fmt.Errorf("cannot set transaction lock timeout seconds, database Tx is nil")
+		m.Log.Warn(err.Error())
+		return err
+	}
+
+	// If we SET, instead of SET LOCAL, lock_timeout would be at the session-level.
+	// Since we use connection pooling, this would mean that different sessions (and therefore requests)
+	// would have different, unknown lock_timeout parameters.
+
+	timeoutMs := timeoutSecs * 1000
+	_, err := m.Tx.Exec(fmt.Sprintf("SET LOCAL lock_timeout = %d", int(timeoutMs)))
+	if err != nil {
+		m.Log.Warn("failed setting transaction lock timeout seconds >%v<", err)
+		return err
+	}
+
+	m.Log.Debug("lock timeout seconds set to >%fs<", timeoutSecs)
+
+	return nil
 }
 
 // Rollback -
 func (m *Model) Rollback() error {
-	if m.Tx == nil {
-		msg := "cannot rollback, database Tx is nil"
-		m.Log.Warn(msg)
-		return fmt.Errorf(msg)
+	if m.Tx != nil {
+		return m.Tx.Rollback()
 	}
-	return m.Tx.Rollback()
+	msg := "cannot rollback, database Tx is nil"
+	m.Log.Warn(msg)
+	return fmt.Errorf(msg)
 }

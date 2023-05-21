@@ -4,9 +4,9 @@ package logger
 type Logger interface {
 	NewInstance() (Logger, error)
 	Context(key, value string)
-	WithFunctionContext(value string) Logger
+	WithApplicationContext(value string) Logger
 	WithPackageContext(value string) Logger
-	WithInstanceContext(value string) Logger
+	WithFunctionContext(value string) Logger
 	Debug(msg string, args ...interface{})
 	Info(msg string, args ...interface{})
 	Warn(msg string, args ...interface{})

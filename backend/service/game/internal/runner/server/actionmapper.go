@@ -4,9 +4,8 @@ import (
 	"strings"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/nullint"
-
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 

@@ -1,6 +1,6 @@
 module gitlab.com/alienspaces/go-mud/backend/core
 
-go 1.18
+go 1.19
 
 require (
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
@@ -10,6 +10,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.4
+	github.com/r3labs/diff/v3 v3.0.1
 	github.com/rs/cors v1.8.2
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.0
@@ -23,6 +24,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect

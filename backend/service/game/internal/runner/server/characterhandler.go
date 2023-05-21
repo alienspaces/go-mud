@@ -7,46 +7,47 @@ import (
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (
-	getCharacters server.HandlerConfigKey = "get-characters"
-	getCharacter  server.HandlerConfigKey = "get-character"
-	postCharacter server.HandlerConfigKey = "post-character"
-	putCharacter  server.HandlerConfigKey = "put-character"
+	getCharacters string = "get-characters"
+	getCharacter  string = "get-character"
+	postCharacter string = "post-character"
+	putCharacter  string = "put-character"
 )
 
-func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
 		getCharacters: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/characters",
 			HandlerFunc: rnr.GetCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateQueryParams: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/character",
+						Location: "schema/game/character",
 						Name:     "query.schema.json",
 					},
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/character",
+						Location: "schema/game/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/character",
+							Location: "schema/game/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -63,16 +64,16 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 			HandlerFunc: rnr.GetCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/character",
+						Location: "schema/game/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/character",
+							Location: "schema/game/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -89,22 +90,22 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 			HandlerFunc: rnr.PostCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/character",
+						Location: "schema/game/character",
 						Name:     "create.request.schema.json",
 					},
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/character",
+						Location: "schema/game/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/character",
+							Location: "schema/game/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -130,7 +131,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[server.HandlerConfigKey]server.
 }
 
 // GetCharacterHandler -
-func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "GetCharacterHandler")
 	l.Info("** Get character handler **")
 
@@ -141,18 +142,18 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	characterID := pp.ByName("character_id")
 
 	if characterID == "" {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewValidationPathParamTypeError("character_id", characterID)
+		err := coreerror.NewPathParamError("character_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
-	rec, err := m.(*model.Model).GetCharacterRec(characterID, false)
+	rec, err := m.(*model.Model).GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
@@ -161,7 +162,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -193,7 +194,7 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		Data: data,
 	}
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -202,29 +203,16 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	return nil
 }
 
-var paramNameMap map[string]string = map[string]string{
-	"character_id":   "id",
-	"character_name": "name",
-}
-
 // GetCharactersHandler -
-func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "GetCharactersHandler")
 	l.Info("** Get characters handler **")
 
-	var recs []*record.Character
-	var err error
+	opts := queryparam.ToSQLOptions(qp)
 
 	l.Info("Querying character records with params >%#v<", qp)
 
-	// Add query parameters
-	params := make(map[string]interface{})
-	for paramName, paramValue := range qp {
-		l.Info("Querying dungeon records with param name >%s< value >%v<", paramName, paramValue)
-		params[paramNameMap[paramName]] = paramValue
-	}
-
-	recs, err = m.(*model.Model).GetCharacterRecs(params, nil, false)
+	recs, err := m.(*model.Model).GetCharacterRecs(opts)
 	if err != nil {
 		l.Warn("failed getting dungeon character records >%v<", err)
 		server.WriteError(l, w, err)
@@ -258,7 +246,7 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 
 	l.Info("Responding with >%#v<", res)
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -268,12 +256,12 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 }
 
 // PostCharacterHandler -
-func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "PostCharacterHandler")
 	l.Info("** Post character handler **")
 
-	req := schema.CharacterRequest{}
-	err := server.ReadRequest(l, r, &req)
+	req := &schema.CharacterRequest{}
+	req, err := server.ReadRequest(l, r, req)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -319,7 +307,7 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 
 	l.Info("Writing response >%#v<", res)
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -329,7 +317,7 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 }
 
 // PutCharactersHandler -
-func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "PutCharacterHandler")
 	l.Info("** Put character handler **")
 
@@ -337,18 +325,18 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	id := pp.ByName("character_id")
 
 	if id == "" {
-		err := coreerror.NewResourceNotFoundError("character", id)
+		err := coreerror.NewNotFoundError("character", id)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewValidationPathParamTypeError("character_id", id)
+		err := coreerror.NewPathParamError("character_id", id)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Updating character ID >%s<", id)
 
-	rec, err := m.(*model.Model).GetCharacterRec(id, false)
+	rec, err := m.(*model.Model).GetCharacterRec(id, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -356,14 +344,13 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewResourceNotFoundError("character", id)
+		err := coreerror.NewNotFoundError("character", id)
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	req := schema.CharacterRequest{}
-
-	err = server.ReadRequest(l, r, &req)
+	req := &schema.CharacterRequest{}
+	req, err = server.ReadRequest(l, r, req)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -403,7 +390,7 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 		},
 	}
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err

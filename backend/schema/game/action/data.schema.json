@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/action/data.schema.json",
+  "title": "Dungeon Action Data",
+  "description": "Dungeon action data",
+  "type": "object",
+  "required": [
+    "action_id",
+    "action_command",
+    "action_turn_number",
+    "action_serial_number",
+    "action_location",
+    "action_created_at"
+  ],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "action_command": {
+      "type": "string"
+    },
+    "action_narrative": {
+      "type": "string"
+    },
+    "action_turn_number": {
+      "type": "integer"
+    },
+    "action_serial_number": {
+      "type": "integer"
+    },
+    "action_location": {
+      "$ref": "#/$defs/action_location"
+    },
+    "action_character": {
+      "$ref": "#/$defs/action_character"
+    },
+    "action_monster": {
+      "$ref": "#/$defs/action_monster"
+    },
+    "action_equipped_object": {
+      "$ref": "#/$defs/action_object"
+    },
+    "action_stashed_object": {
+      "$ref": "#/$defs/action_object"
+    },
+    "action_target_object": {
+      "$ref": "#/$defs/action_object"
+    },
+    "action_target_character": {
+      "$ref": "#/$defs/action_character"
+    },
+    "action_target_monster": {
+      "$ref": "#/$defs/action_monster"
+    },
+    "action_target_location": {
+      "$ref": "#/$defs/action_location"
+    },
+    "action_created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "action_location": {
+      "type": "object",
+      "required": [
+        "location_name",
+        "location_description",
+        "location_directions"
+      ],
+      "properties": {
+        "location_name": {
+          "type": "string"
+        },
+        "location_description": {
+          "type": "string"
+        },
+        "location_directions": {
+          "type": "array"
+        },
+        "location_characters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_location_character"
+          }
+        },
+        "location_monsters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_location_monster"
+          }
+        },
+        "location_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_location_object"
+          }
+        }
+      }
+    },
+    "action_location_character": {
+      "type": "object",
+      "required": [
+        "character_name",
+        "character_health",
+        "character_fatigue",
+        "character_current_health",
+        "character_current_fatigue"
+      ],
+      "properties": {
+        "character_name": {
+          "type": "string"
+        },
+        "character_health": {
+          "type": "integer"
+        },
+        "character_fatigue": {
+          "type": "integer"
+        },
+        "character_current_health": {
+          "type": "integer"
+        },
+        "character_current_fatigue": {
+          "type": "integer"
+        }
+      }
+    },
+    "action_character": {
+      "type": "object",
+      "required": [
+        "character_name", 
+        "character_strength", 
+        "character_dexterity",
+        "character_intelligence",
+        "character_current_strength", 
+        "character_current_dexterity",
+        "character_current_intelligence",
+        "character_health",
+        "character_fatigue"
+      ],
+      "properties": {
+        "character_name": {
+          "type": "string"
+        },
+        "character_strength": {
+          "type": "integer"
+        },
+        "character_dexterity": {
+          "type": "integer"
+        },
+        "character_intelligence": {
+          "type": "integer"
+        },
+        "character_current_strength": {
+          "type": "integer"
+        },
+        "character_current_dexterity": {
+          "type": "integer"
+        },
+        "character_current_intelligence": {
+          "type": "integer"
+        },
+        "character_health": {
+          "type": "integer"
+        },
+        "character_fatigue": {
+          "type": "integer"
+        },
+        "character_current_health": {
+          "type": "integer"
+        },
+        "character_current_fatigue": {
+          "type": "integer"
+        },
+        "character_equipped_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_object"
+          }
+        },
+        "character_stashed_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_object"
+          }
+        }
+      }
+    },
+    "action_location_monster": {
+      "type": "object",
+      "required": [
+        "monster_name",
+        "monster_health",
+        "monster_fatigue",
+        "monster_current_health",
+        "monster_current_fatigue"
+      ],
+      "properties": {
+        "monster_name": {
+          "type": "string"
+        },
+        "monster_health": {
+          "type": "integer"
+        },
+        "monster_fatigue": {
+          "type": "integer"
+        },
+        "monster_current_health": {
+          "type": "integer"
+        },
+        "monster_current_fatigue": {
+          "type": "integer"
+        }
+      }
+    },
+    "action_monster": {
+      "type": "object",
+      "required": [
+        "monster_name", 
+        "monster_strength", 
+        "monster_dexterity",
+        "monster_intelligence",
+        "monster_current_strength", 
+        "monster_current_dexterity",
+        "monster_current_intelligence",
+        "monster_health",
+        "monster_fatigue"
+      ],
+      "properties": {
+        "monster_name": {
+          "type": "string"
+        },
+        "monster_strength": {
+          "type": "integer"
+        },
+        "monster_dexterity": {
+          "type": "integer"
+        },
+        "monster_intelligence": {
+          "type": "integer"
+        },
+        "monster_current_strength": {
+          "type": "integer"
+        },
+        "monster_current_dexterity": {
+          "type": "integer"
+        },
+        "monster_current_intelligence": {
+          "type": "integer"
+        },
+        "monster_health": {
+          "type": "integer"
+        },
+        "monster_fatigue": {
+          "type": "integer"
+        },
+        "monster_current_health": {
+          "type": "integer"
+        },
+        "monster_current_fatigue": {
+          "type": "integer"
+        },
+        "monster_equipped_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_object"
+          }
+        },
+        "monster_stashed_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_object"
+          }
+        }
+      }
+    },
+    "action_location_object": {
+      "type": "object",
+      "required": [
+        "object_name"
+      ],
+      "properties": {
+        "object_name": {
+          "type": "string"
+        }
+      }
+    },
+    "action_object": {
+      "type": "object",
+      "required": [
+        "object_name",
+        "object_description",
+        "object_is_stashed",
+        "object_is_equipped"
+      ],
+      "properties": {
+        "object_name": {
+          "type": "string"
+        },
+        "object_description": {
+          "type": "string"
+        },
+        "object_is_stashed": {
+          "type": "boolean"
+        },
+        "object_is_equipped": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

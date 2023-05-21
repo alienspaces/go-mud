@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -34,11 +35,24 @@ func (m *Model) resolveActionTurn(args *ResolveActionTurnArgs) (*record.Action, 
 	// Get the dungeon entity instance turn record
 	q := m.DungeonEntityInstanceTurnQuery()
 
-	recs, err := q.GetMany(map[string]interface{}{
-		"dungeon_instance_id": args.DungeonInstanceID,
-		"entity_type":         args.EntityType,
-		"entity_instance_id":  args.EntityInstanceID,
-	}, nil)
+	recs, err := q.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: args.DungeonInstanceID,
+				},
+				{
+					Col: "entity_type",
+					Val: args.EntityType,
+				},
+				{
+					Col: "entity_instance_id",
+					Val: args.EntityInstanceID,
+				},
+			},
+		},
+	)
 	if err != nil {
 		l.Warn("failed querying dungeon entity instance turns >%v<", err)
 		return nil, err

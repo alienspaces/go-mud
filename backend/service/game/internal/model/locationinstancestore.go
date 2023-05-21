@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetLocationInstanceRecs -
-func (m *Model) GetLocationInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.LocationInstance, error) {
+func (m *Model) GetLocationInstanceRecs(opts *coresql.Options) ([]*record.LocationInstance, error) {
 
 	l := m.Logger("GetLocationInstanceRecs")
 
-	l.Debug("Getting dungeon location records params >%s<", params)
+	l.Debug("Getting dungeon location records opts >%#v<", opts)
 
 	r := m.LocationInstanceRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetLocationInstanceRec -
-func (m *Model) GetLocationInstanceRec(recID string, forUpdate bool) (*record.LocationInstance, error) {
+func (m *Model) GetLocationInstanceRec(recID string, lock *coresql.Lock) (*record.LocationInstance, error) {
 
 	l := m.Logger("GetLocationInstanceRec")
 
@@ -33,7 +34,7 @@ func (m *Model) GetLocationInstanceRec(recID string, forUpdate bool) (*record.Lo
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -43,15 +44,15 @@ func (m *Model) GetLocationInstanceRec(recID string, forUpdate bool) (*record.Lo
 }
 
 // GetLocationInstanceViewRecs -
-func (m *Model) GetLocationInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.LocationInstanceView, error) {
+func (m *Model) GetLocationInstanceViewRecs(opts *coresql.Options) ([]*record.LocationInstanceView, error) {
 
 	l := m.Logger("GetLocationInstanceViewRecs")
 
-	l.Debug("Getting dungeon location records params >%s<", params)
+	l.Debug("Getting dungeon location records opts >%#v<", opts)
 
 	r := m.LocationInstanceViewRepository()
 
-	return r.GetMany(params, operators, false)
+	return r.GetMany(opts)
 }
 
 // GetLocationInstanceViewRec -
@@ -68,7 +69,7 @@ func (m *Model) GetLocationInstanceViewRec(recID string) (*record.LocationInstan
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, false)
+	rec, err := r.GetOne(recID, nil)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil

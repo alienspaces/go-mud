@@ -13,13 +13,21 @@ import (
 )
 
 // IsUUID - tests whether provided string is a valid UUID
-func (m *Model) IsUUID(s string) bool {
-
-	_, err := uuid.Parse(s)
-	if err != nil {
-		m.Log.Warn("UUID >%s< is not valid >%v<", s, err)
+func IsUUID(s string) bool {
+	if _, err := uuid.Parse(s); err != nil {
 		return false
 	}
+
+	return true
+}
+
+// This remains here until all references instead call the above package function
+func (m *Model) IsUUID(s string) bool {
+	if !IsUUID(s) {
+		m.Log.Warn("UUID >%s< is not valid", s)
+		return false
+	}
+
 	return true
 }
 
@@ -27,7 +35,7 @@ func (m *Model) ValidateStringField(field string, fieldName string) error {
 	if field == "" {
 		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewValidationInvalidError(fieldName, errMsg)
+		return coreerror.NewInvalidError(fieldName, errMsg)
 	}
 
 	return nil
@@ -37,7 +45,7 @@ func (m *Model) ValidateNullStringField(field sql.NullString, fieldName string) 
 	if !nullstring.IsValid(field) {
 		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field.String)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewValidationInvalidError(fieldName, errMsg)
+		return coreerror.NewInvalidError(fieldName, errMsg)
 	}
 
 	return nil
@@ -47,7 +55,7 @@ func (m *Model) ValidateNullBoolField(field sql.NullBool, fieldName string) erro
 	if !nullbool.IsValid(field) {
 		errMsg := fmt.Sprintf("%s should not be empty", fieldName)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewValidationInvalidError(fieldName, errMsg)
+		return coreerror.NewInvalidError(fieldName, errMsg)
 	}
 
 	return nil
@@ -57,7 +65,7 @@ func (m *Model) ValidateStringArrayField(field pq.StringArray, fieldName string)
 	if len(field) == 0 {
 		errMsg := fmt.Sprintf("%s should not be empty >%#v<", fieldName, field)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewValidationInvalidError(fieldName, errMsg)
+		return coreerror.NewInvalidError(fieldName, errMsg)
 	}
 
 	return nil

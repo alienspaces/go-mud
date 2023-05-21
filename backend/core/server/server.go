@@ -18,37 +18,34 @@ type Server struct {
 // NewServer -
 func NewServer(c configurer.Configurer, l logger.Logger, s storer.Storer, r runnable.Runnable) (*Server, error) {
 
-	svc := Server{
+	svr := Server{
 		Config: c,
 		Log:    l,
 		Store:  s,
 		Runner: r,
 	}
 
-	err := svc.Init()
+	err := svr.Init()
 	if err != nil {
 		return nil, err
 	}
 
-	return &svc, nil
+	return &svr, nil
 }
 
 // Init -
-func (svc *Server) Init() error {
+func (svr *Server) Init() error {
 
-	err := svc.Store.Init()
-	if err != nil {
-		return err
-	}
-	return svc.Runner.Init(svc.Store)
+	// TODO: alerting, retries
+	return svr.Runner.Init(svr.Store)
 }
 
 // Run -
-func (svc *Server) Run(args map[string]interface{}) error {
+func (svr *Server) Run(args map[string]interface{}) error {
 
-	// TODO: (core) Alerts, retries, reloads
+	// TODO:
 	// - alerting on errors
 	// - retries on start up
 	// - reload  on config changes
-	return svc.Runner.Run(args)
+	return svr.Runner.Run(args)
 }

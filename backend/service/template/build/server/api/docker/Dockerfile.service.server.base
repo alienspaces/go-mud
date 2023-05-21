@@ -1,0 +1,14 @@
+# In a Docker multi-stage build, this is used as the final image for any Go services.
+
+ARG DOCKER_IMAGE_GO_FULL_NAME
+FROM $DOCKER_IMAGE_GO_FULL_NAME
+
+RUN apk add --update --no-cache \
+    curl \
+    bash \
+    git \
+    postgresql-client
+
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
+
+ENTRYPOINT [ "/bin/bash" ]

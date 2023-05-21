@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetDungeonRecs -
-func (m *Model) GetDungeonRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Dungeon, error) {
+func (m *Model) GetDungeonRecs(opts *coresql.Options) ([]*record.Dungeon, error) {
 
 	l := m.Logger("GetDungeonRecs")
 
-	l.Debug("Getting dungeon records params >%s<", params)
+	l.Debug("Getting dungeon records opts >%#v<", opts)
 
 	r := m.DungeonRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetDungeonRec -
-func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, error) {
+func (m *Model) GetDungeonRec(recID string, lock *coresql.Lock) (*record.Dungeon, error) {
 
 	l := m.Logger("GetDungeonRec")
 
@@ -33,7 +34,7 @@ func (m *Model) GetDungeonRec(recID string, forUpdate bool) (*record.Dungeon, er
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil

@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 )
@@ -33,105 +35,147 @@ type WriteResponseOption = func(http.ResponseWriter) error
 // RunHTTP - Starts the HTTP server process. Override to implement a custom HTTP server run function.
 // The server process exposes a REST API and is intended for clients to manage resources and
 // perform actions.
-func (rnr *Runner) RunHTTP(args map[string]interface{}) error {
+func (rnr *Runner) RunHTTP(args map[string]interface{}) (*http.Server, error) {
 
 	rnr.Log.Debug("** RunHTTP **")
 
-	// default handler
-	router, err := rnr.DefaultRouter()
+	// Router
+	r := httprouter.New()
+
+	r, err := rnr.RegisterRoutes(r)
 	if err != nil {
 		rnr.Log.Warn("failed default router >%v<", err)
-		return err
+		return nil, err
 	}
 
-	port := rnr.Config.Get("APP_SERVER_PORT")
+	port := rnr.config.AppServerPort
 	if port == "" {
 		rnr.Log.Warn("missing APP_SERVER_PORT, cannot start server")
-		return fmt.Errorf("missing APP_SERVER_PORT, cannot start server")
+		return nil, fmt.Errorf("missing APP_SERVER_PORT, cannot start server")
 	}
 
-	// cors
+	// CORS
+	allowedOrigins := rnr.HTTPCORSConfig.AllowedOrigins
+	if len(allowedOrigins) == 0 {
+		allowedOrigins = []string{"*"}
+	}
+
+	allowedHeaders := []string{
+		"X-ProgramID", "X-ProgramName", "Content-Type",
+		"Authorization", "X-Authorization-Token",
+		"Origin", "X-Requested-With", "Accept",
+		"X-CSRF-Token",
+	}
+
+	allowedHeaders = append(allowedHeaders, rnr.HTTPCORSConfig.AllowedHeaders...)
+
 	c := cors.New(cors.Options{
-		Debug:          false,
-		AllowedOrigins: []string{"*"},
-		AllowedHeaders: []string{
-			"X-ProgramID", "X-ProgramName", "Content-Type",
-			"X-Authorization", "X-Authorization-Token",
-			"Origin", "X-Requested-With", "Accept",
-			"Access-Control-Allow-Origin",
-			"X-CSRF-Token",
-		},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
-		AllowCredentials: true,
+		// Access-Control-Allow-Origin, Access-Control-Allow-Headers and Access-Control-Allow-Methods cannot be wildcard if the CORS request is credentialed.
+		Debug:            false,
+		AllowedOrigins:   allowedOrigins,
+		AllowedHeaders:   allowedHeaders,
+		ExposedHeaders:   rnr.HTTPCORSConfig.ExposedHeaders,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"},
+		AllowCredentials: rnr.HTTPCORSConfig.AllowCredentials,
 	})
-	handler := c.Handler(router)
+	h := c.Handler(r)
 
 	// serve
 	rnr.Log.Info("server running at: http://localhost:%s", port)
 
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
-}
-
-// DefaultRouterFunc - default RouterFunc, override this function for custom routes
-func (rnr *Runner) DefaultRouterFunc(router *httprouter.Router) error {
-	l := loggerWithContext(rnr.Log, "Router")
-
-	l.Info("Using default empty router")
-
-	return nil
-}
-
-// Middleware - default MiddlewareFunc, override this function for custom middleware
-func (rnr *Runner) DefaultMiddlewareFunc(h Handle) (Handle, error) {
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-		return h(w, r, pp, qp, l, m)
+	srv := &http.Server{
+		Handler:      h,
+		Addr:         fmt.Sprintf(":%s", port),
+		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  5 * time.Second,
 	}
 
-	return handle, nil
+	return srv, srv.ListenAndServe()
 }
 
-// Handler - default HandlerFunc, override this function for custom handler
-func (rnr *Runner) DefaultHandlerFunc(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "DefaultHandlerFunc")
+// RegisterRoutes - registers routes as implemented by the assigned router function
+func (rnr *Runner) RegisterRoutes(r *httprouter.Router) (*httprouter.Router, error) {
+	return rnr.RouterFunc(r)
+}
 
-	l.Info("Using default handler")
+// defaultHandler is the default HandlerFunc
+func (rnr *Runner) defaultHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+
+	l.Info("** Handler **")
 
 	fmt.Fprint(w, "Ok!\n")
 
 	return nil
 }
 
-// DefaultRouter - implements default routes based on runner configuration options
-func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
-	l := loggerWithContext(rnr.Log, "DefaultRouter")
+func (rnr *Runner) RegisterDefaultHealthzRoute(r *httprouter.Router) (*httprouter.Router, error) {
+	l := Logger(rnr.Log, "RegisterDefaultHealthzRoute")
 
-	l.Info("Using default router")
-
-	r := httprouter.New()
-
-	// Default index handler
-	h, err := rnr.DefaultMiddleware(HandlerConfig{Path: "/", MiddlewareConfig: MiddlewareConfig{
-		AuthenTypes: []AuthenticationType{AuthenTypePublic},
-	}}, rnr.HandlerFunc)
+	h, err := rnr.ApplyMiddleware(
+		HandlerConfig{
+			Path: "/healthz",
+			MiddlewareConfig: MiddlewareConfig{
+				AuthenTypes: []AuthenticationType{AuthenticationTypePublic},
+			},
+		},
+		rnr.HandlerFunc,
+	)
 	if err != nil {
-		rnr.Log.Warn("failed default middleware >%v<", err)
+		l.Warn("failed default middleware >%v<", err)
 		return nil, err
 	}
 	r.GET("/healthz", h)
+
+	l.Info("Registered /healthz")
+
+	return r, nil
+}
+
+func (rnr *Runner) RegisterDefaultLivenessRoute(r *httprouter.Router) (*httprouter.Router, error) {
+	l := Logger(rnr.Log, "RegisterDefaultLivenessRoute")
+
+	// This logger should only be used for the liveness endpoint and is to avoid creating
+	// a new logger on every request.
+	hl, err := rnr.Log.NewInstance()
+	if err != nil {
+		l.Warn("failed new log instance >%v<", err)
+		return nil, err
+	}
 	r.GET("/liveness", func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
-		_ = rnr.HandlerFunc(w, r, pp, nil, rnr.Log, nil)
+		_ = rnr.HandlerFunc(w, r, pp, nil, hl, nil)
 	})
 
-	// Register configured routes
+	l.Info("Registered /liveness")
+
+	return r, nil
+}
+
+// defaultRouter - implements default routes based on runner configuration options
+func (rnr *Runner) defaultRouter(r *httprouter.Router) (*httprouter.Router, error) {
+	l := Logger(rnr.Log, "defaultRouter")
+
+	var err error
+	r, err = rnr.RegisterDefaultHealthzRoute(r)
+	if err != nil {
+		return nil, err
+	}
+
+	r, err = rnr.RegisterDefaultLivenessRoute(r)
+	if err != nil {
+		return nil, err
+	}
+
+	// register configured routes
 	for _, hc := range rnr.HandlerConfig {
 
-		l.Info("Routing method >%s< path >%s<", hc.Method, hc.Path)
+		l.Info("Router method >%s< path >%s<", hc.Method, hc.Path)
 
-		h, err := rnr.DefaultMiddleware(hc, hc.HandlerFunc)
+		h, err := rnr.ApplyMiddleware(hc, hc.HandlerFunc)
 		if err != nil {
 			l.Warn("failed registering handler >%v<", err)
 			return nil, err
 		}
+
 		switch hc.Method {
 		case http.MethodGet:
 			r.GET(hc.Path, h)
@@ -148,144 +192,104 @@ func (rnr *Runner) DefaultRouter() (*httprouter.Router, error) {
 		case http.MethodHead:
 			r.HEAD(hc.Path, h)
 		default:
-			err := fmt.Errorf("router HTTP method >%s< not supported", hc.Method)
-			l.Warn(err.Error())
-			return nil, err
+			l.Warn("router HTTP method >%s< not supported", hc.Method)
+			return nil, fmt.Errorf("router HTTP method >%s< not supported", hc.Method)
 		}
-	}
-
-	// server defined routes
-	err = rnr.RouterFunc(r)
-	if err != nil {
-		l.Warn("failed router >%v<", err)
-		return nil, err
 	}
 
 	return r, nil
 }
 
-// DefaultMiddleware - implements middlewares based on runner configuration
-func (rnr *Runner) DefaultMiddleware(hc HandlerConfig, h Handle) (httprouter.Handle, error) {
-	l := loggerWithContext(rnr.Log, "DefaultMiddleware")
-
-	l.Info("Using default middleware")
-
-	// NOTE: The order matters here. Different middleware will not be able to function
-	// unless prior middleware have run successfully.
-
-	// Validate body data
-	h, err := rnr.Validate(hc, h)
-	if err != nil {
-		l.Warn("failed adding validate middleware >%v<", err)
-		return nil, err
-	}
-
-	// Request body data
-	h, err = rnr.Data(h)
-	if err != nil {
-		l.Warn("failed adding data middleware >%v<", err)
-		return nil, err
-	}
-
-	h, err = rnr.Audit(hc, h)
-	if err != nil {
-		l.Warn("failed adding audit middleware >%v<", err)
-		return nil, err
-	}
-
-	// Authz
-	h, err = rnr.Authz(hc, h)
-	if err != nil {
-		l.Warn("failed adding authz middleware >%v<", err)
-		return nil, err
-	}
-
-	// Authen
-	h, err = rnr.Authen(hc, h)
-	if err != nil {
-		l.Warn("failed adding authen middleware >%v<", err)
-		return nil, err
-	}
-
-	// Tx
-	h, err = rnr.Tx(h)
-	if err != nil {
-		l.Warn("failed adding tx middleware >%v<", err)
-		return nil, err
-	}
-
-	// Correlation
-	h, err = rnr.Correlation(h)
-	if err != nil {
-		l.Warn("failed adding correlation middleware >%v<", err)
-		return nil, err
-	}
-
-	// Server defined routes
-	h, err = rnr.MiddlewareFunc(h)
-	if err != nil {
-		l.Warn("failed middleware >%v<", err)
-		return nil, err
-	}
-
-	// Wrap everything in a httprouter Handler
-	handle := func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
-
-		// New logger instance per request
-		l, err := l.NewInstance()
+// HttpRouterHandlerWrapper wraps a Handle function in an httprouter.Handle function while also
+// providing a new logger for every request. Typically this function should be used to wrap the
+// final product of applying all middleware to Handle function.
+func (rnr *Runner) HttpRouterHandlerWrapper(h Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
+		// Create new logger with its own context (fields map) on every request because each
+		// request maintains its own context (fields map). If the same logger is used, when
+		// different requests set the logger context, there will be concurrent map read/writes.
+		l, err := rnr.Log.NewInstance()
 		if err != nil {
-			WriteSystemError(rnr.Log, w, err)
+			rnr.Log.Warn("failed new log instance >%v<", err)
 			return
 		}
 
-		// Delegate
-		h(w, r, pp, nil, l, nil)
+		// delegate
+		_ = h(w, r, pp, nil, l, nil)
+	}
+}
+
+// RequestData -
+func RequestData(l logger.Logger, r *http.Request) *string {
+	value := r.Context().Value(ctxKeyData)
+	data, ok := value.(string)
+	if !ok {
+		return nil
 	}
 
-	return handle, nil
+	l.Info("Request data >%s<", data)
+
+	return &data
+}
+
+func AuthData(l logger.Logger, r *http.Request) *AuthenticatedRequest {
+	auth, ok := (r.Context().Value(ctxKeyAuth)).(AuthenticatedRequest)
+	if !ok {
+		return nil
+	}
+
+	l.Info("Auth data Type >%s< RLSType >%s< Permissions >%v<", auth.Type, auth.RLSType, auth.Permissions)
+
+	return &auth
+}
+
+func GetCorrelationID(l logger.Logger, r *http.Request) (string, error) {
+	correlationID, ok := (r.Context().Value(ctxKeyCorrelationID)).(string)
+	if !ok {
+		return "", fmt.Errorf("missing correlation ID")
+	}
+
+	l.Info("Correlation ID >%s<", correlationID)
+
+	return correlationID, nil
 }
 
 // ReadRequest -
-func ReadRequest(l logger.Logger, r *http.Request, s interface{}) error {
+func ReadRequest[T any](l logger.Logger, r *http.Request, s *T) (*T, error) {
 
-	data := r.Context().Value(ctxKeyData)
-
-	if data != nil {
-		r := strings.NewReader(data.(string))
-		err := json.NewDecoder(r).Decode(s)
-		if err != nil {
-			// Include data in error response
-			return fmt.Errorf("failed decoding request data >%s< >%v<", data.(string), err)
-		}
-	}
-
-	return nil
-}
-
-func ReadXMLRequest(l logger.Logger, r *http.Request, s interface{}) (*string, error) {
-
-	data := r.Context().Value(ctxKeyData)
-
-	d, ok := data.(string)
-	if !ok {
+	data := RequestData(l, r)
+	if data == nil {
 		return nil, nil
 	}
 
-	l.Info("xml message body >%s<", d)
-	reader := strings.NewReader(d)
-	if err := xml.NewDecoder(reader).Decode(s); err != nil {
-		return &d, fmt.Errorf("failed decoding request data >%s< >%v<", d, err)
+	reader := strings.NewReader(*data)
+	err := json.NewDecoder(reader).Decode(s)
+	if err != nil {
+		return nil, fmt.Errorf("failed decoding request data >%s< >%v<", *data, err)
 	}
 
-	return &d, nil
+	return s, nil
+}
+
+// ReadXMLRequest -
+func ReadXMLRequest(l logger.Logger, r *http.Request, s interface{}) (*string, error) {
+
+	data := RequestData(l, r)
+	if data == nil {
+		return nil, nil
+	}
+
+	reader := strings.NewReader(*data)
+	if err := xml.NewDecoder(reader).Decode(s); err != nil {
+		return data, fmt.Errorf("failed decoding request data >%s< >%v<", *data, err)
+	}
+
+	return data, nil
 }
 
 // WriteResponse -
-func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, options ...WriteResponseOption) error {
-	l = loggerWithContext(l, "WriteResponse")
-
-	status := http.StatusOK
-	l.Info("Write response status >%d<", status)
+func WriteResponse(l logger.Logger, w http.ResponseWriter, status int, r interface{}, options ...WriteResponseOption) error {
+	l.Info("write response status >%d<", status)
 
 	// content type json
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -302,11 +306,37 @@ func WriteResponse(l logger.Logger, w http.ResponseWriter, r interface{}, option
 	return json.NewEncoder(w).Encode(r)
 }
 
-func WriteXMLResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
-	l = loggerWithContext(l, "WriteXMLResponse")
+func WritePaginatedResponse[R any, D any](l logger.Logger, w http.ResponseWriter, recs []R, mapper func(R) (D, error), pageSize int) error {
+	res := []D{}
 
+	buildPageSize := pageSize
+	for _, rec := range recs {
+		if buildPageSize == 0 {
+			break
+		}
+
+		responseData, err := mapper(rec)
+		if err != nil {
+			WriteSystemError(l, w, err)
+			return err
+		}
+		res = append(res, responseData)
+
+		buildPageSize--
+	}
+
+	err := WriteResponse(l, w, http.StatusOK, res, XPaginationHeader(len(recs), pageSize))
+	if err != nil {
+		l.Warn("failed writing response >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
+func WriteXMLResponse(l logger.Logger, w http.ResponseWriter, s interface{}) error {
 	status := http.StatusOK
-	l.Info("Write response status >%d<", status)
+	l.Info("write response status >%d<", status)
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 

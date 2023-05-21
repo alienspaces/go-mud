@@ -1,7 +1,7 @@
 package test
 
-// NOTE: repository tests are run is the public space so we are
-// able to use common setup and teardown tooling for all repositories
+// NOTE: repository tests are run in the public space so we
+// can use common setup and teardown tooling for all repositories
 
 import (
 	"testing"
@@ -9,25 +9,36 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/harness"
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 func TestCreateOne(t *testing.T) {
+	t.Parallel()
 
 	// harness
-	config := harness.DataConfig{}
+	config := harness.DataConfig{
+		TemplateConfig: []harness.TemplateConfig{
+			{
+				Record: &record.Template{},
+			},
+		},
+	}
 
-	c, l, s, err := dependencies.Default()
-	require.NoError(t, err, "Default dependencies returns without error")
+	c, l, s, err := harness.NewDefaultDependencies()
+	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, config)
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
+
+	h, err := harness.NewTesting(c, l, s, config, false)
 	require.NoError(t, err, "NewTesting returns without error")
-
-	// harness commit data
-	h.CommitData = true
 
 	tests := []struct {
 		name string
@@ -57,18 +68,18 @@ func TestCreateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
+		t.Run(tc.name, func(t *testing.T) {
 
-			// Test harness
-			err = h.Setup()
+			// test harness
+			_, err := h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
-				require.NoError(t, err, "Teardown returns without error")
+				require.NoError(t, err, "Test harness teardown returns without error")
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
@@ -84,47 +95,51 @@ func TestCreateOne(t *testing.T) {
 			}
 			require.NoError(t, err, "CreateOne returns without error")
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
-
-			h.RollbackTx()
-		}()
+		})
 	}
 }
 
 func TestGetOne(t *testing.T) {
+	t.Parallel()
 
 	// harness
 	config := harness.DataConfig{
 		TemplateConfig: []harness.TemplateConfig{
 			{
-				Record: record.Template{},
+				Record: &record.Template{},
 			},
 		},
 	}
 
-	c, l, s, err := dependencies.Default()
-	require.NoError(t, err, "Default dependencies returns without error")
+	c, l, s, err := harness.NewDefaultDependencies()
+	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, config)
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
+
+	h, err := harness.NewTesting(c, l, s, config, false)
 	require.NoError(t, err, "NewTesting returns without error")
-
-	// harness commit data
-	h.CommitData = true
 
 	tests := []struct {
 		name string
-		id   func() string
+		id   func(d *harness.Data) string
 		err  bool
 	}{
 		{
 			name: "With ID",
-			id: func() string {
-				return h.Data.TemplateRecs[0].ID
+			id: func(d *harness.Data) string {
+				return d.TemplateRecs[0].ID
 			},
 			err: false,
 		},
 		{
 			name: "Without ID",
-			id: func() string {
+			id: func(d *harness.Data) string {
 				return ""
 			},
 			err: true,
@@ -135,25 +150,20 @@ func TestGetOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
-
-			// harness setup
-			err = h.Setup()
+		t.Run(tc.name, func(t *testing.T) {
+			// test harness
+			_, err := h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
-				require.NoError(t, err, "Teardown returns without error")
+				require.NoError(t, err, "Test harness teardown returns without error")
 			}()
-
-			// init tx
-			err = h.InitTx(nil)
-			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
 			r := h.Model.(*model.Model).TemplateRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
-			rec, err := r.GetOne(tc.id(), false)
+			rec, err := r.GetOne(tc.id(h.Data), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetOne returns error")
 				return
@@ -161,32 +171,34 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "GetOne returns without error")
 			require.NotNil(t, rec, "GetOne returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
-
-			h.RollbackTx()
-		}()
+		})
 	}
 }
 
 func TestUpdateOne(t *testing.T) {
+	t.Parallel()
 
 	// harness
 	config := harness.DataConfig{
 		TemplateConfig: []harness.TemplateConfig{
 			{
-				Record: record.Template{},
+				Record: &record.Template{},
 			},
 		},
 	}
 
-	c, l, s, err := dependencies.Default()
-	require.NoError(t, err, "Default dependencies returns without error")
+	c, l, s, err := harness.NewDefaultDependencies()
+	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, config)
-	require.NoError(t, err, "NewTesting returns without error")
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
 
-	// harness commit data
-	h.CommitData = true
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
 
+	h, err := harness.NewTesting(c, l, s, config, false)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	tests := []struct {
@@ -216,19 +228,14 @@ func TestUpdateOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
-
-			// harness setup
-			err = h.Setup()
+		t.Run(tc.name, func(t *testing.T) {
+			// test harness
+			_, err := h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
-				require.NoError(t, err, "Teardown returns without error")
+				require.NoError(t, err, "Test harness teardown returns without error")
 			}()
-
-			// init tx
-			err = h.InitTx(nil)
-			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
 			r := h.Model.(*model.Model).TemplateRepository()
@@ -236,38 +243,42 @@ func TestUpdateOne(t *testing.T) {
 
 			rec := tc.rec()
 
-			err := r.UpdateOne(&rec)
+			err = r.UpdateOne(&rec)
 			if tc.err == true {
 				require.Error(t, err, "UpdateOne returns error")
 				return
 			}
 			require.NoError(t, err, "UpdateOne returns without error")
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
-
-			h.RollbackTx()
-		}()
+		})
 	}
 }
 
 func TestDeleteOne(t *testing.T) {
+	t.Parallel()
 
 	// harness
 	config := harness.DataConfig{
 		TemplateConfig: []harness.TemplateConfig{
 			{
-				Record: record.Template{},
+				Record: &record.Template{},
 			},
 		},
 	}
 
-	c, l, s, err := dependencies.Default()
-	require.NoError(t, err, "Default dependencies returns without error")
+	c, l, s, err := harness.NewDefaultDependencies()
+	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
-	h, err := harness.NewTesting(c, l, s, config)
+	defer func() {
+		db, err := s.GetDb()
+		require.NoError(t, err, "getDb should return no error")
+
+		err = db.Close()
+		require.NoError(t, err, "close db should return no error")
+	}()
+
+	h, err := harness.NewTesting(c, l, s, config, false)
 	require.NoError(t, err, "NewTesting returns without error")
-
-	// harness commit data
-	h.CommitData = true
 
 	tests := []struct {
 		name string
@@ -294,36 +305,29 @@ func TestDeleteOne(t *testing.T) {
 
 		t.Logf("Run test >%s<", tc.name)
 
-		func() {
-
-			// harness setup
-			err = h.Setup()
+		t.Run(tc.name, func(t *testing.T) {
+			// test harness
+			_, err := h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
-				require.NoError(t, err, "Teardown returns without error")
+				require.NoError(t, err, "Test harness teardown returns without error")
 			}()
-
-			// init tx
-			err = h.InitTx(nil)
-			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
 			r := h.Model.(*model.Model).TemplateRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
-			err := r.DeleteOne(tc.id())
+			err = r.DeleteOne(tc.id())
 			if tc.err == true {
 				require.Error(t, err, "DeleteOne returns error")
 				return
 			}
 			require.NoError(t, err, "DeleteOne returns without error")
 
-			rec, err := r.GetOne(tc.id(), false)
+			rec, err := r.GetOne(tc.id(), nil)
 			require.Error(t, err, "GetOne returns error")
 			require.Nil(t, rec, "GetOne does not return record")
-
-			h.RollbackTx()
-		}()
+		})
 	}
 }

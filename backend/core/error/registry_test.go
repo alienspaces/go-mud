@@ -235,8 +235,8 @@ func TestNewSchemaError(t *testing.T) {
 
 	for i := range tests {
 		tests[i].want.HttpStatusCode = http.StatusBadRequest
-		tests[i].want.ErrorCode = ErrorCodeValidationSchema
-		tests[i].want.Message = registry[ErrorCodeValidationSchema].Message
+		tests[i].want.ErrorCode = SchemaValidation
+		tests[i].want.Message = registry[SchemaValidation].Message
 	}
 
 	cwd, err := os.Getwd()

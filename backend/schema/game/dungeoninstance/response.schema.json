@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/dungeoninstance/response.schema.json",
+  "title": "Dungeon Instance Main",
+  "type": "object",
+  "required": ["data"],
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": { "$ref": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/dungeoninstance/data.schema.json" }
+    }
+  }
+}

@@ -2,16 +2,70 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+	"sort"
 	"strings"
 
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
+func CollectErrorDocumentation(config HandlerConfig) []coreerror.Error {
+	var ed []coreerror.Error
+	for _, d := range config.DocumentationConfig.ErrorRegistry {
+		ed = append(ed, d)
+	}
+
+	ed = append(ed, coreerror.GetRegistryError(coreerror.Internal))
+
+	if hasPathParam(config.Path) {
+		ed = append(ed, coreerror.GetRegistryError(coreerror.InvalidPathParam))
+		ed = append(ed, coreerror.GetRegistryError(coreerror.NotFound))
+	}
+
+	if !config.MiddlewareConfig.ValidateQueryParams.IsEmpty() {
+		ed = append(ed, coreerror.GetRegistryError(coreerror.InvalidQueryParam))
+	}
+
+	switch config.Method {
+	case http.MethodPost, http.MethodPut, http.MethodPatch:
+		ed = append(ed, coreerror.GetRegistryError(coreerror.SchemaValidation))
+		ed = append(ed, coreerror.GetRegistryError(coreerror.InvalidJSON))
+	}
+
+	authenTypes := ToAuthenticationSet(config.MiddlewareConfig.AuthenTypes...)
+	if _, ok := authenTypes[AuthenticationTypeRestricted]; ok {
+		ed = append(ed, coreerror.GetRegistryError(coreerror.Unauthenticated))
+		ed = append(ed, coreerror.GetRegistryError(coreerror.Unauthorized))
+	}
+
+	sort.Slice(ed, func(i, j int) bool {
+		x := ed[i]
+		y := ed[j]
+
+		if x.HttpStatusCode != y.HttpStatusCode {
+			return x.HttpStatusCode < y.HttpStatusCode
+		}
+
+		return x.ErrorCode < y.ErrorCode
+	})
+
+	return ed
+}
+
+func hasPathParam(path string) bool {
+	for _, r := range path {
+		if r == ':' {
+			return true
+		}
+	}
+
+	return false
+}
+
 // GenerateHandlerDocumentation - generates documentation based on handler configuration
-func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, handlerConfigs []HandlerConfig) ([]byte, error) {
+func (rnr *Runner) GenerateHandlerDocumentation(handlerConfigs []HandlerConfig) ([]byte, error) {
 
 	rnr.Log.Info("** Generate Handler Documentation **")
 
@@ -147,20 +201,6 @@ func (rnr *Runner) GenerateHandlerDocumentation(messageConfigs []MessageConfig, 
 
 	rnr.appendAPIDocumentationURL(&b)
 
-	if len(messageConfigs) > 0 {
-		fmt.Fprintf(&b, "<h3 class='header'>Messages</h3>")
-		for count, cfg := range messageConfigs {
-			appendMessageConfig(&b, cfg)
-
-			schemaMain, schemaData, err := rnr.loadSchemaWithReferences(cfg.ValidateSchema)
-			if err != nil {
-				return nil, err
-			}
-
-			appendSchemaWithReferences(&b, count, schemaMain, schemaData, "Body Schema")
-		}
-	}
-
 	if len(handlerConfigs) > 0 {
 		fmt.Fprintf(&b, "<h3 class='header'>API</h3>")
 		for count, config := range sortHandlerConfigs(handlerConfigs) {
@@ -206,19 +246,6 @@ func (rnr *Runner) appendAPIDocumentationURL(b *strings.Builder) {
 	}
 }
 
-func appendMessageConfig(b *strings.Builder, cfg MessageConfig) {
-	fmt.Fprintf(b, "<h4 id='%s'>%s %s</h4>", strings.ToLower(string(cfg.Name)), cases.Title(language.Und).String(string(cfg.Subject)), cases.Title(language.Und).String(string(cfg.Event)))
-	fmt.Fprintf(b, "<div class='params'>\n")
-	fmt.Fprintf(b, "<div class='params-label'>Topic - </div><div class='params-value'>%s</div>", cfg.Topic)
-	fmt.Fprintf(b, "</div>\n")
-	fmt.Fprintf(b, "<div class='params'>\n")
-	fmt.Fprintf(b, "<div class='params-label'>Subject - </div><div class='params-value'>%s</div>", cfg.Subject)
-	fmt.Fprintf(b, "</div>\n")
-	fmt.Fprintf(b, "<div class='params'>\n")
-	fmt.Fprintf(b, "<div class='params-label'>Event - </div><div class='params-value'>%s</div>", cfg.Event)
-	fmt.Fprintf(b, "</div>\n")
-}
-
 func appendSummary(b *strings.Builder, config HandlerConfig) {
 	fmt.Fprintf(b, "<div id='%s' class='path'><h4><span class='path-method'>%s</span> - <span class='path=url'>%s</span></h4></div>", strings.ToLower(config.Name), config.Method, config.Path)
 	if config.DocumentationConfig.Summary != "" {
@@ -231,7 +258,8 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 		return mainSchema, referenceSchemas, nil
 	}
 
-	mainSchemaPath := s.Main.GetFileName()
+	// mainSchemaPath := s.Main.GetFileName()
+	mainSchemaPath := s.Main.GetFullPath()
 
 	rnr.Log.Debug("schema main content path >%s<", mainSchemaPath)
 
@@ -242,7 +270,7 @@ func (rnr *Runner) loadSchemaWithReferences(s jsonschema.SchemaWithReferences) (
 
 	for _, schemaReference := range s.References {
 
-		path := schemaReference.GetFileName()
+		path := schemaReference.GetFullPath()
 
 		rnr.Log.Debug("schema reference content path >%s<", path)
 

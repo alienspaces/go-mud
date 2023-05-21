@@ -1,34 +1,25 @@
 package error
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 )
 
-const (
-	// TODO: (core) Change to data
-	ErrorCategoryValidation ErrorCategory = "validation"
-	// TODO: (core) Additional categories data, query_parameter and path parameter
-	ErrorCategoryResource ErrorCategory = "resource"
-	ErrorCategoryClient   ErrorCategory = "client"
-	ErrorCategoryServer   ErrorCategory = "server"
-)
+type ErrorCode string
 
 const (
-	// TODO: (core) Change the following to data.invalid
-	ErrorCodeValidationSchema ErrorCode = "validation.schema"
-	// TODO: (core) Change the following to data.invalid_json
-	ErrorCodeValidationJSON ErrorCode = "validation.invalid_json"
-	// TODO: (core) Change the following to query_parameter.invalid
-	ErrorCodeValidationQueryParam ErrorCode = "validation.invalid_query_parameter"
-	// TODO: (core) Change the following to path_parameter.invalid
-	ErrorCodeValidationPathParam   ErrorCode = "validation.invalid_path_parameter"
-	ErrorCodeResourceNotFound      ErrorCode = "resource.not_found"
-	ErrorCodeClientUnauthorized    ErrorCode = "client.unauthorized"
-	ErrorCodeClientUnauthenticated ErrorCode = "client.unauthenticated"
-	ErrorCodeServerUnavailable     ErrorCode = "server.unavailable"
-	ErrorCodeServerInternal        ErrorCode = "server.internal_error"
+	SchemaValidation  ErrorCode = "validation.body_not_matching_json_schema"
+	InvalidAction     ErrorCode = "invalid_action"
+	InvalidJSON       ErrorCode = "validation.invalid_json"
+	InvalidHeader     ErrorCode = "validation.invalid_header"
+	InvalidQueryParam ErrorCode = "validation.invalid_query_parameter"
+	InvalidPathParam  ErrorCode = "validation.invalid_path_parameter"
+	NotFound          ErrorCode = "resource_not_found"
+	Unauthorized      ErrorCode = "unauthorized"
+	Unauthenticated   ErrorCode = "unauthenticated"
+	Unavailable       ErrorCode = "unavailable"
+	Internal          ErrorCode = "internal_error"
 )
 
 type Error struct {
@@ -39,128 +30,73 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return e.Message
+	return fmt.Sprintf("%s: %s", e.ErrorCode, e.Message)
 }
 
-type ErrorCategory string
-type ErrorCode string
+// Registry is a map of error codes to errors
+type Registry map[ErrorCode]Error
 
-func NewErrorCode(ec ErrorCategory, et ErrorType, s string) ErrorCode {
-	return ErrorCode(fmt.Sprintf("%s.%s_%s", ec, et, s))
+// Merge merges another error collection with this error collection returning a new error collection
+func (c Registry) Merge(a Registry) Registry {
+	for k, v := range c {
+		a[k] = v
+	}
+	return a
 }
 
-func HasErrorCode(err error, ec ErrorCode) bool {
+type SchemaValidationError struct {
+	DataPath string `json:"dataPath"`
+	Message  string `json:"message"`
+}
+
+func (sve SchemaValidationError) GetField() string {
+	field := strings.Split(sve.DataPath, ".")
+	lastField := field[len(field)-1]
+	return lastField
+}
+
+func IsError(e error) bool {
+	var errorPtr Error
+	return errors.As(e, &errorPtr)
+}
+
+func HasErrorCode(err error, c ErrorCode) bool {
 	e, err := ToError(err)
 	if err != nil {
 		return false
 	}
 
-	return e.ErrorCode == ec
+	return e.ErrorCode == c
 }
 
-func NewResourceNotFoundError(resourceName string, resourceID string) error {
-	e := GetRegistryError(ErrorCodeResourceNotFound)
-	e.Message = fmt.Sprintf("%s with ID >%s< not found", resourceName, resourceID)
-
-	return e
-}
-
-func NewServerInternalError() error {
-	return GetRegistryError(ErrorCodeServerInternal)
-}
-
-func NewServerUnavailableError() error {
-	return GetRegistryError(ErrorCodeServerUnavailable)
-}
-
-func NewClientUnauthorizedError() error {
-	return GetRegistryError(ErrorCodeClientUnauthorized)
-}
-
-func NewClientUnauthenticatedError(message string) error {
-	e := GetRegistryError(ErrorCodeClientUnauthenticated)
-	e.Message = message
-	return e
-}
-
-func NewValidationQueryParamError(message string) error {
-	e := GetRegistryError(ErrorCodeValidationQueryParam)
-	e.Message = message
-	return e
-}
-
-func ProcessValidationQueryParamError(err error) error {
-	e, conversionErr := ToError(err)
-	if conversionErr != nil {
-		return err
+func ToError(e error) (Error, error) {
+	if e == nil {
+		return Error{}, fmt.Errorf("err is nil when converting to coreerror.Error type")
 	}
 
-	if len(e.SchemaValidationErrors) == 0 {
-		return NewValidationQueryParamError(e.Error())
+	var err Error
+	if !errors.As(e, &err) {
+		return Error{}, fmt.Errorf("failed to convert to coreerror.Error type >%v<", e)
 	}
 
-	errStr := strings.Builder{}
-	errStr.WriteString("Invalid query parameter(s): ")
-	for i, sve := range e.SchemaValidationErrors {
-		if sve.GetField() == "$" {
-			errStr.WriteString(fmt.Sprintf("(%d) %s; ", i+1, sve.Message))
-		} else {
-			errStr.WriteString(fmt.Sprintf("(%d) %s: %s; ", i+1, sve.GetField(), sve.Message))
+	if len(err.SchemaValidationErrors) == 0 {
+		err.SchemaValidationErrors = nil
+	}
+
+	return err, nil
+}
+
+func ToErrors(errs ...error) ([]Error, error) {
+	var results []Error
+
+	for _, e := range errs {
+		result, err := ToError(e)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert err to error result >%#v<", err)
 		}
+
+		results = append(results, result)
 	}
 
-	formattedErrString := errStr.String()
-
-	// remove extra space and semicolon
-	formattedErrString = formattedErrString[0 : len(formattedErrString)-2]
-	formattedErrString += "."
-
-	return NewValidationQueryParamError(formattedErrString)
-}
-
-func NewValidationPathParamTypeError(param string, id string) error {
-	e := GetRegistryError(ErrorCodeValidationPathParam)
-	e.Message = fmt.Sprintf("Path parameter %s value >%s< is not a valid UUID", param, id)
-	return e
-}
-
-func NewValidationPathParamError(param, id, message string) error {
-	e := GetRegistryError(ErrorCodeValidationPathParam)
-	if message == "" {
-		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid", param, id)
-	} else {
-		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid, %s", param, id, message)
-	}
-	return e
-}
-
-func NewValidationJSONError(message string) error {
-	e := GetRegistryError(ErrorCodeValidationJSON)
-	if message != "" {
-		e.Message = message
-	}
-	return e
-}
-
-type ErrorType string
-
-const (
-	ErrorTypeUnsupported ErrorType = "unsupported"
-	ErrorTypeInvalid     ErrorType = "invalid"
-)
-
-func NewValidationInvalidError(errorCodeSuffix string, message string) error {
-	return Error{
-		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      NewErrorCode(ErrorCategoryValidation, ErrorTypeInvalid, errorCodeSuffix),
-		Message:        message,
-	}
-}
-
-func NewValidationUnsupportedError(errorCodeSuffix string, message string) error {
-	return Error{
-		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      NewErrorCode(ErrorCategoryValidation, ErrorTypeUnsupported, errorCodeSuffix),
-		Message:        message,
-	}
+	return results, nil
 }

@@ -6,27 +6,28 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 )
 
 const (
-	getDocumentationRoot  server.HandlerConfigKey = "get-documentation-root"
-	getDocumentationAPI   server.HandlerConfigKey = "get-documentation-api"
-	getDocumentationAPIV1 server.HandlerConfigKey = "get-documentation-api-v1"
+	getDocumentationRoot  string = "get-documentation-root"
+	getDocumentationAPI   string = "get-documentation-api"
+	getDocumentationAPIV1 string = "get-documentation-api-v1"
 )
 
-func (rnr *Runner) DocumentationHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func (rnr *Runner) DocumentationHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
 		getDocumentationRoot: {
 			Method:      http.MethodGet,
 			Path:        "/",
 			HandlerFunc: rnr.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 			},
 		},
@@ -36,7 +37,7 @@ func (rnr *Runner) DocumentationHandlerConfig(hc map[server.HandlerConfigKey]ser
 			HandlerFunc: rnr.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 			},
 		},
@@ -46,7 +47,7 @@ func (rnr *Runner) DocumentationHandlerConfig(hc map[server.HandlerConfigKey]ser
 			HandlerFunc: rnr.GetDocumentationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 			},
 		},
@@ -54,11 +55,11 @@ func (rnr *Runner) DocumentationHandlerConfig(hc map[server.HandlerConfigKey]ser
 }
 
 // GetDocumentationHandler -
-func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 
 	l.Info("** get schema documentation handler ** p >%#v< m >%#v<", pp, m)
 
-	docs, err := rnr.GenerateHandlerDocumentation(rnr.GetMessageConfigs(), rnr.GetHandlerConfigs())
+	docs, err := rnr.GenerateHandlerDocumentation(rnr.GetHandlerConfigs())
 	if err != nil {
 		msg := fmt.Sprintf("unable to load schema documentation >%v<, cannot init runner", err)
 		rnr.Log.Error(msg)

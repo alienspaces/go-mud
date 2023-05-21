@@ -4,9 +4,8 @@ package server
 // The daemon process is a long running background process intended to listen or poll for events
 // and then process those events.
 func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
-	l := loggerWithContext(rnr.Log, "RunDaemon")
 
-	l.Debug("** RunDaemon **")
+	rnr.Log.Debug("** RunDaemon **")
 
 	return nil
 }

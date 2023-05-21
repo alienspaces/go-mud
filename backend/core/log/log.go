@@ -11,12 +11,22 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
+// Environment configuration keys
+const (
+	EnvKeyAppServerLogLevel  = "APP_SERVER_LOG_LEVEL"
+	EnvKeyAppServerLogPretty = "APP_SERVER_LOG_PRETTY"
+)
+
 // Log -
 type Log struct {
-	log      zerolog.Logger
-	fields   map[string]interface{}
-	Config   configurer.Configurer
-	IsPretty bool
+	log    zerolog.Logger
+	fields map[string]interface{}
+	Config Config
+}
+
+type Config struct {
+	Level  string
+	Pretty bool
 }
 
 var _ logger.Logger = &Log{}
@@ -46,32 +56,55 @@ var levelMap = map[Level]zerolog.Level{
 	ErrorLevel: zerolog.ErrorLevel,
 }
 
+func NewDefaultLogger() *Log {
+	l := Log{
+		fields: make(map[string]interface{}),
+		Config: Config{
+			Level:  "info",
+			Pretty: false,
+		},
+	}
+
+	l.Init()
+	return &l
+}
+
 // NewLogger returns a logger
 func NewLogger(c configurer.Configurer) (*Log, error) {
+
+	l := Log{
+		fields: make(map[string]interface{}),
+		Config: Config{
+			Level:  c.Get(EnvKeyAppServerLogLevel),
+			Pretty: c.Get(EnvKeyAppServerLogPretty) == "true",
+		},
+	}
+
+	l.Init()
+
+	return &l, nil
+}
+
+// NewLoggerWithConfig returns a logger with the provided configuration
+func NewLoggerWithConfig(c Config) (*Log, error) {
 
 	l := Log{
 		fields: make(map[string]interface{}),
 		Config: c,
 	}
 
-	err := l.Init()
-	if err != nil {
-		return nil, err
-	}
+	l.Init()
 
 	return &l, nil
 }
 
 // Init initializes logger
-func (l *Log) Init() error {
+func (l *Log) Init() {
 
 	l.log = zerolog.New(os.Stdout).With().Timestamp().Logger()
 
-	if l.Config.Get("APP_SERVER_LOG_PRETTY") == "true" {
-		l.IsPretty = true
-	}
-
-	if l.IsPretty {
+	// Pretty
+	if l.Config.Pretty {
 		output := zerolog.ConsoleWriter{
 			Out: os.Stdout,
 			// The following adds colour to the value of additional log fields, a nice shade of purple actually..
@@ -85,10 +118,8 @@ func (l *Log) Init() error {
 		l.log = l.log.Output(output)
 	}
 
-	// logger level
-	configLevel := l.Config.Get("APP_SERVER_LOG_LEVEL")
-
-	level := strings.ToLower(configLevel)
+	// Level
+	level := strings.ToLower(l.Config.Level)
 
 	switch level {
 	case "debug":
@@ -102,24 +133,15 @@ func (l *Log) Init() error {
 	default:
 		l.log = l.log.Level(zerolog.DebugLevel)
 	}
-
-	return nil
 }
 
 // NewInstance - Create a new log instance based off configuration of this instance
 func (l *Log) NewInstance() (logger.Logger, error) {
-
-	i := Log{
+	return &Log{
 		fields: make(map[string]interface{}),
 		Config: l.Config,
-	}
-
-	err := i.Init()
-	if err != nil {
-		return nil, err
-	}
-
-	return &i, nil
+		log:    l.log.With().Logger(),
+	}, nil
 }
 
 // Printf -
@@ -143,38 +165,18 @@ func (l *Log) Context(key, value string) {
 	l.fields[key] = value
 }
 
-// WithFunctionContext - Shallow copied logger instance with new function context and existing package context
-func (l *Log) WithFunctionContext(value string) logger.Logger {
+// WithApplicationContext - Shallow copied logger instance with new application context and existing package and function context
+func (l *Log) WithApplicationContext(value string) logger.Logger {
 	ctxLog := *l
 	fields := map[string]interface{}{
-		"function": value,
-	}
-	if value, ok := ctxLog.fields["instance"]; ok {
-		fields["instance"] = value
+		"application": value,
 	}
 	if value, ok := ctxLog.fields["package"]; ok {
 		fields["package"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
-
-	ctxLog.fields = fields
-	return &ctxLog
-}
-
-// WithInstanceContext - Shallow copied logger instance with new function context and existing package context
-func (l *Log) WithInstanceContext(value string) logger.Logger {
-	ctxLog := *l
-	fields := map[string]interface{}{
-		"instance": value,
 	}
 	if value, ok := ctxLog.fields["function"]; ok {
 		fields["function"] = value
 	}
-	if value, ok := ctxLog.fields["package"]; ok {
-		fields["package"] = value
-	}
 	if value, ok := ctxLog.fields["correlation-id"]; ok {
 		fields["correlation-id"] = value
 	}
@@ -183,14 +185,14 @@ func (l *Log) WithInstanceContext(value string) logger.Logger {
 	return &ctxLog
 }
 
-// WithPackageContext - Shallow copied logger instance with new package context and existing function context
+// WithPackageContext - Shallow copied logger instance with new package context and existing application and function context
 func (l *Log) WithPackageContext(value string) logger.Logger {
 	ctxLog := *l
 	fields := map[string]interface{}{
 		"package": value,
 	}
-	if value, ok := ctxLog.fields["instance"]; ok {
-		fields["instance"] = value
+	if value, ok := ctxLog.fields["application"]; ok {
+		fields["application"] = value
 	}
 	if value, ok := ctxLog.fields["function"]; ok {
 		fields["function"] = value
@@ -198,6 +200,26 @@ func (l *Log) WithPackageContext(value string) logger.Logger {
 	if value, ok := ctxLog.fields["correlation-id"]; ok {
 		fields["correlation-id"] = value
 	}
+	ctxLog.fields = fields
+	return &ctxLog
+}
+
+// WithFunctionContext - Shallow copied logger instance with new function context and existing application and package context
+func (l *Log) WithFunctionContext(value string) logger.Logger {
+	ctxLog := *l
+	fields := map[string]interface{}{
+		"function": value,
+	}
+	if value, ok := ctxLog.fields["application"]; ok {
+		fields["application"] = value
+	}
+	if value, ok := ctxLog.fields["package"]; ok {
+		fields["package"] = value
+	}
+	if value, ok := ctxLog.fields["correlation-id"]; ok {
+		fields["correlation-id"] = value
+	}
+
 	ctxLog.fields = fields
 	return &ctxLog
 }

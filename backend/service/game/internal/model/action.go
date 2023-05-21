@@ -307,7 +307,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	}
 
 	// Refetch the resulting action event record so we ave its serial number
-	actionRec, err = m.GetActionRec(actionRec.ID, false)
+	actionRec, err = m.GetActionRec(actionRec.ID, nil)
 	if err != nil {
 		l.Warn("failed refetching action record >%v<", err)
 		return nil, err
@@ -400,7 +400,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 	actionRecordSet := record.ActionRecordSet{}
 
-	actionRec, err := m.GetActionRec(actionID, false)
+	actionRec, err := m.GetActionRec(actionID, nil)
 	if err != nil {
 		l.Warn("failed getting action record >%v<", err)
 		return nil, err
@@ -410,11 +410,26 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Add the source action character record that performed the action.
 	if actionRec.CharacterInstanceID.Valid {
 		actionCharacterRecs, err := m.GetActionCharacterRecs(
-			map[string]interface{}{
-				"record_type":           record.ActionCharacterRecordTypeSource,
-				"action_id":             actionID,
-				"character_instance_id": actionRec.CharacterInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionCharacterRecordTypeSource,
+						Op:  coresql.OpEqualTo,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+						Op:  coresql.OpEqualTo,
+					},
+					{
+						Col: "character_instance_id",
+						Val: actionRec.CharacterInstanceID.String,
+						Op:  coresql.OpEqualTo,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting action character records >%v<", err)
 			return nil, err
@@ -427,9 +442,15 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		actionRecordSet.ActionCharacterRec = actionCharacterRecs[0]
 
 		actionCharacterObjectRecs, err := m.GetActionCharacterObjectRecs(
-			map[string]interface{}{
-				"action_character_id": actionRecordSet.ActionCharacterRec.ID,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "action_character_id",
+						Val: actionRecordSet.ActionCharacterRec.ID,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting action character object records >%v<", err)
 			return nil, err
@@ -440,11 +461,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Add the source action monster record that performed the action.
 	if actionRec.MonsterInstanceID.Valid {
 		actionMonsterRecs, err := m.GetActionMonsterRecs(
-			map[string]interface{}{
-				"record_type":         record.ActionMonsterRecordTypeSource,
-				"action_id":           actionID,
-				"monster_instance_id": actionRec.MonsterInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionMonsterRecordTypeSource,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "monster_instance_id",
+						Val: actionRec.MonsterInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting action monster records >%v<", err)
 			return nil, err
@@ -457,9 +490,15 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		actionRecordSet.ActionMonsterRec = actionMonsterRecs[0]
 
 		actionMonsterObjectRecs, err := m.GetActionMonsterObjectRecs(
-			map[string]interface{}{
-				"action_monster_id": actionRecordSet.ActionMonsterRec.ID,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "action_monster_id",
+						Val: actionRecordSet.ActionMonsterRec.ID,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting action monster object records >%v<", err)
 			return nil, err
@@ -483,13 +522,22 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 	// Add the current location action character records
 	actionCharacterRecs, err := m.GetActionCharacterRecs(
-		map[string]interface{}{
-			"record_type":          record.ActionCharacterRecordTypeCurrentLocation,
-			"action_id":            actionID,
-			"location_instance_id": locationInstanceViewRec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "record_type",
+					Val: record.ActionCharacterRecordTypeCurrentLocation,
+				},
+				{
+					Col: "action_id",
+					Val: actionID,
+				},
+				{
+					Col: "location_instance_id",
+					Val: locationInstanceViewRec.ID,
+				},
+			},
 		},
-		nil,
-		false,
 	)
 	if err != nil {
 		l.Warn("failed getting current location occupant action character records >%v<", err)
@@ -500,13 +548,22 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 	// Add the current location action monster records
 	actionMonsterRecs, err := m.GetActionMonsterRecs(
-		map[string]interface{}{
-			"record_type":          record.ActionMonsterRecordTypeCurrentLocation,
-			"action_id":            actionID,
-			"location_instance_id": locationInstanceViewRec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "record_type",
+					Val: record.ActionMonsterRecordTypeCurrentLocation,
+				},
+				{
+					Col: "action_id",
+					Val: actionID,
+				},
+				{
+					Col: "location_instance_id",
+					Val: locationInstanceViewRec.ID,
+				},
+			},
 		},
-		nil,
-		false,
 	)
 	if err != nil {
 		l.Warn("failed getting current location occupant action monster records >%v<", err)
@@ -517,13 +574,22 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 	// Add the current location action object records
 	dungeonActionObjectRecs, err := m.GetActionObjectRecs(
-		map[string]interface{}{
-			"record_type":          record.ActionObjectRecordTypeCurrentLocation,
-			"action_id":            actionID,
-			"location_instance_id": locationInstanceViewRec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "record_type",
+					Val: record.ActionObjectRecordTypeCurrentLocation,
+				},
+				{
+					Col: "action_id",
+					Val: actionID,
+				},
+				{
+					Col: "location_instance_id",
+					Val: locationInstanceViewRec.ID,
+				},
+			},
 		},
-		nil,
-		false,
 	)
 	if err != nil {
 		l.Warn("failed getting current location occupant action monster records >%v<", err)
@@ -552,13 +618,22 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		// Add the target location occupant action character records
 		actionCharacterRecs, err := m.GetActionCharacterRecs(
-			map[string]interface{}{
-				"record_type":          record.ActionCharacterRecordTypeTargetLocation,
-				"action_id":            actionID,
-				"location_instance_id": locationInstanceViewRec.ID,
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionCharacterRecordTypeTargetLocation,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "location_instance_id",
+						Val: locationInstanceViewRec.ID,
+					},
+				},
 			},
-			nil,
-			false,
 		)
 		if err != nil {
 			l.Warn("failed getting target location occupant action character records >%v<", err)
@@ -568,13 +643,22 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		// Add the target location occupant action monster records
 		actionMonsterRecs, err := m.GetActionMonsterRecs(
-			map[string]interface{}{
-				"record_type":          record.ActionMonsterRecordTypeTargetLocation,
-				"action_id":            actionID,
-				"location_instance_id": locationInstanceViewRec.ID,
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionMonsterRecordTypeTargetLocation,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "location_instance_id",
+						Val: locationInstanceViewRec.ID,
+					},
+				},
 			},
-			nil,
-			false,
 		)
 		if err != nil {
 			l.Warn("failed getting target location occupant action monster records >%v<", err)
@@ -584,13 +668,22 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 
 		// Add the target location occupant action object records
 		actionObjectRecs, err := m.GetActionObjectRecs(
-			map[string]interface{}{
-				"record_type":          record.ActionObjectRecordTypeTargetLocation,
-				"action_id":            actionID,
-				"location_instance_id": locationInstanceViewRec.ID,
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionObjectRecordTypeTargetLocation,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "location_instance_id",
+						Val: locationInstanceViewRec.ID,
+					},
+				},
 			},
-			nil,
-			false,
 		)
 		if err != nil {
 			l.Warn("failed getting target location occupant action monster records >%v<", err)
@@ -604,11 +697,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Get the target character action record
 	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
 		actionCharacterRecs, err := m.GetActionCharacterRecs(
-			map[string]interface{}{
-				"record_type":           record.ActionCharacterRecordTypeTarget,
-				"action_id":             actionID,
-				"character_instance_id": actionRec.ResolvedTargetCharacterInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionCharacterRecordTypeTarget,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "character_instance_id",
+						Val: actionRec.ResolvedTargetCharacterInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting target action character record >%v<", err)
 			return nil, err
@@ -621,9 +726,15 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		actionRecordSet.TargetActionCharacterRec = actionCharacterRecs[0]
 
 		actionCharacterObjectRecs, err := m.GetActionCharacterObjectRecs(
-			map[string]interface{}{
-				"action_character_id": actionRecordSet.TargetActionCharacterRec.ID,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "action_character_id",
+						Val: actionRecordSet.TargetActionCharacterRec.ID,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting target character object records >%v<", err)
 			return nil, err
@@ -634,11 +745,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Get the target dungeon monster action record
 	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
 		actionMonsterRecs, err := m.GetActionMonsterRecs(
-			map[string]interface{}{
-				"record_type":         record.ActionMonsterRecordTypeTarget,
-				"action_id":           actionID,
-				"monster_instance_id": actionRec.ResolvedTargetMonsterInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionMonsterRecordTypeTarget,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "monster_instance_id",
+						Val: actionRec.ResolvedTargetMonsterInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting target action monster record >%v<", err)
 			return nil, err
@@ -651,9 +774,15 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 		actionRecordSet.TargetActionMonsterRec = actionMonsterRecs[0]
 
 		actionMonsterObjectRecs, err := m.GetActionMonsterObjectRecs(
-			map[string]interface{}{
-				"action_monster_id": actionRecordSet.TargetActionMonsterRec.ID,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "action_monster_id",
+						Val: actionRecordSet.TargetActionMonsterRec.ID,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting target monster object records >%v<", err)
 			return nil, err
@@ -664,11 +793,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Get the target dungeon object action record
 	if actionRec.ResolvedTargetObjectInstanceID.Valid {
 		dungeonActionObjectRecs, err := m.GetActionObjectRecs(
-			map[string]interface{}{
-				"record_type":        record.ActionObjectRecordTypeTarget,
-				"action_id":          actionID,
-				"object_instance_id": actionRec.ResolvedTargetObjectInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionObjectRecordTypeTarget,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "object_instance_id",
+						Val: actionRec.ResolvedTargetObjectInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting target action object record >%v<", err)
 			return nil, err
@@ -684,11 +825,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Get the stashed dungeon object action record
 	if actionRec.ResolvedStashedObjectInstanceID.Valid {
 		dungeonActionObjectRecs, err := m.GetActionObjectRecs(
-			map[string]interface{}{
-				"record_type":        record.ActionObjectRecordTypeStashed,
-				"action_id":          actionID,
-				"object_instance_id": actionRec.ResolvedStashedObjectInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionObjectRecordTypeStashed,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "object_instance_id",
+						Val: actionRec.ResolvedStashedObjectInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting stashed action object record >%v<", err)
 			return nil, err
@@ -704,11 +857,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Get the equipped dungeon object action record
 	if actionRec.ResolvedEquippedObjectInstanceID.Valid {
 		dungeonActionObjectRecs, err := m.GetActionObjectRecs(
-			map[string]interface{}{
-				"record_type":        record.ActionObjectRecordTypeEquipped,
-				"action_id":          actionID,
-				"object_instance_id": actionRec.ResolvedEquippedObjectInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionObjectRecordTypeEquipped,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "object_instance_id",
+						Val: actionRec.ResolvedEquippedObjectInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting equipped action object record >%v<", err)
 			return nil, err
@@ -724,11 +889,23 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 	// Get the dropped dungeon object action record
 	if actionRec.ResolvedDroppedObjectInstanceID.Valid {
 		dungeonActionObjectRecs, err := m.GetActionObjectRecs(
-			map[string]interface{}{
-				"record_type":        record.ActionObjectRecordTypeDropped,
-				"action_id":          actionID,
-				"object_instance_id": actionRec.ResolvedDroppedObjectInstanceID.String,
-			}, nil, false)
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "record_type",
+						Val: record.ActionObjectRecordTypeDropped,
+					},
+					{
+						Col: "action_id",
+						Val: actionID,
+					},
+					{
+						Col: "object_instance_id",
+						Val: actionRec.ResolvedDroppedObjectInstanceID.String,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting dropped action object record >%v<", err)
 			return nil, err
@@ -759,10 +936,14 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 
 	// All characters at location
 	characterInstanceViewRecs, err := m.GetCharacterInstanceViewRecs(
-		map[string]interface{}{
-			"location_instance_id": locationInstanceViewRec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "location_instance_id",
+					Val: locationInstanceViewRec.ID,
+				},
+			},
 		},
-		nil,
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon location character records >%v<", err)
@@ -772,10 +953,14 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 
 	// All monsters at location
 	monsterInstanceViewRecs, err := m.GetMonsterInstanceViewRecs(
-		map[string]interface{}{
-			"location_instance_id": locationInstanceViewRec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "location_instance_id",
+					Val: locationInstanceViewRec.ID,
+				},
+			},
 		},
-		nil,
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon location monster records >%v<", err)
@@ -785,10 +970,14 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 
 	// All objects at location
 	objectInstanceViewRecs, err := m.GetObjectInstanceViewRecs(
-		map[string]interface{}{
-			"location_instance_id": locationInstanceViewRec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "location_instance_id",
+					Val: locationInstanceViewRec.ID,
+				},
+			},
 		},
-		nil,
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon location object records >%v<", err)
@@ -829,10 +1018,14 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 	}
 
 	locationInstanceViewRecs, err := m.GetLocationInstanceViewRecs(
-		map[string]interface{}{
-			"id": locationInstanceIDs,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "id",
+					Val: locationInstanceIDs,
+				},
+			},
 		},
-		nil,
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon location direction location records >%v<", err)
@@ -865,16 +1058,25 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 	l.Info("Current action record monster instance ID >%s<", nullstring.ToString(rec.MonsterInstanceID))
 
 	actionRecs, err := m.GetActionRecs(
-		map[string]interface{}{
-			"character_instance_id": nullstring.ToString(rec.CharacterInstanceID),
-			"turn_number":           rec.TurnNumber,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: nullstring.ToString(rec.CharacterInstanceID),
+				},
+				{
+					Col: "turn_number",
+					Val: rec.TurnNumber,
+				},
+			},
+			Limit: 1,
+			OrderBy: []coresql.OrderBy{
+				{
+					Col:       "turn_number",
+					Direction: coresql.OrderDirectionDESC,
+				},
+			},
 		},
-		map[string]string{
-			"turn_number":                     coresql.OperatorLessThan,
-			coresql.OperatorLimit:             "1",
-			coresql.OperatorOrderByDescending: "turn_number",
-		},
-		false,
 	)
 	if err != nil {
 		l.Warn("failed getting previous action record >%v<", err)
@@ -900,14 +1102,19 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 	// serial number so we exclude those specific records when looking between.
 	var adjustAmount int16 = 1
 	actionRecs, err = m.GetActionRecs(
-		map[string]interface{}{
-			"location_instance_id": prevActionRec.LocationInstanceID,
-			"serial_number":        fmt.Sprintf("%d,%d", nullint.ToInt16(prevActionRec.SerialNumber)+adjustAmount, nullint.ToInt16(rec.SerialNumber)-adjustAmount),
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "location_instance_id",
+					Val: prevActionRec.LocationInstanceID,
+				},
+				{
+					Col: "serial_number",
+					Val: fmt.Sprintf("%d,%d", nullint.ToInt16(prevActionRec.SerialNumber)+adjustAmount, nullint.ToInt16(rec.SerialNumber)-adjustAmount),
+					Op:  coresql.OpBetween,
+				},
+			},
 		},
-		map[string]string{
-			"serial_number": coresql.OperatorBetween,
-		},
-		false,
 	)
 	if err != nil {
 		l.Warn("failed getting action records since serial number >%s< >%v<", err)
@@ -925,13 +1132,21 @@ func (m *Model) GetMonsterInstanceMemoryActionRecs(rec *record.MonsterInstanceVi
 
 	// Maybe need a view here to make it easier to union monster actions and other actions?
 	maRecs, err := m.GetActionRecs(
-		map[string]interface{}{
-			"monster_instance_id": rec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: rec.ID,
+				},
+			},
+			Limit: rec.CurrentIntelligence,
+			OrderBy: []coresql.OrderBy{
+				{
+					Col:       "created_at",
+					Direction: coresql.OrderDirectionDESC,
+				},
+			},
 		},
-		map[string]string{
-			coresql.OperatorLimit:             fmt.Sprintf("%d", rec.CurrentIntelligence),
-			coresql.OperatorOrderByDescending: "created_at",
-		}, false,
 	)
 	if err != nil {
 		l.Warn("failed fetching monster action recs >%v<", err)
@@ -939,13 +1154,21 @@ func (m *Model) GetMonsterInstanceMemoryActionRecs(rec *record.MonsterInstanceVi
 	}
 
 	oaRecs, err := m.GetActionRecs(
-		map[string]interface{}{
-			"resolved_target_monster_instance_id": rec.ID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "resolved_target_monster_instance_id",
+					Val: rec.ID,
+				},
+			},
+			Limit: rec.CurrentIntelligence,
+			OrderBy: []coresql.OrderBy{
+				{
+					Col:       "created_at",
+					Direction: coresql.OrderDirectionDESC,
+				},
+			},
 		},
-		map[string]string{
-			coresql.OperatorLimit:             fmt.Sprintf("%d", rec.CurrentIntelligence),
-			coresql.OperatorOrderByDescending: "created_at",
-		}, false,
 	)
 	if err != nil {
 		l.Warn("failed fetching resolved monster target action recs >%v<", err)

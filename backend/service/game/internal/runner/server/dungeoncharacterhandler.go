@@ -7,38 +7,39 @@ import (
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 const (
-	getDungeonCharacter       server.HandlerConfigKey = "get-dungeon-character"
-	postDungeonCharacterEnter server.HandlerConfigKey = "post-dungeon-character-enter"
-	postDungeonCharacterExit  server.HandlerConfigKey = "post-dungeon-character-exit"
+	getDungeonCharacter       string = "get-dungeon-character"
+	postDungeonCharacterEnter string = "post-dungeon-character-enter"
+	postDungeonCharacterExit  string = "post-dungeon-character-exit"
 )
 
-func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
 		getDungeonCharacter: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id",
 			HandlerFunc: rnr.GetDungeonCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/game/dungeoncharacter",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeoncharacter",
+							Location: "schema/game/dungeoncharacter",
 							Name:     "data.schema.json",
 						},
 					},
@@ -55,16 +56,16 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[server.HandlerConfigKey]
 			HandlerFunc: rnr.PostDungeonCharacterEnterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeoncharacter",
+						Location: "schema/game/dungeoncharacter",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeoncharacter",
+							Location: "schema/game/dungeoncharacter",
 							Name:     "data.schema.json",
 						},
 					},
@@ -81,16 +82,16 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[server.HandlerConfigKey]
 			HandlerFunc: rnr.PostDungeonCharacterExitHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/character",
+						Location: "schema/game/character",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/character",
+							Location: "schema/game/character",
 							Name:     "data.schema.json",
 						},
 					},
@@ -105,7 +106,7 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[server.HandlerConfigKey]
 }
 
 // GetDungeonCharacterHandler -
-func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "GetDungeonCharacterHandler")
 	l.Info("** Get dungeon character handler **")
 
@@ -114,28 +115,28 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	characterID := pp.ByName("character_id")
 
 	if dungeonID == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if characterID == "" {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", characterID)
+		err := coreerror.NewPathParamError("dungeon_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
 		l.Warn("failed getting dungeon record >%v<", err)
 		server.WriteError(l, w, err)
@@ -143,14 +144,14 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	if dungeonRec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
-	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, false)
+	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
@@ -158,7 +159,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	if characterRec == nil {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -172,7 +173,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 
 	if instanceViewRecordSet == nil {
 		l.Warn("instance record set is nil")
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -193,7 +194,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 
 	l.Info("Responding with >%#v<", res)
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -203,7 +204,7 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 }
 
 // PostDungeonCharacterEnterHandler -
-func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "PostDungeonCharacterEnterHandler")
 	l.Info("** Dungeon character enter handler **")
 
@@ -212,28 +213,28 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 	characterID := pp.ByName("character_id")
 
 	if dungeonID == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if characterID == "" {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", characterID)
+		err := coreerror.NewPathParamError("dungeon_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
 		l.Warn("failed getting dungeon record >%v<", err)
 		server.WriteError(l, w, err)
@@ -241,14 +242,14 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 	}
 
 	if dungeonRec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
-	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, false)
+	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
@@ -256,7 +257,7 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 	}
 
 	if characterRec == nil {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -280,7 +281,7 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 
 	if instanceViewRecordSet == nil {
 		l.Warn("instance record set is nil")
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -301,7 +302,7 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 
 	l.Info("Responding with >%#v<", res)
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -311,7 +312,7 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 }
 
 // PostDungeonCharacterExitHandler -
-func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "PostDungeonCharacterExitHandler")
 	l.Info("** Dungeon character exit handler **")
 
@@ -320,28 +321,28 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	characterID := pp.ByName("character_id")
 
 	if dungeonID == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if characterID == "" {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", characterID)
+		err := coreerror.NewPathParamError("dungeon_id", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
 		l.Warn("failed getting dungeon record >%v<", err)
 		server.WriteError(l, w, err)
@@ -349,14 +350,14 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	}
 
 	if dungeonRec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
-	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, false)
+	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
@@ -364,7 +365,7 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	}
 
 	if characterRec == nil {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -378,14 +379,14 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 
 	if instanceViewRecordSet == nil {
 		l.Warn("instance record set is nil")
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if instanceViewRecordSet.DungeonInstanceViewRec.DungeonID != dungeonID {
 		l.Warn("dungeon ID >%s< does not contain character ID >%s<", dungeonID, characterID)
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -399,7 +400,7 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	}
 
 	// Get updated character record
-	characterRec, err = m.(*model.Model).GetCharacterRec(characterID, false)
+	characterRec, err = m.(*model.Model).GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
@@ -407,7 +408,7 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	}
 
 	if characterRec == nil {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -426,7 +427,7 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 		},
 	}
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err

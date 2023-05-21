@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/tag"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
@@ -34,8 +35,9 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 
 			// Config
 			Config: repository.Config{
-				TableName:  TableName,
-				Attributes: tag.GetValues(record.CharacterInstanceView{}, "db"),
+				TableName:   TableName,
+				Attributes:  tag.GetFieldTagValues(record.CharacterInstanceView{}, "db"),
+				ArrayFields: tag.GetArrayFieldTagValues(record.CharacterInstanceView{}, "db"),
 			},
 		},
 	}
@@ -48,10 +50,14 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 
 	// prepare
 	err = p.Prepare(r, preparer.ExcludePreparation{
-		CreateOne: true,
-		UpdateOne: true,
-		DeleteOne: true,
-		RemoveOne: true,
+		CreateOne:  true,
+		CreateMany: true,
+		UpdateOne:  true,
+		UpdateMany: true,
+		DeleteOne:  true,
+		DeleteMany: true,
+		RemoveOne:  true,
+		RemoveMany: true,
 	})
 	if err != nil {
 		l.Warn("failed preparing repository >%v<", err)
@@ -72,9 +78,9 @@ func (r *Repository) NewRecordArray() []*record.CharacterInstanceView {
 }
 
 // GetOne -
-func (r *Repository) GetOne(id string, forUpdate bool) (*record.CharacterInstanceView, error) {
+func (r *Repository) GetOne(id string, lock *coresql.Lock) (*record.CharacterInstanceView, error) {
 	rec := r.NewRecord()
-	if err := r.GetOneRec(id, rec, forUpdate); err != nil {
+	if err := r.GetOneRec(id, rec, lock); err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
 		return nil, err
 	}
@@ -82,14 +88,11 @@ func (r *Repository) GetOne(id string, forUpdate bool) (*record.CharacterInstanc
 }
 
 // GetMany -
-func (r *Repository) GetMany(
-	params map[string]interface{},
-	paramOperators map[string]string,
-	forUpdate bool) ([]*record.CharacterInstanceView, error) {
+func (r *Repository) GetMany(opts *coresql.Options) ([]*record.CharacterInstanceView, error) {
 
 	recs := r.NewRecordArray()
 
-	rows, err := r.GetManyRecs(params, paramOperators, forUpdate)
+	rows, err := r.GetManyRecs(opts)
 	if err != nil {
 		r.Log.Warn("failed statement execution >%v<", err)
 		return nil, err

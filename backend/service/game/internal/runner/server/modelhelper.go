@@ -37,7 +37,7 @@ func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m mode
 
 	if dungeonInstanceViewRec == nil {
 		l.Warn("dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID)
-		err := coreerror.NewServerInternalError()
+		err := coreerror.NewInternalError()
 		return nil, err
 	}
 
@@ -49,7 +49,7 @@ func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m mode
 
 	if locationInstanceViewRec == nil {
 		l.Warn("location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID)
-		err := coreerror.NewServerInternalError()
+		err := coreerror.NewInternalError()
 		return nil, err
 	}
 

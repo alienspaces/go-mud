@@ -1,0 +1,19 @@
+# In a Docker multi-stage build, this is used as the final image for the documentation service.
+
+ARG DOCKER_IMAGE_GO_FULL_NAME
+FROM $DOCKER_IMAGE_GO_FULL_NAME as builder
+
+FROM nginx:alpine
+
+COPY --from=builder /usr/local/go/ /usr/local/go/
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+RUN apk add --update --no-cache \
+    curl \
+    bash \
+    git \
+    npm \
+    sed
+
+RUN npm i -g yarn
+RUN npm i -g redoc-cli@0.13.20

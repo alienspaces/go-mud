@@ -34,3 +34,13 @@ func isExcludedTagValue(value string, excludedValues map[string]struct{}) bool {
 	_, ok := excludedValues[value]
 	return ok
 }
+
+func shouldExclude(field reflect.StructField, fp ...ExcludeFilterPredicate) bool {
+	for _, exclude := range fp {
+		if exclude(field) {
+			return true
+		}
+	}
+
+	return false
+}

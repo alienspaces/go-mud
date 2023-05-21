@@ -4,43 +4,42 @@ import (
 	"database/sql"
 	"reflect"
 	"time"
+
+	"gitlab.com/alienspaces/go-mud/backend/core/collection/set"
 )
 
-var nonRecurseTypeNames = map[interface{}]struct{}{
-	getTypeName(sql.NullInt16{}):  {},
-	getTypeName(sql.NullString{}): {},
-	getTypeName(sql.NullTime{}):   {},
-	getTypeName(sql.NullBool{}):   {},
-	getTypeName(time.Time{}):      {},
-}
+var nonRecurseTypeNames = set.New(
+	getTypeName(sql.NullString{}),
+	getTypeName(sql.NullInt32{}),
+	getTypeName(sql.NullInt64{}),
+	getTypeName(sql.NullTime{}),
+	getTypeName(sql.NullBool{}),
+	getTypeName(time.Time{}),
+)
 
-func getTypeName(i interface{}) string {
+func getTypeName(i any) string {
 	return reflect.TypeOf(i).Name()
 }
 
-func GetValues(entity interface{}, tag string, fp ...ExcludeFilterPredicate) []string {
-	entityType := reflect.TypeOf(entity)
+func GetFieldTagValues(entity any, tag string, fp ...ExcludeFilterPredicate) []string {
+	t := reflect.TypeOf(entity)
 
-	return getValuesRecur(entityType, tag, fp...)
+	values := &[]string{}
+	getValuesRecur(t, tag, values, fp...)
+	return *values
 }
 
-func getValuesRecur(t reflect.Type, tag string, fp ...ExcludeFilterPredicate) []string {
-	var tagValues []string
-
+func getValuesRecur(t reflect.Type, tag string, values *[]string, fp ...ExcludeFilterPredicate) {
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
-		if shouldExclude(field, fp...) {
-			continue
-		}
-
 		if shouldRecurse(field) {
-			tagValues = append(tagValues, getValuesRecur(field.Type, tag)...)
+			getValuesRecur(field.Type, tag, values, fp...)
+		} else if shouldExclude(field, fp...) {
+			continue
 		} else if attr, ok := shouldGetTagValue(field, tag); ok {
-			tagValues = append(tagValues, attr)
+			*values = append(*values, attr)
 		}
 	}
-
-	return tagValues
 }
 
 func shouldRecurse(field reflect.StructField) bool {
@@ -48,20 +47,9 @@ func shouldRecurse(field reflect.StructField) bool {
 }
 
 func isRecurseFieldType(name string) bool {
-	_, ok := nonRecurseTypeNames[name]
-	return !ok
+	return !nonRecurseTypeNames.Contains(name)
 }
 
 func shouldGetTagValue(field reflect.StructField, tag string) (string, bool) {
 	return field.Tag.Lookup(tag)
-}
-
-func shouldExclude(field reflect.StructField, fp ...ExcludeFilterPredicate) bool {
-	for _, exclude := range fp {
-		if exclude(field) {
-			return true
-		}
-	}
-
-	return false
 }

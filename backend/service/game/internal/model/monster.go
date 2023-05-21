@@ -1,6 +1,7 @@
 package model
 
 import (
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -14,17 +15,27 @@ func (m *Model) GetMonsterEquippedObjectRecs(monsterID string) ([]*record.Object
 	mor := m.MonsterObjectRepository()
 	or := m.ObjectRepository()
 
-	monsterObjectRecs, err := mor.GetMany(map[string]interface{}{
-		"monster_id":  monsterID,
-		"is_equipped": true,
-	}, nil, false)
+	monsterObjectRecs, err := mor.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_id",
+					Val: monsterID,
+				},
+				{
+					Col: "is_equipped",
+					Val: true,
+				},
+			},
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	objectRecs := []*record.Object{}
 	for _, monsterObjectRec := range monsterObjectRecs {
-		objectRec, err := or.GetOne(monsterObjectRec.ObjectID, false)
+		objectRec, err := or.GetOne(monsterObjectRec.ObjectID, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -44,17 +55,27 @@ func (m *Model) GetMonsterStashedObjectRecs(monsterID string) ([]*record.Object,
 	mor := m.MonsterObjectRepository()
 	or := m.ObjectRepository()
 
-	monsterObjectRecs, err := mor.GetMany(map[string]interface{}{
-		"monster_id": monsterID,
-		"is_stashed": true,
-	}, nil, false)
+	monsterObjectRecs, err := mor.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_id",
+					Val: monsterID,
+				},
+				{
+					Col: "is_stashed",
+					Val: true,
+				},
+			},
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	objectRecs := []*record.Object{}
 	for _, monsterObjectRec := range monsterObjectRecs {
-		objectRec, err := or.GetOne(monsterObjectRec.ObjectID, false)
+		objectRec, err := or.GetOne(monsterObjectRec.ObjectID, nil)
 		if err != nil {
 			return nil, err
 		}

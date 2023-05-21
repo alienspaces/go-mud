@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetActionRecs -
-func (m *Model) GetActionRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Action, error) {
+func (m *Model) GetActionRecs(opts *coresql.Options) ([]*record.Action, error) {
 
 	l := m.Logger("GetActionRecs")
 
-	l.Debug("Getting dungeon action records params >%s<", params)
+	l.Debug("Getting dungeon action records opts >%#v<", opts)
 
 	r := m.ActionRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetActionRec -
-func (m *Model) GetActionRec(recID string, forUpdate bool) (*record.Action, error) {
+func (m *Model) GetActionRec(recID string, lock *coresql.Lock) (*record.Action, error) {
 
 	l := m.Logger("GetActionRec")
 
@@ -33,7 +34,7 @@ func (m *Model) GetActionRec(recID string, forUpdate bool) (*record.Action, erro
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil

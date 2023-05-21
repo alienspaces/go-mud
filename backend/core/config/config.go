@@ -13,6 +13,7 @@ const (
 	AppServerHome                 string = "APP_SERVER_HOME"
 	AppServerEnv                  string = "APP_SERVER_ENV"
 	AppServerPort                 string = "APP_SERVER_PORT"
+	AppServerHost                 string = "APP_SERVER_HOST"
 	AppServerLogLevel             string = "APP_SERVER_LOG_LEVEL"
 	AppServerLogPretty            string = "APP_SERVER_LOG_PRETTY"
 	AppServerDbHost               string = "APP_SERVER_DB_HOST"

@@ -11,7 +11,7 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/backend/core/auth"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 )
 

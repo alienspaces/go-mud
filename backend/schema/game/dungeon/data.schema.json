@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/dungeon/data.schema.json",
+  "title": "Dungeon Data",
+  "description": "Dungeon data",
+  "type": "object",
+  "required": ["dungeon_id", "dungeon_name", "dungeon_description", "dungeon_created_at"],
+  "properties": {
+    "dungeon_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dungeon_name": {
+      "type": "string"
+    },
+    "dungeon_description": {
+      "type": "string"
+    },
+    "dungeon_created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dungeon_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

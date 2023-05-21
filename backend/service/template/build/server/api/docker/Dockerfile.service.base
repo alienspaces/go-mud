@@ -1,0 +1,11 @@
+# In a Docker multi-stage build, this is used as the builder image for any Go services.
+
+ARG DOCKER_IMAGE_GO_FULL_NAME
+FROM $DOCKER_IMAGE_GO_FULL_NAME
+
+RUN apk add --update --no-cache \
+    curl \
+    bash \
+    git
+
+ENTRYPOINT [ "/bin/bash" ]

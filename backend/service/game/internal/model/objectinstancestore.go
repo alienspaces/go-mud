@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetObjectInstanceRecs -
-func (m *Model) GetObjectInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.ObjectInstance, error) {
+func (m *Model) GetObjectInstanceRecs(opts *coresql.Options) ([]*record.ObjectInstance, error) {
 
 	l := m.Logger("GetObjectInstanceRecs")
 
-	l.Debug("Getting object instance records params >%s<", params)
+	l.Debug("Getting object instance records opts >%#v<", opts)
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetObjectInstanceRec -
-func (m *Model) GetObjectInstanceRec(recID string, forUpdate bool) (*record.ObjectInstance, error) {
+func (m *Model) GetObjectInstanceRec(recID string, lock *coresql.Lock) (*record.ObjectInstance, error) {
 
 	l := m.Logger("GetObjectInstanceRec")
 
@@ -33,7 +34,7 @@ func (m *Model) GetObjectInstanceRec(recID string, forUpdate bool) (*record.Obje
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -43,15 +44,15 @@ func (m *Model) GetObjectInstanceRec(recID string, forUpdate bool) (*record.Obje
 }
 
 // GetObjectInstanceViewRecs -
-func (m *Model) GetObjectInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.ObjectInstanceView, error) {
+func (m *Model) GetObjectInstanceViewRecs(opts *coresql.Options) ([]*record.ObjectInstanceView, error) {
 
 	l := m.Logger("GetObjectInstanceViewRecs")
 
-	l.Debug("Getting object instance view records params >%s<", params)
+	l.Debug("Getting object instance view records opts >%#v<", opts)
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(params, operators, false)
+	return r.GetMany(opts)
 }
 
 // GetObjectInstanceViewRec -
@@ -68,7 +69,7 @@ func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceVi
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, false)
+	rec, err := r.GetOne(recID, nil)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil

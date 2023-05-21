@@ -56,7 +56,7 @@ for SERVICE_NAME in "${SERVICE_NAMES[@]}"; do
             --name "go-mud-${SERVICE_NAME}" \
             --env APP_SERVER_ENV=ci \
             --env APP_SERVER_LOG_LEVEL=info \
-            --env APP_SERVER_SCHEMA_PATH="/schema/docs" \
+            --env APP_SERVER_SCHEMA_PATH="/schema/game" \
             --env APP_SERVER_JWT_SIGNING_KEY="!notTherealSecretNoob!" \
             --env APP_SERVER_PORT=8084 \
             --env APP_SERVER_DB_HOST=localhost \

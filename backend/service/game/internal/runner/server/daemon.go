@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
@@ -51,7 +52,7 @@ func daemonRemoveDungeonInstanceState(dungeonInstanceStates map[string]*dungeonI
 func daemonGetDungeonInstanceRecs(l logger.Logger, m *model.Model) ([]*record.DungeonInstance, error) {
 	l = loggerWithContext(l, "daemonGetDungeonInstanceRecs")
 
-	diRecs, err := m.GetDungeonInstanceRecs(nil, nil, false)
+	diRecs, err := m.GetDungeonInstanceRecs(nil)
 	if err != nil {
 		l.Warn("failed getting dungeon instance records >%v<", err)
 		return nil, err
@@ -64,9 +65,14 @@ func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.Dun
 	l = loggerWithContext(l, "daemonDungeonInstanceEmpty")
 
 	ciRecs, err := m.GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dir.ID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dir.ID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting many character instance records >%v<", err)
@@ -298,9 +304,16 @@ WHILE_RESULT_NOT_INCREMENTED:
 		pditr.incrementTurnResult = iditr
 
 		// Process monster instances
-		recs, err := m.GetMonsterInstanceRecs(map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, false)
+		recs, err := m.GetMonsterInstanceRecs(
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "dungeon_instance_id",
+						Val: dungeonInstanceID,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting dungeon ID >%s< monster instance records >%v<", dungeonInstanceID, err)
 			return nil, err

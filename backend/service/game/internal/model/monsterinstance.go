@@ -1,6 +1,7 @@
 package model
 
 import (
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -11,9 +12,16 @@ func (m *Model) GetMonsterInstanceObjectInstanceRecs(monsterID string) ([]*recor
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"monster_instance_id": monsterID,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: monsterID,
+				},
+			},
+		},
+	)
 }
 
 // GetMonsterInstanceEquippedObjectInstanceRecs -
@@ -23,10 +31,20 @@ func (m *Model) GetMonsterInstanceEquippedObjectInstanceRecs(monsterID string) (
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"monster_instance_id": monsterID,
-		"is_equipped":         true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: monsterID,
+				},
+				{
+					Col: "is_equipped",
+					Val: true,
+				},
+			},
+		},
+	)
 }
 
 // GetMonsterInstanceStashedObjectInstanceRecs -
@@ -36,10 +54,20 @@ func (m *Model) GetMonsterInstanceStashedObjectInstanceRecs(monsterID string) ([
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"monster_instance_id": monsterID,
-		"is_stashed":          true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: monsterID,
+				},
+				{
+					Col: "is_stashed",
+					Val: true,
+				},
+			},
+		},
+	)
 }
 
 // GetMonsterInstanceObjectInstanceViewRecs -
@@ -49,9 +77,16 @@ func (m *Model) GetMonsterInstanceObjectInstanceViewRecs(monsterID string) ([]*r
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"monster_instance_id": monsterID,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: monsterID,
+				},
+			},
+		},
+	)
 }
 
 // GetMonsterInstanceEquippedObjectInstanceViewRecs -
@@ -61,10 +96,20 @@ func (m *Model) GetMonsterInstanceEquippedObjectInstanceViewRecs(monsterID strin
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"monster_instance_id": monsterID,
-		"is_equipped":         true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: monsterID,
+				},
+				{
+					Col: "is_equipped",
+					Val: true,
+				},
+			},
+		},
+	)
 }
 
 // GetMonsterInstanceStashedObjectInstanceViewRecs -
@@ -74,8 +119,18 @@ func (m *Model) GetMonsterInstanceStashedObjectInstanceViewRecs(monsterID string
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"monster_instance_id": monsterID,
-		"is_stashed":          true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_instance_id",
+					Val: monsterID,
+				},
+				{
+					Col: "is_stashed",
+					Val: true,
+				},
+			},
+		},
+	)
 }

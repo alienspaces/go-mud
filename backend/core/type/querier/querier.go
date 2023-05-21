@@ -1,10 +1,17 @@
 package querier
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"github.com/jmoiron/sqlx"
+
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+)
 
 type Querier interface {
 	Init() error
 	Name() string
 	SQL() string
-	Exec(params map[string]interface{}) (sql.Result, error)
+	Result(params map[string]interface{}) (sql.Result, error)
+	Rows(opts *coresql.Options) (*sqlx.Rows, error)
 }

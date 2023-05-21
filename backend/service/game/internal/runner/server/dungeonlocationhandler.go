@@ -7,38 +7,39 @@ import (
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (
-	getDungeonLocations server.HandlerConfigKey = "get-dungeon-locations"
-	getDungeonLocation  server.HandlerConfigKey = "get-dungeon-location"
+	getDungeonLocations string = "get-dungeon-locations"
+	getDungeonLocation  string = "get-dungeon-location"
 )
 
-func (rnr *Runner) DungeonLocationHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func (rnr *Runner) DungeonLocationHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
 		getDungeonLocations: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id/locations",
 			HandlerFunc: rnr.GetDungeonLocationsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateRequestSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/location",
+						Location: "schema/game/location",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/location",
+							Location: "schema/game/location",
 							Name:     "data.schema.json",
 						},
 					},
@@ -55,16 +56,16 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[server.HandlerConfigKey]s
 			HandlerFunc: rnr.GetDungeonLocationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/location",
+						Location: "schema/game/location",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/location",
+							Location: "schema/game/location",
 							Name:     "data.schema.json",
 						},
 					},
@@ -79,7 +80,7 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[server.HandlerConfigKey]s
 }
 
 // GetDungeonLocationHandler -
-func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 
 	var recs []*record.Location
 	var err error
@@ -87,11 +88,11 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	if dungeonID == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 
@@ -99,11 +100,11 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	locationID := pp.ByName("location_id")
 	if locationID == "" {
-		err := coreerror.NewResourceNotFoundError("location", locationID)
+		err := coreerror.NewNotFoundError("location", locationID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(locationID) {
-		err := coreerror.NewValidationPathParamTypeError("location_id", locationID)
+		err := coreerror.NewPathParamError("location_id", locationID)
 		server.WriteError(l, w, err)
 		return err
 
@@ -111,7 +112,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	l.Info("Getting dungeon ID >%s< location ID >%s<", dungeonID, locationID)
 
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -119,12 +120,12 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	locationRec, err := m.(*model.Model).GetLocationRec(locationID, false)
+	locationRec, err := m.(*model.Model).GetLocationRec(locationID, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -132,13 +133,13 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	// Resource not found
 	if locationRec == nil {
-		err := coreerror.NewResourceNotFoundError("location", locationID)
+		err := coreerror.NewNotFoundError("location", locationID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if locationRec.DungeonID != dungeonRec.ID {
-		err := coreerror.NewResourceNotFoundError("location", locationID)
+		err := coreerror.NewNotFoundError("location", locationID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -163,7 +164,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 		Data: data,
 	}
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -173,24 +174,26 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 }
 
 // GetDungeonLocationsHandler -
-func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l.Info("** Get locations handler **")
+
+	opts := queryparam.ToSQLOptions(qp)
 
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	if dungeonID == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
+		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting dungeon ID >%s<", dungeonID)
 
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -198,27 +201,22 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	params := make(map[string]interface{})
-	params["dungeon_id"] = dungeonID
+	// params := make(map[string]interface{})
+	// params["dungeon_id"] = dungeonID
 
-	for paramName, paramValue := range qp {
-		l.Info("Querying location records with param name >%s< value >%v<", paramName, paramValue)
-		params[paramName] = paramValue
-	}
+	// for paramName, paramValue := range qp {
+	// 	l.Info("Querying location records with param name >%s< value >%v<", paramName, paramValue)
+	// 	params[paramName] = paramValue
+	// }
 
-	l.Info("Querying dungeon location records with params >%#v<", params)
+	l.Info("Querying dungeon location records with opts >%#v<", opts)
 
-	locationRecs, err := m.(*model.Model).GetLocationRecs(
-		map[string]interface{}{
-			"dungeon_id": dungeonID,
-		},
-		nil, false,
-	)
+	locationRecs, err := m.(*model.Model).GetLocationRecs(opts)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -244,7 +242,7 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 
 	l.Info("Responding with >%#v<", res)
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err

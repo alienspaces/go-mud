@@ -3,9 +3,12 @@ package query
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/collection/set"
+	"gitlab.com/alienspaces/go-mud/backend/core/convert"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
@@ -13,22 +16,18 @@ import (
 )
 
 type Query struct {
-	Config   Config
-	Log      logger.Logger
-	Tx       *sqlx.Tx
-	Preparer preparer.Query
-	Alias    string
+	Config  Config
+	Log     logger.Logger
+	Tx      *sqlx.Tx
+	Prepare preparer.Query
 }
 
 type Config struct {
-	Name string
+	Name        string
+	ArrayFields set.Set[string]
 }
 
 var _ querier.Querier = &Query{}
-
-func (q *Query) Name() string {
-	return q.Config.Name
-}
 
 func (q *Query) Init() error {
 
@@ -38,19 +37,34 @@ func (q *Query) Init() error {
 		return errors.New("query Tx is nil, cannot initialise")
 	}
 
-	if q.Preparer == nil {
-		return errors.New("query Preparer is nil, cannot initialise")
+	if q.Prepare == nil {
+		return errors.New("query Prepare is nil, cannot initialise")
+	}
+
+	if q.Config.Name == "" {
+		return errors.New("query Config Name is empty, cannot initialise")
+	}
+
+	if q.ArrayFields() == nil {
+		return errors.New("repository ArrayFields is nil, cannot initialise")
 	}
 
 	return nil
 }
 
-func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
-	l := q.Log
-	tx := q.Tx
+func (q *Query) Name() string {
+	return q.Config.Name
+}
 
-	stmt := q.Preparer.Stmt(q)
-	stmt = tx.NamedStmt(stmt)
+func (q *Query) ArrayFields() set.Set[string] {
+	return q.Config.ArrayFields
+}
+
+func (q *Query) Result(params map[string]interface{}) (sql.Result, error) {
+	l := q.Log
+
+	stmt := q.Prepare.Stmt(q)
+	stmt = q.Tx.NamedStmt(stmt)
 
 	res, err := stmt.Exec(params)
 	if err != nil {
@@ -61,29 +75,77 @@ func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
 	return res, err
 }
 
-func (q *Query) GetRows(sql string, params map[string]interface{}, operators map[string]string) (*sqlx.Rows, error) {
+func (q *Query) Rows(opts *coresql.Options) (*sqlx.Rows, error) {
 	l := q.Log
 	tx := q.Tx
 
 	// params
-	querySQL, queryParams, err := coresql.FromParamsAndOperators(q.Alias, sql, params, operators)
+	querySQL := q.Prepare.SQL(q)
+
+	opts, err := q.resolveOpts(opts)
 	if err != nil {
-		l.Warn("failed generating query >%v<", err)
+		return nil, fmt.Errorf("failed to resolve opts: sql >%s< opts >%#v< >%v<", querySQL, opts, err)
+	}
+
+	querySQL, queryArgs, err := coresql.From(querySQL, opts)
+	if err != nil {
+		q.Log.Warn("failed generating query >%v<", err)
 		return nil, err
 	}
 
-	l.Debug("SQL >%s< Params >%#v<", querySQL, queryParams)
+	l.Debug("Resulting SQL >%s< Params >%#v<", querySQL, queryArgs)
 
-	rows, err := tx.NamedQuery(querySQL, queryParams)
+	rows, err := tx.NamedQuery(querySQL, queryArgs)
 	if err != nil {
-		l.Warn("failed querying rows >%v<", err)
+		l.Warn("Failed querying row >%v<", err)
 		return nil, err
 	}
 
 	return rows, err
 }
 
-// SQL should be overridden in a custom implementation with the SQL statement specific to the query
+func (q *Query) resolveOpts(opts *coresql.Options) (*coresql.Options, error) {
+	if opts == nil {
+		return opts, nil
+	}
+
+	for i, p := range opts.Params {
+		if p.Op != "" {
+			// if Op is specified, it is assumed you know what you're doing
+			continue
+		}
+
+		switch t := p.Val.(type) {
+		case []string:
+			p.Array = convert.GenericSlice(t)
+			p.Val = nil
+		case []int:
+			p.Array = convert.GenericSlice(t)
+			p.Val = nil
+		}
+
+		isArrayField := q.ArrayFields().Contains(p.Col)
+		if isArrayField {
+			if len(p.Array) > 0 {
+				p.Op = coresql.OpContains
+			} else {
+				p.Op = coresql.OpAny
+			}
+		} else {
+			if len(p.Array) > 0 {
+				p.Op = coresql.OpIn
+			} else {
+				p.Op = coresql.OpEqualTo
+			}
+		}
+
+		opts.Params[i] = p
+	}
+
+	return opts, nil
+}
+
+// SQL should be overridden in implementation with the SQL statement specific to the query
 func (q *Query) SQL() string {
 	return ""
 }

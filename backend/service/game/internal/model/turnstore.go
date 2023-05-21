@@ -6,23 +6,24 @@ import (
 	"time"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetTurnRecs -
-func (m *Model) GetTurnRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Turn, error) {
+func (m *Model) GetTurnRecs(opts *coresql.Options) ([]*record.Turn, error) {
 
 	l := m.Logger("GetTurnRecs")
 
-	l.Debug("Getting turn records params >%s<", params)
+	l.Debug("Getting turn records opts >%#v<", opts)
 
 	r := m.TurnRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetTurnRec -
-func (m *Model) GetTurnRec(recID string, forUpdate bool) (*record.Turn, error) {
+func (m *Model) GetTurnRec(recID string, lock *coresql.Lock) (*record.Turn, error) {
 
 	l := m.Logger("GetTurnRec")
 
@@ -35,7 +36,7 @@ func (m *Model) GetTurnRec(recID string, forUpdate bool) (*record.Turn, error) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil

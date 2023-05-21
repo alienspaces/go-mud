@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -36,9 +37,16 @@ func (m *Model) GetAvailableDungeonInstanceViewRecordSet(dungeonID string) (*Dun
 	// will skip records that are currently locked so depending on traffic we
 	// could end up with multiple instances being created that have few characters
 	// but that is probably okay.
-	dungeonInstanceRecs, err := m.GetDungeonInstanceRecs(map[string]interface{}{
-		"dungeon_id": dungeonID,
-	}, nil, true)
+	dungeonInstanceRecs, err := m.GetDungeonInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_id",
+					Val: dungeonID,
+				},
+			},
+		},
+	)
 	if err != nil {
 		l.Warn("failed querying dungeon instances >%v<", err)
 		return nil, err
@@ -50,10 +58,20 @@ func (m *Model) GetAvailableDungeonInstanceViewRecordSet(dungeonID string) (*Dun
 	}
 
 	if len(dungeonInstanceIDs) > 0 {
-		dungeonInstanceCapacityRecs, err := q.GetMany(map[string]interface{}{
-			"dungeon_id":          dungeonID,
-			"dungeon_instance_id": dungeonInstanceIDs,
-		}, nil)
+		dungeonInstanceCapacityRecs, err := q.GetMany(
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "dungeon_id",
+						Val: dungeonID,
+					},
+					{
+						Col: "dungeon_instance_id",
+						Val: dungeonInstanceIDs,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed querying dungeon instance capacity >%v<", err)
 			return nil, err
@@ -90,9 +108,14 @@ func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*Dung
 	recordSet.DungeonInstanceViewRec = dungeonInstanceViewRec
 
 	locationInstanceViewRecs, err := m.GetLocationInstanceViewRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting location instance view records >%v<", err)
@@ -101,9 +124,14 @@ func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*Dung
 	recordSet.LocationInstanceViewRecs = locationInstanceViewRecs
 
 	objectInstanceViewRecs, err := m.GetObjectInstanceViewRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting object instance view records >%v<", err)
@@ -112,9 +140,14 @@ func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*Dung
 	recordSet.ObjectInstanceViewRecs = objectInstanceViewRecs
 
 	monsterInstanceViewRecs, err := m.GetMonsterInstanceViewRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting monster instance view records >%v<", err)
@@ -123,9 +156,14 @@ func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*Dung
 	recordSet.MonsterInstanceViewRecs = monsterInstanceViewRecs
 
 	characterInstanceViewRecs, err := m.GetCharacterInstanceViewRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting character instance view records >%v<", err)
@@ -141,7 +179,7 @@ func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonI
 
 	recordSet := &DungeonInstanceRecordSet{}
 
-	dungeonInstanceRec, err := m.GetDungeonInstanceRec(dungeonInstanceID, false)
+	dungeonInstanceRec, err := m.GetDungeonInstanceRec(dungeonInstanceID, nil)
 	if err != nil {
 		l.Warn("failed getting dungeon instance record >%v<", err)
 		return nil, err
@@ -149,9 +187,14 @@ func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonI
 	recordSet.DungeonInstanceRec = dungeonInstanceRec
 
 	locationInstanceRecs, err := m.GetLocationInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting location instance records >%v<", err)
@@ -160,9 +203,14 @@ func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonI
 	recordSet.LocationInstanceRecs = locationInstanceRecs
 
 	objectInstanceRecs, err := m.GetObjectInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting object instance records >%v<", err)
@@ -171,9 +219,14 @@ func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonI
 	recordSet.ObjectInstanceRecs = objectInstanceRecs
 
 	monsterInstanceRecs, err := m.GetMonsterInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting monster instance records >%v<", err)
@@ -182,9 +235,14 @@ func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonI
 	recordSet.MonsterInstanceRecs = monsterInstanceRecs
 
 	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting character instance records >%v<", err)
@@ -219,10 +277,14 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 	// Create location instance records
 	locationRecs, err := m.GetLocationRecs(
-		map[string]interface{}{
-			"dungeon_id": dungeonID,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_id",
+					Val: dungeonID,
+				},
+			},
 		},
-		nil, false,
 	)
 	if err != nil {
 		l.Warn("failed getting locations records >%v<", err)
@@ -261,10 +323,14 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 		// Create location object instance records
 		locationObjectRecs, err := m.GetLocationObjectRecs(
-			map[string]interface{}{
-				"location_id": locationInstanceRec.LocationID,
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "location_id",
+						Val: locationInstanceRec.LocationID,
+					},
+				},
 			},
-			nil, false,
 		)
 		if err != nil {
 			l.Warn("failed getting location monster records >%v<", err)
@@ -273,7 +339,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 		objectInstanceMap := map[string]*record.ObjectInstance{}
 		for _, locationObjectRec := range locationObjectRecs {
-			objectRec, err := m.GetObjectRec(locationObjectRec.ObjectID, false)
+			objectRec, err := m.GetObjectRec(locationObjectRec.ObjectID, nil)
 			if err != nil {
 				l.Warn("failed getting object record >%v<", err)
 				return nil, err
@@ -297,10 +363,14 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 		// Create location monster instance records
 		locationMonsterRecs, err := m.GetLocationMonsterRecs(
-			map[string]interface{}{
-				"location_id": locationInstanceRec.LocationID,
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "location_id",
+						Val: locationInstanceRec.LocationID,
+					},
+				},
 			},
-			nil, false,
 		)
 		if err != nil {
 			l.Warn("failed getting location monster records >%v<", err)
@@ -309,7 +379,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 		monsterInstanceMap := map[string]*record.MonsterInstance{}
 		for _, monsterLocationRec := range locationMonsterRecs {
-			monsterRec, err := m.GetMonsterRec(monsterLocationRec.MonsterID, false)
+			monsterRec, err := m.GetMonsterRec(monsterLocationRec.MonsterID, nil)
 			if err != nil {
 				l.Warn("failed getting monster record >%v<", err)
 				return nil, err
@@ -339,9 +409,14 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 			monsterInstanceRecs = append(monsterInstanceRecs, monsterInstanceRec)
 
 			monsterObjectRecs, err := m.GetMonsterObjectRecs(
-				map[string]interface{}{
-					"monster_id": monsterRec.ID,
-				}, nil, false,
+				&coresql.Options{
+					Params: []coresql.Param{
+						{
+							Col: "monster_id",
+							Val: monsterRec.ID,
+						},
+					},
+				},
 			)
 			if err != nil {
 				l.Warn("failed getting monster object records >%v<", err)
@@ -385,9 +460,14 @@ func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
 	l := m.Logger("DeleteDungeonInstance")
 
 	oiRecs, err := m.GetObjectInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, true,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon instance object instance records >%v<", err)
@@ -404,9 +484,14 @@ func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
 	}
 
 	ciRecs, err := m.GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, true,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon instance character instance records >%v<", err)
@@ -423,9 +508,14 @@ func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
 	}
 
 	miRecs, err := m.GetMonsterInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, true,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon instance monster instance records >%v<", err)
@@ -442,9 +532,14 @@ func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
 	}
 
 	liRecs, err := m.GetLocationInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, true,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed to get dungeon instance location instance records >%v<", err)

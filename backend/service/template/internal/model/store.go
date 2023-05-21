@@ -2,114 +2,125 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	templateerror "gitlab.com/alienspaces/go-mud/backend/service/template/internal/error"
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 // GetTemplateRecs -
-func (m *Model) GetTemplateRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Template, error) {
+func (m *Model) GetTemplateRecs(opts *coresql.Options) ([]*record.Template, error) {
 
-	m.Log.Info("Getting template records params >%s<", params)
+	m.Log.Debug("Getting template records options >%#v<", opts)
 
 	r := m.TemplateRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	recs, err := r.GetMany(opts)
+	if err != nil {
+		return recs, templateerror.NewDatabaseError(m.Log, err)
+	}
+
+	return recs, nil
 }
 
 // GetTemplateRec -
-func (m *Model) GetTemplateRec(recID string, forUpdate bool) (*record.Template, error) {
+func (m *Model) GetTemplateRec(recID string, lock *coresql.Lock) (*record.Template, error) {
 
-	m.Log.Info("Getting template rec ID >%s<", recID)
-
-	r := m.TemplateRepository()
+	m.Log.Debug("Getting template record ID >%s<", recID)
 
 	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
-	if err == sql.ErrNoRows {
-		m.Log.Warn("No record found ID >%s<", recID)
-		return nil, nil
+	r := m.TemplateRepository()
+
+	rec, err := r.GetOne(recID, lock)
+	if errors.Is(err, sql.ErrNoRows) {
+		return rec, coreerror.NewNotFoundError("template", recID)
+	} else if err != nil {
+		return rec, templateerror.NewDatabaseError(m.Log, err)
 	}
 
 	return rec, err
 }
 
 // CreateTemplateRec -
-func (m *Model) CreateTemplateRec(rec *record.Template) error {
+func (m *Model) CreateTemplateRec(rec *record.Template) (*record.Template, error) {
 
-	m.Log.Info("Creating template record >%#v<", rec)
+	m.Log.Debug("Creating template rec >%v<", rec)
 
 	r := m.TemplateRepository()
 
-	err := m.ValidateTemplateRec(rec)
-	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
-		return err
+	if err := m.ValidateTemplateRec(rec); err != nil {
+		m.Log.Warn("Failed model validation >%v<", err)
+		return rec, err
 	}
 
-	m.Log.Info("Created template record >%#v<", rec)
+	if err := r.CreateOne(rec); err != nil {
+		return rec, templateerror.NewDatabaseError(m.Log, err)
+	}
 
-	return r.CreateOne(rec)
+	return rec, nil
 }
 
 // UpdateTemplateRec -
-func (m *Model) UpdateTemplateRec(rec *record.Template) error {
+func (m *Model) UpdateTemplateRec(rec *record.Template) (*record.Template, error) {
 
-	m.Log.Info("Updating template record >%#v<", rec)
+	m.Log.Debug("Updating template rec >%v<", rec)
 
 	r := m.TemplateRepository()
 
-	err := m.ValidateTemplateRec(rec)
-	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
-		return err
+	if err := m.ValidateTemplateRec(rec); err != nil {
+		m.Log.Warn("Failed model validation >%v<", err)
+		return rec, err
 	}
 
-	return r.UpdateOne(rec)
+	if err := r.UpdateOne(rec); err != nil {
+		return rec, templateerror.NewDatabaseError(m.Log, err)
+	}
+
+	return rec, nil
 }
 
 // DeleteTemplateRec -
 func (m *Model) DeleteTemplateRec(recID string) error {
 
-	m.Log.Info("Deleting template rec ID >%s<", recID)
+	m.Log.Debug("Deleting template record ID >%s<", recID)
 
 	r := m.TemplateRepository()
 
-	// validate UUID
-	if !m.IsUUID(recID) {
-		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
-	}
-
-	err := m.ValidateDeleteTemplateRec(recID)
-	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+	if err := m.ValidateDeleteTemplateRec(recID); err != nil {
+		m.Log.Warn("Failed model validation >%v<", err)
 		return err
 	}
 
-	return r.DeleteOne(recID)
+	if err := r.DeleteOne(recID); err != nil {
+		return templateerror.NewDatabaseError(m.Log, err)
+	}
+
+	return nil
 }
 
 // RemoveTemplateRec -
 func (m *Model) RemoveTemplateRec(recID string) error {
 
-	m.Log.Info("Removing template rec ID >%s<", recID)
+	m.Log.Debug("Removing template record ID >%s<", recID)
 
 	r := m.TemplateRepository()
 
-	// validate UUID
-	if !m.IsUUID(recID) {
-		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
-	}
-
 	err := m.ValidateDeleteTemplateRec(recID)
 	if err != nil {
-		m.Log.Info("Failed model validation >%v<", err)
+		m.Log.Warn("Failed model validation >%v<", err)
 		return err
 	}
 
-	return r.RemoveOne(recID)
+	if err := r.RemoveOne(recID); err != nil {
+		return templateerror.NewDatabaseError(m.Log, err)
+	}
+
+	return nil
 }

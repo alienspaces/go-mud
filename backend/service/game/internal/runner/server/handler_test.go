@@ -134,7 +134,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	handlerConfig := tc.TestHandlerConfig(rnr)
 
 	// Handler
-	h, _ := rnr.DefaultMiddleware(handlerConfig, handlerConfig.HandlerFunc)
+	h, _ := rnr.ApplyMiddleware(handlerConfig, handlerConfig.HandlerFunc)
 
 	// Router
 	rtr := httprouter.New()

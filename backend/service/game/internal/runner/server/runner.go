@@ -3,6 +3,7 @@ package runner
 import (
 	"fmt"
 
+	coreconfig "gitlab.com/alienspaces/go-mud/backend/core/config"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
@@ -14,6 +15,8 @@ import (
 // Runner -
 type Runner struct {
 	server.Runner
+	// Service specific configuration
+	config Config
 }
 
 // Fault -
@@ -27,24 +30,23 @@ var _ runnable.Runnable = &Runner{}
 // NewRunner -
 func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
-	r := Runner{}
-
-	r.Log = l
-	if r.Log == nil {
-		msg := "logger undefined, cannot init runner"
-		r.Log.Error(msg)
-		return nil, fmt.Errorf(msg)
+	cr, err := server.NewRunner(c, l)
+	if err != nil {
+		err := fmt.Errorf("failed core runner >%v<", err)
+		l.Warn(err.Error())
+		return nil, err
 	}
 
-	r.Config = c
-	if r.Config == nil {
-		msg := "configurer undefined, cannot init runner"
-		r.Log.Error(msg)
-		return nil, fmt.Errorf(msg)
+	cfg, err := NewConfig(c)
+	if err != nil {
+		return nil, err
 	}
 
-	r.RouterFunc = r.Router
-	r.MiddlewareFunc = r.Middleware
+	r := Runner{
+		Runner: *cr,
+		config: *cfg,
+	}
+
 	r.HandlerFunc = r.Handler
 	r.ModellerFunc = r.Modeller
 	r.RunDaemonFunc = r.RunDaemon
@@ -57,6 +59,16 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	hc = r.ActionHandlerConfig(hc)
 	hc = r.DocumentationHandlerConfig(hc)
 
+	appHome := r.Config.Get(coreconfig.AppServerHome)
+
+	hc, err = server.ResolveHandlerSchemaLocationRoot(hc, appHome)
+	if err != nil {
+		err := fmt.Errorf("failed to resolve template API handler location root >%v<", err)
+		r.Log.Warn(err.Error())
+		return nil, err
+	}
+
+	hc = server.ResolveHandlerSchemaLocation(hc, "schema/game")
 	r.HandlerConfig = hc
 
 	return &r, nil
@@ -73,7 +85,7 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 }
 
 func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
-	m, err := rnr.InitModeller(l)
+	m, err := rnr.InitTx(l)
 	if err != nil {
 		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
 		return nil, err
@@ -89,9 +101,9 @@ func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	return l.WithPackageContext("game/server").WithFunctionContext(functionName)
 }
 
-func mergeHandlerConfigs(hc1 map[server.HandlerConfigKey]server.HandlerConfig, hc2 map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 	if hc1 == nil {
-		hc1 = map[server.HandlerConfigKey]server.HandlerConfig{}
+		hc1 = map[string]server.HandlerConfig{}
 	}
 	for a, b := range hc2 {
 		hc1[a] = b
