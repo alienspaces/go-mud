@@ -87,28 +87,7 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
-	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-
-	}
-
 	locationID := pp.ByName("location_id")
-	if locationID == "" {
-		err := coreerror.NewNotFoundError("location", locationID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(locationID) {
-		err := coreerror.NewPathParamError("location_id", locationID)
-		server.WriteError(l, w, err)
-		return err
-
-	}
 
 	l.Info("Getting dungeon ID >%s< location ID >%s<", dungeonID, locationID)
 
@@ -177,21 +156,13 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l.Info("** Get locations handler **")
 
-	opts := queryparam.ToSQLOptions(qp)
-
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
-	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	}
 
-	l.Info("Getting dungeon ID >%s<", dungeonID)
+	// Query parameters
+	opts := queryparam.ToSQLOptions(qp)
+
+	l.Info("Querying dungeon ID >%s< location records with opts >%#v<", dungeonID, opts)
 
 	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
@@ -205,16 +176,6 @@ func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Req
 		server.WriteError(l, w, err)
 		return err
 	}
-
-	// params := make(map[string]interface{})
-	// params["dungeon_id"] = dungeonID
-
-	// for paramName, paramValue := range qp {
-	// 	l.Info("Querying location records with param name >%s< value >%v<", paramName, paramValue)
-	// 	params[paramName] = paramValue
-	// }
-
-	l.Info("Querying dungeon location records with opts >%#v<", opts)
 
 	locationRecs, err := m.(*model.Model).GetLocationRecs(opts)
 	if err != nil {

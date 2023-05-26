@@ -20,9 +20,9 @@ func (rnr *Runner) LoadTestData(c *cli.Context) error {
 	}
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
-	err = h.Setup()
+	_, err = h.Setup()
 	if err != nil {
 		rnr.Log.Warn("Failed testing harness setup >%v<", err)
 		return err

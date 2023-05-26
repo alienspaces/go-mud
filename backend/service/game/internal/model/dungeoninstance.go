@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -348,7 +348,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 			objectInstanceRec := &record.ObjectInstance{
 				ObjectID:           locationObjectRec.ObjectID,
 				DungeonInstanceID:  dungeonInstanceRec.ID,
-				LocationInstanceID: nullstring.FromString(locationInstanceRec.ID),
+				LocationInstanceID: null.NullStringFromString(locationInstanceRec.ID),
 			}
 
 			err = m.CreateObjectInstanceRec(objectInstanceRec)
@@ -428,7 +428,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 				objectInstanceRec := &record.ObjectInstance{
 					ObjectID:          monsterObjectRec.ObjectID,
 					DungeonInstanceID: dungeonInstanceRec.ID,
-					MonsterInstanceID: nullstring.FromString(monsterInstanceRec.ID),
+					MonsterInstanceID: null.NullStringFromString(monsterInstanceRec.ID),
 					IsEquipped:        monsterObjectRec.IsEquipped,
 					IsStashed:         monsterObjectRec.IsStashed,
 				}
@@ -603,35 +603,35 @@ func (m *Model) resolveLocationInstanceDirectionIdentifiers(locationMap map[stri
 			return nil, fmt.Errorf("missing location record with ID >%s<", locationInstanceRec.LocationID)
 		}
 
-		if nullstring.IsValid(locationRec.NorthLocationID) {
-			locationInstanceRec.NorthLocationInstanceID = nullstring.FromString(locationMap[locationRec.NorthLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.NorthLocationID) {
+			locationInstanceRec.NorthLocationInstanceID = null.NullStringFromString(locationMap[locationRec.NorthLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.NortheastLocationID) {
-			locationInstanceRec.NortheastLocationInstanceID = nullstring.FromString(locationMap[locationRec.NortheastLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.NortheastLocationID) {
+			locationInstanceRec.NortheastLocationInstanceID = null.NullStringFromString(locationMap[locationRec.NortheastLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.EastLocationID) {
-			locationInstanceRec.EastLocationInstanceID = nullstring.FromString(locationMap[locationRec.EastLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.EastLocationID) {
+			locationInstanceRec.EastLocationInstanceID = null.NullStringFromString(locationMap[locationRec.EastLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.SoutheastLocationID) {
-			locationInstanceRec.SoutheastLocationInstanceID = nullstring.FromString(locationMap[locationRec.SoutheastLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.SoutheastLocationID) {
+			locationInstanceRec.SoutheastLocationInstanceID = null.NullStringFromString(locationMap[locationRec.SoutheastLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.SouthLocationID) {
-			locationInstanceRec.SouthLocationInstanceID = nullstring.FromString(locationMap[locationRec.SouthLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.SouthLocationID) {
+			locationInstanceRec.SouthLocationInstanceID = null.NullStringFromString(locationMap[locationRec.SouthLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.SouthwestLocationID) {
-			locationInstanceRec.SouthwestLocationInstanceID = nullstring.FromString(locationMap[locationRec.SouthwestLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.SouthwestLocationID) {
+			locationInstanceRec.SouthwestLocationInstanceID = null.NullStringFromString(locationMap[locationRec.SouthwestLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.WestLocationID) {
-			locationInstanceRec.WestLocationInstanceID = nullstring.FromString(locationMap[locationRec.WestLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.WestLocationID) {
+			locationInstanceRec.WestLocationInstanceID = null.NullStringFromString(locationMap[locationRec.WestLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.NorthwestLocationID) {
-			locationInstanceRec.NorthwestLocationInstanceID = nullstring.FromString(locationMap[locationRec.NorthwestLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.NorthwestLocationID) {
+			locationInstanceRec.NorthwestLocationInstanceID = null.NullStringFromString(locationMap[locationRec.NorthwestLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.UpLocationID) {
-			locationInstanceRec.UpLocationInstanceID = nullstring.FromString(locationMap[locationRec.UpLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.UpLocationID) {
+			locationInstanceRec.UpLocationInstanceID = null.NullStringFromString(locationMap[locationRec.UpLocationID.String].LocationInstanceRec.ID)
 		}
-		if nullstring.IsValid(locationRec.DownLocationID) {
-			locationInstanceRec.DownLocationInstanceID = nullstring.FromString(locationMap[locationRec.DownLocationID.String].LocationInstanceRec.ID)
+		if null.NullStringIsValid(locationRec.DownLocationID) {
+			locationInstanceRec.DownLocationInstanceID = null.NullStringFromString(locationMap[locationRec.DownLocationID.String].LocationInstanceRec.ID)
 		}
 	}
 

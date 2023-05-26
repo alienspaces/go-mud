@@ -76,7 +76,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 func (rnr *Runner) middlewareFuncs() []server.MiddlewareFunc {
 	return []server.MiddlewareFunc{
 		rnr.WaitMiddleware,
-		rnr.QueryParamMiddleware,
+		rnr.ParamMiddleware,
 		rnr.DataMiddleware,
 		rnr.AuthzMiddleware,
 		rnr.AuthenMiddleware,

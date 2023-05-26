@@ -114,26 +114,6 @@ func (rnr *Runner) GetDungeonCharacterHandler(w http.ResponseWriter, r *http.Req
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
 
-	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("dungeon_id", characterID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
 	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
@@ -211,26 +191,6 @@ func (rnr *Runner) PostDungeonCharacterEnterHandler(w http.ResponseWriter, r *ht
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
-
-	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("dungeon_id", characterID)
-		server.WriteError(l, w, err)
-		return err
-	}
 
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
@@ -319,26 +279,6 @@ func (rnr *Runner) PostDungeonCharacterExitHandler(w http.ResponseWriter, r *htt
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
-
-	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("dungeon_id", characterID)
-		server.WriteError(l, w, err)
-		return err
-	}
 
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 

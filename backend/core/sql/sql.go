@@ -4,30 +4,36 @@ import (
 	"fmt"
 	"strings"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/collection/counter"
 	"gitlab.com/alienspaces/go-mud/backend/core/collection/set"
 )
 
 type Operator string
 
 const (
-	OpBetween            Operator = "BETWEEN"
-	OpILike              Operator = "ILIKE"
-	OpLike               Operator = "LIKE"
-	OpEqualTo            Operator = "="
-	OpNotEqualTo         Operator = "!="
-	OpLessThanEqualTo    Operator = "<="
-	OpLessThan           Operator = "<"
-	OpGreaterThanEqualTo Operator = ">="
-	OpGreaterThan        Operator = ">"
-	OpAny                Operator = "ANY"
-	OpNotIn              Operator = "NOT IN"
-	OpIn                 Operator = "IN"
-	OpContains           Operator = "@>"
-	OpContainedBy        Operator = "<@"
-	OpOverlap            Operator = "&&"
-	OpIsNull             Operator = "IS NULL"
-	OpIsNotNull          Operator = "IS NOT NULL"
+	OpBetween          Operator = "BETWEEN"
+	OpBetweenSymmetric Operator = "BETWEEN SYMMETRIC"
+	OpLike             Operator = "LIKE"
+	OpILike            Operator = "ILIKE"
+	OpEqual            Operator = "="
+	OpNotEqual         Operator = "!="
+	OpLessThanEqual    Operator = "<="
+	OpLessThan         Operator = "<"
+	OpGreaterThanEqual Operator = ">="
+	OpGreaterThan      Operator = ">"
+	OpAny              Operator = "ANY"
+	OpNotIn            Operator = "NOT IN"
+	OpIn               Operator = "IN"
+	OpContains         Operator = "@>"
+	OpContainedBy      Operator = "<@"
+	OpOverlap          Operator = "&&"
+	OpIsNull           Operator = "IS NULL"
+	OpIsNotNull        Operator = "IS NOT NULL"
 )
+
+// TODO: `OR` support, provide the ability to express `AND expires_at is null OR expires_at >= :datetime`
+// negating the need to do `COALESCE(pg.expires_at, now() + interval '1000 years') as "expires_at"` with
+// `AND expires_at >= :datetime`
 
 type Options struct {
 	Params  []Param
@@ -142,8 +148,16 @@ func From(initialSQL string, opts *Options) (string, map[string]any, error) {
 	sql := initialSQL
 	queryArgs := map[string]any{}
 
+	// columnIdx is used to support the same column appearing multiple times in the same query,
+	// but with different operators.
+	// For example, created_at >= 2023-01-01 AND created_at <= 2023-12-31.
+	columnIdx := counter.New()
+
 	for _, param := range opts.Params {
 		op := param.Op
+
+		colIdx := columnIdx.CountToString(param.Col)
+		col := param.Col + colIdx
 
 		if ArrayOps.Contains(op) && len(param.Array) == 0 {
 			return "", nil, fmt.Errorf("missing param Array for op >%s< sql >%s<", op, sql)
@@ -151,13 +165,17 @@ func From(initialSQL string, opts *Options) (string, map[string]any, error) {
 
 		if op != OpIsNull && op != OpIsNotNull {
 			if param.ValB != nil {
-				queryArgs[param.Col+"0"] = param.Val
-				queryArgs[param.Col+"1"] = param.ValB
+				// 'A' and 'B' are suffixed to avoid collision with the same column appearing multiple times in the
+				// same query but with different operators
+				queryArgs[col+colIdx+"A"] = param.Val
+				queryArgs[col+colIdx+"B"] = param.ValB
 			} else if param.Val != nil {
-				queryArgs[param.Col] = param.Val
+				queryArgs[col] = param.Val
 			} else if len(param.Array) > 0 {
 				for i, a := range param.Array {
-					col := fmt.Sprintf("%s%d", param.Col, i)
+					// 'ArrayOp' verbosity is to avoid the possibility of collision with an actual SQL table column
+					// with the incredibly unlikely 'ArrayOp' suffix
+					col := fmt.Sprintf("%sArrayOp%d", col, i)
 					queryArgs[col] = a
 				}
 			} else {
@@ -167,21 +185,23 @@ func From(initialSQL string, opts *Options) (string, map[string]any, error) {
 
 		opClause := "AND "
 		switch op {
-		case OpEqualTo, OpNotEqualTo, OpLessThanEqualTo, OpGreaterThanEqualTo, OpLessThan, OpGreaterThan, OpLike, OpILike:
-			opClause += fmt.Sprintf("%s %s :%s", param.Col, op, param.Col)
-		case OpBetween:
-			opClause += fmt.Sprintf("%s %s :%s0 AND :%s1", param.Col, op, param.Col, param.Col)
+		case OpEqual, OpNotEqual, OpLessThanEqual, OpGreaterThanEqual, OpLessThan, OpGreaterThan:
+			opClause += fmt.Sprintf("%s %s :%s", param.Col, op, col)
+		case OpLike, OpILike:
+			opClause += fmt.Sprintf("CAST(%s AS TEXT) %s :%s", param.Col, op, col)
+		case OpBetween, OpBetweenSymmetric:
+			opClause += fmt.Sprintf("%s %s :%sA AND :%sB", param.Col, op, col, col)
 			if param.ValB == "" {
 				return "", nil, fmt.Errorf("missing param B for op >%s< column name >%s< sql >%s<", op, param.Col, sql)
 			}
 		case OpIn, OpNotIn:
-			namedParams := toNamedArrayParams(param.Array, param.Col)
+			namedParams := toNamedArrayParams(param.Array, col)
 			opClause += fmt.Sprintf("%s %s (%s)", param.Col, op, namedParams)
 		case OpContains, OpContainedBy, OpOverlap:
-			namedParams := toNamedArrayParams(param.Array, param.Col)
+			namedParams := toNamedArrayParams(param.Array, col)
 			opClause += fmt.Sprintf("%s %s array[%s]", param.Col, op, namedParams)
 		case OpAny:
-			opClause += fmt.Sprintf(":%s = %s(%s)", param.Col, op, param.Col)
+			opClause += fmt.Sprintf(":%s = %s(%s)", col, op, param.Col)
 		case OpIsNull, OpIsNotNull:
 			opClause += fmt.Sprintf("%s %s", param.Col, op)
 		default:
@@ -189,6 +209,7 @@ func From(initialSQL string, opts *Options) (string, map[string]any, error) {
 		}
 
 		sql += fmt.Sprintf("%s\n", opClause)
+		columnIdx.Increment(param.Col)
 	}
 
 	if len(opts.OrderBy) > 0 {
@@ -218,7 +239,7 @@ func From(initialSQL string, opts *Options) (string, map[string]any, error) {
 func toNamedArrayParams(array []any, columnName string) string {
 	var namedParams string
 	for i := range array {
-		namedParams += fmt.Sprintf(":%s%d,", columnName, i)
+		namedParams += fmt.Sprintf(":%sArrayOp%d,", columnName, i)
 	}
 
 	return strings.TrimSuffix(namedParams, ",")

@@ -29,7 +29,7 @@ func NewTestHarness() (*harness.Testing, error) {
 	// For handler tests the test harness needs to commit data as the handler
 	// creates a new database transaction. Data created as a result of a test
 	// case bust be specifically added to the test harness to be torn down.
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	return h, nil
 }

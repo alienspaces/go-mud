@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
@@ -42,7 +42,7 @@ func TestCreateOne(t *testing.T) {
 					DungeonID:       data.DungeonRecs[0].ID,
 					Name:            "Dirt Road",
 					Description:     "A dirt road",
-					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
+					NorthLocationID: null.NullStringFromString(data.LocationRecs[0].ID),
 				}
 			},
 			err: false,
@@ -54,7 +54,7 @@ func TestCreateOne(t *testing.T) {
 					DungeonID:       data.DungeonRecs[0].ID,
 					Name:            "Dusty Road",
 					Description:     "A dusty road",
-					NorthLocationID: nullstring.FromString(data.LocationRecs[0].ID),
+					NorthLocationID: null.NullStringFromString(data.LocationRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

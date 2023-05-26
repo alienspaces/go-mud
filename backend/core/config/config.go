@@ -6,26 +6,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
-)
 
-const (
-	AppServerHome                 string = "APP_SERVER_HOME"
-	AppServerEnv                  string = "APP_SERVER_ENV"
-	AppServerPort                 string = "APP_SERVER_PORT"
-	AppServerHost                 string = "APP_SERVER_HOST"
-	AppServerLogLevel             string = "APP_SERVER_LOG_LEVEL"
-	AppServerLogPretty            string = "APP_SERVER_LOG_PRETTY"
-	AppServerDbHost               string = "APP_SERVER_DB_HOST"
-	AppServerDbPort               string = "APP_SERVER_DB_PORT"
-	AppServerDbName               string = "APP_SERVER_DB_NAME"
-	AppServerDbUser               string = "APP_SERVER_DB_USER"
-	AppServerDbPassword           string = "APP_SERVER_DB_PASSWORD"
-	AppServerDbMaxOpenConnections string = "APP_SERVER_DB_MAX_OPEN_CONNECTIONS"
-	AppServerDbMaxIdleConnections string = "APP_SERVER_DB_MAX_IDLE_CONNECTIONS"
-	AppServerDbMaxIdleTimeMins    string = "APP_SERVER_DB_MAX_IDLE_TIME_MINS"
-	AppServerSchemaPath           string = "APP_SERVER_SCHEMA_PATH"
-	AppServerJwtSigningKey        string = "APP_SERVER_JWT_SIGNING_KEY"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 )
 
 // Config defines a container of Items and corresponding Values. Items specifies whether the Item.Key is required.
@@ -34,22 +16,20 @@ type Config struct {
 	Values   map[string]string
 }
 
-var _ configurer.Configurer = &Config{}
-
 // NewConfig creates a new environment object
 func NewConfig(items []Item, dotEnv bool) (*Config, error) {
 
-	c := Config{
+	e := Config{
 		Required: make(map[string]bool),
 		Values:   make(map[string]string),
 	}
 
-	err := c.Init(items, dotEnv)
+	err := e.Init(items, dotEnv)
 	if err != nil {
 		return nil, fmt.Errorf("NewConfig failed init >%v<", err)
 	}
 
-	return &c, nil
+	return &e, nil
 }
 
 // Init initialises and checks environment values
@@ -93,6 +73,15 @@ func (e *Config) Init(items []Item, dotEnv bool) (err error) {
 // Get returns a config item value
 func (e *Config) Get(key string) (value string) {
 	return e.Values[key]
+}
+
+// MustGet returns a non-empty config item value, otherwise an error
+func (e *Config) MustGet(key string) (string, error) {
+	v := e.Values[key]
+	if v == "" {
+		return "", fmt.Errorf("config key >%s< must not be empty", key)
+	}
+	return v, nil
 }
 
 // Set a config item value
@@ -140,8 +129,25 @@ func (e *Config) sourceItem(item Item) error {
 func (e *Config) checkItem(item Item) error {
 
 	if item.Required && e.Values[item.Key] == "" {
-		return fmt.Errorf("failed checking env value >%s<", item.Key)
+		return fmt.Errorf("failed checking required env value >%s<", item.Key)
 	}
 
 	return nil
+}
+
+func (e *Config) Clone() configurer.Configurer {
+	cfg := Config{
+		Required: make(map[string]bool),
+		Values:   make(map[string]string),
+	}
+
+	for k, v := range e.Required {
+		cfg.Required[k] = v
+	}
+
+	for k, v := range e.Values {
+		cfg.Values[k] = v
+	}
+
+	return &cfg
 }

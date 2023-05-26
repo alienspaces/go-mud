@@ -17,6 +17,6 @@ func Test_testDataConfig(t *testing.T) {
 		th.Teardown()
 	}()
 
-	err = th.Setup()
+	_, err = th.Setup()
 	require.NoError(t, err, "Test data setup returns without error")
 }

@@ -34,10 +34,12 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateQueryParams: jsonschema.SchemaWithReferences{
-					Main: jsonschema.Schema{
-						Location: "schema/game/character",
-						Name:     "query.schema.json",
+				ValidateParamsConfig: &server.ValidateParamsConfig{
+					Schema: jsonschema.SchemaWithReferences{
+						Main: jsonschema.Schema{
+							Location: "schema/game/character",
+							Name:     "query.schema.json",
+						},
 					},
 				},
 				ValidateResponseSchema: jsonschema.SchemaWithReferences{
@@ -140,16 +142,6 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Path parameters
 	characterID := pp.ByName("character_id")
-
-	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("character_id", characterID)
-		server.WriteError(l, w, err)
-		return err
-	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
@@ -323,16 +315,6 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 	// Path parameters
 	id := pp.ByName("character_id")
-
-	if id == "" {
-		err := coreerror.NewNotFoundError("character", id)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamError("character_id", id)
-		server.WriteError(l, w, err)
-		return err
-	}
 
 	l.Info("Updating character ID >%s<", id)
 

@@ -4,15 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
 type nestedMultiTag struct {
-	A      string `db:"db_A" json:"json_A"`
-	B      string `db:"db_B" json:"json_B"`
-	nested `db:"nested" json:"NESTED"`
-	// emptyNested            `db:"empty_nested" json:"EMPTY_NESTED"`
+	A                      string `db:"db_A" json:"json_A"`
+	B                      string `db:"db_B" json:"json_B"`
+	nested                 `db:"nested" json:"NESTED"`
+	emptyNested            `db:"empty_nested" json:"EMPTY_NESTED"`
 	singleNestedDB         `db:"single_nested_db" json:"SINGLE_NESTED_DB"`
 	singleNestedJSON       `db:"single_nested_json" json:"SINGLE_NESTED_JSON"`
 	singleNestedNullTime   `db:"single_nested_null_time" json:"SINGLE_NESTED_NULL_TIME"`
@@ -20,7 +21,7 @@ type nestedMultiTag struct {
 	f                      int `db:"db_f"`
 	G                      int `json:"json_G"`
 	h                      int
-	// time                   time.Time `db:"db_time"`
+	time                   time.Time `db:"db_time"`
 }
 
 type nested struct {
@@ -30,7 +31,7 @@ type nested struct {
 	E2 int
 }
 
-// type emptyNested struct{}
+type emptyNested struct{}
 
 type singleNestedDB struct {
 	E3 int `db:"db_E3"`

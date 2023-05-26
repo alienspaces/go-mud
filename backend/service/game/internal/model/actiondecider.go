@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -164,13 +164,13 @@ func getPreviousLocationInstanceID(args *DeciderArgs) string {
 	previousLocationInstanceID := ""
 	for idx := range args.MemoryActionRecs {
 		if args.MonsterInstanceViewRec != nil &&
-			nullstring.ToString(args.MemoryActionRecs[idx].MonsterInstanceID) == args.MonsterInstanceViewRec.ID &&
+			null.NullStringToString(args.MemoryActionRecs[idx].MonsterInstanceID) == args.MonsterInstanceViewRec.ID &&
 			args.MemoryActionRecs[idx].LocationInstanceID != args.MonsterInstanceViewRec.LocationInstanceID {
 			previousLocationInstanceID = args.MemoryActionRecs[idx].LocationInstanceID
 			break
 		}
 		if args.CharacterInstanceViewRec != nil &&
-			nullstring.ToString(args.MemoryActionRecs[idx].CharacterInstanceID) == args.CharacterInstanceViewRec.ID &&
+			null.NullStringToString(args.MemoryActionRecs[idx].CharacterInstanceID) == args.CharacterInstanceViewRec.ID &&
 			args.MemoryActionRecs[idx].LocationInstanceID != args.CharacterInstanceViewRec.LocationInstanceID {
 			previousLocationInstanceID = args.MemoryActionRecs[idx].LocationInstanceID
 			break
@@ -200,7 +200,7 @@ func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
 
 	var possibleDirections []string
 	for direction := range directions {
-		if nullstring.IsValid(directions[direction]) {
+		if null.NullStringIsValid(directions[direction]) {
 			possibleDirections = append(possibleDirections, direction)
 		}
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -230,7 +230,7 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 		objectInstanceRec := &record.ObjectInstance{
 			ObjectID:            characterObjectRec.ObjectID,
 			DungeonInstanceID:   locationInstanceRec.DungeonInstanceID,
-			CharacterInstanceID: nullstring.FromString(characterInstanceRec.ID),
+			CharacterInstanceID: null.NullStringFromString(characterInstanceRec.ID),
 			IsStashed:           characterObjectRec.IsStashed,
 			IsEquipped:          characterObjectRec.IsEquipped,
 		}

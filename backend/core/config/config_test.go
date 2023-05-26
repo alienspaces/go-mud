@@ -33,10 +33,10 @@ func TestNewConfig(t *testing.T) {
 		},
 		"NewConfig without dot env": {
 			setup: func() func() {
-				appHome := os.Getenv("APP_SERVER_HOME")
-				os.Setenv("APP_SERVER_HOME", "./")
+				appHome := os.Getenv(AppServerHome)
+				os.Setenv(AppServerHome, "./")
 				return func() {
-					os.Setenv("APP_SERVER_HOME", appHome)
+					os.Setenv(AppServerHome, appHome)
 				}
 			},
 			dotEnv:  true,
@@ -45,10 +45,10 @@ func TestNewConfig(t *testing.T) {
 		},
 		"NewConfig without APP_SERVER_HOME": {
 			setup: func() func() {
-				appHome := os.Getenv("APP_SERVER_HOME")
-				os.Setenv("APP_SERVER_HOME", "")
+				appHome := os.Getenv(AppServerHome)
+				os.Setenv(AppServerHome, "")
 				return func() {
-					os.Setenv("APP_SERVER_HOME", appHome)
+					os.Setenv(AppServerHome, appHome)
 				}
 			},
 			dotEnv:  false,

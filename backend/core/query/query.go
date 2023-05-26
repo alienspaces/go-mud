@@ -60,7 +60,7 @@ func (q *Query) ArrayFields() set.Set[string] {
 	return q.Config.ArrayFields
 }
 
-func (q *Query) Result(params map[string]interface{}) (sql.Result, error) {
+func (q *Query) Exec(params map[string]interface{}) (sql.Result, error) {
 	l := q.Log
 
 	stmt := q.Prepare.Stmt(q)
@@ -75,7 +75,7 @@ func (q *Query) Result(params map[string]interface{}) (sql.Result, error) {
 	return res, err
 }
 
-func (q *Query) Rows(opts *coresql.Options) (*sqlx.Rows, error) {
+func (q *Query) GetRows(opts *coresql.Options) (*sqlx.Rows, error) {
 	l := q.Log
 	tx := q.Tx
 
@@ -135,7 +135,7 @@ func (q *Query) resolveOpts(opts *coresql.Options) (*coresql.Options, error) {
 			if len(p.Array) > 0 {
 				p.Op = coresql.OpIn
 			} else {
-				p.Op = coresql.OpEqualTo
+				p.Op = coresql.OpEqual
 			}
 		}
 

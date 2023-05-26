@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -51,7 +51,7 @@ func (m *Model) CreateTurnRec(rec *record.Turn) error {
 
 	// Initial defaults
 	rec.TurnNumber = 1
-	rec.IncrementedAt = nulltime.FromTime(time.Now().UTC())
+	rec.IncrementedAt = null.NullTimeFromTime(time.Now().UTC())
 
 	l.Debug("Creating turn record >%#v<", rec)
 

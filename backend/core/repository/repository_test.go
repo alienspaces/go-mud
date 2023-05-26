@@ -408,7 +408,7 @@ func TestGetManySQL(t *testing.T) {
 					},
 					{
 						Col: "db_E6",
-						Op:  coresql.OpEqualTo,
+						Op:  coresql.OpEqual,
 						Val: "a",
 					},
 				},
@@ -452,7 +452,7 @@ func TestGetManySQL(t *testing.T) {
 					},
 					{
 						Col: "db_f",
-						Op:  coresql.OpEqualTo,
+						Op:  coresql.OpEqual,
 						Val: 1,
 					},
 					{
@@ -466,9 +466,9 @@ func TestGetManySQL(t *testing.T) {
 	}
 	for _, tt := range optTests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := r.resolveOpts(tt.args.opts)
-			require.NoError(t, err, "resolveOpts should not err")
-			require.Equal(t, tt.want, got, "resolveOpts should return coresql.Options as expected")
+			got, err := r.resolveOptions(tt.args.opts)
+			require.NoError(t, err, "resolveOptions should not err")
+			require.Equal(t, tt.want, got, "resolveOptions should return coresql.Options as expected")
 		})
 	}
 }

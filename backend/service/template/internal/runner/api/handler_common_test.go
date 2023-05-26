@@ -162,7 +162,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	err = rnr.Init(th.Store)
 	require.NoError(t, err, "Runner init returns without error")
 
-	err = th.Setup()
+	_, err = th.Setup()
 	require.NoError(t, err, "Test data setup returns without error")
 	defer func() {
 		err = th.Teardown()

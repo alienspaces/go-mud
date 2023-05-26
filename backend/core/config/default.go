@@ -1,7 +1,9 @@
 package config
 
 func NewConfigWithDefaults(extra []Item, dotEnv bool) (*Config, error) {
-	items := NewItems(DefaultRequiredItemKeys(), true)
+	items := NewItems(DefaultRequiredDBItemKeys(), true)
+	items = append(items, NewItems(DefaultRequiredItemKeys(), true)...)
+	items = append(items, NewItems(DefaultItemKeys(), false)...)
 	items = append(items, extra...)
 
 	conf, err := NewConfig(items, dotEnv)
@@ -13,30 +15,31 @@ func NewConfigWithDefaults(extra []Item, dotEnv bool) (*Config, error) {
 }
 
 func DefaultItemKeys() []string {
-	return []string{
-		// build info for documentation
-		"APP_IMAGE_TAG_FEATURE_BRANCH",
-		"APP_IMAGE_TAG_SHA",
-	}
+	return []string{}
 }
 
 func DefaultRequiredItemKeys() []string {
 	return []string{
-		AppServerHome,
+		// general
 		AppServerEnv,
 		AppServerHost,
 		AppServerPort,
+		// logger
 		AppServerLogLevel,
 		AppServerLogPretty,
-		AppServerDbHost,
-		AppServerDbPort,
-		AppServerDbName,
-		AppServerDbUser,
-		AppServerDbPassword,
-		AppServerDbMaxOpenConnections,
-		AppServerDbMaxIdleConnections,
-		AppServerDbMaxIdleTimeMins,
-		AppServerSchemaPath,
-		AppServerJwtSigningKey,
+	}
+}
+
+func DefaultRequiredDBItemKeys() []string {
+	return []string{
+		// database
+		AppServerDBHost,
+		AppServerDBPort,
+		AppServerDBName,
+		AppServerDBUser,
+		AppServerDBPassword,
+		AppServerDBMaxOpenConnections,
+		AppServerDBMaxIdleConnections,
+		AppServerDBMaxIdleTimeMins,
 	}
 }

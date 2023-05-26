@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
@@ -325,7 +325,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -388,7 +388,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -531,7 +531,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -615,7 +615,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -694,7 +694,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -773,7 +773,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -850,7 +850,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -929,7 +929,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1004,7 +1004,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1079,7 +1079,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1163,7 +1163,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1252,7 +1252,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,

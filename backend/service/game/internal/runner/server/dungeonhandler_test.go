@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/auth"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
@@ -25,24 +24,13 @@ func TestGetDungeonHandler(t *testing.T) {
 		expectResponseBody func(data harness.Data) *schema.DungeonResponse
 	}
 
-	// validAuthToken - Generate a valid authentication token for this handler
-	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(th.Config, th.Log)
-		token, _ := authen.EncodeJWT(&auth.Claims{
-			Roles:    []string{},
-			Identity: map[string]interface{}{},
-		})
-		return token
-	}
-
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
 		return rnr.HandlerConfig[getDungeon]
 	}
 
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
-			"Authorization": "Bearer " + validAuthToken(),
-		}
+					}
 		return headers
 	}
 

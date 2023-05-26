@@ -81,7 +81,6 @@ func NewLogger(c configurer.Configurer) (*Log, error) {
 	}
 
 	l.Init()
-
 	return &l, nil
 }
 
@@ -94,7 +93,6 @@ func NewLoggerWithConfig(c Config) (*Log, error) {
 	}
 
 	l.Init()
-
 	return &l, nil
 }
 

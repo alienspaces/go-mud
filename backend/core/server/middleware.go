@@ -10,8 +10,10 @@ type MiddlewareFunc func(hc HandlerConfig, h Handle) (Handle, error)
 func (rnr *Runner) defaultMiddlewareFuncs() []MiddlewareFunc {
 	return []MiddlewareFunc{
 		rnr.WaitMiddleware,
-		rnr.QueryParamMiddleware,
+		rnr.ParamMiddleware,
 		rnr.DataMiddleware,
+		rnr.AuditMiddleware,
+		rnr.RLSMiddleware,
 		rnr.AuthzMiddleware,
 		rnr.AuthenMiddleware,
 		rnr.TxMiddleware,

@@ -32,8 +32,9 @@ type Testing struct {
 	QueryPreparer      preparer.Query
 	Model              modeller.Modeller
 
-	// Configuration
-	CommitData bool
+	// ShouldCommitData is used to determine whether Setup and Teardown should commit data to the DB.
+	// This should only be true if changes in one transaction must be visible in another (e.g., handler tests).
+	ShouldCommitData bool
 
 	// Modeller function
 	ModellerFunc func() (modeller.Modeller, error)
@@ -71,6 +72,7 @@ func (t *Testing) Init() (err error) {
 			return err
 		}
 	}
+	t.Log = t.Log.WithApplicationContext("harness")
 
 	// storer
 	if t.Store == nil {
@@ -78,12 +80,6 @@ func (t *Testing) Init() (err error) {
 		if err != nil {
 			return err
 		}
-	}
-
-	err = t.Store.Init()
-	if err != nil {
-		t.Log.Warn("failed storer init >%v<", err)
-		return err
 	}
 
 	// preparer
@@ -132,33 +128,29 @@ func (t *Testing) Init() (err error) {
 }
 
 // InitTx -
-func (t *Testing) InitTx(tx *sqlx.Tx) (err error) {
+func (t *Testing) InitTx() (*sqlx.Tx, error) {
 
-	// initialise our own database tx when none is provided
-	if tx == nil {
-		t.Log.Debug("Starting database tx")
-
-		tx, err = t.Store.GetTx()
-		if err != nil {
-			t.Log.Warn("failed getting database tx >%v<", err)
-			return err
-		}
+	if t.tx != nil {
+		return t.tx, nil
 	}
 
-	err = t.Model.Init(t.RepositoryPreparer, t.QueryPreparer, tx)
+	t.Log.Debug("Starting database tx")
+
+	tx, err := t.Store.GetTx()
 	if err != nil {
-		t.Log.Warn("failed modeller init >%v<", err)
-		return err
+		t.Log.Warn("failed getting database tx >%v<", err)
+		return nil, err
 	}
 
 	t.tx = tx
 
-	return nil
-}
+	err = t.Model.Init(t.RepositoryPreparer, t.QueryPreparer, t.tx)
+	if err != nil {
+		t.Log.Warn("failed modeller init >%v<", err)
+		return nil, err
+	}
 
-// Tx -
-func (t *Testing) Tx() *sqlx.Tx {
-	return t.tx
+	return t.tx, nil
 }
 
 // CommitTx -
@@ -186,44 +178,47 @@ func (t *Testing) RollbackTx() (err error) {
 }
 
 // Setup -
-func (t *Testing) Setup() (err error) {
+//
+// If ShouldCommitData is false, the tx is returned. The caller can perform other queries, but must commit or rollback the tx.
+func (t *Testing) Setup() (*sqlx.Tx, error) {
 
 	// init
-	err = t.InitTx(nil)
+	_, err := t.InitTx()
 	if err != nil {
 		t.Log.Warn("failed init >%v<", err)
-		return err
+		return nil, err
 	}
 
 	// data function is expected to create and manage its own store
 	if t.CreateDataFunc != nil {
-		t.Log.Debug("Creating test data")
+		t.Log.Debug("creating test data")
 		err := t.CreateDataFunc()
 		if err != nil {
 			t.Log.Warn("failed creating data >%v<", err)
-			return err
+			return nil, err
 		}
 	}
 
 	// commit data when configured, otherwise we are leaving
 	// it up to tests to explicitly commit or rollback
-	if t.CommitData {
-		t.Log.Debug("Committing database tx")
+	if t.ShouldCommitData {
+		t.Log.Debug("committing database tx")
 		err = t.CommitTx()
 		if err != nil {
-			t.Log.Warn("failed comitting data >%v<", err)
-			return err
+			t.Log.Warn("failed committing data >%v<", err)
+			return nil, err
 		}
+
+		return nil, nil
 	}
 
-	return nil
+	return t.tx, nil
 }
 
 // Teardown -
-func (t *Testing) Teardown() (err error) {
+func (t *Testing) Teardown() error {
 
-	// init
-	err = t.InitTx(nil)
+	_, err := t.InitTx()
 	if err != nil {
 		t.Log.Warn("failed init >%v<", err)
 		return err
@@ -231,7 +226,7 @@ func (t *Testing) Teardown() (err error) {
 
 	// data function is expected to create and manage its own store
 	if t.RemoveDataFunc != nil {
-		t.Log.Debug("Removing test data")
+		t.Log.Debug("removing test data")
 		err := t.RemoveDataFunc()
 		if err != nil {
 			t.Log.Warn("failed removing data >%v<", err)
@@ -239,13 +234,18 @@ func (t *Testing) Teardown() (err error) {
 		}
 	}
 
-	// commit data when configured, otherwise we are leaving
-	// it up to tests to explicitly commit or rollback
-	if t.CommitData {
-		t.Log.Debug("Committing database tx")
-		err = t.CommitTx()
+	if t.ShouldCommitData {
+		t.Log.Debug("committing database tx")
+		err := t.CommitTx()
 		if err != nil {
 			t.Log.Warn("failed committing data >%v<", err)
+			return err
+		}
+	} else {
+		t.Log.Debug("rollback database tx")
+		err := t.RollbackTx()
+		if err != nil {
+			t.Log.Warn("failed rolling back data >%v<", err)
 			return err
 		}
 	}

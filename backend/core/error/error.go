@@ -9,17 +9,17 @@ import (
 type ErrorCode string
 
 const (
-	SchemaValidation  ErrorCode = "validation.body_not_matching_json_schema"
-	InvalidAction     ErrorCode = "invalid_action"
-	InvalidJSON       ErrorCode = "validation.invalid_json"
-	InvalidHeader     ErrorCode = "validation.invalid_header"
-	InvalidQueryParam ErrorCode = "validation.invalid_query_parameter"
-	InvalidPathParam  ErrorCode = "validation.invalid_path_parameter"
-	NotFound          ErrorCode = "resource_not_found"
-	Unauthorized      ErrorCode = "unauthorized"
-	Unauthenticated   ErrorCode = "unauthenticated"
-	Unavailable       ErrorCode = "unavailable"
-	Internal          ErrorCode = "internal_error"
+	SchemaValidation ErrorCode = "validation.body_not_matching_json_schema"
+	InvalidAction    ErrorCode = "invalid_action"
+	InvalidJSON      ErrorCode = "validation.invalid_json"
+	InvalidHeader    ErrorCode = "validation.invalid_header"
+	InvalidParam     ErrorCode = "validation.invalid_parameter"
+	NotFound         ErrorCode = "resource_not_found"
+	Unauthorized     ErrorCode = "unauthorized"
+	Unauthenticated  ErrorCode = "unauthenticated"
+	Unavailable      ErrorCode = "unavailable"
+	Malformed        ErrorCode = "malformed"
+	Internal         ErrorCode = "internal_error"
 )
 
 type Error struct {
@@ -99,4 +99,30 @@ func ToErrors(errs ...error) ([]Error, error) {
 	}
 
 	return results, nil
+}
+
+func ProcessParamError(err error) error {
+	e, conversionErr := ToError(err)
+	if conversionErr != nil {
+		return err
+	}
+
+	if len(e.SchemaValidationErrors) == 0 {
+		return NewParamError(e.Error())
+	}
+
+	errStr := strings.Builder{}
+	errStr.WriteString("Invalid parameter(s): ")
+	for i, sve := range e.SchemaValidationErrors {
+		if sve.GetField() == "$" {
+			errStr.WriteString(fmt.Sprintf("(%d) %s; ", i+1, sve.Message))
+		} else {
+			errStr.WriteString(fmt.Sprintf("(%d) %s: %s; ", i+1, sve.GetField(), sve.Message))
+		}
+	}
+
+	formattedErrString := errStr.String()
+	formattedErrString = formattedErrString[0 : len(formattedErrString)-2] // remove extra space and semicolon
+	formattedErrString += "."
+	return NewParamError(formattedErrString)
 }

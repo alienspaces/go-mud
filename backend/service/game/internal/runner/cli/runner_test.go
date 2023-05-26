@@ -27,7 +27,7 @@ func NewTestHarness(config *harness.DataConfig) (*harness.Testing, error) {
 	}
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	return h, nil
 }

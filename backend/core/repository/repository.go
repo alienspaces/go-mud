@@ -24,6 +24,7 @@ type Repository struct {
 	Tx                 *sqlx.Tx
 	Prepare            preparer.Repository
 	computedAttributes []string
+	attributeIndex     set.Set[string]
 	rlsIdentifiers     map[string][]string
 	IsRLSDisabled      bool
 }
@@ -62,7 +63,9 @@ func (r *Repository) Init() error {
 	}
 
 	computedAttributes := []string{}
+	attributeIndex := map[string]struct{}{}
 	for _, attribute := range r.Attributes() {
+		attributeIndex[attribute] = struct{}{}
 		if attribute == "created_at" ||
 			attribute == "deleted_at" {
 			continue
@@ -70,6 +73,7 @@ func (r *Repository) Init() error {
 		computedAttributes = append(computedAttributes, attribute)
 	}
 	r.computedAttributes = computedAttributes
+	r.attributeIndex = attributeIndex
 
 	return nil
 }
@@ -157,7 +161,7 @@ func (r *Repository) GetManyRecs(opts *coresql.Options) (rows *sqlx.Rows, err er
 	tx := r.Tx
 
 	// params
-	opts, err = r.resolveOpts(opts)
+	opts, err = r.resolveOptions(opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve opts: sql >%s< opts >%#v< >%v<", querySQL, opts, err)
 	}
@@ -180,14 +184,17 @@ func (r *Repository) GetManyRecs(opts *coresql.Options) (rows *sqlx.Rows, err er
 	return rows, nil
 }
 
-func (r *Repository) resolveOpts(opts *coresql.Options) (*coresql.Options, error) {
+func (r *Repository) resolveOptions(opts *coresql.Options) (*coresql.Options, error) {
 	if opts == nil {
 		return opts, nil
 	}
 
-	for i, p := range opts.Params {
-		if p.Op != "" {
-			// if Op is specified, it is assumed you know what you're doing
+	params := []coresql.Param{}
+
+	for _, p := range opts.Params {
+
+		// Skip parameters that aren't valid attributes for the record
+		if _, ok := r.attributeIndex[p.Col]; !ok {
 			continue
 		}
 
@@ -198,6 +205,12 @@ func (r *Repository) resolveOpts(opts *coresql.Options) (*coresql.Options, error
 		case []int:
 			p.Array = convert.GenericSlice(t)
 			p.Val = nil
+		}
+
+		// if Op is specified, it is assumed you know what you're doing
+		if p.Op != "" {
+			params = append(params, p)
+			continue
 		}
 
 		isArrayField := r.ArrayFields().Contains(p.Col)
@@ -211,12 +224,14 @@ func (r *Repository) resolveOpts(opts *coresql.Options) (*coresql.Options, error
 			if len(p.Array) > 0 {
 				p.Op = coresql.OpIn
 			} else {
-				p.Op = coresql.OpEqualTo
+				p.Op = coresql.OpEqual
 			}
 		}
 
-		opts.Params[i] = p
+		params = append(params, p)
 	}
+
+	opts.Params = params
 
 	return opts, nil
 }

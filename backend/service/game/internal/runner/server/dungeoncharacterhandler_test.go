@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/auth"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
@@ -24,23 +23,12 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 		TestCase
 	}
 
-	// validAuthToken - Generate a valid authentication token for this handler
-	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(th.Config, th.Log)
-		token, _ := authen.EncodeJWT(&auth.Claims{
-			Roles:    []string{},
-			Identity: map[string]interface{}{},
-		})
-		return token
-	}
-
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
 		return rnr.HandlerConfig[postDungeonCharacterEnter]
 	}
 
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
-			"Authorization": "Bearer " + validAuthToken(),
 			"X-Tx-Rollback": "true",
 		}
 		return headers
@@ -124,23 +112,12 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 		TestCase
 	}
 
-	// validAuthToken - Generate a valid authentication token for this handler
-	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(th.Config, th.Log)
-		token, _ := authen.EncodeJWT(&auth.Claims{
-			Roles:    []string{},
-			Identity: map[string]interface{}{},
-		})
-		return token
-	}
-
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
 		return rnr.HandlerConfig[postDungeonCharacterExit]
 	}
 
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
-			"Authorization": "Bearer " + validAuthToken(),
 			"X-Tx-Rollback": "true",
 		}
 		return headers

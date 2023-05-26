@@ -11,7 +11,6 @@ import (
 type Querier interface {
 	Init() error
 	Name() string
-	SQL() string
-	Result(params map[string]interface{}) (sql.Result, error)
-	Rows(opts *coresql.Options) (*sqlx.Rows, error)
+	GetRows(opts *coresql.Options) (*sqlx.Rows, error)
+	Exec(params map[string]interface{}) (sql.Result, error)
 }

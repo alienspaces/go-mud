@@ -8,21 +8,16 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-type SchemaWithReferences struct {
-	Main       Schema
-	References []Schema
-}
-
-type Schema struct {
-	LocationRoot string
-	Location     string
-	Name         string
-}
-
 type cacheKey string
 
 var schemaCache = map[cacheKey]*gojsonschema.Schema{}
 var mu = sync.Mutex{}
+
+// SchemaWithReferences -
+type SchemaWithReferences struct {
+	Main       Schema
+	References []Schema
+}
 
 func (s SchemaWithReferences) IsEmpty() bool {
 	return s.Main.Name == "" || s.Main.Location == ""
@@ -36,6 +31,13 @@ func (s SchemaWithReferences) GetReferencesFullPaths() []string {
 	}
 
 	return paths
+}
+
+// Schema -
+type Schema struct {
+	LocationRoot string
+	Location     string
+	Name         string
 }
 
 func (s Schema) GetLocation() string {
@@ -55,6 +57,7 @@ func (s Schema) GetFullPath() string {
 	return fmt.Sprintf("%s/%s", loc, s.Name)
 }
 
+// Utility functions
 func ValidateJSON(schema SchemaWithReferences, document []byte) error {
 	result, err := Validate(schema, document)
 	if err != nil {

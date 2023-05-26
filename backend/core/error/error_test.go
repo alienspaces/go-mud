@@ -27,16 +27,9 @@ func TestToError(t *testing.T) {
 		{
 			name: "invalid query param",
 			args: args{
-				e: GetRegistryError(InvalidQueryParam),
+				e: GetRegistryError(InvalidParam),
 			},
-			want: GetRegistryError(InvalidQueryParam),
-		},
-		{
-			name: "invalid path param",
-			args: args{
-				e: GetRegistryError(InvalidPathParam),
-			},
-			want: GetRegistryError(InvalidPathParam),
+			want: GetRegistryError(InvalidParam),
 		},
 		{
 			name: "unauthenticated",

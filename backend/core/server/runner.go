@@ -49,6 +49,7 @@ type Runner struct {
 
 	// Handler and message configuration
 	HandlerConfig map[string]HandlerConfig
+	MessageConfig map[string]MessageConfig
 
 	// Assignable functions
 	RunHTTPFunc   func(args map[string]interface{}) (*http.Server, error)
@@ -65,6 +66,8 @@ type Runner struct {
 	ModellerFunc           func(l logger.Logger) (modeller.Modeller, error)
 
 	AuthenticateRequestFunc func(l logger.Logger, m modeller.Modeller, apiKey string) (AuthenticatedRequest, error)
+	SetAuditConfigFunc      func(l logger.Logger, m modeller.Modeller, req AuditRequest) error
+	SetRLSFunc              func(l logger.Logger, m modeller.Modeller, authedReq AuthenticatedRequest) (RLS, error)
 }
 
 type AuditRequest struct {
@@ -104,7 +107,16 @@ type HandlerConfig struct {
 }
 
 type Tag string
+
+func (t Tag) ToString() string {
+	return string(t)
+}
+
 type TagGroup string
+
+func (tg TagGroup) ToString() string {
+	return string(tg)
+}
 
 // TagGroupEndpoint is used to group endpoints related to the same resource
 type TagGroupEndpoint struct {
@@ -159,7 +171,18 @@ type MiddlewareConfig struct {
 	AuthzPermissions       []AuthorizedPermission
 	ValidateRequestSchema  jsonschema.SchemaWithReferences
 	ValidateResponseSchema jsonschema.SchemaWithReferences
-	ValidateQueryParams    jsonschema.SchemaWithReferences
+	ValidateParamsConfig   *ValidateParamsConfig
+}
+
+// ValidateParamsConfig defines how route path parameters should be validated
+//
+// ExcludePathParamsFromQueryParams - By default path parameters will be added as query parameters
+// and validated as part of query parameter validation. When disabled path parameters
+// will need to be validated by the handler.
+// Schema - Validate query parameters using this JSON schema set
+type ValidateParamsConfig struct {
+	ExcludePathParamsFromQueryParams bool
+	Schema                           jsonschema.SchemaWithReferences
 }
 
 // DocumentationConfig - Configuration describing how to document a route
@@ -556,6 +579,15 @@ func (rnr *Runner) defaultModellerFunc(l logger.Logger) (modeller.Modeller, erro
 	return nil, nil
 }
 
+func (rnr *Runner) GetMessageConfigs() []MessageConfig {
+	var cfgs []MessageConfig
+	for _, cfg := range rnr.MessageConfig {
+		cfgs = append(cfgs, cfg)
+	}
+
+	return cfgs
+}
+
 func (rnr *Runner) GetHandlerConfigs() []HandlerConfig {
 	var cfgs []HandlerConfig
 	for _, cfg := range rnr.HandlerConfig {
@@ -585,8 +617,11 @@ func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
 
 func ResolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, location string) map[string]HandlerConfig {
 	for handler, cfg := range handlerConfig {
-		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateQueryParams, location)
+		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
+			schema := cfg.MiddlewareConfig.ValidateParamsConfig.Schema
+			if len(schema.Main.Name) > 0 {
+				cfg.MiddlewareConfig.ValidateParamsConfig.Schema = jsonschema.ResolveSchemaLocation(schema, location)
+			}
 		}
 
 		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 {
@@ -605,8 +640,11 @@ func ResolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, locati
 
 func ResolveHandlerSchemaLocationRoot(handlerConfig map[string]HandlerConfig, root string) (map[string]HandlerConfig, error) {
 	for handler, cfg := range handlerConfig {
-		if len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Name) > 0 || len(cfg.MiddlewareConfig.ValidateQueryParams.Main.Location) > 0 {
-			cfg.MiddlewareConfig.ValidateQueryParams = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateQueryParams, root)
+		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
+			schema := cfg.MiddlewareConfig.ValidateParamsConfig.Schema
+			if len(schema.Main.Name) > 0 || len(schema.Main.Location) > 0 {
+				cfg.MiddlewareConfig.ValidateParamsConfig.Schema = jsonschema.ResolveSchemaLocationRoot(schema, root)
+			}
 		}
 
 		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 || len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Location) > 0 {
@@ -623,11 +661,32 @@ func ResolveHandlerSchemaLocationRoot(handlerConfig map[string]HandlerConfig, ro
 	return handlerConfig, nil
 }
 
+func ResolveMessageSchemaLocation(messageConfig map[string]MessageConfig, location string) map[string]MessageConfig {
+	for message, cfg := range messageConfig {
+		cfg.ValidateSchema = jsonschema.ResolveSchemaLocation(cfg.ValidateSchema, location)
+
+		messageConfig[message] = cfg
+	}
+
+	return messageConfig
+}
+
+func ResolveMessageSchemaLocationRoot(messageConfig map[string]MessageConfig, root string) (map[string]MessageConfig, error) {
+	for messsage, cfg := range messageConfig {
+		cfg.ValidateSchema = jsonschema.ResolveSchemaLocationRoot(cfg.ValidateSchema, root)
+
+		messageConfig[messsage] = cfg
+	}
+
+	return messageConfig, nil
+}
+
 func ResolveDocumentationSummary(handlerConfig map[string]HandlerConfig) map[string]HandlerConfig {
 	for name, cfg := range handlerConfig {
 		if cfg.DocumentationConfig.Summary == "" {
 			cfg.DocumentationConfig.Summary = cfg.DocumentationConfig.Description
 		}
+
 		handlerConfig[name] = cfg
 	}
 

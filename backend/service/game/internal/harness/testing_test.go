@@ -20,10 +20,10 @@ func TestSetupTeardown(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	func() {
-		err = h.Setup()
+		_, err = h.Setup()
 		require.NoError(t, err, "Setup returns without error")
 		defer func() {
 			err = h.Teardown()

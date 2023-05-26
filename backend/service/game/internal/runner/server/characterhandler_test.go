@@ -9,7 +9,6 @@ import (
 	"github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/auth"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
@@ -26,20 +25,9 @@ func TestPostCharacterHandler(t *testing.T) {
 		expectResponseBody func(data harness.Data) *schema.CharacterResponse
 	}
 
-	// validAuthToken - Generate a valid authentication token for this handler
-	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(th.Config, th.Log)
-		token, _ := authen.EncodeJWT(&auth.Claims{
-			Roles:    []string{},
-			Identity: map[string]interface{}{},
-		})
-		return token
-	}
-
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
-			"Authorization": "Bearer " + validAuthToken(),
-			"X-Tx-Rollback": "true",
+						"X-Tx-Rollback": "true",
 		}
 		return headers
 	}
@@ -123,20 +111,9 @@ func TestGetCharacterHandler(t *testing.T) {
 		expectResponseBody func(data harness.Data) *schema.CharacterResponse
 	}
 
-	// validAuthToken - Generate a valid authentication token for this handler
-	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(th.Config, th.Log)
-		token, _ := authen.EncodeJWT(&auth.Claims{
-			Roles:    []string{},
-			Identity: map[string]interface{}{},
-		})
-		return token
-	}
-
 	testCaseRequestHeaders := func(data harness.Data) map[string]string {
 		headers := map[string]string{
-			"Authorization": "Bearer " + validAuthToken(),
-		}
+					}
 		return headers
 	}
 
@@ -194,8 +171,7 @@ func TestGetCharacterHandler(t *testing.T) {
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
+											}
 					return headers
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
@@ -238,8 +214,7 @@ func TestGetCharacterHandler(t *testing.T) {
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
+											}
 					return headers
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {
@@ -263,8 +238,7 @@ func TestGetCharacterHandler(t *testing.T) {
 				},
 				RequestHeaders: func(data harness.Data) map[string]string {
 					headers := map[string]string{
-						"Authorization": "Bearer " + validAuthToken(),
-					}
+											}
 					return headers
 				},
 				RequestPathParams: func(data harness.Data) map[string]string {

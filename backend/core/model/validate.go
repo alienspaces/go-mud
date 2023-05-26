@@ -8,8 +8,7 @@ import (
 	"github.com/lib/pq"
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
-	"gitlab.com/alienspaces/go-mud/backend/core/nullbool"
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 )
 
 // IsUUID - tests whether provided string is a valid UUID
@@ -42,7 +41,7 @@ func (m *Model) ValidateStringField(field string, fieldName string) error {
 }
 
 func (m *Model) ValidateNullStringField(field sql.NullString, fieldName string) error {
-	if !nullstring.IsValid(field) {
+	if !null.NullStringIsValid(field) {
 		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field.String)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
 		return coreerror.NewInvalidError(fieldName, errMsg)
@@ -52,7 +51,7 @@ func (m *Model) ValidateNullStringField(field sql.NullString, fieldName string) 
 }
 
 func (m *Model) ValidateNullBoolField(field sql.NullBool, fieldName string) error {
-	if !nullbool.IsValid(field) {
+	if !null.NullBoolIsValid(field) {
 		errMsg := fmt.Sprintf("%s should not be empty", fieldName)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
 		return coreerror.NewInvalidError(fieldName, errMsg)

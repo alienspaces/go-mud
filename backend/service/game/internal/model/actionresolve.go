@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -127,14 +127,14 @@ func (m *Model) resolveActionMove(sentence string, args *ResolveActionArgs) (*re
 		DungeonInstanceID:                locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:               locationInstanceRec.ID,
 		ResolvedCommand:                  "move",
-		ResolvedTargetLocationDirection:  nullstring.FromString(targetLocationDirection),
-		ResolvedTargetLocationInstanceID: nullstring.FromString(targetLocationInstanceID),
+		ResolvedTargetLocationDirection:  null.NullStringFromString(targetLocationDirection),
+		ResolvedTargetLocationInstanceID: null.NullStringFromString(targetLocationInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil
@@ -240,17 +240,17 @@ func (m *Model) resolveActionLook(sentence string, args *ResolveActionArgs) (*re
 		DungeonInstanceID:                 locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:                locationInstanceRec.ID,
 		ResolvedCommand:                   "look",
-		ResolvedTargetObjectInstanceID:    nullstring.FromString(targetObjectInstanceID),
-		ResolvedTargetMonsterInstanceID:   nullstring.FromString(targetMonsterInstanceID),
-		ResolvedTargetCharacterInstanceID: nullstring.FromString(targetCharacterInstanceID),
-		ResolvedTargetLocationDirection:   nullstring.FromString(targetLocationDirection),
-		ResolvedTargetLocationInstanceID:  nullstring.FromString(targetLocationInstanceID),
+		ResolvedTargetObjectInstanceID:    null.NullStringFromString(targetObjectInstanceID),
+		ResolvedTargetMonsterInstanceID:   null.NullStringFromString(targetMonsterInstanceID),
+		ResolvedTargetCharacterInstanceID: null.NullStringFromString(targetCharacterInstanceID),
+		ResolvedTargetLocationDirection:   null.NullStringFromString(targetLocationDirection),
+		ResolvedTargetLocationInstanceID:  null.NullStringFromString(targetLocationInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil
@@ -350,15 +350,15 @@ func (m *Model) resolveActionUse(sentence string, args *ResolveActionArgs) (*rec
 		DungeonInstanceID:                 locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:                locationInstanceRec.ID,
 		ResolvedCommand:                   "use",
-		ResolvedTargetObjectInstanceID:    nullstring.FromString(targetObjectInstanceID),
-		ResolvedTargetMonsterInstanceID:   nullstring.FromString(targetMonsterInstanceID),
-		ResolvedTargetCharacterInstanceID: nullstring.FromString(targetCharacterInstanceID),
+		ResolvedTargetObjectInstanceID:    null.NullStringFromString(targetObjectInstanceID),
+		ResolvedTargetMonsterInstanceID:   null.NullStringFromString(targetMonsterInstanceID),
+		ResolvedTargetCharacterInstanceID: null.NullStringFromString(targetCharacterInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil
@@ -408,12 +408,12 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*
 		DungeonInstanceID:                 locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:                locationInstanceRec.ID,
 		ResolvedCommand:                   "attack",
-		ResolvedTargetMonsterInstanceID:   nullstring.FromString(targetMonsterInstanceID),
-		ResolvedTargetCharacterInstanceID: nullstring.FromString(targetCharacterInstanceID),
+		ResolvedTargetMonsterInstanceID:   null.NullStringFromString(targetMonsterInstanceID),
+		ResolvedTargetCharacterInstanceID: null.NullStringFromString(targetCharacterInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 
 		// Attacking with a specific weapon
 		objectInstanceViewRecs, err := m.GetCharacterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
@@ -429,11 +429,11 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*
 		}
 
 		if objectInstanceRec != nil {
-			dungeonActionRec.ResolvedEquippedObjectInstanceID = nullstring.FromString(objectInstanceRec.ID)
+			dungeonActionRec.ResolvedEquippedObjectInstanceID = null.NullStringFromString(objectInstanceRec.ID)
 		}
 
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 
 		// Attacking with a specific weapon
 		objectInstanceViewRecs, err := m.GetMonsterInstanceEquippedObjectInstanceViewRecs(args.EntityInstanceID)
@@ -449,7 +449,7 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*
 		}
 
 		if objectInstanceRec != nil {
-			dungeonActionRec.ResolvedEquippedObjectInstanceID = nullstring.FromString(objectInstanceRec.ID)
+			dungeonActionRec.ResolvedEquippedObjectInstanceID = null.NullStringFromString(objectInstanceRec.ID)
 		}
 	}
 
@@ -509,14 +509,14 @@ func (m *Model) resolveActionStash(sentence string, args *ResolveActionArgs) (*r
 		DungeonInstanceID:               locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:              locationInstanceRec.ID,
 		ResolvedCommand:                 "stash",
-		ResolvedTargetObjectInstanceID:  nullstring.FromString(stashedObjectInstanceID),
-		ResolvedStashedObjectInstanceID: nullstring.FromString(stashedObjectInstanceID),
+		ResolvedTargetObjectInstanceID:  null.NullStringFromString(stashedObjectInstanceID),
+		ResolvedStashedObjectInstanceID: null.NullStringFromString(stashedObjectInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil
@@ -575,14 +575,14 @@ func (m *Model) resolveActionEquip(sentence string, args *ResolveActionArgs) (*r
 		DungeonInstanceID:                locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:               locationInstanceRec.ID,
 		ResolvedCommand:                  "equip",
-		ResolvedTargetObjectInstanceID:   nullstring.FromString(equippedObjectInstanceID),
-		ResolvedEquippedObjectInstanceID: nullstring.FromString(equippedObjectInstanceID),
+		ResolvedTargetObjectInstanceID:   null.NullStringFromString(equippedObjectInstanceID),
+		ResolvedEquippedObjectInstanceID: null.NullStringFromString(equippedObjectInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil
@@ -663,14 +663,14 @@ func (m *Model) resolveActionDrop(sentence string, args *ResolveActionArgs) (*re
 		DungeonInstanceID:               locationInstanceRec.DungeonInstanceID,
 		LocationInstanceID:              locationInstanceRec.ID,
 		ResolvedCommand:                 "drop",
-		ResolvedTargetObjectInstanceID:  nullstring.FromString(droppedObjectInstanceID),
-		ResolvedDroppedObjectInstanceID: nullstring.FromString(droppedObjectInstanceID),
+		ResolvedTargetObjectInstanceID:  null.NullStringFromString(droppedObjectInstanceID),
+		ResolvedDroppedObjectInstanceID: null.NullStringFromString(droppedObjectInstanceID),
 	}
 
 	if args.EntityType == EntityTypeCharacter {
-		dungeonActionRec.CharacterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.CharacterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	} else if args.EntityType == EntityTypeMonster {
-		dungeonActionRec.MonsterInstanceID = nullstring.FromString(args.EntityInstanceID)
+		dungeonActionRec.MonsterInstanceID = null.NullStringFromString(args.EntityInstanceID)
 	}
 
 	return &dungeonActionRec, nil

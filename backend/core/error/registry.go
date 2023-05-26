@@ -29,15 +29,10 @@ var registry = Registry{
 		ErrorCode:      InvalidJSON,
 		Message:        "Request body contains invalid JSON.",
 	},
-	InvalidQueryParam: Error{
+	InvalidParam: Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      InvalidQueryParam,
-		Message:        "The value for the query parameter is invalid.",
-	},
-	InvalidPathParam: Error{
-		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      InvalidPathParam,
-		Message:        "The value for the path parameter is invalid.",
+		ErrorCode:      InvalidParam,
+		Message:        "The value for the parameter is invalid.",
 	},
 	NotFound: Error{
 		HttpStatusCode: http.StatusNotFound,
@@ -58,6 +53,11 @@ var registry = Registry{
 		HttpStatusCode: http.StatusServiceUnavailable,
 		ErrorCode:      Unavailable,
 		Message:        "Server overloaded: unable to process request",
+	},
+	Malformed: Error{
+		HttpStatusCode: http.StatusBadRequest,
+		ErrorCode:      Malformed,
+		Message:        "Malformed data: unable to process the request",
 	},
 	Internal: Error{
 		HttpStatusCode: http.StatusInternalServerError,
@@ -81,10 +81,6 @@ func deepcopy(e Error) Error {
 	return e
 }
 
-func CreateErrorCode(errorType ValidationErrorType, field string) ErrorCode {
-	return ErrorCode(fmt.Sprintf("%s_%s", errorType, field))
-}
-
 func NewInternalError() error {
 	return GetRegistryError(Internal)
 }
@@ -100,6 +96,10 @@ func NewUnavailableError() error {
 	return GetRegistryError(Unavailable)
 }
 
+func NewMalformedError() error {
+	return GetRegistryError(Malformed)
+}
+
 func NewUnauthorizedError() error {
 	return GetRegistryError(Unauthorized)
 }
@@ -111,8 +111,8 @@ func NewUnauthenticatedError(message string, args ...any) error {
 	return e
 }
 
-func NewQueryParamError(message string, args ...any) error {
-	e := GetRegistryError(InvalidQueryParam)
+func NewParamError(message string, args ...any) error {
+	e := GetRegistryError(InvalidParam)
 	e.Message = fmt.Sprintf(message, args...)
 
 	return e
@@ -121,13 +121,6 @@ func NewQueryParamError(message string, args ...any) error {
 func NewHeaderError(message string, args ...any) error {
 	e := GetRegistryError(InvalidHeader)
 	e.Message = fmt.Sprintf(message, args...)
-
-	return e
-}
-
-func NewPathParamError(param string, id string) error {
-	e := GetRegistryError(InvalidPathParam)
-	e.Message = fmt.Sprintf("%s >%s< is invalid", param, id)
 
 	return e
 }
@@ -165,6 +158,10 @@ func NewUnsupportedError(errorCodeSuffix string, message string, args ...any) er
 	}
 }
 
+func CreateErrorCode(errorType ValidationErrorType, field string) ErrorCode {
+	return ErrorCode(fmt.Sprintf("%s_%s", errorType, field))
+}
+
 func NewSchemaValidationError(resultErrors []gojsonschema.ResultError) error {
 	e := GetRegistryError(SchemaValidation)
 
@@ -177,32 +174,6 @@ func NewSchemaValidationError(resultErrors []gojsonschema.ResultError) error {
 	}
 
 	return e
-}
-
-func ProcessQueryParamError(err error) error {
-	e, conversionErr := ToError(err)
-	if conversionErr != nil {
-		return err
-	}
-
-	if len(e.SchemaValidationErrors) == 0 {
-		return NewQueryParamError(e.Error())
-	}
-
-	errStr := strings.Builder{}
-	errStr.WriteString("Invalid query parameter(s): ")
-	for i, sve := range e.SchemaValidationErrors {
-		if sve.GetField() == "$" {
-			errStr.WriteString(fmt.Sprintf("(%d) %s; ", i+1, sve.Message))
-		} else {
-			errStr.WriteString(fmt.Sprintf("(%d) %s: %s; ", i+1, sve.GetField(), sve.Message))
-		}
-	}
-
-	formattedErrString := errStr.String()
-	formattedErrString = formattedErrString[0 : len(formattedErrString)-2] // remove extra space and semicolon
-	formattedErrString += "."
-	return NewQueryParamError(formattedErrString)
 }
 
 func filterNonUserFriendlyErrors(re []gojsonschema.ResultError) []gojsonschema.ResultError {

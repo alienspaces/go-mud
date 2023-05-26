@@ -17,6 +17,6 @@ func Test_seedDataConfig(t *testing.T) {
 		th.Teardown()
 	}()
 
-	err = th.Setup()
+	_, err = th.Setup()
 	require.NoError(t, err, "Seed data setup returns without error")
 }

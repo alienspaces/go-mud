@@ -86,17 +86,6 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 	// Path parameters
 	id := pp.ByName("dungeon_id")
 
-	if id == "" {
-		err := coreerror.NewNotFoundError("dungeon", id)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewPathParamError("dungeon_id", id)
-		server.WriteError(l, w, err)
-		return err
-
-	}
-
 	l.Info("Getting dungeon record ID >%s<", id)
 
 	rec, err := m.(*model.Model).GetDungeonRec(id, nil)

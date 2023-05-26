@@ -66,7 +66,15 @@ func (e Error) Error() string {
 }
 
 // Request -
-type Request struct{}
+type Request struct {
+	Pagination *RequestPagination `json:"pagination,omitempty"`
+}
+
+// RequestPagination -
+type RequestPagination struct {
+	PageNumber int `json:"page_number"`
+	PageSize   int `json:"page_size"`
+}
 
 // Response -
 type Response struct {
@@ -119,7 +127,7 @@ func (c *Client) Init() error {
 	// AuthTypeBearer
 	if c.AuthType == AuthTypeBearer {
 		if c.AuthToken == "" {
-			msg := "property AuthType is AuthTypeBearer and property AuthToken is undefined, cannot init client"
+			msg := "property AuthType is AuthTypeBearer and AuthToken is undefined, cannot init client"
 			c.Log.Warn(msg)
 			return fmt.Errorf(msg)
 		}
@@ -128,12 +136,12 @@ func (c *Client) Init() error {
 	// AuthTypeBasic
 	if c.AuthType == AuthTypeBasic {
 		if c.AuthUser == "" {
-			msg := "property AuthType is AuthTypeBasic and property AuthUser is undefined, cannot init client"
+			msg := "AuthType is AuthTypeBasic and AuthUser is undefined, cannot init client"
 			c.Log.Warn(msg)
 			return fmt.Errorf(msg)
 		}
 		if c.AuthPass == "" {
-			msg := "property AuthType is AuthTypeBasic and property AuthUser is undefined, cannot init client"
+			msg := "AuthType is AuthTypeBasic and AuthUser is undefined, cannot init client"
 			c.Log.Warn(msg)
 			return fmt.Errorf(msg)
 		}

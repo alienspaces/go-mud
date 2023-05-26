@@ -3,7 +3,7 @@ package runner
 import (
 	"strings"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullint"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
@@ -147,7 +147,7 @@ func actionResponseData(l logger.Logger, actionRecordSet record.ActionRecordSet)
 		ActionID:              dungeonActionRec.ID,
 		ActionCommand:         dungeonActionRec.ResolvedCommand,
 		ActionTurnNumber:      dungeonActionRec.TurnNumber,
-		ActionSerialNumber:    nullint.ToInt16(dungeonActionRec.SerialNumber),
+		ActionSerialNumber:    null.NullInt16ToInt16(dungeonActionRec.SerialNumber),
 		ActionNarrative:       narrative,
 		ActionLocation:        *locationData,
 		ActionCharacter:       characterData,

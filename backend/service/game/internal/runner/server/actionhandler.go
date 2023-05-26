@@ -74,26 +74,6 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
 
-	if dungeonID == "" {
-		err := coreerror.NewNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	if characterID == "" {
-		err := coreerror.NewNotFoundError("character", characterID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewPathParamError("character_id", characterID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
 	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
@@ -154,7 +134,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if len(characterInstanceRecs) == 0 {
-		err := coreerror.NewPathParamError("character_id", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -175,7 +155,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if dungeonInstanceRec == nil {
-		err := coreerror.NewPathParamError("dungeon_id", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}

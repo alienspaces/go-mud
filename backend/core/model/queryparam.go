@@ -85,7 +85,7 @@ func resolveLimit(params map[string]any, opts *coresql.Options) (map[string]any,
 		return params, opts, 0, err
 	}
 	if pageSize < 1 {
-		return params, opts, 0, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageSize, pageSize))
+		return params, opts, 0, coreerror.NewParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageSize, pageSize))
 	}
 
 	opts.Limit = pageSize + 1
@@ -98,7 +98,7 @@ func resolveOffset(params map[string]any, opts *coresql.Options, pageSize int) (
 		return params, opts, err
 	}
 	if pageNumber < 1 {
-		return params, opts, coreerror.NewQueryParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageNumber, pageNumber))
+		return params, opts, coreerror.NewParamError(fmt.Sprintf("Query parameter >%s< is less than 1 >%d<", PageNumber, pageNumber))
 	}
 
 	opts.Offset = (pageNumber - 1) * pageSize
@@ -117,12 +117,12 @@ func extractIntQueryParam(params map[string]any, key string, defaultValue string
 	}
 
 	if len(valueStr) != 1 {
-		return params, 0, coreerror.NewQueryParamError(fmt.Sprintf("query parameter >%s< should be a single value but is >%+v<", key, valueStr))
+		return params, 0, coreerror.NewParamError(fmt.Sprintf("query parameter >%s< should be a single value but is >%+v<", key, valueStr))
 	}
 
 	valueInt, err := strconv.Atoi(valueStr[0])
 	if err != nil {
-		return params, 0, coreerror.NewQueryParamError(fmt.Sprintf("query parameter >%s< has an invalid value >%+v<", key, valueStr))
+		return params, 0, coreerror.NewParamError(fmt.Sprintf("query parameter >%s< has an invalid value >%+v<", key, valueStr))
 	}
 
 	return params, valueInt, nil

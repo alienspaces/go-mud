@@ -3,6 +3,8 @@ package store
 import (
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
+
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
@@ -16,16 +18,23 @@ const (
 
 // Store -
 type Store struct {
-	Log      logger.Logger
-	Config   configurer.Configurer
-	Database string
-	DB       *sqlx.DB
+	Log              logger.Logger
+	Config           configurer.Configurer
+	Database         string
+	DB               *sqlx.DB
+	connectionConfig *storer.ConnectionConfig
 }
+
+var _ storer.Storer = &Store{}
 
 // NewStore -
 func NewStore(c configurer.Configurer, l logger.Logger) (*Store, error) {
 
-	dt := c.Get("APP_SERVER_DATABASE")
+	dt := ""
+	if c != nil {
+		dt = c.Get("APP_SERVER_DATABASE")
+	}
+
 	if dt == "" {
 		l.Debug("defaulting to postgres")
 		dt = DBPostgres
@@ -40,37 +49,34 @@ func NewStore(c configurer.Configurer, l logger.Logger) (*Store, error) {
 	return &s, nil
 }
 
-// Init sets up a database connection if one doesn't already exist
-func (s *Store) Init() error {
-
-	// Get a database connection
-	c, err := s.GetDb()
-	if err != nil {
-		s.Log.Warn("failed database init >%v<", err)
-		return err
-	}
-	s.DB = c
-
-	return nil
-}
-
 // GetDb -
 func (s *Store) GetDb() (*sqlx.DB, error) {
+	l := s.Log
 
 	// Return existing database handle if we have one
 	if s.DB != nil {
 		return s.DB, nil
 	}
 
-	if s.Database == DBPostgres {
-		s.Log.Debug("connecting to postgres")
-		c, err := getPostgresDB(s.Config, s.Log)
+	var err error
+	connectionConfig := s.connectionConfig
+	if connectionConfig == nil {
+		connectionConfig, err = s.GetConnectionConfig()
 		if err != nil {
-			s.Log.Warn("failed getting postgres DB handle >%v<", err)
+			s.Log.Warn("failed to get connection config >%v<", err)
 			return nil, err
 		}
-		s.DB = c
-		return c, nil
+	}
+
+	if s.Database == DBPostgres {
+		l.Debug("connecting to postgres")
+		conn, err := connectPostgresDB(s.Log, connectionConfig)
+		if err != nil {
+			l.Warn("failed getting postgres DB handle >%v<", err)
+			return nil, err
+		}
+		s.DB = conn
+		return conn, nil
 	}
 
 	return nil, fmt.Errorf("unsupported database")
@@ -78,11 +84,14 @@ func (s *Store) GetDb() (*sqlx.DB, error) {
 
 // GetTx -
 func (s *Store) GetTx() (*sqlx.Tx, error) {
+	l := s.Log
 
 	if s.DB == nil {
-		errMsg := "not connected"
-		s.Log.Warn(errMsg)
-		return nil, fmt.Errorf(errMsg)
+		_, err := s.GetDb()
+		if err != nil {
+			l.Warn("failed getting postgres DB handle >%v<", err)
+			return nil, err
+		}
 	}
 
 	return s.DB.Beginx()

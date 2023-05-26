@@ -51,6 +51,12 @@ func WriteError(l logger.Logger, w http.ResponseWriter, errs ...error) {
 	}
 }
 
+func WriteMalformedError(l logger.Logger, w http.ResponseWriter, err error) {
+	e := coreerror.NewMalformedError()
+	l.Warn("malformed data >%v< >%v", err, e)
+	WriteError(l, w, e)
+}
+
 func WriteNotFoundError(l logger.Logger, w http.ResponseWriter, entity string, id string) {
 	e := coreerror.NewNotFoundError(entity, id)
 	l.Warn("not found error >%v<", e)

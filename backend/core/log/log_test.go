@@ -29,7 +29,7 @@ func TestNewLogger(t *testing.T) {
 			Required: true,
 		},
 	}, false)
-	require.Nil(t, err, "NewConfig returns without error")
+	require.NoError(t, err, "NewConfig returns without error")
 
 	l, err := NewLogger(c)
 	require.NoError(t, err, "NewLogger returns without error")

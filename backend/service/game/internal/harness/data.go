@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -270,7 +270,7 @@ func (d *Data) GetObjectInstanceRecByName(name string) (*record.ObjectInstance, 
 func (d *Data) GetObjectInstanceRecsByLocationInstanceID(locationInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.LocationInstanceID) == locationInstanceID {
+		if null.NullStringToString(rec.LocationInstanceID) == locationInstanceID {
 			recs = append(recs, rec)
 		}
 	}
@@ -280,7 +280,7 @@ func (d *Data) GetObjectInstanceRecsByLocationInstanceID(locationInstanceID stri
 func (d *Data) GetObjectInstanceRecsByCharacterInstanceID(characterInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.CharacterInstanceID) == characterInstanceID {
+		if null.NullStringToString(rec.CharacterInstanceID) == characterInstanceID {
 			recs = append(recs, rec)
 		}
 	}
@@ -290,7 +290,7 @@ func (d *Data) GetObjectInstanceRecsByCharacterInstanceID(characterInstanceID st
 func (d *Data) GetEquippedObjectInstanceRecsByCharacterInstanceID(characterInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.CharacterInstanceID) == characterInstanceID &&
+		if null.NullStringToString(rec.CharacterInstanceID) == characterInstanceID &&
 			rec.IsEquipped {
 			recs = append(recs, rec)
 		}
@@ -301,7 +301,7 @@ func (d *Data) GetEquippedObjectInstanceRecsByCharacterInstanceID(characterInsta
 func (d *Data) GetStashedObjectInstanceRecsByCharacterInstanceID(characterInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.CharacterInstanceID) == characterInstanceID &&
+		if null.NullStringToString(rec.CharacterInstanceID) == characterInstanceID &&
 			rec.IsStashed {
 			recs = append(recs, rec)
 		}
@@ -312,7 +312,7 @@ func (d *Data) GetStashedObjectInstanceRecsByCharacterInstanceID(characterInstan
 func (d *Data) GetObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.MonsterInstanceID) == monsterInstanceID {
+		if null.NullStringToString(rec.MonsterInstanceID) == monsterInstanceID {
 			recs = append(recs, rec)
 		}
 	}
@@ -322,7 +322,7 @@ func (d *Data) GetObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string
 func (d *Data) GetEquippedObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.MonsterInstanceID) == monsterInstanceID &&
+		if null.NullStringToString(rec.MonsterInstanceID) == monsterInstanceID &&
 			rec.IsEquipped {
 			recs = append(recs, rec)
 		}
@@ -333,7 +333,7 @@ func (d *Data) GetEquippedObjectInstanceRecsByMonsterInstanceID(monsterInstanceI
 func (d *Data) GetStashedObjectInstanceRecsByMonsterInstanceID(monsterInstanceID string) []*record.ObjectInstance {
 	recs := []*record.ObjectInstance{}
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.ToString(rec.MonsterInstanceID) == monsterInstanceID &&
+		if null.NullStringToString(rec.MonsterInstanceID) == monsterInstanceID &&
 			rec.IsStashed {
 			recs = append(recs, rec)
 		}
@@ -346,22 +346,22 @@ func (d *Data) GetMatchingObjectInstanceRecs(mrec *record.ObjectInstance) []*rec
 	recs := []*record.ObjectInstance{}
 	matched := false
 	for _, rec := range d.ObjectInstanceRecs {
-		if nullstring.IsValid(mrec.LocationInstanceID) {
-			if nullstring.ToString(mrec.LocationInstanceID) == nullstring.ToString(rec.LocationInstanceID) {
+		if null.NullStringIsValid(mrec.LocationInstanceID) {
+			if null.NullStringToString(mrec.LocationInstanceID) == null.NullStringToString(rec.LocationInstanceID) {
 				matched = true
 			} else {
 				matched = false
 			}
 		}
-		if nullstring.IsValid(mrec.CharacterInstanceID) {
-			if nullstring.ToString(mrec.CharacterInstanceID) == nullstring.ToString(rec.CharacterInstanceID) {
+		if null.NullStringIsValid(mrec.CharacterInstanceID) {
+			if null.NullStringToString(mrec.CharacterInstanceID) == null.NullStringToString(rec.CharacterInstanceID) {
 				matched = true
 			} else {
 				matched = false
 			}
 		}
-		if nullstring.IsValid(mrec.MonsterInstanceID) {
-			if nullstring.ToString(mrec.MonsterInstanceID) == nullstring.ToString(rec.MonsterInstanceID) {
+		if null.NullStringIsValid(mrec.MonsterInstanceID) {
+			if null.NullStringToString(mrec.MonsterInstanceID) == null.NullStringToString(rec.MonsterInstanceID) {
 				matched = true
 			} else {
 				matched = false

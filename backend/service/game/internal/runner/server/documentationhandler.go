@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -59,12 +58,14 @@ func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Reques
 
 	l.Info("** get schema documentation handler ** p >%#v< m >%#v<", pp, m)
 
-	docs, err := rnr.GenerateHandlerDocumentation(rnr.GetHandlerConfigs())
-	if err != nil {
-		msg := fmt.Sprintf("unable to load schema documentation >%v<, cannot init runner", err)
-		rnr.Log.Error(msg)
-		return fmt.Errorf(msg)
-	}
+	docs := []byte{}
+
+	// docs, err := rnr.GenerateHandlerDocumentation(rnr.GetHandlerConfigs())
+	// if err != nil {
+	// 	msg := fmt.Sprintf("unable to load schema documentation >%v<, cannot init runner", err)
+	// 	rnr.Log.Error(msg)
+	// 	return fmt.Errorf(msg)
+	// }
 
 	// content type html
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

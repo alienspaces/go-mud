@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
@@ -41,9 +41,9 @@ func TestCreateOne(t *testing.T) {
 				return &record.Action{
 					DungeonInstanceID:                 data.DungeonInstanceRecs[0].ID,
 					LocationInstanceID:                data.LocationInstanceRecs[0].ID,
-					CharacterInstanceID:               nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					CharacterInstanceID:               null.NullStringFromString(data.CharacterInstanceRecs[0].ID),
 					ResolvedCommand:                   record.ActionCommandAttack,
-					ResolvedTargetCharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					ResolvedTargetCharacterInstanceID: null.NullStringFromString(data.CharacterInstanceRecs[0].ID),
 				}
 			},
 			err: false,
@@ -54,9 +54,9 @@ func TestCreateOne(t *testing.T) {
 				rec := &record.Action{
 					DungeonInstanceID:                 data.DungeonInstanceRecs[0].ID,
 					LocationInstanceID:                data.LocationInstanceRecs[0].ID,
-					CharacterInstanceID:               nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					CharacterInstanceID:               null.NullStringFromString(data.CharacterInstanceRecs[0].ID),
 					ResolvedCommand:                   record.ActionCommandLook,
-					ResolvedTargetCharacterInstanceID: nullstring.FromString(data.CharacterInstanceRecs[0].ID),
+					ResolvedTargetCharacterInstanceID: null.NullStringFromString(data.CharacterInstanceRecs[0].ID),
 				}
 				id, _ := uuid.NewRandom()
 				rec.ID = id.String()

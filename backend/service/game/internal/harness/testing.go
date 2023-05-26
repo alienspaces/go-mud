@@ -482,8 +482,8 @@ func (t *Testing) AddCharacterTeardownID(id string) {
 func (t *Testing) AddActionTeardownID(id string) {
 	l := t.Logger("AddActionTeardownID")
 
-	if t.CommitData {
-		t.InitTx(nil)
+	if t.ShouldCommitData {
+		t.InitTx()
 	}
 
 	actionRecordSet, err := t.Model.(*model.Model).GetActionRecordSet(id)
@@ -494,7 +494,7 @@ func (t *Testing) AddActionTeardownID(id string) {
 
 	t.teardownData.AddActionRecordSet(actionRecordSet)
 
-	if t.CommitData {
+	if t.ShouldCommitData {
 		t.RollbackTx()
 	}
 }

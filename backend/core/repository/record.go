@@ -6,8 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/r3labs/diff/v3"
-
-	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 )
 
 // NOTE:
@@ -32,8 +31,8 @@ func (r *Record) clearID() {
 }
 func (r *Record) clearTimestamps() {
 	r.CreatedAt = time.Time{}
-	r.UpdatedAt = nulltime.FromTime(time.Time{})
-	r.DeletedAt = nulltime.FromTime(time.Time{})
+	r.UpdatedAt = null.NullTimeFromTime(time.Time{})
+	r.DeletedAt = null.NullTimeFromTime(time.Time{})
 }
 
 type EqualityFlag string
@@ -79,7 +78,7 @@ func NewRecordTimestamp() time.Time {
 
 // NewRecordNullTimestamp -
 func NewRecordNullTimestamp() sql.NullTime {
-	return nulltime.FromTime(timestamp())
+	return null.NullTimeFromTime(timestamp())
 }
 
 func timestamp() time.Time {

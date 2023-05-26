@@ -3,8 +3,7 @@ package model
 import (
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullint"
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -96,7 +95,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	l.Info("Created action record ID >%s< SerialNumber >%d<", actionRec.ID, nullint.ToInt16(actionRec.SerialNumber))
+	l.Info("Created action record ID >%s< SerialNumber >%d<", actionRec.ID, null.NullInt16ToInt16(actionRec.SerialNumber))
 
 	// TODO: (game) Maybe don't need to do this... Get the updated character record
 	civRec, err = m.GetCharacterInstanceViewRec(characterInstanceID)
@@ -313,7 +312,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	l.Info("Created action record ID >%s< SerialNumber >%d<", actionRec.ID, nullint.ToInt16(actionRec.SerialNumber))
+	l.Info("Created action record ID >%s< SerialNumber >%d<", actionRec.ID, null.NullInt16ToInt16(actionRec.SerialNumber))
 
 	// Get the updated monster record
 	mivRec, err = m.GetMonsterInstanceViewRec(monsterInstanceID)
@@ -415,17 +414,17 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 					{
 						Col: "record_type",
 						Val: record.ActionCharacterRecordTypeSource,
-						Op:  coresql.OpEqualTo,
+						Op:  coresql.OpEqual,
 					},
 					{
 						Col: "action_id",
 						Val: actionID,
-						Op:  coresql.OpEqualTo,
+						Op:  coresql.OpEqual,
 					},
 					{
 						Col: "character_instance_id",
 						Val: actionRec.CharacterInstanceID.String,
-						Op:  coresql.OpEqualTo,
+						Op:  coresql.OpEqual,
 					},
 				},
 			},
@@ -1031,6 +1030,7 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 		l.Warn("failed to get dungeon location direction location records >%v<", err)
 		return nil, err
 	}
+
 	locationInstanceRecordSet.LocationInstanceViewRecs = locationInstanceViewRecs
 
 	return locationInstanceRecordSet, nil
@@ -1046,23 +1046,23 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 		return nil, fmt.Errorf("missing action record argument, cannot get action record since previous action")
 	}
 
-	if !nullstring.IsValid(rec.CharacterInstanceID) {
+	if !null.NullStringIsValid(rec.CharacterInstanceID) {
 		return nil, nil
 	}
 
 	l.Info("Current action record ID >%s<", rec.ID)
 	l.Info("Current action record location instance ID >%s<", rec.LocationInstanceID)
 	l.Info("Current action record turn number >%d<", rec.TurnNumber)
-	l.Info("Current action record serial number >%d<", nullint.ToInt16(rec.SerialNumber))
-	l.Info("Current action record character instance ID >%s<", nullstring.ToString(rec.CharacterInstanceID))
-	l.Info("Current action record monster instance ID >%s<", nullstring.ToString(rec.MonsterInstanceID))
+	l.Info("Current action record serial number >%d<", null.NullInt16ToInt16(rec.SerialNumber))
+	l.Info("Current action record character instance ID >%s<", null.NullStringToString(rec.CharacterInstanceID))
+	l.Info("Current action record monster instance ID >%s<", null.NullStringToString(rec.MonsterInstanceID))
 
 	actionRecs, err := m.GetActionRecs(
 		&coresql.Options{
 			Params: []coresql.Param{
 				{
 					Col: "character_instance_id",
-					Val: nullstring.ToString(rec.CharacterInstanceID),
+					Val: null.NullStringToString(rec.CharacterInstanceID),
 				},
 				{
 					Col: "turn_number",
@@ -1084,7 +1084,7 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 	}
 
 	if len(actionRecs) != 1 {
-		l.Info("Character instance ID >%s< has no previous action records", nullstring.ToString(rec.CharacterInstanceID))
+		l.Info("Character instance ID >%s< has no previous action records", null.NullStringToString(rec.CharacterInstanceID))
 		actionRecs = append(actionRecs, rec)
 		return actionRecs, nil
 	}
@@ -1094,9 +1094,9 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 	l.Info("Previous action record ID >%s<", prevActionRec.ID)
 	l.Info("Previous action record location instance ID >%s<", prevActionRec.LocationInstanceID)
 	l.Info("Previous action record turn number >%d<", prevActionRec.TurnNumber)
-	l.Info("Previous action record serial number >%d<", nullint.ToInt16(prevActionRec.SerialNumber))
-	l.Info("Previous action record character instance ID >%s<", nullstring.ToString(prevActionRec.CharacterInstanceID))
-	l.Info("Previous action record monster instance ID >%s<", nullstring.ToString(prevActionRec.MonsterInstanceID))
+	l.Info("Previous action record serial number >%d<", null.NullInt16ToInt16(prevActionRec.SerialNumber))
+	l.Info("Previous action record character instance ID >%s<", null.NullStringToString(prevActionRec.CharacterInstanceID))
+	l.Info("Previous action record monster instance ID >%s<", null.NullStringToString(prevActionRec.MonsterInstanceID))
 
 	// We add one to the previous action serial number and subtract one from the current action
 	// serial number so we exclude those specific records when looking between.
@@ -1110,7 +1110,7 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 				},
 				{
 					Col: "serial_number",
-					Val: fmt.Sprintf("%d,%d", nullint.ToInt16(prevActionRec.SerialNumber)+adjustAmount, nullint.ToInt16(rec.SerialNumber)-adjustAmount),
+					Val: fmt.Sprintf("%d,%d", null.NullInt16ToInt16(prevActionRec.SerialNumber)+adjustAmount, null.NullInt16ToInt16(rec.SerialNumber)-adjustAmount),
 					Op:  coresql.OpBetween,
 				},
 			},
@@ -1181,7 +1181,7 @@ func (m *Model) GetMonsterInstanceMemoryActionRecs(rec *record.MonsterInstanceVi
 	aRecs := []*record.Action{}
 	for len(maRecs) > 0 {
 		if len(oaRecs) > 0 {
-			if nullint.ToInt16(maRecs[0].SerialNumber) > nullint.ToInt16(oaRecs[0].SerialNumber) {
+			if null.NullInt16ToInt16(maRecs[0].SerialNumber) > null.NullInt16ToInt16(oaRecs[0].SerialNumber) {
 				aRecs = append(aRecs, maRecs[0])
 				maRecs = maRecs[1:]
 			} else {
@@ -1214,7 +1214,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 
 	// Create target location record set
 	if actionRec.ResolvedTargetLocationInstanceID.Valid {
-		targetLocationRecordSet, err := m.createTargetActionLocationRecordSet(actionRec.ID, nullstring.ToString(actionRec.ResolvedTargetLocationInstanceID))
+		targetLocationRecordSet, err := m.createTargetActionLocationRecordSet(actionRec.ID, null.NullStringToString(actionRec.ResolvedTargetLocationInstanceID))
 		if err != nil {
 			l.Warn("failed creating target action location record set >%v<", err)
 			return nil, err
@@ -1224,7 +1224,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 
 	// Create the target character action record
 	if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+		actionCharacterRec, actionCharacterObjectRecs, err := m.createActionTargetCharacterRecs(actionRec.ID, actionRec.LocationInstanceID, null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID))
 		if err != nil {
 			l.Warn("failed create action character records >%v<", err)
 			return nil, err
@@ -1235,7 +1235,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 
 	// Create the target dungeon monster action record
 	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
+		actionMonsterRec, actionMonsterObjectRecs, err := m.createActionTargetMonsterRecs(actionRec.ID, actionRec.LocationInstanceID, null.NullStringToString(actionRec.ResolvedTargetMonsterInstanceID))
 		if err != nil {
 			l.Warn("failed create action character records >%v<", err)
 			return nil, err
@@ -1249,7 +1249,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 		actionObjectRec, err := m.createActionObjectRec(
 			actionRec.ID,
 			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID),
+			null.NullStringToString(actionRec.ResolvedTargetObjectInstanceID),
 			record.ActionObjectRecordTypeTarget,
 		)
 		if err != nil {
@@ -1264,7 +1264,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 		actionObjectRec, err := m.createActionObjectRec(
 			actionRec.ID,
 			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedStashedObjectInstanceID),
+			null.NullStringToString(actionRec.ResolvedStashedObjectInstanceID),
 			record.ActionObjectRecordTypeStashed,
 		)
 		if err != nil {
@@ -1279,7 +1279,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 		actionObjectRec, err := m.createActionObjectRec(
 			actionRec.ID,
 			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedEquippedObjectInstanceID),
+			null.NullStringToString(actionRec.ResolvedEquippedObjectInstanceID),
 			record.ActionObjectRecordTypeEquipped,
 		)
 		if err != nil {
@@ -1294,7 +1294,7 @@ func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecor
 		actionObjectRec, err := m.createActionObjectRec(
 			actionRec.ID,
 			actionRec.LocationInstanceID,
-			nullstring.ToString(actionRec.ResolvedDroppedObjectInstanceID),
+			null.NullStringToString(actionRec.ResolvedDroppedObjectInstanceID),
 			record.ActionObjectRecordTypeDropped,
 		)
 		if err != nil {

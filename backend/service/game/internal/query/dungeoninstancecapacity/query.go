@@ -66,7 +66,7 @@ func (q *Query) GetMany(opts *coresql.Options) ([]*record.DungeonInstanceCapacit
 
 	recs := q.NewRecordArray()
 
-	rows, err := q.Rows(opts)
+	rows, err := q.GetRows(opts)
 	if err != nil {
 		q.Log.Warn("failed query execution >%v<", err)
 		return nil, err

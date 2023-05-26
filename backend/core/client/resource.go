@@ -64,7 +64,7 @@ func (c *Client) Create(path string, params map[string]string, reqData interface
 // Update is a convenience method wrapping RetryRequest
 func (c *Client) Update(path string, params map[string]string, reqData interface{}, respData interface{}) error {
 
-	c.Log.Context("function", "UpdateTemplate")
+	c.Log.Context("function", "Update")
 	defer func() {
 		c.Log.Context("function", "")
 	}()
