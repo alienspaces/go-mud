@@ -13,7 +13,9 @@ func newDependencies(t *testing.T) (*config.Config, *log.Log, *Store) {
 	c, err := config.NewConfigWithDefaults([]config.Item{}, false)
 	require.NoError(t, err, "NewConfig returns without error")
 
-	l := log.NewLogger(c)
+	l, err := log.NewLogger(c)
+	require.NoError(t, err, "NewLogger returns without error")
+	require.NotNil(t, l, "NewLogger returns a store")
 
 	s, err := NewStore(c, l)
 	require.NoError(t, err, "NewStore returns without error")

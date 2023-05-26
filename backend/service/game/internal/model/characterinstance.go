@@ -124,7 +124,7 @@ CHARACTER_OBJECT_RECS:
 		}
 	}
 
-	// Update character object reocrds or create missing character object records the character now has
+	// Update character object records or create missing character object records the character now has
 CHARACTER_OBJECT_INSTANCE_RECS:
 	for iidx := range characterObjectInstanceRecs {
 		for idx := range characterObjectRecs {

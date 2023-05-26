@@ -41,7 +41,10 @@ func NewDefaultDependencies() (configurer.Configurer, logger.Logger, error) {
 		return nil, nil, err
 	}
 
-	l := log.NewLogger(c)
+	l, err := log.NewLogger(c)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	return c, l, nil
 }

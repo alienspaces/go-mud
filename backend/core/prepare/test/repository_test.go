@@ -204,7 +204,10 @@ func NewDependencies() (configurer.Configurer, logger.Logger, storer.Storer, err
 	}
 
 	// logger
-	l := log.NewLogger(c)
+	l, err := log.NewLogger(c)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 
 	// storer
 	s, err := store.NewStore(c, l)

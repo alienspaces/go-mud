@@ -524,7 +524,7 @@ func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
 
 	for idx := range miRecs {
 		l.Info("Deleting monster instance record ID >%s<", miRecs[idx].ID)
-		err := m.DeleteObjectInstanceRec(miRecs[idx].ID)
+		err := m.DeleteMonsterInstanceRec(miRecs[idx].ID)
 		if err != nil {
 			l.Warn("failed to delete monster instance record >%v<", err)
 			return err

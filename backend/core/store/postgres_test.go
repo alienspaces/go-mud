@@ -11,24 +11,14 @@ import (
 )
 
 func Test_getPostgresDB(t *testing.T) {
-	// setThenRestoreEnv := func(key string, value string) func(*coreconfig.Config) func() {
-	// 	return func(conf *coreconfig.Config) func() {
-	// 		oldEnvValue := conf.Get(key)
-	// 		conf.Set(key, value)
-
-	// 		return func() {
-	// 			conf.Set(key, oldEnvValue)
-	// 		}
-	// 	}
-	// }
-
 	c, err := coreconfig.NewConfigWithDefaults(nil, false)
 	require.NoError(t, err)
 
-	l := log.NewLogger(c)
+	l, err := log.NewLogger(c)
+	require.NoError(t, err, "NewLogger returns without error")
 
 	s, err := NewStore(c, l)
-	require.NoError(t, err)
+	require.NoError(t, err, "NewStore returns without error")
 
 	defaultConnectionConfig, err := s.GetConnectionConfig()
 	require.NoError(t, err)

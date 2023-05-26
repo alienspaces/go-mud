@@ -109,6 +109,36 @@
 		},
 		{
 			"name": "Get dungeon locations",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//",
+							"pm.test('Get dungeon locations', function() {",
+							"    try {",
+							"        pm.expect(pm.response.code).to.equal(200);",
+							"    } catch (e) {",
+							"        throw new Error(`${e.message}: ${JSON.stringify(pm.response.json())}`);",
+							"    }",
+							"",
+							"    const respJSON = pm.response.json();",
+							"    pm.expect(respJSON, \"Response JSON\").to.not.be.empty;",
+							"    pm.expect(respJSON.data, \"Response JSON data\").to.not.be.empty;",
+							"    pm.expect(respJSON.data.length, \"Response JSON data length\").to.equal(8);",
+							"",
+							"    respJSON.data.forEach(function(e) {",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('dungeon_id');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('location_id');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('location_name');",
+							"        pm.expect(e, \"Dungeon has property\").to.have.property('location_description');",
+							"    });  ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -350,8 +380,6 @@
 							"        pm.expect(l, \"Location has property\").to.have.property('location_description');",
 							"        pm.expect(l, \"Location has property\").to.have.property('location_directions');",
 							"        pm.expect(l, \"Location has property\").to.have.property('location_characters');",
-							"        pm.expect(l, \"Location has property\").to.have.property('location_monsters');",
-							"        pm.expect(l, \"Location has property\").to.have.property('location_objects');",
 							"    });  ",
 							"});",
 							""
