@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+SERVICE_NAME=$1
+if [ -z "${SERVICE_NAME}" ]; then
+    echo "=> (start service) Missing service name, cannot start service"
+    exit 0
+fi
+
+shift
+
+# start krakend
+source "${BASH_SOURCE%/*}"/krakend-start || exit $?
+
+echo
+echo "=> Starting service ${SERVICE_NAME}"
+echo
+
+# copy development env
+cp .env.development .env
+
+# Environment
+source "${BASH_SOURCE%/*}"/env || exit $?
+
+# reset APP_SERVER_PORT as each service should define
+# a unique server port in their local env
+export APP_SERVER_PORT=""
+
+# build and run service
+cd service/"$SERVICE_NAME" || exit
+
+# copy development env
+cp .env.development .env
+
+# NOTE: we shift into the service directory before sourcing
+# the environment so $PWD is correct for APP_SERVER_HOME
+
+# load service specific environment
+source ../../"${BASH_SOURCE%/*}"/env || exit $?
+
+# build server
+SERVER_NAME="go-mud-${SERVICE_NAME}-server"
+rm -f "$SERVER_NAME"
+go build -o "$SERVER_NAME" ./cmd/server || exit $?
+
+echo "Running server $SERVER_NAME"
+./"$SERVER_NAME"
+cd - || exit

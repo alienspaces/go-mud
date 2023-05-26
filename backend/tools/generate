@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+function usage {
+    echo "generate [service/repo] [ServiceName] [RepoName]"
+    echo
+}
+
+function generate_service {
+
+    SERVICE_CC=$1
+    if [ -z "$SERVICE_CC" ]; then
+        echo "Missing service name, cannot create new service"
+        usage
+        exit 1
+    fi
+
+    # check service camel case
+    case ${SERVICE_CC:0:1} in
+    [A-Z])
+        echo "$SERVICE_CC looks good..."
+        ;;
+    *)
+        echo "$SERVICE_CC must be in CamelCase thanks!"
+        exit
+        ;;
+    esac
+
+    # lower case service name
+    SERVICE_LC=$(echo "$SERVICE_CC" | tr '[:upper:]' '[:lower:]')
+    SERVICE_UC=$(echo "$SERVICE_CC" | tr '[:lower:]' '[:upper:]')
+
+    echo "Generating service ${SERVICE_CC}"
+
+    # create service directory
+    mkdir ./service/"${SERVICE_LC}"
+
+    # remove template binaries in case
+    rm -f ./service/template/go-mud-template-server
+    rm -f ./service/template/go-mud-template-cli
+
+    # copy source
+    cp -R ./service/template/* ./service/"${SERVICE_LC}"
+    cp ./service/template/.env* ./service/"${SERVICE_LC}"/
+
+    # rename specific files
+    mv ./service/"${SERVICE_LC}"/internal/repository/template ./service/"${SERVICE_LC}"/internal/repository/"${SERVICE_LC}"
+
+    # replace template names
+    find ./service/"${SERVICE_LC}" -type f -exec perl -pi -e "s/template/${SERVICE_LC}/g" {} \;
+    find ./service/"${SERVICE_LC}" -type f -exec perl -pi -e "s/TEMPLATE/${SERVICE_UC}/g" {} \;
+    find ./service/"${SERVICE_LC}" -type f -exec perl -pi -e "s/Template/${SERVICE_CC}/g" {} \;
+
+    # check go module integrity
+    cd ./service/"${SERVICE_LC}" || exit
+    go mod tidy
+    cd - || exit
+}
+
+function generate_repo {
+
+    SERVICE_CC=$1
+    if [ -z "$SERVICE_CC" ]; then
+        echo "Missing service name, cannot create new service"
+        usage
+        exit 1
+    fi
+
+    # check service camel case
+    case ${SERVICE_CC:0:1} in
+    [A-Z])
+        echo "$SERVICE_CC looks good..."
+        ;;
+    *)
+        echo "$SERVICE_CC must be in CamelCase thanks!"
+        exit
+        ;;
+    esac
+
+    # lower/upper case service name
+    SERVICE_LC=$(echo "$SERVICE_CC" | tr '[:upper:]' '[:lower:]')
+    SERVICE_UC=$(echo "$SERVICE_CC" | tr '[:lower:]' '[:upper:]')
+
+    REPO_CC=$2
+    if [ -z "$REPO_CC" ]; then
+        echo "Missing repo name, cannot create new repo"
+        usage
+        exit 1
+    fi
+
+    # check service camel case
+    case ${REPO_CC:0:1} in
+    [A-Z])
+        echo "$REPO_CC looks good..."
+        ;;
+    *)
+        echo "$REPO_CC must be in CamelCase thanks!"
+        exit
+        ;;
+    esac
+
+    # lower/upper case repository name
+    # shellcheck disable=SC2034
+    REPO_LC=$(echo "$REPO_CC" | tr '[:upper:]' '[:lower:]')
+    # shellcheck disable=SC2034
+    REPO_UC=$(echo "$REPO_CC" | tr '[:lower:]' '[:upper:]')
+
+    echo "Generating repo ${REPO_CC} in service ${SERVICE_CC}"
+
+    # TODO: (script) Actually generate a repository from the template service eh?
+}
+
+# command (repo, service)
+COMMAND=$1
+shift
+
+if [ -z "$COMMAND" ]; then
+    echo "Missing command, cannot generate"
+    usage
+    exit 1
+fi
+
+if [[ "$1" == *'/'* ]]; then
+    echo "Generator does not support nesting directories, cannot generate"
+    usage
+    exit 1
+fi
+
+if [[ "$2" == *'/'* ]]; then
+    echo "Generator does not support nesting directories, cannot generate"
+    usage
+    exit 1
+fi
+
+# generate repo
+if [ "$COMMAND" == "repo" ]; then
+    generate_repo "$1" "$2"
+    exit 1
+fi
+
+# generate service
+if [ "$COMMAND" == "service" ]; then
+    generate_service "$1"
+    exit 1
+fi
+
+echo "Unknown command ${COMMAND}. doing nothing!"
+echo
+usage
+exit 1

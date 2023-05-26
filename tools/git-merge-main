@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+BRANCH=$(git symbolic-ref --short HEAD)
+git checkout main
+git fetch
+git merge origin/develop
+git push origin main
+git checkout "$BRANCH"
+git branch

@@ -1,0 +1,29 @@
+
+# unique job names required
+test_common_database:
+  stage: test
+  image: $DOCKER_IMAGE_GITLAB_POSTGRES_FULL_NAME
+  services:
+    - name: $DOCKER_IMAGE_GITLAB_POSTGRES_FULL_NAME
+      alias: postgres
+  variables:
+    POSTGRES_DB: "test"
+    POSTGRES_USER: "test_user"
+    POSTGRES_PASSWORD: "test_user_password"
+  before_script:
+    - apk update
+    - apk add gcc
+    - apk add bash
+    - apk add musl-dev
+    - apk add libffi-dev
+    - apk add openssl-dev
+    - apk add make
+  script:
+    - echo "Testing.."
+    - cd common/database
+    - go test -v .
+  only:
+    changes:
+      - common/database/**/*
+      - common/logger/**/*
+      - common/env/**/*

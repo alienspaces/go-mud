@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Environment
+source "${BASH_SOURCE%/*}"/env || exit $?
+
+# stop database
+echo "=> Stopping database";
+
+# if [ "$APP_SERVER_DB_SERVICE" = "docker" ]; then
+if [ "$APP_SERVER_ENV" = "development" ]; then
+
+    echo "=> Stopping database - docker service"
+
+    # We want this string to output $arg without expansion
+    # shellcheck disable=SC2016
+    docker ps -a | grep go-mud | awk '{print $1}' | xargs sh -c 'for arg do docker stop $arg; docker rm $arg; done' _
+fi

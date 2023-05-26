@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Local development run script
+
+# Environment
+source "${BASH_SOURCE%/*}"/env || exit $?
+
+# go version
+if [ "$(command -v gvm)" ]; then
+    source  ~/.gvm/scripts/gvm
+    echo "=> Use ${APP_SERVER_GO_VERSION}"
+    gvm use "$APP_SERVER_GO_VERSION" || exit $?
+fi
+
+# golang migrate
+MIGRATE_PATH=$(which migrate)
+if [[ "$MIGRATE_PATH" != *"$APP_SERVER_GO_VERSION"* ]]; then
+    source "${BASH_SOURCE%/*}"/db-migrate-install || exit $?
+fi
+
+# NOTE: Add new services here
+service_base_path=./service
+service_names=(template game)
+echo "=> (db-migrate-up) - Service names" "${service_names[@]}"
+
+for service_name in "${service_names[@]}"; do
+
+    # Ingoring template
+    if [ "$service_name" = "template" ] && [ "$APP_SERVER_ENABLE_TEMPLATE" != 1 ]; then
+        echo "=> (db-migrate-up) - Skipping database $service_name"
+        continue
+    fi
+
+    # run migrations
+    if [ -d "$service_base_path/$service_name/migration" ]; then
+
+        # load service specific environment
+        source "${BASH_SOURCE%/*}"/env "$service_base_path/$service_name" || exit $?
+
+        URL="postgres://$APP_SERVER_DB_USER:$APP_SERVER_DB_PASSWORD@$APP_SERVER_DB_HOST:$APP_SERVER_DB_PORT/$APP_SERVER_DB_NAME?sslmode=disable"
+
+        echo "=> Migration path $service_base_path/$service_name/migration"
+
+        migrate -verbose -path "$service_base_path/$service_name/migration" -database "$URL" -- up
+    fi
+done
