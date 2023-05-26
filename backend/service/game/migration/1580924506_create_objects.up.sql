@@ -666,7 +666,8 @@ FROM
   "object_instance" oi
   JOIN "object" o on o.id = oi.object_id;
 
-CREATE VIEW dungeon_entity_instance_turn_view AS (
+CREATE
+OR REPLACE VIEW dungeon_entity_instance_turn_view AS (
   SELECT
     a1.dungeon_instance_id,
     d.name as "dungeon_name",
@@ -716,4 +717,40 @@ CREATE VIEW dungeon_entity_instance_turn_view AS (
       WHERE
         a2.monster_instance_id = a1.monster_instance_id
     )
+);
+
+CREATE
+OR REPLACE VIEW dungeon_instance_capacity_view AS (
+  WITH "dungeon_capacity" AS (
+    SELECT
+      d.id AS dungeon_id,
+      count(l.id) AS dungeon_location_count
+    FROM
+      dungeon d
+      JOIN location l ON l.dungeon_id = d.id
+    GROUP BY
+      d.id
+  ),
+  "dungeon_instance_capacity" AS (
+    SELECT
+      di.id AS dungeon_instance_id,
+      di.dungeon_id AS dungeon_id,
+      count(ci.id) AS dungeon_instance_character_count
+    FROM
+      dungeon_instance di
+      LEFT JOIN character_instance ci ON ci.dungeon_instance_id = di.id
+    GROUP BY
+      di.id
+  )
+  SELECT
+    dic.dungeon_instance_id,
+    dic.dungeon_instance_character_count,
+    dc.dungeon_id,
+    dc.dungeon_location_count
+  FROM
+    dungeon_instance_capacity dic
+    JOIN dungeon_capacity dc ON dc.dungeon_id = dic.dungeon_id
+    AND dc.dungeon_location_count > dic.dungeon_instance_character_count
+  WHERE
+    1 = 1
 );

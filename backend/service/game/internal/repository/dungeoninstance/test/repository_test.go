@@ -31,7 +31,7 @@ func TestCreateOne(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -68,7 +68,7 @@ func TestCreateOne(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
@@ -76,7 +76,7 @@ func TestCreateOne(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
@@ -118,7 +118,7 @@ func TestGetOne(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -148,7 +148,7 @@ func TestGetOne(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
@@ -156,14 +156,14 @@ func TestGetOne(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
 			r := h.Model.(*model.Model).DungeonInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
-			rec, err := r.GetOne(tc.id(), false)
+			rec, err := r.GetOne(tc.id(), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetOne returns error")
 				return
@@ -197,7 +197,7 @@ func TestUpdateOne(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -231,7 +231,7 @@ func TestUpdateOne(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
@@ -239,7 +239,7 @@ func TestUpdateOne(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
@@ -281,7 +281,7 @@ func TestDeleteOne(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -311,7 +311,7 @@ func TestDeleteOne(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.Teardown()
@@ -319,7 +319,7 @@ func TestDeleteOne(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			// repository
@@ -333,7 +333,7 @@ func TestDeleteOne(t *testing.T) {
 			}
 			require.NoError(t, err, "DeleteOne returns without error")
 
-			rec, err := r.GetOne(tc.id(), false)
+			rec, err := r.GetOne(tc.id(), nil)
 			require.Error(t, err, "GetOne returns error")
 			require.Nil(t, rec, "GetOne does not return record")
 

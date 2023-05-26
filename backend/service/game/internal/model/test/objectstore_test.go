@@ -28,7 +28,7 @@ func TestCreateObjectRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -69,7 +69,7 @@ func TestCreateObjectRec(t *testing.T) {
 		func() {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -79,7 +79,7 @@ func TestCreateObjectRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec(th.Data)
@@ -107,7 +107,7 @@ func TestGetObjectRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -137,7 +137,7 @@ func TestGetObjectRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -147,10 +147,10 @@ func TestGetObjectRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetObjectRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetObjectRec(tc.id(), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetObjectRec returns error")
 				return
@@ -174,7 +174,7 @@ func TestUpdateObjectRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -208,7 +208,7 @@ func TestUpdateObjectRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -218,7 +218,7 @@ func TestUpdateObjectRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec()
@@ -246,7 +246,7 @@ func TestDeleteObjectRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -276,7 +276,7 @@ func TestDeleteObjectRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -286,7 +286,7 @@ func TestDeleteObjectRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			err := h.Model.(*model.Model).DeleteObjectRec(tc.id())
@@ -296,7 +296,7 @@ func TestDeleteObjectRec(t *testing.T) {
 			}
 			require.NoError(t, err, "DeleteObjectRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetObjectRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetObjectRec(tc.id(), nil)
 			require.NoError(t, err, "GetObjectRec returns without error")
 			require.Nil(t, rec, "GetObjectRec does not return record")
 		}()
