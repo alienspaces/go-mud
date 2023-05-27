@@ -26,9 +26,6 @@ func TestCreateOne(t *testing.T) {
 	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
-	// harness commit data
-	h.ShouldCommitData = true
-
 	tests := []struct {
 		name string
 		rec  func(data harness.Data) *record.CharacterInstance
@@ -81,10 +78,6 @@ func TestCreateOne(t *testing.T) {
 				require.NoError(t, err, "Teardown returns without error")
 			}()
 
-			// init tx
-			_, err = h.InitTx()
-			require.NoError(t, err, "InitTx returns without error")
-
 			// repository
 			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
@@ -98,8 +91,6 @@ func TestCreateOne(t *testing.T) {
 			}
 			require.NoError(t, err, "CreateOne returns without error")
 			require.NotEmpty(t, rec.CreatedAt, "CreateOne returns record with CreatedAt")
-
-			h.RollbackTx()
 		})
 	}
 }
@@ -114,9 +105,6 @@ func TestGetOne(t *testing.T) {
 
 	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
-
-	// harness commit data
-	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -153,10 +141,6 @@ func TestGetOne(t *testing.T) {
 				require.NoError(t, err, "Teardown returns without error")
 			}()
 
-			// init tx
-			_, err = h.InitTx()
-			require.NoError(t, err, "InitTx returns without error")
-
 			// repository
 			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
@@ -169,8 +153,6 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "GetOne returns without error")
 			require.NotNil(t, rec, "GetOne returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
-
-			h.RollbackTx()
 		})
 	}
 }
@@ -185,9 +167,6 @@ func TestUpdateOne(t *testing.T) {
 
 	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
-
-	// harness commit data
-	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -228,10 +207,6 @@ func TestUpdateOne(t *testing.T) {
 				require.NoError(t, err, "Teardown returns without error")
 			}()
 
-			// init tx
-			_, err = h.InitTx()
-			require.NoError(t, err, "InitTx returns without error")
-
 			// repository
 			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
@@ -245,8 +220,6 @@ func TestUpdateOne(t *testing.T) {
 			}
 			require.NoError(t, err, "UpdateOne returns without error")
 			require.NotEmpty(t, rec.UpdatedAt, "UpdateOne returns record with UpdatedAt")
-
-			h.RollbackTx()
 		})
 	}
 }
@@ -261,9 +234,6 @@ func TestDeleteOne(t *testing.T) {
 
 	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
-
-	// harness commit data
-	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -300,10 +270,6 @@ func TestDeleteOne(t *testing.T) {
 				require.NoError(t, err, "Teardown returns without error")
 			}()
 
-			// init tx
-			_, err = h.InitTx()
-			require.NoError(t, err, "InitTx returns without error")
-
 			// repository
 			r := h.Model.(*model.Model).CharacterInstanceRepository()
 			require.NotNil(t, r, "Repository is not nil")
@@ -318,8 +284,6 @@ func TestDeleteOne(t *testing.T) {
 			rec, err := r.GetOne(tc.id(), nil)
 			require.Error(t, err, "GetOne returns error")
 			require.Nil(t, rec, "GetOne does not return record")
-
-			h.RollbackTx()
 		})
 	}
 }

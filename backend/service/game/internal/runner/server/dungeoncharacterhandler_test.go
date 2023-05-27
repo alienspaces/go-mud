@@ -34,7 +34,7 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 		return headers
 	}
 
-	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.DungeonCharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
@@ -55,7 +55,7 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 					}
 					return params
 				},
-				ResponseBody: testCaseResponseBody,
+				ResponseDecoder: testCaseResponseDecoder,
 				ResponseCode: http.StatusOK,
 			},
 		},
@@ -123,7 +123,7 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 		return headers
 	}
 
-	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.DungeonCharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
@@ -144,7 +144,7 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 					}
 					return params
 				},
-				ResponseBody: testCaseResponseBody,
+				ResponseDecoder: testCaseResponseDecoder,
 				ResponseCode: http.StatusOK,
 			},
 		},

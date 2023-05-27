@@ -49,7 +49,7 @@ func TestPostActionHandler(t *testing.T) {
 		return params
 	}
 
-	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.ActionResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
@@ -71,8 +71,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -238,8 +238,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -405,8 +405,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -571,8 +571,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -721,8 +721,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -888,8 +888,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -1055,8 +1055,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -1213,8 +1213,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -1371,8 +1371,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.ActionResponse {
 
@@ -1527,8 +1527,8 @@ func TestPostActionHandler(t *testing.T) {
 					}
 					return &res
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusBadRequest,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusBadRequest,
 			},
 		},
 	}

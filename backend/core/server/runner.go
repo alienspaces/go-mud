@@ -49,7 +49,6 @@ type Runner struct {
 
 	// Handler and message configuration
 	HandlerConfig map[string]HandlerConfig
-	MessageConfig map[string]MessageConfig
 
 	// Assignable functions
 	RunHTTPFunc   func(args map[string]interface{}) (*http.Server, error)
@@ -176,13 +175,17 @@ type MiddlewareConfig struct {
 
 // ValidateParamsConfig defines how route path parameters should be validated
 //
-// ExcludePathParamsFromQueryParams - By default path parameters will be added as query parameters
-// and validated as part of query parameter validation. When disabled path parameters
-// will need to be validated by the handler.
-// Schema - Validate query parameters using this JSON schema set
+// ExcludePathParamsFromQueryParams - By default path parameters will be added as query
+// parameters and validated as part of query parameter validation. When disabled path
+// parameters will need to be validated in handler functions
+//
+// # PathParamSchema - Validate path parameters using this JSON schema set
+//
+// QueryParamSchema - Validate query parameters using this JSON schema set
 type ValidateParamsConfig struct {
 	ExcludePathParamsFromQueryParams bool
-	Schema                           jsonschema.SchemaWithReferences
+	PathParamSchema                  jsonschema.SchemaWithReferences
+	QueryParamSchema                 jsonschema.SchemaWithReferences
 }
 
 // DocumentationConfig - Configuration describing how to document a route
@@ -579,15 +582,6 @@ func (rnr *Runner) defaultModellerFunc(l logger.Logger) (modeller.Modeller, erro
 	return nil, nil
 }
 
-func (rnr *Runner) GetMessageConfigs() []MessageConfig {
-	var cfgs []MessageConfig
-	for _, cfg := range rnr.MessageConfig {
-		cfgs = append(cfgs, cfg)
-	}
-
-	return cfgs
-}
-
 func (rnr *Runner) GetHandlerConfigs() []HandlerConfig {
 	var cfgs []HandlerConfig
 	for _, cfg := range rnr.HandlerConfig {
@@ -616,11 +610,16 @@ func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
 }
 
 func ResolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, location string) map[string]HandlerConfig {
+
 	for handler, cfg := range handlerConfig {
 		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
-			schema := cfg.MiddlewareConfig.ValidateParamsConfig.Schema
+			schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
 			if len(schema.Main.Name) > 0 {
-				cfg.MiddlewareConfig.ValidateParamsConfig.Schema = jsonschema.ResolveSchemaLocation(schema, location)
+				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = jsonschema.ResolveSchemaLocation(schema, location)
+			}
+			schema = cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
+			if len(schema.Main.Name) > 0 {
+				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = jsonschema.ResolveSchemaLocation(schema, location)
 			}
 		}
 
@@ -639,19 +638,26 @@ func ResolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, locati
 }
 
 func ResolveHandlerSchemaLocationRoot(handlerConfig map[string]HandlerConfig, root string) (map[string]HandlerConfig, error) {
+
 	for handler, cfg := range handlerConfig {
 		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
-			schema := cfg.MiddlewareConfig.ValidateParamsConfig.Schema
-			if len(schema.Main.Name) > 0 || len(schema.Main.Location) > 0 {
-				cfg.MiddlewareConfig.ValidateParamsConfig.Schema = jsonschema.ResolveSchemaLocationRoot(schema, root)
+			schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
+			if !schema.IsEmpty() {
+				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = jsonschema.ResolveSchemaLocationRoot(schema, root)
+			}
+			schema = cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
+			if !schema.IsEmpty() {
+				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = jsonschema.ResolveSchemaLocationRoot(schema, root)
 			}
 		}
 
-		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 || len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Location) > 0 {
+		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 ||
+			len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Location) > 0 {
 			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateRequestSchema, root)
 		}
 
-		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 || len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Location) > 0 {
+		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 ||
+			len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Location) > 0 {
 			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateResponseSchema, root)
 		}
 
@@ -659,38 +665,6 @@ func ResolveHandlerSchemaLocationRoot(handlerConfig map[string]HandlerConfig, ro
 	}
 
 	return handlerConfig, nil
-}
-
-func ResolveMessageSchemaLocation(messageConfig map[string]MessageConfig, location string) map[string]MessageConfig {
-	for message, cfg := range messageConfig {
-		cfg.ValidateSchema = jsonschema.ResolveSchemaLocation(cfg.ValidateSchema, location)
-
-		messageConfig[message] = cfg
-	}
-
-	return messageConfig
-}
-
-func ResolveMessageSchemaLocationRoot(messageConfig map[string]MessageConfig, root string) (map[string]MessageConfig, error) {
-	for messsage, cfg := range messageConfig {
-		cfg.ValidateSchema = jsonschema.ResolveSchemaLocationRoot(cfg.ValidateSchema, root)
-
-		messageConfig[messsage] = cfg
-	}
-
-	return messageConfig, nil
-}
-
-func ResolveDocumentationSummary(handlerConfig map[string]HandlerConfig) map[string]HandlerConfig {
-	for name, cfg := range handlerConfig {
-		if cfg.DocumentationConfig.Summary == "" {
-			cfg.DocumentationConfig.Summary = cfg.DocumentationConfig.Description
-		}
-
-		handlerConfig[name] = cfg
-	}
-
-	return handlerConfig
 }
 
 func ValidateAuthenticationTypes(handlerConfig map[string]HandlerConfig) error {

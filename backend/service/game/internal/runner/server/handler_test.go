@@ -28,7 +28,7 @@ type TestCaser interface {
 	TestRequestPathParams(data harness.Data) map[string]string
 	TestRequestQueryParams(data harness.Data) map[string]string
 	TestRequestBody(data harness.Data) interface{}
-	TestResponseBody(body io.Reader) (interface{}, error)
+	TestResponseDecoder(body io.Reader) (interface{}, error)
 	TestResponseCode() int
 }
 
@@ -42,7 +42,7 @@ type TestCase struct {
 	RequestPathParams  func(data harness.Data) map[string]string
 	RequestQueryParams func(data harness.Data) map[string]string
 	RequestBody        func(data harness.Data) interface{}
-	ResponseBody       func(body io.Reader) (interface{}, error)
+	ResponseDecoder    func(body io.Reader) (interface{}, error)
 	ResponseCode       int
 }
 
@@ -96,11 +96,11 @@ func (t *TestCase) TestRequestBody(data harness.Data) interface{} {
 	return b
 }
 
-func (t *TestCase) TestResponseBody(body io.Reader) (interface{}, error) {
+func (t *TestCase) TestResponseDecoder(body io.Reader) (interface{}, error) {
 	var b interface{}
 	var err error
-	if t.ResponseBody != nil {
-		b, err = t.ResponseBody(body)
+	if t.ResponseDecoder != nil {
+		b, err = t.ResponseDecoder(body)
 	}
 	return b, err
 }
@@ -212,12 +212,15 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	// Test status
 	require.Equalf(t, tc.TestResponseCode(), rec.Code, "%s - Response code equals expected", tc.TestName())
 
-	// Response body
-	responseBody, err := tc.TestResponseBody(rec.Body)
-	require.NoError(t, err, "Response body decodes without error")
+	var responseBody interface{}
 
 	// Validate response body
 	if rec.Code == 200 || rec.Code == 201 {
+
+		// Response body
+		responseBody, err = tc.TestResponseDecoder(rec.Body)
+		require.NoError(t, err, "Response body decodes without error")
+
 		require.NotNil(t, responseBody, "Response body is not nil")
 
 		jsonData, err := json.Marshal(responseBody)

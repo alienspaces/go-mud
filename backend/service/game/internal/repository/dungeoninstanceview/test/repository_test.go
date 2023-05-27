@@ -24,9 +24,6 @@ func TestGetOne(t *testing.T) {
 	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
-	// harness commit data
-	h.ShouldCommitData = true
-
 	tests := []struct {
 		name string
 		id   func() string
@@ -62,10 +59,6 @@ func TestGetOne(t *testing.T) {
 				require.NoError(t, err, "Teardown returns without error")
 			}()
 
-			// init tx
-			_, err = h.InitTx()
-			require.NoError(t, err, "InitTx returns without error")
-
 			// repository
 			r := h.Model.(*model.Model).DungeonInstanceViewRepository()
 			require.NotNil(t, r, "Repository is not nil")
@@ -78,8 +71,6 @@ func TestGetOne(t *testing.T) {
 			require.NoError(t, err, "GetOne returns without error")
 			require.NotNil(t, rec, "GetOne returns record")
 			require.NotEmpty(t, rec.ID, "Record ID is not empty")
-
-			h.RollbackTx()
 		})
 	}
 }

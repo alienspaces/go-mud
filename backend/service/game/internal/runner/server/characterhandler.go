@@ -9,6 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
@@ -35,7 +36,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 					server.AuthenticationTypePublic,
 				},
 				ValidateParamsConfig: &server.ValidateParamsConfig{
-					Schema: jsonschema.SchemaWithReferences{
+					QueryParamSchema: jsonschema.SchemaWithReferences{
 						Main: jsonschema.Schema{
 							Location: "schema/game/character",
 							Name:     "query.schema.json",
@@ -195,12 +196,25 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	return nil
 }
 
+func QueryParamsToSQLOptions(qp *queryparam.QueryParams) *coresql.Options {
+
+	if len(qp.SortColumns) == 0 {
+		qp.SortColumns = []queryparam.SortColumn{
+			{
+				Col: "created_at",
+			},
+		}
+	}
+
+	return queryparam.ToSQLOptions(qp)
+}
+
 // GetCharactersHandler -
 func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "GetCharactersHandler")
 	l.Info("** Get characters handler **")
 
-	opts := queryparam.ToSQLOptions(qp)
+	opts := QueryParamsToSQLOptions(qp)
 
 	l.Info("Querying character records with params >%#v<", qp)
 

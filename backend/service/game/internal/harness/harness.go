@@ -503,6 +503,13 @@ func (t *Testing) AddActionTeardownID(id string) {
 func (t *Testing) RemoveData() error {
 	l := t.Logger("RemoveData")
 
+	// Quick cleanup when data is not committed
+	if !t.ShouldCommitData {
+		t.Data = Data{}
+		t.teardownData = teardownData{}
+		return nil
+	}
+
 	l.Info("Removing test data")
 
 	seen := map[string]bool{}

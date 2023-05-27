@@ -34,7 +34,7 @@ func TestGetDungeonHandler(t *testing.T) {
 		return headers
 	}
 
-	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.DungeonResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
@@ -55,7 +55,7 @@ func TestGetDungeonHandler(t *testing.T) {
 				RequestBody: func(data harness.Data) interface{} {
 					return nil
 				},
-				ResponseBody: testCaseResponseBody,
+				ResponseDecoder: testCaseResponseDecoder,
 				ResponseCode: http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.DungeonResponse {
