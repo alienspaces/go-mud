@@ -36,14 +36,14 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 					server.AuthenticationTypePublic,
 				},
 				ValidateParamsConfig: &server.ValidateParamsConfig{
-					QueryParamSchema: jsonschema.SchemaWithReferences{
+					QueryParamSchema: &jsonschema.SchemaWithReferences{
 						Main: jsonschema.Schema{
 							Location: "schema/game/character",
 							Name:     "query.schema.json",
 						},
 					},
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/character",
 						Name:     "response.schema.json",
@@ -69,7 +69,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/character",
 						Name:     "response.schema.json",
@@ -95,13 +95,13 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+				ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/character",
 						Name:     "create.request.schema.json",
 					},
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/character",
 						Name:     "response.schema.json",

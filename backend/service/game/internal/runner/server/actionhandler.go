@@ -32,7 +32,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[string]server.HandlerConfig) map[s
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+				ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/action",
 						Name:     "create.request.schema.json",
@@ -44,7 +44,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[string]server.HandlerConfig) map[s
 						},
 					},
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/action",
 						Name:     "response.schema.json",

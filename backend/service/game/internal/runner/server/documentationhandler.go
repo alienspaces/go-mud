@@ -60,13 +60,6 @@ func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Reques
 
 	docs := []byte{}
 
-	// docs, err := rnr.GenerateHandlerDocumentation(rnr.GetHandlerConfigs())
-	// if err != nil {
-	// 	msg := fmt.Sprintf("unable to load schema documentation >%v<, cannot init runner", err)
-	// 	rnr.Log.Error(msg)
-	// 	return fmt.Errorf(msg)
-	// }
-
 	// content type html
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 

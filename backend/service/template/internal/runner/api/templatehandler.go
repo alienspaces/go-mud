@@ -34,7 +34,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 			AuthenTypes: []server.AuthenticationType{
 				server.AuthenticationTypePublic,
 			},
-			ValidateResponseSchema: jsonschema.SchemaWithReferences{
+			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.response.schema.json",
 				},
@@ -59,7 +59,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 			AuthenTypes: []server.AuthenticationType{
 				server.AuthenticationTypePublic,
 			},
-			ValidateResponseSchema: jsonschema.SchemaWithReferences{
+			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.response.schema.json",
 				},
@@ -84,7 +84,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 			AuthenTypes: []server.AuthenticationType{
 				server.AuthenticationTypePublic,
 			},
-			ValidateRequestSchema: jsonschema.SchemaWithReferences{
+			ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.request.schema.json",
 				},
@@ -94,7 +94,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 					},
 				},
 			},
-			ValidateResponseSchema: jsonschema.SchemaWithReferences{
+			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.response.schema.json",
 				},
@@ -119,7 +119,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 			AuthenTypes: []server.AuthenticationType{
 				server.AuthenticationTypePublic,
 			},
-			ValidateRequestSchema: jsonschema.SchemaWithReferences{
+			ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.request.schema.json",
 				},
@@ -129,7 +129,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 					},
 				},
 			},
-			ValidateResponseSchema: jsonschema.SchemaWithReferences{
+			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.response.schema.json",
 				},
@@ -154,7 +154,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 			AuthenTypes: []server.AuthenticationType{
 				server.AuthenticationTypePublic,
 			},
-			ValidateRequestSchema: jsonschema.SchemaWithReferences{
+			ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.request.schema.json",
 				},
@@ -164,7 +164,7 @@ func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]serv
 					},
 				},
 			},
-			ValidateResponseSchema: jsonschema.SchemaWithReferences{
+			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 				Main: jsonschema.Schema{
 					Name: "main.response.schema.json",
 				},

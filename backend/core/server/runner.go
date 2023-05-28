@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
-	"sort"
 	"syscall"
 
 	"github.com/julienschmidt/httprouter"
@@ -50,28 +49,34 @@ type Runner struct {
 	// Handler and message configuration
 	HandlerConfig map[string]HandlerConfig
 
-	// Assignable functions
+	// Run functions
 	RunHTTPFunc   func(args map[string]interface{}) (*http.Server, error)
 	RunDaemonFunc func(args map[string]interface{}) error
-	RouterFunc    func(router *httprouter.Router) (*httprouter.Router, error)
+
+	// RouterFunc
+	RouterFunc func(router *httprouter.Router) (*httprouter.Router, error)
 
 	// HandlerFunc is the default handler function. It is used for liveness and healthz. Therefore, it should execute quickly.
 	HandlerFunc Handle
 
 	// HandlerMiddlewareFuncs returns a list of middleware functions to apply to routes
 	HandlerMiddlewareFuncs func() []MiddlewareFunc
-	RepositoryPreparerFunc func(l logger.Logger) (preparer.Repository, error)
-	QueryPreparerFunc      func(l logger.Logger) (preparer.Query, error)
-	ModellerFunc           func(l logger.Logger) (modeller.Modeller, error)
 
+	// Service feature callbacks
 	AuthenticateRequestFunc func(l logger.Logger, m modeller.Modeller, apiKey string) (AuthenticatedRequest, error)
 	SetAuditConfigFunc      func(l logger.Logger, m modeller.Modeller, req AuditRequest) error
 	SetRLSFunc              func(l logger.Logger, m modeller.Modeller, authedReq AuthenticatedRequest) (RLS, error)
+
+	// Domain layer
+	ModellerFunc func(l logger.Logger) (modeller.Modeller, error)
+
+	// Data layer
+	RepositoryPreparerFunc func(l logger.Logger) (preparer.Repository, error)
+	QueryPreparerFunc      func(l logger.Logger) (preparer.Query, error)
 }
 
 type AuditRequest struct {
-	RequestID string
-
+	RequestID      string
 	RequesterType  string
 	RequesterID    string
 	RequesterName  string
@@ -105,27 +110,6 @@ type HandlerConfig struct {
 	DocumentationConfig DocumentationConfig
 }
 
-type Tag string
-
-func (t Tag) ToString() string {
-	return string(t)
-}
-
-type TagGroup string
-
-func (tg TagGroup) ToString() string {
-	return string(tg)
-}
-
-// TagGroupEndpoint is used to group endpoints related to the same resource
-type TagGroupEndpoint struct {
-	ResourceName TagGroup `json:"name"`
-	Description  string   `json:"description"`
-	Tags         []Tag    `json:"tags"`
-}
-
-// NOTE: AuthenticatedRequest modelled from the following for possible familliarity.
-// https://gitlab.com/msts-enterprise/rock/caas-customer/-/blob/develop/server/src/core/authentication/schemas/x-authenticated-request.schema.json
 type AuthenticatedRequest struct {
 	Type        AuthenticatedType      `json:"type"`
 	User        AuthenticatedUser      `json:"user"`
@@ -168,8 +152,8 @@ const (
 type MiddlewareConfig struct {
 	AuthenTypes            []AuthenticationType
 	AuthzPermissions       []AuthorizedPermission
-	ValidateRequestSchema  jsonschema.SchemaWithReferences
-	ValidateResponseSchema jsonschema.SchemaWithReferences
+	ValidateRequestSchema  *jsonschema.SchemaWithReferences
+	ValidateResponseSchema *jsonschema.SchemaWithReferences
 	ValidateParamsConfig   *ValidateParamsConfig
 }
 
@@ -184,8 +168,8 @@ type MiddlewareConfig struct {
 // QueryParamSchema - Validate query parameters using this JSON schema set
 type ValidateParamsConfig struct {
 	ExcludePathParamsFromQueryParams bool
-	PathParamSchema                  jsonschema.SchemaWithReferences
-	QueryParamSchema                 jsonschema.SchemaWithReferences
+	PathParamSchema                  *jsonschema.SchemaWithReferences
+	QueryParamSchema                 *jsonschema.SchemaWithReferences
 }
 
 // DocumentationConfig - Configuration describing how to document a route
@@ -194,49 +178,6 @@ type DocumentationConfig struct {
 	Summary       string // used for API doc endpoint title
 	Description   string // used for API doc endpoint description
 	ErrorRegistry coreerror.Registry
-	TagGroup      TagGroupEndpoint
-}
-
-type MessageAttribute struct {
-	Name  string `json:"name"`
-	Type  string `json:"type"`
-	Value string `json:"value"`
-}
-
-type MessageConfig struct {
-	Summary           string
-	Name              string
-	Source            string
-	Topic             string
-	Subject           string
-	Event             string
-	attributesMapping map[string]MessageAttribute
-	Attributes        []MessageAttribute
-	ValidateSchema    jsonschema.SchemaWithReferences
-	TagGroup          TagGroupSchemaModel
-}
-
-func (m MessageConfig) AttributesMap() map[string]MessageAttribute {
-	if m.attributesMapping != nil {
-		return m.attributesMapping
-	}
-
-	attributes := map[string]MessageAttribute{}
-
-	for _, a := range m.Attributes {
-		attributes[a.Name] = a
-	}
-
-	m.attributesMapping = attributes
-
-	return m.attributesMapping
-}
-
-// TagGroupSchemaModel is used to group schema models related to the same resource
-type TagGroupSchemaModel struct {
-	ResourceName TagGroup `json:"name"`
-	Description  string   `json:"description"`
-	Tag          Tag      `json:"tag"`
 }
 
 // Response -
@@ -498,8 +439,6 @@ func (rnr *Runner) Run(args map[string]interface{}) error {
 // property RepositoryPreparerFunc to provide your own custom repository preparer.
 func (rnr *Runner) defaultRepositoryPreparerFunc(l logger.Logger) (preparer.Repository, error) {
 
-	// NOTE: We have a good generic preparer.Repository so we'll provide that here
-
 	l.Debug("** Repository **")
 
 	// Return the existing preparer if we already have one
@@ -580,99 +519,4 @@ func (rnr *Runner) defaultModellerFunc(l logger.Logger) (modeller.Modeller, erro
 	l.Debug("** Modeller **")
 
 	return nil, nil
-}
-
-func (rnr *Runner) GetHandlerConfigs() []HandlerConfig {
-	var cfgs []HandlerConfig
-	for _, cfg := range rnr.HandlerConfig {
-		cfgs = append(cfgs, cfg)
-	}
-
-	return sortHandlerConfigs(cfgs)
-}
-
-func sortHandlerConfigs(handlerConfigs []HandlerConfig) []HandlerConfig {
-	var sorted []HandlerConfig
-	sorted = append(sorted, handlerConfigs...)
-
-	sort.Slice(sorted, func(i, j int) bool {
-		x := sorted[i]
-		y := sorted[j]
-
-		if x.Path != y.Path {
-			return x.Path < y.Path
-		}
-
-		return x.Method < y.Method
-	})
-
-	return sorted
-}
-
-func ResolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, location string) map[string]HandlerConfig {
-
-	for handler, cfg := range handlerConfig {
-		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
-			schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
-			if len(schema.Main.Name) > 0 {
-				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = jsonschema.ResolveSchemaLocation(schema, location)
-			}
-			schema = cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
-			if len(schema.Main.Name) > 0 {
-				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = jsonschema.ResolveSchemaLocation(schema, location)
-			}
-		}
-
-		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateRequestSchema, location)
-		}
-
-		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 {
-			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocation(cfg.MiddlewareConfig.ValidateResponseSchema, location)
-		}
-
-		handlerConfig[handler] = cfg
-	}
-
-	return handlerConfig
-}
-
-func ResolveHandlerSchemaLocationRoot(handlerConfig map[string]HandlerConfig, root string) (map[string]HandlerConfig, error) {
-
-	for handler, cfg := range handlerConfig {
-		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
-			schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
-			if !schema.IsEmpty() {
-				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = jsonschema.ResolveSchemaLocationRoot(schema, root)
-			}
-			schema = cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
-			if !schema.IsEmpty() {
-				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = jsonschema.ResolveSchemaLocationRoot(schema, root)
-			}
-		}
-
-		if len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Name) > 0 ||
-			len(cfg.MiddlewareConfig.ValidateRequestSchema.Main.Location) > 0 {
-			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateRequestSchema, root)
-		}
-
-		if len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Name) > 0 ||
-			len(cfg.MiddlewareConfig.ValidateResponseSchema.Main.Location) > 0 {
-			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocationRoot(cfg.MiddlewareConfig.ValidateResponseSchema, root)
-		}
-
-		handlerConfig[handler] = cfg
-	}
-
-	return handlerConfig, nil
-}
-
-func ValidateAuthenticationTypes(handlerConfig map[string]HandlerConfig) error {
-	for _, cfg := range handlerConfig {
-		if len(cfg.MiddlewareConfig.AuthenTypes) == 0 {
-			return fmt.Errorf("handler >%s< with undefined authentication type", cfg.Name)
-		}
-	}
-
-	return nil
 }

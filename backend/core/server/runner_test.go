@@ -127,7 +127,7 @@ func Test_registerRoutes(t *testing.T) {
 	require.NoError(t, err, "Runner Init returns without error")
 
 	r := httprouter.New()
-	router, err := tr.RegisterRoutes(r)
+	router, err := tr.registerRoutes(r)
 	require.NoError(t, err, "Router returns without error")
 	require.NotNil(t, router, "Router returns a router")
 
@@ -146,7 +146,7 @@ func Test_registerRoutes(t *testing.T) {
 	}
 
 	r = httprouter.New()
-	router, err = tr.RegisterRoutes(r)
+	router, err = tr.registerRoutes(r)
 	require.NoError(t, err, "Router returns without error")
 	require.NotNil(t, router, "Router returns a router")
 
@@ -160,7 +160,7 @@ func Test_registerRoutes(t *testing.T) {
 	}
 
 	r = httprouter.New()
-	router, err = tr.RegisterRoutes(r)
+	router, err = tr.registerRoutes(r)
 	require.Error(t, err, "Router returns with error")
 	require.Nil(t, router, "Router returns nil")
 }

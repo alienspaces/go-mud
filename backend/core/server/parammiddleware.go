@@ -91,7 +91,7 @@ func extractPathParams(p string) []string {
 }
 
 // validateParams validates any provided parameters
-func validateParams(l logger.Logger, q url.Values, paramSchema jsonschema.SchemaWithReferences) error {
+func validateParams(l logger.Logger, q url.Values, paramSchema *jsonschema.SchemaWithReferences) error {
 	if len(q) == 0 {
 		return nil
 	}

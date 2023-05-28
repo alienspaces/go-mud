@@ -57,7 +57,7 @@ func Test_validateQueryParameters(t *testing.T) {
 
 	type args struct {
 		q           url.Values
-		paramSchema jsonschema.SchemaWithReferences
+		paramSchema *jsonschema.SchemaWithReferences
 	}
 
 	type testcase struct {
@@ -158,7 +158,7 @@ func Test_validateQueryParameters(t *testing.T) {
 	require.NoError(t, err, "Getwd returns without error")
 
 	for i := range tests {
-		tests[i].args.paramSchema = jsonschema.SchemaWithReferences{
+		tests[i].args.paramSchema = &jsonschema.SchemaWithReferences{
 			Main: jsonschema.Schema{
 				LocationRoot: cwd,
 				Location:     "testdata",

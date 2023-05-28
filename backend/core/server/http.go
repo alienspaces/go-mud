@@ -11,6 +11,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/config"
+	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
@@ -42,17 +44,26 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) (*http.Server, error) {
 	// Router
 	r := httprouter.New()
 
-	r, err := rnr.RegisterRoutes(r)
+	r, err := rnr.registerRoutes(r)
 	if err != nil {
-		rnr.Log.Warn("failed default router >%v<", err)
+		rnr.Log.Warn("failed registering routes >%v<", err)
 		return nil, err
 	}
 
-	port := rnr.config.AppServerPort
-	if port == "" {
-		rnr.Log.Warn("missing APP_SERVER_PORT, cannot start server")
-		return nil, fmt.Errorf("missing APP_SERVER_PORT, cannot start server")
+	appHome := rnr.Config.Get(config.AppServerHome)
+	if appHome == "" {
+		rnr.Log.Warn("missing APP_SERVER_HOME, cannot start server")
+		return nil, fmt.Errorf("missing APP_SERVER_HOME, cannot start server")
 	}
+
+	rnr.HandlerConfig, err = rnr.resolveHandlerSchemaLocationRoot(appHome, rnr.HandlerConfig)
+	if err != nil {
+		err := fmt.Errorf("failed to resolve handler schema location root >%v<", err)
+		rnr.Log.Warn(err.Error())
+		return nil, err
+	}
+
+	// hc = server.ResolveHandlerSchemaLocation(hc, "schema/game")
 
 	// CORS
 	allowedOrigins := rnr.HTTPCORSConfig.AllowedOrigins
@@ -69,8 +80,9 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) (*http.Server, error) {
 
 	allowedHeaders = append(allowedHeaders, rnr.HTTPCORSConfig.AllowedHeaders...)
 
+	// Access-Control-Allow-Origin, Access-Control-Allow-Headers and Access-Control-Allow-Methods
+	// cannot be wildcard if the CORS request is credentialed.
 	c := cors.New(cors.Options{
-		// Access-Control-Allow-Origin, Access-Control-Allow-Headers and Access-Control-Allow-Methods cannot be wildcard if the CORS request is credentialed.
 		Debug:            false,
 		AllowedOrigins:   allowedOrigins,
 		AllowedHeaders:   allowedHeaders,
@@ -80,7 +92,13 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) (*http.Server, error) {
 	})
 	h := c.Handler(r)
 
-	// serve
+	// Serve
+	port := rnr.config.AppServerPort
+	if port == "" {
+		rnr.Log.Warn("missing APP_SERVER_PORT, cannot start server")
+		return nil, fmt.Errorf("missing APP_SERVER_PORT, cannot start server")
+	}
+
 	rnr.Log.Info("server running at: http://localhost:%s", port)
 
 	srv := &http.Server{
@@ -93,8 +111,8 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) (*http.Server, error) {
 	return srv, srv.ListenAndServe()
 }
 
-// RegisterRoutes - registers routes as implemented by the assigned router function
-func (rnr *Runner) RegisterRoutes(r *httprouter.Router) (*httprouter.Router, error) {
+// registerRoutes - registers routes as implemented by the assigned router function
+func (rnr *Runner) registerRoutes(r *httprouter.Router) (*httprouter.Router, error) {
 	return rnr.RouterFunc(r)
 }
 
@@ -217,6 +235,149 @@ func (rnr *Runner) HttpRouterHandlerWrapper(h Handle) httprouter.Handle {
 		// delegate
 		_ = h(w, r, pp, nil, l, nil)
 	}
+}
+
+// TODO: Need to work out why these calls are necessary, also feels logical to call these from
+// within the core server code and not depend on service implementations to call these functions.
+func (rnr *Runner) resolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, location string) map[string]HandlerConfig {
+
+	for handler, cfg := range handlerConfig {
+
+		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
+			if cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema != nil {
+				schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
+				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = jsonschema.ResolveSchemaLocation(location, schema)
+			}
+			if cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema != nil {
+				schema := cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
+				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = jsonschema.ResolveSchemaLocation(location, schema)
+			}
+		}
+
+		if cfg.MiddlewareConfig.ValidateRequestSchema != nil {
+			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateRequestSchema)
+		}
+
+		if cfg.MiddlewareConfig.ValidateResponseSchema != nil {
+			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateResponseSchema)
+		}
+
+		handlerConfig[handler] = cfg
+	}
+
+	return handlerConfig
+}
+
+func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig map[string]HandlerConfig) (map[string]HandlerConfig, error) {
+	l := Logger(rnr.Log, "resolveHandlerSchemaLocationRoot")
+
+	for name, cfg := range handlerConfig {
+
+		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
+
+			// Path parameter schemas
+			if cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema != nil {
+				schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
+				if schema.Main.Name == "" {
+					return nil, fmt.Errorf("handler name >%s< main path params schema missing name", name)
+				}
+				if schema.Main.Location == "" {
+					return nil, fmt.Errorf("handler name >%s< main path params schema missing location", name)
+				}
+				if schema.Main.LocationRoot == "" {
+					schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+				}
+
+				l.Info("PathParamSchema Main Name >%s<", schema.Main.Name)
+				l.Info("PathParamSchema Main LocationRoot >%s<", schema.Main.LocationRoot)
+				l.Info("PathParamSchema Main Location >%s<", schema.Main.Location)
+
+				for i := range schema.References {
+					schemaRef := schema.References[i]
+					l.Info("PathParamSchema Ref Name >%s<", schemaRef.Name)
+					l.Info("PathParamSchema Ref LocationRoot >%s<", schemaRef.LocationRoot)
+					l.Info("PathParamSchema Ref Location >%s<", schemaRef.Location)
+				}
+
+				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = schema
+			}
+
+			// Query parameter schemas
+			if cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema != nil {
+				schema := cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
+				if schema.Main.Name == "" {
+					return nil, fmt.Errorf("handler name >%s< main query params schema missing name", name)
+				}
+				if schema.Main.Location == "" {
+					return nil, fmt.Errorf("handler name >%s< main query params schema missing location", name)
+				}
+				if schema.Main.LocationRoot == "" {
+					schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+				}
+
+				l.Info("QueryParamSchema Main Name >%s<", schema.Main.Name)
+				l.Info("QueryParamSchema Main LocationRoot >%s<", schema.Main.LocationRoot)
+				l.Info("QueryParamSchema Main Location >%s<", schema.Main.Location)
+
+				for i := range schema.References {
+					schemaRef := schema.References[i]
+					l.Info("QueryParamSchema Ref Name >%s<", schemaRef.Name)
+					l.Info("QueryParamSchema Ref LocationRoot >%s<", schemaRef.LocationRoot)
+					l.Info("QueryParamSchema Ref Location >%s<", schemaRef.Location)
+				}
+
+				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = schema
+			}
+		}
+
+		if cfg.MiddlewareConfig.ValidateRequestSchema != nil {
+
+			schema := cfg.MiddlewareConfig.ValidateRequestSchema
+			if schema.Main.Name == "" {
+				return nil, fmt.Errorf("handler name >%s< main request schema missing name", name)
+			}
+			if schema.Main.Location == "" {
+				return nil, fmt.Errorf("handler name >%s< main request schema missing location", name)
+			}
+
+			if schema.Main.LocationRoot == "" {
+				schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+			}
+
+			cfg.MiddlewareConfig.ValidateRequestSchema = schema
+		}
+
+		if cfg.MiddlewareConfig.ValidateResponseSchema != nil {
+
+			schema := cfg.MiddlewareConfig.ValidateResponseSchema
+			if schema.Main.Name == "" {
+				return nil, fmt.Errorf("handler name >%s< main response schema missing name", name)
+			}
+			if schema.Main.Location == "" {
+				return nil, fmt.Errorf("handler name >%s< main response schema missing location", name)
+			}
+
+			if schema.Main.LocationRoot == "" {
+				schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+			}
+
+			cfg.MiddlewareConfig.ValidateResponseSchema = schema
+		}
+
+		handlerConfig[name] = cfg
+	}
+
+	return handlerConfig, nil
+}
+
+func ValidateAuthenticationTypes(handlerConfig map[string]HandlerConfig) error {
+	for _, cfg := range handlerConfig {
+		if len(cfg.MiddlewareConfig.AuthenTypes) == 0 {
+			return fmt.Errorf("handler >%s< with undefined authentication type", cfg.Name)
+		}
+	}
+
+	return nil
 }
 
 // RequestData -

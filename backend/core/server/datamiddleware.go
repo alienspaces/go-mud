@@ -45,17 +45,17 @@ func (rnr *Runner) DataMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 			return h(w, r, pp, qp, l, m)
 		}
 
-		requestSchema := hc.MiddlewareConfig.ValidateRequestSchema
-		schemaMain := requestSchema.Main
-		if schemaMain.Name == "" || schemaMain.Location == "" {
-			l.Debug("not validating URI >%s< method >%s<", r.RequestURI, r.Method)
+		if hc.MiddlewareConfig.ValidateRequestSchema == nil {
+			l.Warn("missing request schema, not validating URI >%s< method >%s<", r.RequestURI, r.Method)
 			return h(w, r, pp, qp, l, m)
 		}
 
-		l.Info("schemas >%#v<", requestSchema)
-		l.Info("data >%s<", data)
+		schema := hc.MiddlewareConfig.ValidateRequestSchema
 
-		result, err := jsonschema.Validate(requestSchema, data)
+		l.Info("Schemas >%#v<", schema)
+		l.Info("Data >%s<", data)
+
+		result, err := jsonschema.Validate(schema, data)
 		if err != nil {
 			l.Warn("failed validate >%v<", err)
 

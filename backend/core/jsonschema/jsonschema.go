@@ -58,7 +58,7 @@ func (s Schema) GetFullPath() string {
 }
 
 // Utility functions
-func ValidateJSON(schema SchemaWithReferences, document []byte) error {
+func ValidateJSON(schema *SchemaWithReferences, document []byte) error {
 	result, err := Validate(schema, document)
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func ValidateJSON(schema SchemaWithReferences, document []byte) error {
 	return MapError(result)
 }
 
-func Validate(schema SchemaWithReferences, data interface{}) (*gojsonschema.Result, error) {
+func Validate(schema *SchemaWithReferences, data interface{}) (*gojsonschema.Result, error) {
 
 	s, err := Compile(schema)
 	if err != nil {
@@ -107,7 +107,7 @@ func MapError(result *gojsonschema.Result) error {
 }
 
 // Compile caches JSON schema compilation
-func Compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
+func Compile(sr *SchemaWithReferences) (*gojsonschema.Schema, error) {
 	key := generateCacheKey(sr)
 	cached, ok := schemaCache[key]
 	if !ok {
@@ -131,7 +131,7 @@ func Compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
 	return s, nil
 }
 
-func generateCacheKey(s SchemaWithReferences) cacheKey {
+func generateCacheKey(s *SchemaWithReferences) cacheKey {
 	var refs []string
 	for _, r := range s.References {
 		refs = append(refs, r.GetFullPath())
@@ -142,7 +142,7 @@ func generateCacheKey(s SchemaWithReferences) cacheKey {
 }
 
 // Internal non-caching JSON schema compilation
-func compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
+func compile(sr *SchemaWithReferences) (*gojsonschema.Schema, error) {
 
 	sl := gojsonschema.NewSchemaLoader()
 	sl.Validate = true
@@ -166,23 +166,20 @@ func compile(sr SchemaWithReferences) (*gojsonschema.Schema, error) {
 	return s, nil
 }
 
-func ResolveSchemaLocationRoot(cfg SchemaWithReferences, root string) SchemaWithReferences {
+// ResolveSchemaLocationRoot resolved the LocationRoot of the Main and all References schemas
+func ResolveSchemaLocationRoot(root string, cfg *SchemaWithReferences) *SchemaWithReferences {
 	cfg.Main.LocationRoot = resolveString(cfg.Main.LocationRoot, root)
-
 	for i := range cfg.References {
 		cfg.References[i].LocationRoot = resolveString(cfg.References[i].LocationRoot, root)
 	}
-
 	return cfg
 }
 
-func ResolveSchemaLocation(cfg SchemaWithReferences, location string) SchemaWithReferences {
+func ResolveSchemaLocation(location string, cfg *SchemaWithReferences) *SchemaWithReferences {
 	cfg.Main.Location = resolveString(cfg.Main.Location, location)
-
 	for i := range cfg.References {
 		cfg.References[i].Location = resolveString(cfg.References[i].Location, location)
 	}
-
 	return cfg
 }
 
@@ -190,6 +187,5 @@ func resolveString(str string, defaultStr string) string {
 	if str != "" {
 		return str
 	}
-
 	return defaultStr
 }

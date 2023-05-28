@@ -31,7 +31,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+				ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/dungeon",
 						Name:     "response.schema.json",
@@ -57,7 +57,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/dungeon",
 						Name:     "response.schema.json",

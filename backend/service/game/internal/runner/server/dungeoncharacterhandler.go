@@ -32,7 +32,7 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[string]server.HandlerCon
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/dungeoncharacter",
 						Name:     "response.schema.json",
@@ -58,7 +58,7 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[string]server.HandlerCon
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/dungeoncharacter",
 						Name:     "response.schema.json",
@@ -84,7 +84,7 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[string]server.HandlerCon
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/character",
 						Name:     "response.schema.json",

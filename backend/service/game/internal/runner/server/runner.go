@@ -3,7 +3,6 @@ package runner
 import (
 	"fmt"
 
-	coreconfig "gitlab.com/alienspaces/go-mud/backend/core/config"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
@@ -59,16 +58,6 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	hc = r.ActionHandlerConfig(hc)
 	hc = r.DocumentationHandlerConfig(hc)
 
-	appHome := r.Config.Get(coreconfig.AppServerHome)
-
-	hc, err = server.ResolveHandlerSchemaLocationRoot(hc, appHome)
-	if err != nil {
-		err := fmt.Errorf("failed to resolve template API handler location root >%v<", err)
-		r.Log.Warn(err.Error())
-		return nil, err
-	}
-
-	hc = server.ResolveHandlerSchemaLocation(hc, "schema/game")
 	r.HandlerConfig = hc
 
 	return &r, nil
