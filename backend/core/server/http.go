@@ -237,37 +237,6 @@ func (rnr *Runner) HttpRouterHandlerWrapper(h Handle) httprouter.Handle {
 	}
 }
 
-// TODO: Need to work out why these calls are necessary, also feels logical to call these from
-// within the core server code and not depend on service implementations to call these functions.
-func (rnr *Runner) resolveHandlerSchemaLocation(handlerConfig map[string]HandlerConfig, location string) map[string]HandlerConfig {
-
-	for handler, cfg := range handlerConfig {
-
-		if cfg.MiddlewareConfig.ValidateParamsConfig != nil {
-			if cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema != nil {
-				schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
-				cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema = jsonschema.ResolveSchemaLocation(location, schema)
-			}
-			if cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema != nil {
-				schema := cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
-				cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema = jsonschema.ResolveSchemaLocation(location, schema)
-			}
-		}
-
-		if cfg.MiddlewareConfig.ValidateRequestSchema != nil {
-			cfg.MiddlewareConfig.ValidateRequestSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateRequestSchema)
-		}
-
-		if cfg.MiddlewareConfig.ValidateResponseSchema != nil {
-			cfg.MiddlewareConfig.ValidateResponseSchema = jsonschema.ResolveSchemaLocation(location, cfg.MiddlewareConfig.ValidateResponseSchema)
-		}
-
-		handlerConfig[handler] = cfg
-	}
-
-	return handlerConfig
-}
-
 func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig map[string]HandlerConfig) (map[string]HandlerConfig, error) {
 	l := Logger(rnr.Log, "resolveHandlerSchemaLocationRoot")
 

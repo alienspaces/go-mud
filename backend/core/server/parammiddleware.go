@@ -32,9 +32,10 @@ func (rnr *Runner) ParamMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 
 		if hc.MiddlewareConfig.ValidateParamsConfig != nil {
 
+			cfg := hc.MiddlewareConfig.ValidateParamsConfig
 			// Validate query parameters
-			if !hc.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema.IsEmpty() {
-				err := validateParams(l, queryParamValues, hc.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema)
+			if cfg.QueryParamSchema != nil {
+				err := validateParams(l, queryParamValues, cfg.QueryParamSchema)
 				if err != nil {
 					WriteError(l, w, coreerror.ProcessParamError(err))
 					return err
@@ -47,7 +48,7 @@ func (rnr *Runner) ParamMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 				pathParamValues[pathParam] = []string{
 					pathParamValue,
 				}
-				if !hc.MiddlewareConfig.ValidateParamsConfig.ExcludePathParamsFromQueryParams {
+				if !cfg.ExcludePathParamsFromQueryParams {
 					l.Info("Adding path param >%s< Value >%s<", pathParam, pathParamValue)
 					queryParamValues[pathParam] = []string{
 						pathParamValue,
@@ -56,8 +57,8 @@ func (rnr *Runner) ParamMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 			}
 
 			// Validate path parameters
-			if !hc.MiddlewareConfig.ValidateParamsConfig.PathParamSchema.IsEmpty() {
-				err := validateParams(l, pathParamValues, hc.MiddlewareConfig.ValidateParamsConfig.PathParamSchema)
+			if cfg.PathParamSchema != nil {
+				err := validateParams(l, pathParamValues, cfg.PathParamSchema)
 				if err != nil {
 					WriteError(l, w, coreerror.ProcessParamError(err))
 					return err
