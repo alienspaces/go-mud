@@ -33,8 +33,10 @@ func (rnr *Runner) ParamMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 		if hc.MiddlewareConfig.ValidateParamsConfig != nil {
 
 			cfg := hc.MiddlewareConfig.ValidateParamsConfig
+
 			// Validate query parameters
 			if cfg.QueryParamSchema != nil {
+				l.Debug("Validating query parameters >%#v<", queryParamValues)
 				err := validateParams(l, queryParamValues, cfg.QueryParamSchema)
 				if err != nil {
 					WriteError(l, w, coreerror.ProcessParamError(err))
@@ -58,6 +60,7 @@ func (rnr *Runner) ParamMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 
 			// Validate path parameters
 			if cfg.PathParamSchema != nil {
+				l.Debug("Validating path parameters >%#v<", pathParamValues)
 				err := validateParams(l, pathParamValues, cfg.PathParamSchema)
 				if err != nil {
 					WriteError(l, w, coreerror.ProcessParamError(err))
@@ -97,10 +100,8 @@ func validateParams(l logger.Logger, q url.Values, paramSchema *jsonschema.Schem
 		return nil
 	}
 
-	if paramSchema.IsEmpty() {
-		for k := range q {
-			return coreerror.NewParamError(fmt.Sprintf("Parameter >%s< not allowed.", k))
-		}
+	if paramSchema == nil {
+		return nil
 	}
 
 	qJSON := paramsToJSON(q)
@@ -167,9 +168,8 @@ func parseKey(k string) string {
 }
 
 func parseValue(v string) string {
-	// Attempt to parse an integer prior to
-	// a boolean as parse bool will also accept
-	// 1 and 0 as valid booleans
+	// Attempt to parse an integer prior to a boolean as parse
+	// bool will also accept 1 and 0 as valid booleans.
 	i, err := strconv.Atoi(v)
 	if err != nil {
 		b, err := strconv.ParseBool(v)

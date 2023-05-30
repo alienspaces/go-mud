@@ -11,7 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/config"
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
@@ -49,21 +49,6 @@ func (rnr *Runner) RunHTTP(args map[string]interface{}) (*http.Server, error) {
 		rnr.Log.Warn("failed registering routes >%v<", err)
 		return nil, err
 	}
-
-	appHome := rnr.Config.Get(config.AppServerHome)
-	if appHome == "" {
-		rnr.Log.Warn("missing APP_SERVER_HOME, cannot start server")
-		return nil, fmt.Errorf("missing APP_SERVER_HOME, cannot start server")
-	}
-
-	rnr.HandlerConfig, err = rnr.resolveHandlerSchemaLocationRoot(appHome, rnr.HandlerConfig)
-	if err != nil {
-		err := fmt.Errorf("failed to resolve handler schema location root >%v<", err)
-		rnr.Log.Warn(err.Error())
-		return nil, err
-	}
-
-	// hc = server.ResolveHandlerSchemaLocation(hc, "schema/game")
 
 	// CORS
 	allowedOrigins := rnr.HTTPCORSConfig.AllowedOrigins
@@ -237,8 +222,16 @@ func (rnr *Runner) HttpRouterHandlerWrapper(h Handle) httprouter.Handle {
 	}
 }
 
-func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig map[string]HandlerConfig) (map[string]HandlerConfig, error) {
+func (rnr *Runner) ResolveHandlerSchemaLocations() error {
 	l := Logger(rnr.Log, "resolveHandlerSchemaLocationRoot")
+
+	appHome := rnr.config.AppServerHome
+	if appHome == "" {
+		l.Warn("")
+		return coreerror.NewInternalError()
+	}
+
+	handlerConfig := rnr.HandlerConfig
 
 	for name, cfg := range handlerConfig {
 
@@ -248,13 +241,13 @@ func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig m
 			if cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema != nil {
 				schema := cfg.MiddlewareConfig.ValidateParamsConfig.PathParamSchema
 				if schema.Main.Name == "" {
-					return nil, fmt.Errorf("handler name >%s< main path params schema missing name", name)
+					return fmt.Errorf("handler name >%s< main path params schema missing name", name)
 				}
 				if schema.Main.Location == "" {
-					return nil, fmt.Errorf("handler name >%s< main path params schema missing location", name)
+					return fmt.Errorf("handler name >%s< main path params schema missing location", name)
 				}
 				if schema.Main.LocationRoot == "" {
-					schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+					schema = jsonschema.ResolveSchemaLocationRoot(appHome, schema)
 				}
 
 				l.Info("PathParamSchema Main Name >%s<", schema.Main.Name)
@@ -275,13 +268,13 @@ func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig m
 			if cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema != nil {
 				schema := cfg.MiddlewareConfig.ValidateParamsConfig.QueryParamSchema
 				if schema.Main.Name == "" {
-					return nil, fmt.Errorf("handler name >%s< main query params schema missing name", name)
+					return fmt.Errorf("handler name >%s< main query params schema missing name", name)
 				}
 				if schema.Main.Location == "" {
-					return nil, fmt.Errorf("handler name >%s< main query params schema missing location", name)
+					return fmt.Errorf("handler name >%s< main query params schema missing location", name)
 				}
 				if schema.Main.LocationRoot == "" {
-					schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+					schema = jsonschema.ResolveSchemaLocationRoot(appHome, schema)
 				}
 
 				l.Info("QueryParamSchema Main Name >%s<", schema.Main.Name)
@@ -303,14 +296,14 @@ func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig m
 
 			schema := cfg.MiddlewareConfig.ValidateRequestSchema
 			if schema.Main.Name == "" {
-				return nil, fmt.Errorf("handler name >%s< main request schema missing name", name)
+				return fmt.Errorf("handler name >%s< main request schema missing name", name)
 			}
 			if schema.Main.Location == "" {
-				return nil, fmt.Errorf("handler name >%s< main request schema missing location", name)
+				return fmt.Errorf("handler name >%s< main request schema missing location", name)
 			}
 
 			if schema.Main.LocationRoot == "" {
-				schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+				schema = jsonschema.ResolveSchemaLocationRoot(appHome, schema)
 			}
 
 			cfg.MiddlewareConfig.ValidateRequestSchema = schema
@@ -320,14 +313,14 @@ func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig m
 
 			schema := cfg.MiddlewareConfig.ValidateResponseSchema
 			if schema.Main.Name == "" {
-				return nil, fmt.Errorf("handler name >%s< main response schema missing name", name)
+				return fmt.Errorf("handler name >%s< main response schema missing name", name)
 			}
 			if schema.Main.Location == "" {
-				return nil, fmt.Errorf("handler name >%s< main response schema missing location", name)
+				return fmt.Errorf("handler name >%s< main response schema missing location", name)
 			}
 
 			if schema.Main.LocationRoot == "" {
-				schema = jsonschema.ResolveSchemaLocationRoot(root, schema)
+				schema = jsonschema.ResolveSchemaLocationRoot(appHome, schema)
 			}
 
 			cfg.MiddlewareConfig.ValidateResponseSchema = schema
@@ -336,7 +329,9 @@ func (rnr *Runner) resolveHandlerSchemaLocationRoot(root string, handlerConfig m
 		handlerConfig[name] = cfg
 	}
 
-	return handlerConfig, nil
+	rnr.HandlerConfig = handlerConfig
+
+	return nil
 }
 
 func ValidateAuthenticationTypes(handlerConfig map[string]HandlerConfig) error {

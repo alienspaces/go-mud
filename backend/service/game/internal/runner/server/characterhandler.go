@@ -69,6 +69,14 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
 				},
+				ValidateParamsConfig: &server.ValidateParamsConfig{
+					PathParamSchema: &jsonschema.SchemaWithReferences{
+						Main: jsonschema.Schema{
+							Location: "schema/game/character",
+							Name:     "path.schema.json",
+						},
+					},
+				},
 				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
 						Location: "schema/game/character",

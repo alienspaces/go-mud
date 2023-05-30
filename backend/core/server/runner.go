@@ -64,7 +64,6 @@ type Runner struct {
 
 	// Service feature callbacks
 	AuthenticateRequestFunc func(l logger.Logger, m modeller.Modeller, apiKey string) (AuthenticatedRequest, error)
-	SetAuditConfigFunc      func(l logger.Logger, m modeller.Modeller, req AuditRequest) error
 	SetRLSFunc              func(l logger.Logger, m modeller.Modeller, authedReq AuthenticatedRequest) (RLS, error)
 
 	// Domain layer
@@ -73,14 +72,6 @@ type Runner struct {
 	// Data layer
 	RepositoryPreparerFunc func(l logger.Logger) (preparer.Repository, error)
 	QueryPreparerFunc      func(l logger.Logger) (preparer.Query, error)
-}
-
-type AuditRequest struct {
-	RequestID      string
-	RequesterType  string
-	RequesterID    string
-	RequesterName  string
-	RequesterEmail string
 }
 
 type HTTPCORSConfig struct {
@@ -110,13 +101,6 @@ type HandlerConfig struct {
 	DocumentationConfig DocumentationConfig
 }
 
-type AuthenticatedRequest struct {
-	Type        AuthenticatedType      `json:"type"`
-	User        AuthenticatedUser      `json:"user"`
-	Permissions []AuthorizedPermission `json:"permissions"`
-	RLSType     RLSType                `json:"-"`
-}
-
 type RLSType string
 
 const (
@@ -132,10 +116,16 @@ const (
 )
 
 type AuthenticatedUser struct {
-	ID                  any    `json:"id"`
-	Name                string `json:"name"`
-	Email               string `json:"email"`
-	ServiceCloudProfile string `json:"service_cloud_profile,omitempty"` // Profile is used to support QA testing by switching the Active SC Profile in the UI. It should not be populated in Staging or Production.
+	ID    any    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type AuthenticatedRequest struct {
+	Type        AuthenticatedType      `json:"type"`
+	User        AuthenticatedUser      `json:"user"`
+	Permissions []AuthorizedPermission `json:"permissions"`
+	RLSType     RLSType                `json:"-"`
 }
 
 type AuthenticationType string
@@ -286,6 +276,12 @@ func (rnr *Runner) Init(s storer.Storer) error {
 	// http server - handler
 	if rnr.HandlerFunc == nil {
 		rnr.HandlerFunc = rnr.defaultHandler
+	}
+
+	err := rnr.ResolveHandlerSchemaLocations()
+	if err != nil {
+		rnr.Log.Warn("Failed query preparer func >%v<", err)
+		return err
 	}
 
 	return nil

@@ -50,12 +50,12 @@ func (rnr *Runner) DataMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 			return h(w, r, pp, qp, l, m)
 		}
 
-		schema := hc.MiddlewareConfig.ValidateRequestSchema
+		schemas := hc.MiddlewareConfig.ValidateRequestSchema
 
-		l.Info("Schemas >%#v<", schema)
+		l.Info("Schemas >%#v<", schemas)
 		l.Info("Data >%s<", data)
 
-		result, err := jsonschema.Validate(schema, data)
+		result, err := jsonschema.Validate(schemas, data)
 		if err != nil {
 			l.Warn("failed validate >%v<", err)
 
