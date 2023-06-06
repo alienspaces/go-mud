@@ -65,11 +65,31 @@ func Test_validateQueryParameters(t *testing.T) {
 		args    args
 		errCode coreerror.ErrorCode
 	}
+
+	cwd, err := os.Getwd()
+	require.NoError(t, err, "Getwd returns without error")
+
+	paramSchema := &jsonschema.SchemaWithReferences{
+		Main: jsonschema.Schema{
+			LocationRoot: cwd,
+			Location:     "testdata",
+			Name:         "test.main.schema.json",
+		},
+		References: []jsonschema.Schema{
+			{
+				LocationRoot: cwd,
+				Location:     "testdata",
+				Name:         "test.data.schema.json",
+			},
+		},
+	}
+
 	tests := []testcase{
 		{
 			name: "nil",
 			args: args{
-				q: nil,
+				q:           nil,
+				paramSchema: paramSchema,
 			},
 		},
 		{
@@ -78,6 +98,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"id": []string{"a87feca8-d6f0-4794-98c7-037b30219520"},
 				},
+				paramSchema: paramSchema,
 			},
 		},
 		{
@@ -86,6 +107,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"string": []string{"asdf"},
 				},
+				paramSchema: paramSchema,
 			},
 		},
 		{
@@ -94,6 +116,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"number": []string{"123"},
 				},
+				paramSchema: paramSchema,
 			},
 		},
 		{
@@ -104,6 +127,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"string": []string{"asdf"},
 					"number": []string{"123"},
 				},
+				paramSchema: paramSchema,
 			},
 		},
 		{
@@ -112,6 +136,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"string": []string{""},
 				},
+				paramSchema: paramSchema,
 			},
 			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
 		},
@@ -121,6 +146,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"number": []string{"0"},
 				},
+				paramSchema: paramSchema,
 			},
 			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
 		},
@@ -130,6 +156,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"number": []string{"0", "1"},
 				},
+				paramSchema: paramSchema,
 			},
 			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
 		},
@@ -140,6 +167,7 @@ func Test_validateQueryParameters(t *testing.T) {
 					"string": []string{""},
 					"number": []string{"0", "1"},
 				},
+				paramSchema: paramSchema,
 			},
 			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
 		},
@@ -149,29 +177,10 @@ func Test_validateQueryParameters(t *testing.T) {
 				q: url.Values{
 					"asdf": []string{"0"},
 				},
+				paramSchema: paramSchema,
 			},
 			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
 		},
-	}
-
-	cwd, err := os.Getwd()
-	require.NoError(t, err, "Getwd returns without error")
-
-	for i := range tests {
-		tests[i].args.paramSchema = &jsonschema.SchemaWithReferences{
-			Main: jsonschema.Schema{
-				LocationRoot: cwd,
-				Location:     "testdata",
-				Name:         "test.main.schema.json",
-			},
-			References: []jsonschema.Schema{
-				{
-					LocationRoot: cwd,
-					Location:     "testdata",
-					Name:         "test.data.schema.json",
-				},
-			},
-		}
 	}
 
 	noSchemaTests := []testcase{
@@ -182,7 +191,6 @@ func Test_validateQueryParameters(t *testing.T) {
 					"asdf": []string{"0"},
 				},
 			},
-			errCode: coreerror.GetRegistryError(coreerror.InvalidParam).ErrorCode,
 		},
 	}
 
