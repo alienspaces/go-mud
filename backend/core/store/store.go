@@ -18,11 +18,22 @@ const (
 
 // Store -
 type Store struct {
-	Log              logger.Logger
-	Config           configurer.Configurer
-	Database         string
-	DB               *sqlx.DB
-	connectionConfig *storer.ConnectionConfig
+	Log      logger.Logger
+	Config   configurer.Configurer
+	Database string
+	DB       *sqlx.DB
+	config   *Config
+}
+
+type Config struct {
+	Host               string
+	Port               string
+	User               string
+	Database           string
+	Password           string
+	MaxOpenConnections int
+	MaxIdleConnections int
+	MaxIdleTimeMins    int
 }
 
 var _ storer.Storer = &Store{}
@@ -59,9 +70,9 @@ func (s *Store) GetDb() (*sqlx.DB, error) {
 	}
 
 	var err error
-	connectionConfig := s.connectionConfig
-	if connectionConfig == nil {
-		connectionConfig, err = s.GetConnectionConfig()
+	config := s.config
+	if config == nil {
+		config, err = s.GetConnectionConfig()
 		if err != nil {
 			s.Log.Warn("failed to get connection config >%v<", err)
 			return nil, err
@@ -70,7 +81,7 @@ func (s *Store) GetDb() (*sqlx.DB, error) {
 
 	if s.Database == DBPostgres {
 		l.Debug("connecting to postgres")
-		conn, err := connectPostgresDB(s.Log, connectionConfig)
+		conn, err := connectPostgresDB(s.Log, config)
 		if err != nil {
 			l.Warn("failed getting postgres DB handle >%v<", err)
 			return nil, err

@@ -25,10 +25,6 @@ const (
 	// SMTP
 	AppServerSMTPHost = "APP_SERVER_SMTP_HOST"
 
-	// Deployment version
-	AppImageTagFeatureBranch = "APP_IMAGE_TAG_FEATURE_BRANCH"
-	AppImageTagSHA           = "APP_IMAGE_TAG_SHA"
-
 	// For testing
 	AppServerTxRollback = "APP_SERVER_API_SHOULD_DB_TX_ROLLBACK"
 )

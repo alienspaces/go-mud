@@ -23,8 +23,7 @@ var _ preparer.Query = &Query{}
 func NewQueryPreparer(l logger.Logger) (*Query, error) {
 
 	pCfg := Query{
-		Log: l,
-
+		Log:  l,
 		stmt: make(map[string]*sqlx.NamedStmt),
 		sql:  make(map[string]string),
 	}

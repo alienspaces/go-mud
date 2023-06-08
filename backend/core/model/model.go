@@ -27,7 +27,6 @@ type Model struct {
 	// composable functions
 	RepositoriesFunc func(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error)
 	QueriesFunc      func(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, error)
-	SetRLSFunc       func(identifiers map[string][]string)
 }
 
 var _ modeller.Modeller = &Model{}
@@ -60,10 +59,6 @@ func (m *Model) Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) 
 
 	if m.QueriesFunc == nil {
 		m.QueriesFunc = m.NewQueriers
-	}
-
-	if m.SetRLSFunc == nil {
-		m.SetRLSFunc = m.SetRLS
 	}
 
 	m.Tx = tx
@@ -108,10 +103,6 @@ func (m *Model) NewQueriers(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, e
 	m.Log.Info("** querier.Queriers **")
 
 	return nil, nil
-}
-
-func (m *Model) SetRLS(identifiers map[string][]string) {
-	m.Log.Info("** set RLS not implemented **")
 }
 
 // Commit -

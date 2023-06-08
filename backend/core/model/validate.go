@@ -34,7 +34,7 @@ func (m *Model) ValidateStringField(field string, fieldName string) error {
 	if field == "" {
 		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewInvalidError(fieldName, errMsg)
+		return coreerror.CreateInvalidError(fieldName, errMsg)
 	}
 
 	return nil
@@ -44,7 +44,7 @@ func (m *Model) ValidateNullStringField(field sql.NullString, fieldName string) 
 	if !null.NullStringIsValid(field) {
 		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field.String)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewInvalidError(fieldName, errMsg)
+		return coreerror.CreateInvalidError(fieldName, errMsg)
 	}
 
 	return nil
@@ -54,7 +54,7 @@ func (m *Model) ValidateNullBoolField(field sql.NullBool, fieldName string) erro
 	if !null.NullBoolIsValid(field) {
 		errMsg := fmt.Sprintf("%s should not be empty", fieldName)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewInvalidError(fieldName, errMsg)
+		return coreerror.CreateInvalidError(fieldName, errMsg)
 	}
 
 	return nil
@@ -64,7 +64,7 @@ func (m *Model) ValidateStringArrayField(field pq.StringArray, fieldName string)
 	if len(field) == 0 {
 		errMsg := fmt.Sprintf("%s should not be empty >%#v<", fieldName, field)
 		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.NewInvalidError(fieldName, errMsg)
+		return coreerror.CreateInvalidError(fieldName, errMsg)
 	}
 
 	return nil

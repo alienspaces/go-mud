@@ -11,7 +11,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 
-	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
@@ -227,8 +226,9 @@ func (rnr *Runner) ResolveHandlerSchemaLocations() error {
 
 	appHome := rnr.config.AppServerHome
 	if appHome == "" {
-		l.Warn("")
-		return coreerror.NewInternalError()
+		err := fmt.Errorf("missing app home")
+		l.Warn(err.Error())
+		return err
 	}
 
 	handlerConfig := rnr.HandlerConfig
@@ -363,7 +363,7 @@ func AuthData(l logger.Logger, r *http.Request) *AuthenticatedRequest {
 		return nil
 	}
 
-	l.Info("Auth data Type >%s< RLSType >%s< Permissions >%v<", auth.Type, auth.RLSType, auth.Permissions)
+	l.Info("Auth data Type >%s< Permissions >%v<", auth.Type, auth.Permissions)
 
 	return &auth
 }

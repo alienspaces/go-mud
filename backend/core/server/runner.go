@@ -11,7 +11,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
-	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/prepare"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
@@ -64,7 +63,6 @@ type Runner struct {
 
 	// Service feature callbacks
 	AuthenticateRequestFunc func(l logger.Logger, m modeller.Modeller, apiKey string) (AuthenticatedRequest, error)
-	SetRLSFunc              func(l logger.Logger, m modeller.Modeller, authedReq AuthenticatedRequest) (RLS, error)
 
 	// Domain layer
 	ModellerFunc func(l logger.Logger) (modeller.Modeller, error)
@@ -101,13 +99,6 @@ type HandlerConfig struct {
 	DocumentationConfig DocumentationConfig
 }
 
-type RLSType string
-
-const (
-	RLSTypeOpen       RLSType = "open"
-	RLSTypeRestricted RLSType = "restricted"
-)
-
 type AuthenticatedType string
 
 const (
@@ -125,7 +116,6 @@ type AuthenticatedRequest struct {
 	Type        AuthenticatedType      `json:"type"`
 	User        AuthenticatedUser      `json:"user"`
 	Permissions []AuthorizedPermission `json:"permissions"`
-	RLSType     RLSType                `json:"-"`
 }
 
 type AuthenticationType string
@@ -164,10 +154,9 @@ type ValidateParamsConfig struct {
 
 // DocumentationConfig - Configuration describing how to document a route
 type DocumentationConfig struct {
-	Document      bool
-	Summary       string // used for API doc endpoint title
-	Description   string // used for API doc endpoint description
-	ErrorRegistry coreerror.Registry
+	Document    bool
+	Summary     string // used for API doc endpoint title
+	Description string // used for API doc endpoint description
 }
 
 // Response -
@@ -194,15 +183,9 @@ var _ runnable.Runnable = &Runner{}
 
 func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
-	cfg, err := NewConfig(c)
-	if err != nil {
-		return nil, err
-	}
-
 	r := Runner{
 		Config: c,
 		Log:    l,
-		config: *cfg,
 	}
 
 	return &r, nil
@@ -210,40 +193,49 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
+	l := Logger(rnr.Log, "Init")
 
-	rnr.Log.Debug("** Initialise **")
+	if rnr.Config != nil {
+		cfg, err := NewConfig(rnr.Config)
+		if err != nil {
+			return err
+		}
+		rnr.config = *cfg
+	}
 
 	rnr.Store = s
 	if rnr.Store != nil {
 		if rnr.RepositoryPreparerFunc == nil {
+			l.Info("Using default repository preparer func")
 			rnr.RepositoryPreparerFunc = rnr.defaultRepositoryPreparerFunc
 		}
 
 		repoPreparer, err := rnr.RepositoryPreparerFunc(rnr.Log)
 		if err != nil {
-			rnr.Log.Warn("Failed preparer func >%v<", err)
+			l.Warn("Failed preparer func >%v<", err)
 			return err
 		}
 
 		rnr.RepositoryPreparer = repoPreparer
 		if rnr.RepositoryPreparer == nil {
-			rnr.Log.Warn("RepositoryPreparer is nil, cannot continue")
+			l.Warn("RepositoryPreparer is nil, cannot continue")
 			return err
 		}
 
 		if rnr.QueryPreparerFunc == nil {
+			l.Info("Using default query preparer func")
 			rnr.QueryPreparerFunc = rnr.defaultQueryPreparerFunc
 		}
 
 		queryPreparer, err := rnr.QueryPreparerFunc(rnr.Log)
 		if err != nil {
-			rnr.Log.Warn("Failed query preparer func >%v<", err)
+			l.Warn("Failed query preparer func >%v<", err)
 			return err
 		}
 
 		rnr.QueryPreparer = queryPreparer
 		if rnr.QueryPreparer == nil {
-			rnr.Log.Warn("QueryPreparer is nil, cannot continue")
+			l.Warn("QueryPreparer is nil, cannot continue")
 			return err
 		}
 	}
@@ -280,7 +272,7 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	err := rnr.ResolveHandlerSchemaLocations()
 	if err != nil {
-		rnr.Log.Warn("Failed query preparer func >%v<", err)
+		l.Warn("Failed resolving handler schema locations >%v<", err)
 		return err
 	}
 
@@ -434,20 +426,19 @@ func (rnr *Runner) Run(args map[string]interface{}) error {
 // defaultRepositoryPreparerFunc - returns a default initialised repository preparer, set the
 // property RepositoryPreparerFunc to provide your own custom repository preparer.
 func (rnr *Runner) defaultRepositoryPreparerFunc(l logger.Logger) (preparer.Repository, error) {
-
-	l.Debug("** Repository **")
+	l = Logger(l, "defaultRepositoryPreparerFunc")
 
 	// Return the existing preparer if we already have one
 	if rnr.RepositoryPreparer != nil {
-		l.Debug("Returning existing preparer")
+		l.Info("Returning existing repository preparer")
 		return rnr.RepositoryPreparer, nil
 	}
 
-	l.Debug("Creating new preparer")
+	l.Info("Creating new repository preparer")
 
 	p, err := prepare.NewRepositoryPreparer(l)
 	if err != nil {
-		l.Warn("Failed new prepare >%v<", err)
+		l.Warn("Failed new repository prepare >%v<", err)
 		return nil, err
 	}
 
@@ -459,7 +450,7 @@ func (rnr *Runner) defaultRepositoryPreparerFunc(l logger.Logger) (preparer.Repo
 
 	err = p.Init(db)
 	if err != nil {
-		l.Warn("Failed preparer init >%v<", err)
+		l.Warn("Failed repository preparer init >%v<", err)
 		return nil, err
 	}
 
@@ -471,21 +462,18 @@ func (rnr *Runner) defaultRepositoryPreparerFunc(l logger.Logger) (preparer.Repo
 // defaultQueryPreparerFunc - returns a default initialised query preparer, set the
 // property QueryPreparerFunc to provide your own custom query preparer.
 func (rnr *Runner) defaultQueryPreparerFunc(l logger.Logger) (preparer.Query, error) {
-
-	// NOTE: We have a good generic preparer.Query so we'll provide that here
-
-	l.Debug("** Query **")
+	l = Logger(l, "defaultQueryPreparerFunc")
 
 	if rnr.QueryPreparer != nil {
-		l.Debug("Returning existing preparer query")
+		l.Info("Returning existing query preparer")
 		return rnr.QueryPreparer, nil
 	}
 
-	l.Debug("Creating new preparer query")
+	l.Debug("Creating new query preparer")
 
 	p, err := prepare.NewQueryPreparer(l)
 	if err != nil {
-		l.Warn("failed new prepare query >%v<", err)
+		l.Warn("failed new query preparer >%v<", err)
 		return nil, err
 	}
 
@@ -497,7 +485,7 @@ func (rnr *Runner) defaultQueryPreparerFunc(l logger.Logger) (preparer.Query, er
 
 	err = p.Init(db)
 	if err != nil {
-		l.Warn("failed preparer query init >%v<", err)
+		l.Warn("failed query preparer init >%v<", err)
 		return nil, err
 	}
 

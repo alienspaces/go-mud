@@ -50,7 +50,7 @@ func Test_extractPathParams(t *testing.T) {
 	}
 }
 
-func Test_validateQueryParameters(t *testing.T) {
+func Test_validateParams(t *testing.T) {
 
 	_, l, _, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies should not return err")
@@ -138,7 +138,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.SchemaValidation,
 		},
 		{
 			name: "number invalid below min",
@@ -148,7 +148,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.SchemaValidation,
 		},
 		{
 			name: "number array",
@@ -158,7 +158,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.SchemaValidation,
 		},
 		{
 			name: "multiple",
@@ -169,7 +169,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.SchemaValidation,
 		},
 		{
 			name: "additional property",
@@ -179,7 +179,7 @@ func Test_validateQueryParameters(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.GetRegistryError(coreerror.SchemaValidation).ErrorCode,
+			errCode: coreerror.SchemaValidation,
 		},
 	}
 
@@ -202,15 +202,15 @@ func Test_validateQueryParameters(t *testing.T) {
 			if tt.errCode != "" {
 				require.Error(t, err, "validateQueryParameters should return err")
 				coreerrorErr, conversionErr := coreerror.ToError(err)
-				require.Nil(t, conversionErr, "should not have an err that is not wrapped")
+				require.Nil(t, conversionErr, "error should be a core error type")
 
-				require.Equal(t, tt.errCode, coreerrorErr.ErrorCode)
+				require.Equal(t, tt.errCode, coreerrorErr.ErrorCode, "error code equals expected")
 
 				e := coreerror.ProcessParamError(err)
 				coreerrorErr, conversionErr = coreerror.ToError(e)
-				require.Nil(t, conversionErr, "should not have an err that is not wrapped")
+				require.Nil(t, conversionErr, "error should be a core error type")
 
-				require.Equal(t, coreerror.GetRegistryError(coreerror.InvalidParam).ErrorCode, coreerrorErr.ErrorCode)
+				require.Equal(t, coreerror.InvalidParam, coreerrorErr.ErrorCode, "error code is invalid param")
 			} else {
 				require.NoError(t, err, "validateParams should not return err")
 			}

@@ -9,5 +9,4 @@ type Configurer interface {
 	GetAll() map[string]string
 	Set(key string, value string)
 	Add(key string, required bool) (err error)
-	Clone() Configurer
 }

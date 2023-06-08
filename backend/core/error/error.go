@@ -1,128 +1,243 @@
 package error
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
+	"regexp"
 	"strings"
+
+	"github.com/xeipuuv/gojsonschema"
 )
 
-type ErrorCode string
-
-const (
-	SchemaValidation ErrorCode = "validation.body_not_matching_json_schema"
-	InvalidAction    ErrorCode = "invalid_action"
-	InvalidJSON      ErrorCode = "validation.invalid_json"
-	InvalidHeader    ErrorCode = "validation.invalid_header"
-	InvalidParam     ErrorCode = "validation.invalid_parameter"
-	NotFound         ErrorCode = "resource_not_found"
-	Unauthorized     ErrorCode = "unauthorized"
-	Unauthenticated  ErrorCode = "unauthenticated"
-	Unavailable      ErrorCode = "unavailable"
-	Malformed        ErrorCode = "malformed"
-	Internal         ErrorCode = "internal_error"
+var (
+	reArray = regexp.MustCompile(`(?m)\.(\d+)(\.)?`)
 )
 
-type Error struct {
-	HttpStatusCode         int                     `json:"-"`
-	ErrorCode              ErrorCode               `json:"code"`
-	Message                string                  `json:"message"`
-	SchemaValidationErrors []SchemaValidationError `json:"validationErrors,omitempty"`
+var internal = Error{
+	HttpStatusCode: http.StatusInternalServerError,
+	ErrorCode:      Internal,
+	Message:        "An internal error has occurred.",
 }
 
-func (e Error) Error() string {
-	return fmt.Sprintf("%s: %s", e.ErrorCode, e.Message)
+func NewInternalError() error {
+	return internal
 }
 
-// Registry is a map of error codes to errors
-type Registry map[ErrorCode]Error
+var notFound = Error{
+	HttpStatusCode: http.StatusNotFound,
+	ErrorCode:      NotFound,
+	Message:        "Resource not found",
+}
 
-// Merge merges another error collection with this error collection returning a new error collection
-func (c Registry) Merge(a Registry) Registry {
-	for k, v := range c {
-		a[k] = v
+func NewNotFoundError(resource string, id string) error {
+	e := notFound
+	if resource != "" && id != "" {
+		e.Message = fmt.Sprintf("%s with ID >%s< not found", resource, id)
 	}
-	return a
+	return e
 }
 
-type SchemaValidationError struct {
-	DataPath string `json:"dataPath"`
-	Message  string `json:"message"`
+var unavailable = Error{
+	HttpStatusCode: http.StatusServiceUnavailable,
+	ErrorCode:      Unavailable,
+	Message:        "Server overloaded: unable to process request",
 }
 
-func (sve SchemaValidationError) GetField() string {
-	field := strings.Split(sve.DataPath, ".")
-	lastField := field[len(field)-1]
-	return lastField
+func NewUnavailableError() error {
+	return unavailable
 }
 
-func IsError(e error) bool {
-	var errorPtr Error
-	return errors.As(e, &errorPtr)
+var malformed = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      Malformed,
+	Message:        "Malformed data: unable to process the request",
 }
 
-func HasErrorCode(err error, c ErrorCode) bool {
-	e, err := ToError(err)
-	if err != nil {
-		return false
+func NewMalformedError() error {
+	return malformed
+}
+
+var unauthorized = Error{
+	HttpStatusCode: http.StatusForbidden,
+	ErrorCode:      Unauthorized,
+	Message:        "Permission to the requested resource is denied.",
+}
+
+func NewUnauthorizedError() error {
+	e := unauthorized
+	return e
+}
+
+var unauthenticated = Error{
+	HttpStatusCode: http.StatusUnauthorized,
+	ErrorCode:      Unauthenticated,
+	Message:        "Request is unauthenticated",
+}
+
+func NewUnauthenticatedError(message string, args ...any) error {
+	e := unauthenticated
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidParam = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidParam,
+	Message:        "Request contains invalid parameters",
+}
+
+func NewParamError(message string, args ...any) error {
+	e := invalidParam
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidHeader = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidParam,
+	Message:        "Request contains invalid headers",
+}
+
+func NewHeaderError(message string, args ...any) error {
+	e := invalidHeader
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidJSON = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidJSON,
+	Message:        "Request body contains invalid JSON.",
+}
+
+func NewInvalidJSONError(message string, args ...any) error {
+	e := invalidJSON
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidAction = Error{
+	HttpStatusCode: http.StatusConflict,
+	ErrorCode:      InvalidAction,
+	Message:        "The request conflicts with the current state of the target resource.",
+}
+
+func NewInvalidActionError(message string) error {
+	e := invalidAction
+	if message != "" {
+		e.Message = message
+	}
+	return e
+}
+
+var schemaValidation = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      SchemaValidation,
+	Message:        "Request body failed JSON schema validation.",
+}
+
+func NewSchemaValidationError(resultErrors []gojsonschema.ResultError) error {
+	e := schemaValidation
+
+	resultErrors = filterNonUserFriendlyErrors(resultErrors)
+
+	for _, re := range resultErrors {
+		sve := setDataPath(SchemaValidationError{}, re)
+		sve = setMessage(sve, re)
+		e.SchemaValidationErrors = append(e.SchemaValidationErrors, sve)
 	}
 
-	return e.ErrorCode == c
+	return e
 }
 
-func ToError(e error) (Error, error) {
-	if e == nil {
-		return Error{}, fmt.Errorf("err is nil when converting to coreerror.Error type")
-	}
+func filterNonUserFriendlyErrors(re []gojsonschema.ResultError) []gojsonschema.ResultError {
+	var friendly []gojsonschema.ResultError
+	var unfriendly []gojsonschema.ResultError
 
-	var err Error
-	if !errors.As(e, &err) {
-		return Error{}, fmt.Errorf("failed to convert to coreerror.Error type >%v<", e)
-	}
-
-	if len(err.SchemaValidationErrors) == 0 {
-		err.SchemaValidationErrors = nil
-	}
-
-	return err, nil
-}
-
-func ToErrors(errs ...error) ([]Error, error) {
-	var results []Error
-
-	for _, e := range errs {
-		result, err := ToError(e)
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert err to error result >%#v<", err)
+	// These errors refer to conditionals in the schema that may not be understood by end-users.
+	for _, err := range re {
+		errType := err.Type()
+		switch errType {
+		case "number_any_of", "number_one_of", "number_all_of", "number_not", "condition_then", "condition_else":
+			unfriendly = append(unfriendly, err)
+		default:
+			friendly = append(friendly, err)
 		}
-
-		results = append(results, result)
 	}
 
-	return results, nil
+	// The non-user friendly errors are _usually_ accompanied by a more specific user-friendly error.
+	if len(friendly) == 0 {
+		return unfriendly
+	}
+
+	return friendly
 }
 
-func ProcessParamError(err error) error {
-	e, conversionErr := ToError(err)
-	if conversionErr != nil {
-		return err
+func setDataPath(sve SchemaValidationError, re gojsonschema.ResultError) SchemaValidationError {
+	var field string
+	if re.Type() == "required" {
+		field = re.Details()["property"].(string)
+	} else {
+		field = re.Field()
 	}
 
-	if len(e.SchemaValidationErrors) == 0 {
-		return NewParamError(e.Error())
+	sve.DataPath = "$"
+
+	// not sure if it is possible for the field to be empty, but to be safe the path is set to "$"
+	switch field {
+	case "", "(root)":
+		return sve
 	}
 
-	errStr := strings.Builder{}
-	errStr.WriteString("Invalid parameter(s): ")
-	for i, sve := range e.SchemaValidationErrors {
-		if sve.GetField() == "$" {
-			errStr.WriteString(fmt.Sprintf("(%d) %s; ", i+1, sve.Message))
-		} else {
-			errStr.WriteString(fmt.Sprintf("(%d) %s: %s; ", i+1, sve.GetField(), sve.Message))
+	// reformat fields with array index and prefix with "$." (e.g contacts.0.type -> $.contacts[0].type, contacts.0 -> $.contacts[0])
+	sve.DataPath = sve.DataPath + "." + reArray.ReplaceAllString(field, "[$1]$2")
+
+	return sve
+}
+
+// setMessage sets the detail of the validation error with the reformatted errors returned from the validation.
+func setMessage(sve SchemaValidationError, re gojsonschema.ResultError) SchemaValidationError {
+	switch re.Type() {
+	case "number_gte", "number_gt", "number_lte", "number_lt", "format", "pattern", "array_min_items", "array_max_items":
+		sve.Message = re.String()
+		if strings.Contains(sve.Message, " 1 items") {
+			sve.Message = strings.ReplaceAll(sve.Message, " 1 items", " 1 item")
 		}
+	default:
+		sve.Message = re.Description()
 	}
 
-	formattedErrString := errStr.String()
-	formattedErrString = formattedErrString[0 : len(formattedErrString)-2] // remove extra space and semicolon
-	formattedErrString += "."
-	return NewParamError(formattedErrString)
+	// clean up message to avoid repeating the property
+	if strings.Contains(sve.Message, re.Field()+": ") {
+		sve.Message = strings.ReplaceAll(sve.Message, re.Field()+": ", "")
+	}
+	if strings.Contains(sve.Message, re.Field()+" must") {
+		sve.Message = strings.ReplaceAll(sve.Message, re.Field()+" must", "Must")
+	}
+	if strings.Contains(sve.Message, re.Field()+" does") {
+		sve.Message = strings.ReplaceAll(sve.Message, re.Field()+" does", "Does")
+	}
+
+	return sve
+}
+
+// Dynamic error generation functions
+func CreateInvalidError(errorCodeSuffix string, message string, args ...any) error {
+	return Error{
+		HttpStatusCode: http.StatusBadRequest,
+		ErrorCode:      CreateErrorCode("validation.invalid", errorCodeSuffix),
+		Message:        fmt.Sprintf(message, args...),
+	}
+}
+
+func CreateErrorCode(errorType string, field string) ErrorCode {
+	return ErrorCode(fmt.Sprintf("%s_%s", errorType, field))
 }

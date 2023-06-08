@@ -22,6 +22,7 @@ func DefaultRequiredItemKeys() []string {
 	return []string{
 		// general
 		AppServerEnv,
+		AppServerHome,
 		AppServerHost,
 		AppServerPort,
 		// logger

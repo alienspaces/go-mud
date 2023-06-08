@@ -242,51 +242,17 @@ func TestGetOneSQL(t *testing.T) {
 	require.NoError(t, err, "Repository Init returns without error")
 
 	tests := []struct {
-		name          string
-		identifiers   map[string][]string
-		IsRLSDisabled bool
-		want          set.Set[string]
+		name string
+		want set.Set[string]
 	}{
 		{
-			name:          "RLS disabled, no identifiers",
-			IsRLSDisabled: true,
-			want:          set.FromSlice([]string{fmt.Sprintf("SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL", r.Config.TableName)}),
-		},
-		{
-			name:          "RLS disabled, has identifiers",
-			IsRLSDisabled: true,
-			identifiers: map[string][]string{
-				"db_A": {"1", "2"},
-				"db_B": {"a", "b"},
-			},
+			name: "success",
 			want: set.FromSlice([]string{fmt.Sprintf("SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL", r.Config.TableName)}),
-		},
-		{
-			name: "RLS enabled, no identifiers",
-			want: set.FromSlice([]string{fmt.Sprintf("SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL", r.Config.TableName)}),
-		},
-		{
-			name: "RLS enabled, has identifiers",
-			identifiers: map[string][]string{
-				"db_A": {"1", "2"},
-				"db_B": {"a", "b"},
-			},
-			// appending of the RLS constraints to the SQL query is not ordered because of map iteration
-			want: set.FromSlice([]string{
-				fmt.Sprintf(
-					"SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL\nAND db_A IN ('1','2')\nAND db_B IN ('a','b')",
-					r.Config.TableName),
-				fmt.Sprintf(
-					"SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE id = $1 AND deleted_at IS NULL\nAND db_B IN ('a','b')\nAND db_A IN ('1','2')",
-					r.Config.TableName),
-			}),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r.IsRLSDisabled = tt.IsRLSDisabled
-			r.SetRLS(tt.identifiers)
 			require.Contains(t, tt.want, strings.TrimSpace(r.GetOneSQL()))
 		})
 	}
@@ -311,51 +277,17 @@ func TestGetManySQL(t *testing.T) {
 	require.NoError(t, err, "Repository Init returns without error")
 
 	sqlTests := []struct {
-		name          string
-		identifiers   map[string][]string
-		IsRLSDisabled bool
-		want          set.Set[string]
+		name string
+		want set.Set[string]
 	}{
 		{
-			name:          "RLS disabled, no identifiers",
-			IsRLSDisabled: true,
-			want:          set.FromSlice([]string{fmt.Sprintf("SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE deleted_at IS NULL", r.Config.TableName)}),
-		},
-		{
-			name:          "RLS disabled, has identifiers",
-			IsRLSDisabled: true,
-			identifiers: map[string][]string{
-				"db_A": {"1", "2"},
-				"db_B": {"a", "b"},
-			},
+			name: "success",
 			want: set.FromSlice([]string{fmt.Sprintf("SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE deleted_at IS NULL", r.Config.TableName)}),
-		},
-		{
-			name: "RLS enabled, no identifiers",
-			want: set.FromSlice([]string{fmt.Sprintf("SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE deleted_at IS NULL", r.Config.TableName)}),
-		},
-		{
-			name: "RLS enabled, has identifiers",
-			identifiers: map[string][]string{
-				"db_A": {"1", "2"},
-				"db_B": {"a", "b"},
-			},
-			// appending of the RLS constraints to the SQL query is not ordered because of map iteration
-			want: set.FromSlice([]string{
-				fmt.Sprintf(
-					"SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE deleted_at IS NULL\nAND db_A IN ('1','2')\nAND db_B IN ('a','b')",
-					r.Config.TableName),
-				fmt.Sprintf(
-					"SELECT db_A, db_B, db_d, db_E, db_E3, db_E5, db_E6, db_f, db_time FROM %s WHERE deleted_at IS NULL\nAND db_B IN ('a','b')\nAND db_A IN ('1','2')",
-					r.Config.TableName),
-			}),
 		},
 	}
 
 	for _, tt := range sqlTests {
 		t.Run(tt.name, func(t *testing.T) {
-			r.IsRLSDisabled = tt.IsRLSDisabled
-			r.SetRLS(tt.identifiers)
 			require.Contains(t, tt.want, strings.TrimSpace(r.GetManySQL()))
 		})
 	}

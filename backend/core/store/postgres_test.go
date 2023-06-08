@@ -7,7 +7,6 @@ import (
 
 	coreconfig "gitlab.com/alienspaces/go-mud/backend/core/config"
 	"gitlab.com/alienspaces/go-mud/backend/core/log"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 func Test_getPostgresDB(t *testing.T) {
@@ -24,11 +23,11 @@ func Test_getPostgresDB(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		connectionConfig func() *storer.ConnectionConfig
-		wantErr          bool
+		config  func() *Config
+		wantErr bool
 	}{
 		"without APP_SERVER_DB_HOST": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				c := *defaultConnectionConfig
 				c.Host = ""
 				return &c
@@ -36,7 +35,7 @@ func Test_getPostgresDB(t *testing.T) {
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_PORT": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				c := *defaultConnectionConfig
 				c.Port = ""
 				return &c
@@ -44,7 +43,7 @@ func Test_getPostgresDB(t *testing.T) {
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_NAME": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				c := *defaultConnectionConfig
 				c.Database = ""
 				return &c
@@ -52,7 +51,7 @@ func Test_getPostgresDB(t *testing.T) {
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_USER": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				c := *defaultConnectionConfig
 				c.User = ""
 				return &c
@@ -60,7 +59,7 @@ func Test_getPostgresDB(t *testing.T) {
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_PASSWORD": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				c := *defaultConnectionConfig
 				c.Password = ""
 				return &c
@@ -68,13 +67,13 @@ func Test_getPostgresDB(t *testing.T) {
 			wantErr: true,
 		},
 		"missing config": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				return nil
 			},
 			wantErr: true,
 		},
 		"valid config": {
-			connectionConfig: func() *storer.ConnectionConfig {
+			config: func() *Config {
 				c := *defaultConnectionConfig
 				return &c
 			},
@@ -87,9 +86,9 @@ func Test_getPostgresDB(t *testing.T) {
 		t.Logf("Running test >%s<", tcName)
 
 		func() {
-			connectionConfig := tc.connectionConfig()
+			config := tc.config()
 
-			db, err := connectPostgresDB(l, connectionConfig)
+			db, err := connectPostgresDB(l, config)
 			defer func() {
 				if db != nil {
 					db.Close()

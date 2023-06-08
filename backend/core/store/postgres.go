@@ -8,48 +8,48 @@ import (
 	_ "github.com/lib/pq" // blank import intended
 
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 // connectPostgresDB -
-func connectPostgresDB(l logger.Logger, c *storer.ConnectionConfig) (*sqlx.DB, error) {
+func connectPostgresDB(l logger.Logger, config *Config) (*sqlx.DB, error) {
 
-	if c == nil {
-		return nil, fmt.Errorf("missing configurer, cannot connect to postgres database")
-	}
 	if l == nil {
 		return nil, fmt.Errorf("missing logger, cannot connect to postgres database")
 	}
 
-	dbHost := c.Host
+	if config == nil {
+		return nil, fmt.Errorf("missing config, cannot connect to postgres database")
+	}
+
+	dbHost := config.Host
 	if dbHost == "" {
 		errMsg := "missing APP_SERVER_DB_HOST, cannot connect"
 		l.Warn(errMsg)
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	dbPort := c.Port
+	dbPort := config.Port
 	if dbPort == "" {
 		errMsg := "missing APP_SERVER_DB_PORT, cannot connect"
 		l.Warn(errMsg)
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	dbName := c.Database
+	dbName := config.Database
 	if dbName == "" {
 		errMsg := "missing APP_SERVER_DB_NAME, cannot connect"
 		l.Warn(errMsg)
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	dbUser := c.User
+	dbUser := config.User
 	if dbUser == "" {
 		errMsg := "missing APP_SERVER_DB_USER, cannot connect"
 		l.Warn(errMsg)
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	dbPass := c.Password
+	dbPass := config.Password
 	if dbPass == "" {
 		errMsg := "missing APP_SERVER_DB_PASSWORD, cannot connect"
 		l.Warn(errMsg)
@@ -59,21 +59,21 @@ func connectPostgresDB(l logger.Logger, c *storer.ConnectionConfig) (*sqlx.DB, e
 	cs := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)
 	l.Info("Connect string >%s<", fmt.Sprintf("user=%s password=******* dbname=%s host=%s port=%s sslmode=disable", dbUser, dbName, dbHost, dbPort))
 
-	dbMaxOpenConnections := c.MaxOpenConnections
+	dbMaxOpenConnections := config.MaxOpenConnections
 	if dbMaxOpenConnections == 0 {
 		errMsg := "missing APP_SERVER_DB_MAX_OPEN_CONNECTIONS, cannot connect"
 		l.Warn(errMsg)
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	dbMaxIdleConnections := c.MaxIdleConnections
+	dbMaxIdleConnections := config.MaxIdleConnections
 	if dbMaxIdleConnections == 0 {
 		errMsg := "missing APP_SERVER_DB_MAX_IDLE_CONNECTIONS, cannot connect"
 		l.Warn(errMsg)
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	dbMaxIdleTimeMins := c.MaxIdleTimeMins
+	dbMaxIdleTimeMins := config.MaxIdleTimeMins
 	if dbMaxIdleTimeMins == 0 {
 		errMsg := "missing APP_SERVER_DB_MAX_IDLE_TIME_MINS, cannot connect"
 		l.Warn(errMsg)

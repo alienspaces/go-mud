@@ -25,8 +25,6 @@ type Repository struct {
 	Prepare            preparer.Repository
 	computedAttributes []string
 	attributeIndex     set.Set[string]
-	rlsIdentifiers     map[string][]string
-	IsRLSDisabled      bool
 }
 
 var _ repositor.Repositor = &Repository{}
@@ -93,16 +91,12 @@ func (r *Repository) ArrayFields() set.Set[string] {
 
 // GetOneRec -
 func (r *Repository) GetOneRec(recordID any, rec any, lock *coresql.Lock) error {
-	var querySQL string
-	if r.rlsIdentifiers != nil {
-		querySQL = r.GetOneSQL()
-	} else {
-		// preparer
-		p := r.Prepare
 
-		// stmt
-		querySQL = p.GetOneSQL(r)
-	}
+	// preparer
+	p := r.Prepare
+
+	// stmt
+	querySQL := p.GetOneSQL(r)
 
 	opts := &coresql.Options{
 		Lock: lock,
@@ -146,16 +140,12 @@ func (r *Repository) GetOneRec(recordID any, rec any, lock *coresql.Lock) error 
 
 // GetManyRecs -
 func (r *Repository) GetManyRecs(opts *coresql.Options) (rows *sqlx.Rows, err error) {
-	var querySQL string
-	if r.rlsIdentifiers != nil {
-		querySQL = r.GetManySQL()
-	} else {
-		// preparer
-		p := r.Prepare
 
-		// stmt
-		querySQL = p.GetManySQL(r)
-	}
+	// preparer
+	p := r.Prepare
+
+	// stmt
+	querySQL := p.GetManySQL(r)
 
 	// tx
 	tx := r.Tx
@@ -363,41 +353,20 @@ func (r *Repository) removeOneRec(recordID any) error {
 
 // GetOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetOneSQL() string {
-	return r.withRLS(fmt.Sprintf(`
+	return fmt.Sprintf(`
 SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL
 `,
 		strings.Join(r.Attributes(), ", "),
-		r.TableName()))
+		r.TableName())
 }
 
 // GetManySQL - This SQL statement ends with a newline so that any parameters can be easily appended.
 func (r *Repository) GetManySQL() string {
-	return r.withRLS(fmt.Sprintf(`
+	return fmt.Sprintf(`
 SELECT %s FROM %s WHERE deleted_at IS NULL
 `,
 		strings.Join(r.Attributes(), ", "),
-		r.TableName()))
-}
-
-func (r *Repository) withRLS(sql string) string {
-	for attr, ids := range r.rlsIdentifiers {
-
-		var strBuilder strings.Builder
-		for i, id := range ids {
-			strBuilder.WriteString("'")
-			strBuilder.WriteString(id)
-
-			if i != len(ids)-1 {
-				strBuilder.WriteString("',")
-			} else {
-				strBuilder.WriteString("'")
-			}
-		}
-
-		sql += fmt.Sprintf("AND %s IN (%s)\n", attr, strBuilder.String())
-	}
-
-	return sql
+		r.TableName())
 }
 
 // CreateOneSQL - This SQL statement ends with a newline so that any parameters can be easily appended.
@@ -499,28 +468,4 @@ func (r *Repository) RemoveManySQL() string {
 DELETE FROM %s WHERE 1 = 1
 `
 	return fmt.Sprintf(sql, r.TableName())
-}
-
-func (r *Repository) SetRLS(identifiers map[string][]string) {
-	if r.IsRLSDisabled {
-		return
-	}
-
-	// We could cache RLS filtered computed attributes, but the RLS resources may differ between requests,
-	// resulting in additional complexity. For example, one API key may have an ID for resource X, but another
-	// may only have an ID for resource Y.
-
-	filtered := map[string][]string{}
-
-	// SELECT queries should only filter on rows with identifiers for resources matching the attributes of the record.
-	// For example, a record with only `program_id`, but not `project_id`, should not be filtered on `project_id`.
-	for _, attr := range r.computedAttributes {
-		if ids, ok := identifiers[attr]; ok {
-			filtered[attr] = ids
-		}
-	}
-
-	if len(filtered) > 0 {
-		r.rlsIdentifiers = filtered
-	}
 }

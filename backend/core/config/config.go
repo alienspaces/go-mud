@@ -6,8 +6,6 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-
-	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 )
 
 // Config defines a container of Items and corresponding Values. Items specifies whether the Item.Key is required.
@@ -133,21 +131,4 @@ func (e *Config) checkItem(item Item) error {
 	}
 
 	return nil
-}
-
-func (e *Config) Clone() configurer.Configurer {
-	cfg := Config{
-		Required: make(map[string]bool),
-		Values:   make(map[string]string),
-	}
-
-	for k, v := range e.Required {
-		cfg.Required[k] = v
-	}
-
-	for k, v := range e.Values {
-		cfg.Values[k] = v
-	}
-
-	return &cfg
 }

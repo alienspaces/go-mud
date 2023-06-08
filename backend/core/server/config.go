@@ -3,23 +3,11 @@ package server
 import (
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/config"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 )
 
-// The following constants are used to source environment variables when
-// establishing runner configuration.
-const (
-	EnvKeyAppVariant               = "APP_VARIANT"
-	EnvKeyAppServerEnv             = "APP_SERVER_ENV"
-	EnvKeyAppServerHost            = "APP_SERVER_HOST"
-	EnvKeyAppServerHome            = "APP_SERVER_HOME"
-	EnvKeyAppServerPort            = "APP_SERVER_PORT"
-	EnvKeyAppImageTagFeatureBranch = "APP_IMAGE_TAG_FEATURE_BRANCH"
-	EnvKeyAppImageTagSHA           = "APP_IMAGE_TAG_SHA"
-)
-
 type Config struct {
-	AppVariant               string
 	AppServerEnv             string
 	AppServerHost            string
 	AppServerHome            string
@@ -30,13 +18,10 @@ type Config struct {
 
 func NewConfig(c configurer.Configurer) (*Config, error) {
 	cfg := Config{
-		AppVariant:               c.Get(EnvKeyAppVariant),
-		AppServerEnv:             c.Get(EnvKeyAppServerEnv),
-		AppServerHost:            c.Get(EnvKeyAppServerHost),
-		AppServerHome:            c.Get(EnvKeyAppServerHome),
-		AppServerPort:            c.Get(EnvKeyAppServerPort),
-		AppImageTagFeatureBranch: c.Get(EnvKeyAppImageTagFeatureBranch),
-		AppImageTagSHA:           c.Get(EnvKeyAppImageTagSHA),
+		AppServerEnv:  c.Get(config.AppServerEnv),
+		AppServerHost: c.Get(config.AppServerHost),
+		AppServerHome: c.Get(config.AppServerHome),
+		AppServerPort: c.Get(config.AppServerPort),
 	}
 
 	// Services need to validate core configuration that may have been applied as

@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/config"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/storer"
 )
 
 const (
@@ -14,36 +13,36 @@ const (
 	defaultMaxIdleTimeMins    int = 2
 )
 
-func (s *Store) SetConnectionConfig(connectionConfig *storer.ConnectionConfig) error {
+func (s *Store) SetConnectionConfig(config *Config) error {
 	l := s.Log
 
-	if connectionConfig.MaxOpenConnections == 0 {
-		connectionConfig.MaxOpenConnections = defaultMaxOpenConnections
+	if config.MaxOpenConnections == 0 {
+		config.MaxOpenConnections = defaultMaxOpenConnections
 	}
-	if connectionConfig.MaxIdleConnections == 0 {
-		connectionConfig.MaxIdleConnections = defaultMaxIdleConnections
+	if config.MaxIdleConnections == 0 {
+		config.MaxIdleConnections = defaultMaxIdleConnections
 	}
-	if connectionConfig.MaxIdleTimeMins == 0 {
-		connectionConfig.MaxIdleTimeMins = defaultMaxIdleTimeMins
+	if config.MaxIdleTimeMins == 0 {
+		config.MaxIdleTimeMins = defaultMaxIdleTimeMins
 	}
 
-	err := validateConnectionConfig(connectionConfig)
+	err := validateConnectionConfig(config)
 	if err != nil {
 		l.Warn("failed validating connection configuration >%v<", err)
 		return err
 	}
 
-	s.connectionConfig = connectionConfig
+	s.config = config
 
 	return nil
 }
 
-func (s *Store) GetConnectionConfig() (*storer.ConnectionConfig, error) {
+func (s *Store) GetConnectionConfig() (*Config, error) {
 	l := s.Log
 	c := s.Config
 
-	if s.connectionConfig != nil {
-		return s.connectionConfig, nil
+	if s.config != nil {
+		return s.config, nil
 	}
 
 	dbMaxOpenConnectionsStr := c.Get(config.AppServerDBMaxOpenConnections)
@@ -70,7 +69,7 @@ func (s *Store) GetConnectionConfig() (*storer.ConnectionConfig, error) {
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	connectionConfig := storer.ConnectionConfig{
+	config := Config{
 		Host:               c.Get(config.AppServerDBHost),
 		Port:               c.Get(config.AppServerDBPort),
 		Database:           c.Get(config.AppServerDBName),
@@ -81,26 +80,26 @@ func (s *Store) GetConnectionConfig() (*storer.ConnectionConfig, error) {
 		MaxIdleTimeMins:    dbMaxIdleTimeMins,
 	}
 
-	if connectionConfig.MaxOpenConnections == 0 {
-		connectionConfig.MaxOpenConnections = defaultMaxOpenConnections
+	if config.MaxOpenConnections == 0 {
+		config.MaxOpenConnections = defaultMaxOpenConnections
 	}
-	if connectionConfig.MaxIdleConnections == 0 {
-		connectionConfig.MaxIdleConnections = defaultMaxIdleConnections
+	if config.MaxIdleConnections == 0 {
+		config.MaxIdleConnections = defaultMaxIdleConnections
 	}
-	if connectionConfig.MaxIdleTimeMins == 0 {
-		connectionConfig.MaxIdleTimeMins = defaultMaxIdleTimeMins
+	if config.MaxIdleTimeMins == 0 {
+		config.MaxIdleTimeMins = defaultMaxIdleTimeMins
 	}
 
-	err = validateConnectionConfig(&connectionConfig)
+	err = validateConnectionConfig(&config)
 	if err != nil {
 		l.Warn("failed validating connection configuration >%v<", err)
 		return nil, err
 	}
 
-	return &connectionConfig, nil
+	return &config, nil
 }
 
-func validateConnectionConfig(c *storer.ConnectionConfig) error {
+func validateConnectionConfig(c *Config) error {
 
 	if c.Host == "" {
 		errMsg := "configuration missing Host, cannot connect"
