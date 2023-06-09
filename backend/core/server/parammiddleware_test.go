@@ -138,7 +138,7 @@ func Test_validateParams(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.SchemaValidation,
+			errCode: coreerror.InvalidJSON,
 		},
 		{
 			name: "number invalid below min",
@@ -148,7 +148,7 @@ func Test_validateParams(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.SchemaValidation,
+			errCode: coreerror.InvalidJSON,
 		},
 		{
 			name: "number array",
@@ -158,7 +158,7 @@ func Test_validateParams(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.SchemaValidation,
+			errCode: coreerror.InvalidJSON,
 		},
 		{
 			name: "multiple",
@@ -169,7 +169,7 @@ func Test_validateParams(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.SchemaValidation,
+			errCode: coreerror.InvalidJSON,
 		},
 		{
 			name: "additional property",
@@ -179,7 +179,7 @@ func Test_validateParams(t *testing.T) {
 				},
 				paramSchema: paramSchema,
 			},
-			errCode: coreerror.SchemaValidation,
+			errCode: coreerror.InvalidJSON,
 		},
 	}
 

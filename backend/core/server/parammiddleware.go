@@ -112,7 +112,7 @@ func validateParams(l logger.Logger, q url.Values, paramSchema *jsonschema.Schem
 	}
 
 	if !result.Valid() {
-		err := coreerror.NewSchemaValidationError(result.Errors())
+		err := coreerror.NewInvalidJSONError(result.Errors())
 		l.Warn("failed validate params >%#v<", err)
 		return err
 	}

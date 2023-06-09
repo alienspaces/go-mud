@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -32,9 +31,9 @@ func (m *Model) IsUUID(s string) bool {
 
 func (m *Model) ValidateStringField(field string, fieldName string) error {
 	if field == "" {
-		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field)
-		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.CreateInvalidError(fieldName, errMsg)
+		err := coreerror.NewInvalidDataError("%s should not be empty >%s<", fieldName, field)
+		m.Log.Warn(err.Error())
+		return err
 	}
 
 	return nil
@@ -42,9 +41,9 @@ func (m *Model) ValidateStringField(field string, fieldName string) error {
 
 func (m *Model) ValidateNullStringField(field sql.NullString, fieldName string) error {
 	if !null.NullStringIsValid(field) {
-		errMsg := fmt.Sprintf("%s should not be empty >%s<", fieldName, field.String)
-		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.CreateInvalidError(fieldName, errMsg)
+		err := coreerror.NewInvalidDataError("%s should not be empty >%s<", fieldName, field.String)
+		m.Log.Warn(err.Error())
+		return err
 	}
 
 	return nil
@@ -52,9 +51,9 @@ func (m *Model) ValidateNullStringField(field sql.NullString, fieldName string) 
 
 func (m *Model) ValidateNullBoolField(field sql.NullBool, fieldName string) error {
 	if !null.NullBoolIsValid(field) {
-		errMsg := fmt.Sprintf("%s should not be empty", fieldName)
-		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.CreateInvalidError(fieldName, errMsg)
+		err := coreerror.NewInvalidDataError("%s should not be empty", fieldName)
+		m.Log.Warn(err.Error())
+		return err
 	}
 
 	return nil
@@ -62,9 +61,9 @@ func (m *Model) ValidateNullBoolField(field sql.NullBool, fieldName string) erro
 
 func (m *Model) ValidateStringArrayField(field pq.StringArray, fieldName string) error {
 	if len(field) == 0 {
-		errMsg := fmt.Sprintf("%s should not be empty >%#v<", fieldName, field)
-		m.Log.Warn("failed validating %s >%s<", fieldName, errMsg)
-		return coreerror.CreateInvalidError(fieldName, errMsg)
+		err := coreerror.NewInvalidDataError("%s should not be empty >%#v<", fieldName, field)
+		m.Log.Warn(err.Error())
+		return err
 	}
 
 	return nil

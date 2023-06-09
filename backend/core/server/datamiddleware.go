@@ -61,9 +61,9 @@ func (rnr *Runner) DataMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 
 			var jsonSyntaxError *json.SyntaxError
 			if errors.As(err, &jsonSyntaxError) || errors.Is(err, io.ErrUnexpectedEOF) {
-				WriteError(l, w, coreerror.NewInvalidJSONError(""))
+				WriteError(l, w, coreerror.NewInvalidDataError(""))
 			} else if errors.Is(err, io.EOF) {
-				WriteError(l, w, coreerror.NewInvalidJSONError("Request body is empty."))
+				WriteError(l, w, coreerror.NewInvalidDataError("Request body is empty."))
 			} else {
 				WriteSystemError(l, w, err)
 			}
@@ -72,7 +72,7 @@ func (rnr *Runner) DataMiddleware(hc HandlerConfig, h Handle) (Handle, error) {
 		}
 
 		if !result.Valid() {
-			err := coreerror.NewSchemaValidationError(result.Errors())
+			err := coreerror.NewInvalidJSONError(result.Errors())
 			l.Warn("failed validate >%#v<", err)
 			WriteError(l, w, err)
 			return err

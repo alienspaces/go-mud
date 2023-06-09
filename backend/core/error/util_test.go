@@ -18,11 +18,11 @@ func TestToError(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "invalid JSON",
+			name: "invalid data",
 			args: args{
-				e: NewInvalidJSONError(""),
+				e: NewInvalidDataError(""),
 			},
-			want: invalidJSON,
+			want: invalidData,
 		},
 		{
 			name: "invalid param",

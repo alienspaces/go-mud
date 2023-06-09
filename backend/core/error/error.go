@@ -98,7 +98,7 @@ func NewParamError(message string, args ...any) error {
 
 var invalidHeader = Error{
 	HttpStatusCode: http.StatusBadRequest,
-	ErrorCode:      InvalidParam,
+	ErrorCode:      InvalidHeader,
 	Message:        "Request contains invalid headers",
 }
 
@@ -110,14 +110,14 @@ func NewHeaderError(message string, args ...any) error {
 	return e
 }
 
-var invalidJSON = Error{
+var invalidData = Error{
 	HttpStatusCode: http.StatusBadRequest,
-	ErrorCode:      InvalidJSON,
-	Message:        "Request body contains invalid JSON.",
+	ErrorCode:      InvalidData,
+	Message:        "Request body contains invalid data.",
 }
 
-func NewInvalidJSONError(message string, args ...any) error {
-	e := invalidJSON
+func NewInvalidDataError(message string, args ...any) error {
+	e := invalidData
 	if message != "" {
 		e.Message = fmt.Sprintf(message, args...)
 	}
@@ -138,14 +138,14 @@ func NewInvalidActionError(message string) error {
 	return e
 }
 
-var schemaValidation = Error{
+var invalidJSON = Error{
 	HttpStatusCode: http.StatusBadRequest,
-	ErrorCode:      SchemaValidation,
+	ErrorCode:      InvalidJSON,
 	Message:        "Request body failed JSON schema validation.",
 }
 
-func NewSchemaValidationError(resultErrors []gojsonschema.ResultError) error {
-	e := schemaValidation
+func NewInvalidJSONError(resultErrors []gojsonschema.ResultError) error {
+	e := invalidJSON
 
 	resultErrors = filterNonUserFriendlyErrors(resultErrors)
 

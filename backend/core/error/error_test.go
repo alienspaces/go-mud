@@ -9,7 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 )
 
-func TestNewSchemaValidationError(t *testing.T) {
+func TestNewInvalidJSONError(t *testing.T) {
 	tests := []struct {
 		name string
 		data string
@@ -233,9 +233,9 @@ func TestNewSchemaValidationError(t *testing.T) {
 	}
 
 	for i := range tests {
-		tests[i].want.HttpStatusCode = schemaValidation.HttpStatusCode
-		tests[i].want.ErrorCode = schemaValidation.ErrorCode
-		tests[i].want.Message = schemaValidation.Message
+		tests[i].want.HttpStatusCode = invalidJSON.HttpStatusCode
+		tests[i].want.ErrorCode = invalidJSON.ErrorCode
+		tests[i].want.Message = invalidJSON.Message
 	}
 
 	cwd, err := os.Getwd()
@@ -264,7 +264,7 @@ func TestNewSchemaValidationError(t *testing.T) {
 			schemaResultErrors := result.Errors()
 			require.NotEmpty(t, schemaResultErrors, "schema validation should return errors")
 
-			sve := NewSchemaValidationError(schemaResultErrors)
+			sve := NewInvalidJSONError(schemaResultErrors)
 			require.Equal(t, tt.want, sve, "schema validation error should be as expected")
 		})
 	}

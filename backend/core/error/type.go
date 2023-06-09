@@ -8,17 +8,17 @@ import (
 type ErrorCode string
 
 const (
-	InvalidAction    ErrorCode = "invalid_action"
-	SchemaValidation ErrorCode = "validation.body_not_matching_json_schema"
-	InvalidJSON      ErrorCode = "validation.invalid_json"
-	InvalidHeader    ErrorCode = "validation.invalid_header"
-	InvalidParam     ErrorCode = "validation.invalid_parameter"
-	NotFound         ErrorCode = "resource_not_found"
-	Unauthorized     ErrorCode = "unauthorized"
-	Unauthenticated  ErrorCode = "unauthenticated"
-	Unavailable      ErrorCode = "unavailable"
-	Malformed        ErrorCode = "malformed"
-	Internal         ErrorCode = "internal_error"
+	InvalidAction   ErrorCode = "invalid_action"
+	InvalidJSON     ErrorCode = "invalid_json"
+	InvalidData     ErrorCode = "invalid_data"
+	InvalidHeader   ErrorCode = "invalid_header"
+	InvalidParam    ErrorCode = "invalid_parameter"
+	NotFound        ErrorCode = "resource_not_found"
+	Unauthorized    ErrorCode = "unauthorized"
+	Unauthenticated ErrorCode = "unauthenticated"
+	Unavailable     ErrorCode = "unavailable"
+	Malformed       ErrorCode = "malformed"
+	Internal        ErrorCode = "internal_error"
 )
 
 type Error struct {
