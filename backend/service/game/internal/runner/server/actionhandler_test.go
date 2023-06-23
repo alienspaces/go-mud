@@ -21,6 +21,13 @@ func TestPostActionHandler(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
+	defer func() {
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
+	}()
+
 	type testCase struct {
 		TestCase
 		expectResponseBody func(data harness.Data) *schema.ActionResponse
@@ -28,13 +35,6 @@ func TestPostActionHandler(t *testing.T) {
 
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
 		return rnr.HandlerConfig[postAction]
-	}
-
-	testCaseRequestHeaders := func(data harness.Data) map[string]string {
-		headers := map[string]string{
-			"X-Tx-Rollback": "true",
-		}
-		return headers
 	}
 
 	// All actions are performed by "Barricade" in the "Cave"
@@ -61,7 +61,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Look at the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.ActionRequest{
@@ -228,7 +227,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Move north from the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.ActionRequest{
@@ -395,7 +393,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Look north from the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.ActionRequest{
@@ -560,7 +557,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Look at an item in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
@@ -710,7 +706,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Look at a monster in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					tmRec, _ := data.GetMonsterRecByName(harness.MonsterNameGrumpyDwarf)
@@ -877,7 +872,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Look at themselves in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					tcRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
@@ -1044,7 +1038,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Stash object that is in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
@@ -1202,7 +1195,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Equip object that is in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					toRec, _ := data.GetObjectRecByName(harness.ObjectNameRustedSword)
@@ -1360,7 +1352,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Drop object that is equipped",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					toRec, _ := data.GetObjectRecByName(harness.ObjectNameDullBronzeRing)
@@ -1517,7 +1508,6 @@ func TestPostActionHandler(t *testing.T) {
 			TestCase: TestCase{
 				Name:              "Submit nothing",
 				HandlerConfig:     testCaseHandlerConfig,
-				RequestHeaders:    testCaseRequestHeaders,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
 					res := schema.ActionRequest{

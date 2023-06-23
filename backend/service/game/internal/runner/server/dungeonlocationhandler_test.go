@@ -35,11 +35,6 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 		return rnr.HandlerConfig[getDungeonLocation]
 	}
 
-	testCaseRequestHeaders := func(data harness.Data) map[string]string {
-		headers := map[string]string{}
-		return headers
-	}
-
 	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.LocationResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
@@ -49,9 +44,8 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get existing",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get existing",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id":  data.DungeonRecs[0].ID,
@@ -80,9 +74,8 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get with non-existant dungeon",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get with non-existant dungeon",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id":  "dc73cc41-0c6d-4dc1-b79d-c41ea2761304",
@@ -98,9 +91,8 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get with non-existant location",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get with non-existant location",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id":  data.DungeonRecs[0].ID,
