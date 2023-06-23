@@ -110,6 +110,13 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
+	defer func() {
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
+	}()
+
 	type testCase struct {
 		TestCase
 	}
