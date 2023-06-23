@@ -29,7 +29,6 @@ func (m *Model) GetActionRec(recID string, lock *coresql.Lock) (*record.Action, 
 
 	r := m.ActionRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -88,7 +87,6 @@ func (m *Model) DeleteActionRec(recID string) error {
 
 	r := m.ActionRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -111,7 +109,6 @@ func (m *Model) RemoveActionRec(recID string) error {
 
 	r := m.ActionRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

@@ -29,7 +29,6 @@ func (m *Model) GetActionMonsterObjectRec(recID string, lock *coresql.Lock) (*re
 
 	r := m.ActionMonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -88,7 +87,6 @@ func (m *Model) DeleteActionMonsterObjectRec(recID string) error {
 
 	r := m.ActionMonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -111,7 +109,6 @@ func (m *Model) RemoveActionMonsterObjectRec(recID string) error {
 
 	r := m.ActionMonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

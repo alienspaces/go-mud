@@ -10,14 +10,12 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.4
-	github.com/nimajalali/go-force v0.0.0-20200831220737-454890ee2b7c
 	github.com/r3labs/diff/v3 v3.0.0
 	github.com/rs/cors v1.8.2
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/text v0.8.0
 )
 
 require (
@@ -37,5 +35,3 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
-
-replace gitlab.com/alienspaces/go-mud/backend/core => ../../core

@@ -29,7 +29,6 @@ func (m *Model) GetObjectInstanceRec(recID string, lock *coresql.Lock) (*record.
 
 	r := m.ObjectInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -64,7 +63,6 @@ func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceVi
 
 	r := m.ObjectInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -123,7 +121,6 @@ func (m *Model) DeleteObjectInstanceRec(recID string) error {
 
 	r := m.ObjectInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -146,7 +143,6 @@ func (m *Model) RemoveObjectInstanceRec(recID string) error {
 
 	r := m.ObjectInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

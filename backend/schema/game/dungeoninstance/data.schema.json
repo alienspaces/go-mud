@@ -4,27 +4,27 @@
   "title": "Dungeon Instance Data",
   "description": "Dungeon instance data",
   "type": "object",
-  "required": ["dungeon_id","dungeon_instance_id",  "dungeon_instance_name", "dungeon_instance_description", "dungeon_instance_created_at"],
+  "required": ["id", "dungeon_id", "name", "description", "created_at"],
   "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
     "dungeon_id": {
       "type": "string",
       "format": "uuid"
     },
-    "dungeon_instance_id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "dungeon_instance_name": {
+    "name": {
       "type": "string"
     },
-    "dungeon_instance_description": {
+    "description": {
       "type": "string"
     },
-    "dungeon_instance_created_at": {
+    "created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "dungeon_instance_updated_at": {
+    "updated_at": {
       "type": "string",
       "format": "date-time"
     }

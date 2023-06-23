@@ -29,7 +29,6 @@ func (m *Model) GetDungeonInstanceViewRec(recID string) (*record.DungeonInstance
 
 	r := m.DungeonInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -64,7 +63,6 @@ func (m *Model) GetDungeonInstanceRec(recID string, lock *coresql.Lock) (*record
 
 	r := m.DungeonInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -123,7 +121,6 @@ func (m *Model) DeleteDungeonInstanceRec(recID string) error {
 
 	r := m.DungeonInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -146,7 +143,6 @@ func (m *Model) RemoveDungeonInstanceRec(recID string) error {
 
 	r := m.DungeonInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

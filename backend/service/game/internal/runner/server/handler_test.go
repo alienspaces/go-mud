@@ -26,24 +26,28 @@ type TestCaser interface {
 	TestDataConfig() *harness.DataConfig
 	TestRequestHeaders(data harness.Data) map[string]string
 	TestRequestPathParams(data harness.Data) map[string]string
-	TestRequestQueryParams(data harness.Data) map[string]string
+	TestRequestQueryParams(data harness.Data) map[string]interface{}
 	TestRequestBody(data harness.Data) interface{}
 	TestResponseDecoder(body io.Reader) (interface{}, error)
 	TestResponseCode() int
+	TestShouldSetupTeardown() bool
+	TestShouldTxCommit() bool
 }
 
 // TestCase is the base test case class for all tests cases to extend
 type TestCase struct {
-	Skip               bool
-	Name               string
-	HandlerConfig      func(rnr *Runner) server.HandlerConfig
-	DataConfig         func() *harness.DataConfig
-	RequestHeaders     func(data harness.Data) map[string]string
-	RequestPathParams  func(data harness.Data) map[string]string
-	RequestQueryParams func(data harness.Data) map[string]string
-	RequestBody        func(data harness.Data) interface{}
-	ResponseDecoder    func(body io.Reader) (interface{}, error)
-	ResponseCode       int
+	Skip                bool
+	Name                string
+	HandlerConfig       func(rnr *Runner) server.HandlerConfig
+	DataConfig          func() *harness.DataConfig
+	RequestHeaders      func(data harness.Data) map[string]string
+	RequestPathParams   func(data harness.Data) map[string]string
+	RequestQueryParams  func(data harness.Data) map[string]interface{}
+	RequestBody         func(data harness.Data) interface{}
+	ResponseDecoder     func(body io.Reader) (interface{}, error)
+	ResponseCode        int
+	ShouldSetupTeardown bool // Should running the test automatically run the harness data setup and teardown
+	ShouldTxCommit      bool // Should running the test automatically include the rollback header
 }
 
 //lint:ignore U1000 - testing struct implements interface
@@ -68,10 +72,16 @@ func (t *TestCase) TestDataConfig() *harness.DataConfig {
 }
 
 func (t *TestCase) TestRequestHeaders(data harness.Data) map[string]string {
+	headers := map[string]string{}
 	if t.RequestHeaders != nil {
-		return t.RequestHeaders(data)
+		headers = t.RequestHeaders(data)
 	}
-	return nil
+
+	if !t.ShouldTxCommit {
+		headers[server.HeaderXTxRollback] = "true"
+	}
+
+	return headers
 }
 
 func (t *TestCase) TestRequestPathParams(data harness.Data) map[string]string {
@@ -81,7 +91,7 @@ func (t *TestCase) TestRequestPathParams(data harness.Data) map[string]string {
 	return nil
 }
 
-func (t *TestCase) TestRequestQueryParams(data harness.Data) map[string]string {
+func (t *TestCase) TestRequestQueryParams(data harness.Data) map[string]interface{} {
 	if t.RequestQueryParams != nil {
 		return t.RequestQueryParams(data)
 	}
@@ -109,6 +119,14 @@ func (t *TestCase) TestResponseCode() int {
 	return t.ResponseCode
 }
 
+func (t *TestCase) TestShouldSetupTeardown() bool {
+	return t.ShouldSetupTeardown
+}
+
+func (t *TestCase) TestShouldTxCommit() bool {
+	return t.ShouldTxCommit
+}
+
 func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method string, body interface{})) {
 
 	rnr, err := NewRunner(th.Config, th.Log)
@@ -117,37 +135,37 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	err = rnr.Init(th.Store)
 	require.NoError(t, err, "Runner init returns without error")
 
-	// Data config
-	dataConfig := tc.TestDataConfig()
-	if dataConfig != nil {
-		th.DataConfig = *dataConfig
+	if tc.TestShouldSetupTeardown() {
+		dataConfig := tc.TestDataConfig()
+		if dataConfig != nil {
+			th.DataConfig = *dataConfig
+		}
+		_, err = th.Setup()
+		require.NoError(t, err, "Test data setup returns without error")
+		defer func() {
+			err = th.Teardown()
+			require.NoError(t, err, "Test data teardown returns without error")
+		}()
 	}
 
-	_, err = th.Setup()
-	require.NoError(t, err, "Test data setup returns without error")
-	defer func() {
-		err = th.Teardown()
-		require.NoError(t, err, "Test data teardown returns without error")
-	}()
-
 	// Handler config
-	handlerConfig := tc.TestHandlerConfig(rnr)
+	cfg := tc.TestHandlerConfig(rnr)
 
 	// Handler
-	h, _ := rnr.ApplyMiddleware(handlerConfig, handlerConfig.HandlerFunc)
+	h, _ := rnr.ApplyMiddleware(cfg, cfg.HandlerFunc)
 
 	// Router
 	rtr := httprouter.New()
 
-	switch handlerConfig.Method {
+	switch cfg.Method {
 	case http.MethodGet:
-		rtr.GET(handlerConfig.Path, h)
+		rtr.GET(cfg.Path, h)
 	case http.MethodPost:
-		rtr.POST(handlerConfig.Path, h)
+		rtr.POST(cfg.Path, h)
 	case http.MethodPut:
-		rtr.PUT(handlerConfig.Path, h)
+		rtr.PUT(cfg.Path, h)
 	case http.MethodDelete:
-		rtr.DELETE(handlerConfig.Path, h)
+		rtr.DELETE(cfg.Path, h)
 	default:
 		//
 	}
@@ -155,7 +173,7 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	// Request params
 	requestParams := tc.TestRequestPathParams(th.Data)
 
-	requestPath := handlerConfig.Path
+	requestPath := cfg.Path
 	for paramKey, paramValue := range requestParams {
 		requestPath = strings.Replace(requestPath, paramKey, paramValue, 1)
 	}
@@ -164,16 +182,21 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	queryParams := tc.TestRequestQueryParams(th.Data)
 
 	if len(queryParams) > 0 {
-		count := 0
+		requestPath += `?`
 		for paramKey, paramValue := range queryParams {
-			if count == 0 {
-				requestPath = requestPath + `?`
-			} else {
-				requestPath = requestPath + `&`
+			t.Logf("Adding parameter key >%s< param >%s<", paramKey, paramValue)
+			switch v := paramValue.(type) {
+			case int:
+				requestPath = fmt.Sprintf("%s%s=%d&", requestPath, paramKey, v)
+			case string:
+				requestPath = fmt.Sprintf("%s%s=%s&", requestPath, paramKey, url.QueryEscape(v))
+			case bool:
+				requestPath = fmt.Sprintf("%s%s=%t&", requestPath, paramKey, v)
+			default:
+				t.Errorf("Unsupported query parameter type for value >%v<", v)
 			}
-			t.Logf(">>> Adding parameter key >%s< param >%s<", paramKey, paramValue)
-			requestPath = fmt.Sprintf("%s%s=%s", requestPath, paramKey, url.QueryEscape(paramValue))
 		}
+		t.Logf("Request path with query params >%s<", requestPath)
 	}
 
 	t.Logf(">>> Request path >%s<", requestPath)
@@ -189,10 +212,10 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 
 		t.Logf("++++ Posting JSON data >%s<", jsonData)
 
-		req, err = http.NewRequest(handlerConfig.Method, requestPath, bytes.NewBuffer(jsonData))
+		req, err = http.NewRequest(cfg.Method, requestPath, bytes.NewBuffer(jsonData))
 		require.NoError(t, err, "NewRequest returns without error")
 	} else {
-		req, err = http.NewRequest(handlerConfig.Method, requestPath, nil)
+		req, err = http.NewRequest(cfg.Method, requestPath, nil)
 		require.NoError(t, err, "NewRequest returns without error")
 	}
 
@@ -204,34 +227,59 @@ func RunTestCase(t *testing.T, th *harness.Testing, tc TestCaser, tf func(method
 	}
 
 	// Recorder
-	rec := httptest.NewRecorder()
+	recorder := httptest.NewRecorder()
 
 	// Serve
-	rtr.ServeHTTP(rec, req)
+	rtr.ServeHTTP(recorder, req)
 
 	// Test status
-	require.Equalf(t, tc.TestResponseCode(), rec.Code, "%s - Response code equals expected", tc.TestName())
+	require.Equalf(t, tc.TestResponseCode(), recorder.Code, "%s - Response code equals expected", tc.TestName())
 
 	var responseBody interface{}
 
 	// Validate response body
-	if rec.Code == 200 || rec.Code == 201 {
+	if recorder.Code == http.StatusOK || recorder.Code == http.StatusCreated {
 
 		// Response body
-		responseBody, err = tc.TestResponseDecoder(rec.Body)
+		responseBody, err = tc.TestResponseDecoder(recorder.Body)
 		require.NoError(t, err, "Response body decodes without error")
 
-		require.NotNil(t, responseBody, "Response body is not nil")
+		if responseBody != nil {
+			jsonData, err := json.Marshal(responseBody)
+			require.NoError(t, err, "Marshal returns without error")
 
-		jsonData, err := json.Marshal(responseBody)
-		require.NoError(t, err, "Marshal returns without error")
+			testResponseSchema(t, cfg, jsonData)
 
-		result, err := jsonschema.Validate(handlerConfig.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
-		require.NoError(t, err, "Validates against schema without error")
-		t.Logf(">>> Schema validation errors >%+v< valid >%t<", result.Errors(), result.Valid())
-
-		require.True(t, result.Valid(), "Validates against schema")
+			result, err := jsonschema.Validate(cfg.MiddlewareConfig.ValidateResponseSchema, string(jsonData))
+			require.NoError(t, err, "Validates against JSON response schema without error")
+			require.NotNil(t, result, "JSON response schema validation result is not nil")
+			require.True(t, result.Valid(), fmt.Sprintf("JSON response schema validation result is valid >%+v<", result.Errors()))
+		}
 	}
 
-	tf(handlerConfig.Method, responseBody)
+	if tf != nil {
+		tf(cfg.Method, responseBody)
+	}
+}
+
+func testResponseSchema(t *testing.T, hc server.HandlerConfig, actualRes interface{}) {
+
+	schema := hc.MiddlewareConfig.ValidateResponseSchema
+	schemaMain := schema.Main
+	require.NotEmpty(t, schemaMain.Location, "handler >%s %s< ValidateResponseSchema main location path should not be empty", hc.Method, hc.Path)
+	require.NotEmpty(t, schemaMain.Name, "handler >%s %s< ValidateResponseSchema main filename should not be empty", hc.Method, hc.Path)
+
+	for _, r := range schema.References {
+		require.NotEmpty(t, r.Location, "handler >%s %s< ValidateResponseSchema reference location path should not be empty", hc.Method, hc.Path)
+		require.NotEmpty(t, r.Name, "handler >%s %s< ValidateResponseSchema reference filename should not be empty", hc.Method, hc.Path)
+	}
+
+	testSchemaHelper(t, schema, actualRes)
+}
+
+func testSchemaHelper(t *testing.T, s *jsonschema.SchemaWithReferences, actualRes interface{}) {
+	result, err := jsonschema.Validate(s, actualRes)
+	require.NoError(t, err, "schema validation should not error")
+	err = jsonschema.MapError(result)
+	require.NoError(t, err, "schema validation results should be empty")
 }

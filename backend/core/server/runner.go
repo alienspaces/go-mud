@@ -139,15 +139,22 @@ type MiddlewareConfig struct {
 
 // ValidateParamsConfig defines how route path parameters should be validated
 //
-// ExcludePathParamsFromQueryParams - By default path parameters will be added as query
-// parameters and validated as part of query parameter validation. When disabled path
-// parameters will need to be validated in handler functions
+// ExcludePathParamsFromQueryParams
+// - By default path parameters will be added as query parameters and validated
+// as part of query parameter validation. When disabled path parameters will
+// need to be validated in handler functions
 //
-// # PathParamSchema - Validate path parameters using this JSON schema set
+// RemoveParamPrefixes
+// - TODO: Removes the specified prefixes from parameters
 //
-// QueryParamSchema - Validate query parameters using this JSON schema set
+// PathParamSchema
+// - Validate path parameters using this JSON schema set
+//
+// QueryParamSchema
+// - Validate query parameters using this JSON schema set
 type ValidateParamsConfig struct {
 	ExcludePathParamsFromQueryParams bool
+	RemoveParamPrefixes              []string
 	PathParamSchema                  *jsonschema.SchemaWithReferences
 	QueryParamSchema                 *jsonschema.SchemaWithReferences
 }

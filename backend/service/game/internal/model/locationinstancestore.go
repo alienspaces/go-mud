@@ -29,7 +29,6 @@ func (m *Model) GetLocationInstanceRec(recID string, lock *coresql.Lock) (*recor
 
 	r := m.LocationInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -64,7 +63,6 @@ func (m *Model) GetLocationInstanceViewRec(recID string) (*record.LocationInstan
 
 	r := m.LocationInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -123,7 +121,6 @@ func (m *Model) DeleteLocationInstanceRec(recID string) error {
 
 	r := m.LocationInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -146,7 +143,6 @@ func (m *Model) RemoveLocationInstanceRec(recID string) error {
 
 	r := m.LocationInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

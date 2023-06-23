@@ -30,7 +30,7 @@ func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance
 	if len(characterInstanceRecs) > 0 {
 		msg := fmt.Sprintf("character with ID >%s< is already inside a dungeon", rec.CharacterID)
 		l.Warn(msg)
-		err := coreerror.NewInvalidError("character_id", msg)
+		err := coreerror.CreateInvalidError("character_id", msg)
 		return err
 	}
 
@@ -69,7 +69,7 @@ func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
 	if rec == nil {
 		msg := fmt.Sprintf("failed validation, character instance ID >%s< does not exist", recID)
 		l.Warn(msg)
-		err := coreerror.NewInvalidError("id", msg)
+		err := coreerror.CreateInvalidError("id", msg)
 		return err
 	}
 

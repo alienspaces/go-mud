@@ -31,7 +31,6 @@ func (m *Model) GetTemplateRec(recID string, lock *coresql.Lock) (*record.Templa
 
 	m.Log.Debug("Getting template record ID >%s<", recID)
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

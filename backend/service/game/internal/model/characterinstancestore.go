@@ -62,7 +62,6 @@ func (m *Model) GetCharacterInstanceRec(recID string, lock *coresql.Lock) (*reco
 
 	r := m.CharacterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -130,7 +129,6 @@ func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInst
 
 	r := m.CharacterInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -189,7 +187,6 @@ func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 
 	r := m.CharacterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -212,7 +209,6 @@ func (m *Model) RemoveCharacterInstanceRec(recID string) error {
 
 	r := m.CharacterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

@@ -29,7 +29,6 @@ func (m *Model) GetLocationObjectRec(recID string, lock *coresql.Lock) (*record.
 
 	r := m.LocationObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -88,7 +87,6 @@ func (m *Model) DeleteLocationObjectRec(recID string) error {
 
 	r := m.LocationObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -111,7 +109,6 @@ func (m *Model) RemoveLocationObjectRec(recID string) error {
 
 	r := m.LocationObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

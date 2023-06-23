@@ -29,7 +29,6 @@ func (m *Model) GetMonsterObjectRec(recID string, lock *coresql.Lock) (*record.M
 
 	r := m.MonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -88,7 +87,6 @@ func (m *Model) DeleteMonsterObjectRec(recID string) error {
 
 	r := m.MonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -111,7 +109,6 @@ func (m *Model) RemoveMonsterObjectRec(recID string) error {
 
 	r := m.MonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

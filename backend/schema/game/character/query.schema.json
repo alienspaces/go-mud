@@ -6,10 +6,10 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "character_id": {
+        "id": {
             "type": "string"
         },
-        "character_name": {
+        "name": {
             "type": "string"
         }
     }

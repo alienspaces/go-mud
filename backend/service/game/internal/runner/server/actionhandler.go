@@ -212,20 +212,20 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	for idx := range res.Data {
-		if res.Data[idx].ActionCharacter != nil {
-			l.Info("Response ActionCharacter >%s<", res.Data[idx].ActionCharacter.CharacterName)
-			for oidx := range res.Data[idx].ActionCharacter.CharacterEquippedObjects {
-				l.Info("         -   >%#v<", res.Data[idx].ActionCharacter.CharacterEquippedObjects[oidx])
+		if res.Data[idx].Character != nil {
+			l.Info("Response ActionCharacter >%s<", res.Data[idx].Character.Name)
+			for oidx := range res.Data[idx].Character.EquippedObjects {
+				l.Info("         -   >%#v<", res.Data[idx].Character.EquippedObjects[oidx])
 			}
 		}
-		if res.Data[idx].ActionMonster != nil {
-			l.Info("Response ActionMonster >%s<", res.Data[idx].ActionMonster.MonsterName)
+		if res.Data[idx].Monster != nil {
+			l.Info("Response ActionMonster >%s<", res.Data[idx].Monster.Name)
 		}
-		l.Info("Response ActionLocation LocationName >%s<", res.Data[idx].ActionLocation.LocationName)
-		l.Info("Response - Action ID >%s<", res.Data[idx].ActionID)
-		l.Info("Response - Action Command >%s<", res.Data[idx].ActionCommand)
-		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].ActionTurnNumber)
-		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].ActionSerialNumber)
+		l.Info("Response ActionLocation LocationName >%s<", res.Data[idx].Location.Name)
+		l.Info("Response - Action ID >%s<", res.Data[idx].ID)
+		l.Info("Response - Action Command >%s<", res.Data[idx].Command)
+		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].TurnNumber)
+		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].SerialNumber)
 	}
 
 	err = server.WriteResponse(l, w, http.StatusOK, res)

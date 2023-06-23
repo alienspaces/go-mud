@@ -13,18 +13,18 @@
   "definitions": {
     "data": {
       "type": "object",
-      "required": ["character_name", "character_strength", "character_dexterity", "character_intelligence"],
+      "required": ["name", "strength", "dexterity", "intelligence"],
       "properties": {
-        "character_name": {
+        "name": {
           "type": "string"
         },
-        "character_strength": {
+        "strength": {
           "type": "number"
         },
-        "character_dexterity": {
+        "dexterity": {
           "type": "number"
         },
-        "character_intelligence": {
+        "intelligence": {
           "type": "number"
         }
       }

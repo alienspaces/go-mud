@@ -127,7 +127,6 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 				Description: "Create a character.",
 			},
 		},
-		// TODO: (game) Complete schema validation and implementation
 		putCharacter: {
 			Method:           http.MethodPut,
 			Path:             "/api/v1/characters",
@@ -406,10 +405,10 @@ func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, p
 // CharacterRequestDataToRecord -
 func (rnr *Runner) CharacterRequestDataToRecord(data schema.DungeonCharacterData, rec *record.Character) error {
 
-	rec.Name = data.CharacterName
-	rec.Strength = data.CharacterStrength
-	rec.Dexterity = data.CharacterDexterity
-	rec.Intelligence = data.CharacterIntelligence
+	rec.Name = data.Name
+	rec.Strength = data.Strength
+	rec.Dexterity = data.Dexterity
+	rec.Intelligence = data.Intelligence
 
 	return nil
 }

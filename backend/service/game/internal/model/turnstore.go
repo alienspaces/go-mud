@@ -31,7 +31,6 @@ func (m *Model) GetTurnRec(recID string, lock *coresql.Lock) (*record.Turn, erro
 
 	r := m.TurnRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -91,7 +90,6 @@ func (m *Model) DeleteTurnRec(recID string) error {
 
 	r := m.TurnRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -114,7 +112,6 @@ func (m *Model) RemoveTurnRec(recID string) error {
 
 	r := m.TurnRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

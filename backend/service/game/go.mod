@@ -1,6 +1,6 @@
 module gitlab.com/alienspaces/go-mud/backend/service/game
 
-go 1.19
+go 1.20
 
 require (
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
@@ -33,9 +33,7 @@ require (
 )
 
 replace (
-	gitlab.com/alienspaces/go-mud/backend/constant => ../../constant
 	gitlab.com/alienspaces/go-mud/backend/core => ../../core
 	gitlab.com/alienspaces/go-mud/backend/schema => ../../schema
-
 	gitlab.com/alienspaces/go-mud/backend/service/game => ../../service/game
 )

@@ -19,6 +19,13 @@ func TestGetDungeonHandler(t *testing.T) {
 	th, err := NewTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
+	defer func() {
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
+	}()
+
 	type testCase struct {
 		TestCase
 		expectResponseBody func(data harness.Data) *schema.DungeonResponse
@@ -26,12 +33,6 @@ func TestGetDungeonHandler(t *testing.T) {
 
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
 		return rnr.HandlerConfig[getDungeon]
-	}
-
-	testCaseRequestHeaders := func(data harness.Data) map[string]string {
-		headers := map[string]string{
-					}
-		return headers
 	}
 
 	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
@@ -43,9 +44,8 @@ func TestGetDungeonHandler(t *testing.T) {
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get existing",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get existing",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id": data.DungeonRecs[0].ID,
@@ -56,15 +56,15 @@ func TestGetDungeonHandler(t *testing.T) {
 					return nil
 				},
 				ResponseDecoder: testCaseResponseDecoder,
-				ResponseCode: http.StatusOK,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.DungeonResponse {
 				res := schema.DungeonResponse{
 					Data: []schema.DungeonData{
 						{
-							DungeonID:          data.DungeonRecs[0].ID,
-							DungeonName:        data.DungeonRecs[0].Name,
-							DungeonDescription: data.DungeonRecs[0].Description,
+							ID:          data.DungeonRecs[0].ID,
+							Name:        data.DungeonRecs[0].Name,
+							Description: data.DungeonRecs[0].Description,
 						},
 					},
 				}
@@ -73,9 +73,8 @@ func TestGetDungeonHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get non-existant",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get non-existant",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
@@ -117,10 +116,10 @@ func TestGetDungeonHandler(t *testing.T) {
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Validate dungeon
-						t.Logf("Checking dungeon name >%s< >%s<", expectData.DungeonName, responseBody.Data[idx].DungeonName)
-						require.Equal(t, expectData.DungeonName, responseBody.Data[idx].DungeonName)
-						t.Logf("Checking dungeon description >%s< >%s<", expectData.DungeonDescription, responseBody.Data[idx].DungeonDescription)
-						require.Equal(t, expectData.DungeonDescription, responseBody.Data[idx].DungeonDescription)
+						t.Logf("Checking dungeon name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
+						require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
+						t.Logf("Checking dungeon description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
+						require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
 					}
 				}
 			}

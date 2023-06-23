@@ -27,13 +27,6 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 		return rnr.HandlerConfig[postDungeonCharacterEnter]
 	}
 
-	testCaseRequestHeaders := func(data harness.Data) map[string]string {
-		headers := map[string]string{
-			"X-Tx-Rollback": "true",
-		}
-		return headers
-	}
-
 	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.DungeonCharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
@@ -43,9 +36,8 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name:           "POST - Enter existing",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "POST - Enter existing",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					dRec, _ := data.GetDungeonRecByName(harness.DungeonNameCave)
 					cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBolster)
@@ -56,7 +48,7 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 					return params
 				},
 				ResponseDecoder: testCaseResponseDecoder,
-				ResponseCode: http.StatusOK,
+				ResponseCode:    http.StatusOK,
 			},
 		},
 	}
@@ -76,25 +68,28 @@ func TestPostDungeonCharacterEnterHandler(t *testing.T) {
 				}
 
 				for _, data := range responseBody.Data {
-					require.NotEmpty(t, data.DungeonID, "Data DungeonID is not empty")
-					require.NotEmpty(t, data.DungeonName, "Data DungeonName is not empty")
-					require.NotEmpty(t, data.LocationID, "Data LocationID is not empty")
-					require.NotEmpty(t, data.LocationName, "Data LocationName is not empty")
+					require.NotEmpty(t, data.ID, "Data ID is not empty")
+					require.NotEmpty(t, data.Name, "Data Name is not empty")
+					require.NotEmpty(t, data.Strength, "Data Strength is not empty")
+					require.NotEmpty(t, data.Dexterity, "Data Dexterity is not empty")
+					require.NotEmpty(t, data.Intelligence, "Data Intelligence is not empty")
+					require.NotEmpty(t, data.CurrentStrength, "Data CurrentStrength is not empty")
+					require.NotEmpty(t, data.CurrentDexterity, "Data CurrentDexterity is not empty")
+					require.NotEmpty(t, data.CurrentIntelligence, "Data CurrentIntelligence is not empty")
+					require.NotEmpty(t, data.Health, "Data Health is not empty")
+					require.NotEmpty(t, data.Fatigue, "Data Fatigue is not empty")
+					require.NotEmpty(t, data.CurrentHealth, "Data CurrentHealth is not empty")
+					require.NotEmpty(t, data.CurrentFatigue, "Data CurrentFatigue is not empty")
 
-					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
-					require.NotEmpty(t, data.CharacterName, "Data CharacterName is not empty")
-					require.NotEmpty(t, data.CharacterStrength, "Data CharacterStrength is not empty")
-					require.NotEmpty(t, data.CharacterDexterity, "Data CharacterDexterity is not empty")
-					require.NotEmpty(t, data.CharacterIntelligence, "Data CharacterIntelligence is not empty")
-					require.NotEmpty(t, data.CharacterCurrentStrength, "Data CharacterCurrentStrength is not empty")
-					require.NotEmpty(t, data.CharacterCurrentDexterity, "Data CharacterCurrentDexterity is not empty")
-					require.NotEmpty(t, data.CharacterCurrentIntelligence, "Data CharacterCurrentIntelligence is not empty")
-					require.NotEmpty(t, data.CharacterHealth, "Data CharacterHealth is not empty")
-					require.NotEmpty(t, data.CharacterFatigue, "Data CharacterFatigue is not empty")
-					require.NotEmpty(t, data.CharacterCurrentHealth, "Data CharacterCurrentHealth is not empty")
-					require.NotEmpty(t, data.CharacterCurrentFatigue, "Data CharacterCurrentFatigue is not empty")
+					require.NotEmpty(t, data.Dungeon, "Data Dungeon is not empty")
+					require.NotEmpty(t, data.Dungeon.ID, "Data Dungeon ID is not empty")
+					require.NotEmpty(t, data.Dungeon.Name, "Data Dungeon Name is not empty")
 
-					require.False(t, data.CharacterCreatedAt.IsZero(), "Data CreatedAt is not zero")
+					require.NotEmpty(t, data.Location, "Data Location is not empty")
+					require.NotEmpty(t, data.Location.ID, "Data Location ID is not empty")
+					require.NotEmpty(t, data.Location.Name, "Data Location Name is not empty")
+
+					require.False(t, data.CreatedAt.IsZero(), "Data CreatedAt is not zero")
 				}
 			}
 			RunTestCase(t, th, &tc, testFunc)
@@ -116,13 +111,6 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 		return rnr.HandlerConfig[postDungeonCharacterExit]
 	}
 
-	testCaseRequestHeaders := func(data harness.Data) map[string]string {
-		headers := map[string]string{
-			"X-Tx-Rollback": "true",
-		}
-		return headers
-	}
-
 	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.DungeonCharacterResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
@@ -132,9 +120,8 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name:           "POST - Exit existing",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "POST - Exit existing",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					dRec, _ := data.GetDungeonRecByName(harness.DungeonNameCave)
 					cRec, _ := data.GetCharacterRecByName(harness.CharacterNameBarricade)
@@ -145,7 +132,7 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 					return params
 				},
 				ResponseDecoder: testCaseResponseDecoder,
-				ResponseCode: http.StatusOK,
+				ResponseCode:    http.StatusOK,
 			},
 		},
 	}
@@ -165,19 +152,19 @@ func TestPostDungeonCharacterExitHandler(t *testing.T) {
 				}
 
 				for _, data := range responseBody.Data {
-					require.Empty(t, data.DungeonID, "Data DungeonID is empty")
-					require.Empty(t, data.LocationID, "Data LocationID is empty")
+					require.NotEmpty(t, data.ID, "Data ID is not empty")
+					require.NotEmpty(t, data.Name, "Data Name is not empty")
+					require.NotEmpty(t, data.Strength, "Data Strength is not empty")
+					require.NotEmpty(t, data.Dexterity, "Data Dexterity is not empty")
+					require.NotEmpty(t, data.Intelligence, "Data Intelligence is not empty")
+					require.NotEmpty(t, data.Health, "Data Health is not empty")
+					require.NotEmpty(t, data.Fatigue, "Data Fatigue is not empty")
 
-					require.NotEmpty(t, data.CharacterID, "Data CharacterID is not empty")
-					require.NotEmpty(t, data.CharacterName, "Data CharacterName is not empty")
-					require.NotEmpty(t, data.CharacterStrength, "Data CharacterStrength is not empty")
-					require.NotEmpty(t, data.CharacterDexterity, "Data CharacterDexterity is not empty")
-					require.NotEmpty(t, data.CharacterIntelligence, "Data CharacterIntelligence is not empty")
-					require.NotEmpty(t, data.CharacterHealth, "Data CharacterHealth is not empty")
-					require.NotEmpty(t, data.CharacterFatigue, "Data CharacterFatigue is not empty")
+					require.Empty(t, data.Dungeon, "Data Dungeon is empty")
+					require.Empty(t, data.Location, "Data Location is empty")
 
-					require.False(t, data.CharacterCreatedAt.IsZero(), "Data CreatedAt is not zero")
-					require.False(t, data.CharacterUpdatedAt.IsZero(), "Data UpdatedAt is not zero")
+					require.False(t, data.CreatedAt.IsZero(), "Data CreatedAt is not zero")
+					require.False(t, data.UpdatedAt.IsZero(), "Data UpdatedAt is not zero")
 				}
 			}
 			RunTestCase(t, th, &tc, testFunc)

@@ -1,26 +1,26 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/dungeonlocation/data.schema.json",
-  "title": "Dungeon Location Data",
-  "description": "Dungeon location data",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/location/data.schema.json",
+  "title": "Location Data",
+  "description": "location data",
   "type": "object",
-  "required": ["location_id", "location_name", "location_description", "location_created_at"],
+  "required": ["id", "name", "description", "created_at"],
   "properties": {
-    "location_id": {
+    "id": {
       "type": "string",
       "format": "uuid"
     },
-    "location_name": {
+    "name": {
       "type": "string"
     },
-    "location_description": {
+    "description": {
       "type": "string"
     },
-    "location_created_at": {
+    "created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "location_updated_at": {
+    "updated_at": {
       "type": "string",
       "format": "date-time"
     }

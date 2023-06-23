@@ -29,7 +29,6 @@ func (m *Model) GetMonsterInstanceRec(recID string, lock *coresql.Lock) (*record
 
 	r := m.MonsterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -64,7 +63,6 @@ func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstance
 
 	r := m.MonsterInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -123,7 +121,6 @@ func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 
 	r := m.MonsterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -146,7 +143,6 @@ func (m *Model) RemoveMonsterInstanceRec(recID string) error {
 
 	r := m.MonsterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

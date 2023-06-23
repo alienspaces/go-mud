@@ -6,32 +6,38 @@ import (
 )
 
 // dungeonCharacterResponseData
-func dungeonCharacterResponseData(l logger.Logger, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
+func dungeonCharacterResponseData(l logger.Logger, rs *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
-		DungeonID:                    instanceRecordSet.DungeonInstanceViewRec.DungeonID,
-		DungeonName:                  instanceRecordSet.DungeonInstanceViewRec.Name,
-		DungeonDescription:           instanceRecordSet.DungeonInstanceViewRec.Description,
-		LocationID:                   instanceRecordSet.LocationInstanceViewRec.LocationID,
-		LocationName:                 instanceRecordSet.LocationInstanceViewRec.Name,
-		LocationDescription:          instanceRecordSet.LocationInstanceViewRec.Description,
-		CharacterID:                  instanceRecordSet.CharacterInstanceViewRec.CharacterID,
-		CharacterName:                instanceRecordSet.CharacterInstanceViewRec.Name,
-		CharacterStrength:            instanceRecordSet.CharacterInstanceViewRec.Strength,
-		CharacterDexterity:           instanceRecordSet.CharacterInstanceViewRec.Dexterity,
-		CharacterIntelligence:        instanceRecordSet.CharacterInstanceViewRec.Intelligence,
-		CharacterCurrentStrength:     instanceRecordSet.CharacterInstanceViewRec.CurrentStrength,
-		CharacterCurrentDexterity:    instanceRecordSet.CharacterInstanceViewRec.CurrentDexterity,
-		CharacterCurrentIntelligence: instanceRecordSet.CharacterInstanceViewRec.CurrentIntelligence,
-		CharacterHealth:              instanceRecordSet.CharacterInstanceViewRec.Health,
-		CharacterFatigue:             instanceRecordSet.CharacterInstanceViewRec.Fatigue,
-		CharacterCurrentHealth:       instanceRecordSet.CharacterInstanceViewRec.CurrentHealth,
-		CharacterCurrentFatigue:      instanceRecordSet.CharacterInstanceViewRec.CurrentFatigue,
-		CharacterCoins:               instanceRecordSet.CharacterInstanceViewRec.Coins,
-		CharacterExperiencePoints:    instanceRecordSet.CharacterInstanceViewRec.ExperiencePoints,
-		CharacterAttributePoints:     instanceRecordSet.CharacterInstanceViewRec.AttributePoints,
-		CharacterCreatedAt:           instanceRecordSet.CharacterInstanceViewRec.CreatedAt,
-		CharacterUpdatedAt:           instanceRecordSet.CharacterInstanceViewRec.UpdatedAt.Time,
+		ID:                  rs.CharacterInstanceViewRec.CharacterID,
+		Name:                rs.CharacterInstanceViewRec.Name,
+		Strength:            rs.CharacterInstanceViewRec.Strength,
+		Dexterity:           rs.CharacterInstanceViewRec.Dexterity,
+		Intelligence:        rs.CharacterInstanceViewRec.Intelligence,
+		CurrentStrength:     rs.CharacterInstanceViewRec.CurrentStrength,
+		CurrentDexterity:    rs.CharacterInstanceViewRec.CurrentDexterity,
+		CurrentIntelligence: rs.CharacterInstanceViewRec.CurrentIntelligence,
+		Health:              rs.CharacterInstanceViewRec.Health,
+		Fatigue:             rs.CharacterInstanceViewRec.Fatigue,
+		CurrentHealth:       rs.CharacterInstanceViewRec.CurrentHealth,
+		CurrentFatigue:      rs.CharacterInstanceViewRec.CurrentFatigue,
+		Coins:               rs.CharacterInstanceViewRec.Coins,
+		ExperiencePoints:    rs.CharacterInstanceViewRec.ExperiencePoints,
+		AttributePoints:     rs.CharacterInstanceViewRec.AttributePoints,
+		CreatedAt:           rs.CharacterInstanceViewRec.CreatedAt,
+		UpdatedAt:           rs.CharacterInstanceViewRec.UpdatedAt.Time,
+	}
+
+	data.Dungeon = &schema.DungeonCharacterDungeonData{
+		ID:          rs.DungeonInstanceViewRec.DungeonID,
+		Name:        rs.DungeonInstanceViewRec.Name,
+		Description: rs.DungeonInstanceViewRec.Description,
+	}
+
+	data.Location = &schema.DungeonCharacterLocationData{
+		ID:          rs.LocationInstanceViewRec.LocationID,
+		Name:        rs.LocationInstanceViewRec.Name,
+		Description: rs.LocationInstanceViewRec.Description,
 	}
 
 	return data, nil

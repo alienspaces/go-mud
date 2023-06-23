@@ -20,11 +20,11 @@ type DungeonRequest struct {
 
 // DungeonData -
 type DungeonData struct {
-	DungeonID          string    `json:"dungeon_id"`
-	DungeonName        string    `json:"dungeon_name"`
-	DungeonDescription string    `json:"dungeon_description"`
-	DungeonCreatedAt   time.Time `json:"dungeon_created_at,omitempty"`
-	DungeonUpdatedAt   time.Time `json:"dungeon_updated_at,omitempty"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at,omitempty"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
 
 // DungeonEnterRequest

@@ -93,127 +93,127 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						// Barricade looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", cRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", cRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
 									},
 								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: ceoRec.Name,
-									},
-								},
-								CharacterStashedObjects: []schema.ActionObject{
-									{
-										ObjectName: csoRec.Name,
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionMonster:         nil,
-							ActionEquippedObject:  nil,
-							ActionStashedObject:   nil,
-							ActionTargetObject:    nil,
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation: &schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										CharacterName: cRec.Name,
-									},
-									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: ceoRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								StashedObjects: []schema.ActionObject{
 									{
-										ObjectName: loRec.Name,
+										Name: csoRec.Name,
+									},
+								},
+							},
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation: &schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
+									{
+										Name: cRec.Name,
+									},
+									{
+										Name: lcRec.Name,
+									},
+								},
+								Monsters: []schema.ActionLocationMonster{
+									{
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
@@ -265,122 +265,122 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						// Barricade moves north
 						{
-							ActionCommand:   "move",
-							ActionNarrative: fmt.Sprintf("%s moves north", cRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        tlRec.Name,
-								LocationDescription: tlRec.Description,
-								LocationDirections:  []string{"north", "south", "northwest"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "move",
+							Narrative: fmt.Sprintf("%s moves north", cRec.Name),
+							Location: schema.ActionLocation{
+								Name:        tlRec.Name,
+								Description: tlRec.Description,
+								Directions:  []string{"north", "south", "northwest"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 								},
-								LocationMonsters: []schema.ActionLocationMonster{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										MonsterName: tlmRec.Name,
+										Name: tlmRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: tloRec.Name,
-									},
-								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
-									{
-										ObjectName: ceoRec.Name,
-									},
-								},
-								CharacterStashedObjects: []schema.ActionObject{
-									{
-										ObjectName: csoRec.Name,
+										Name: tloRec.Name,
 									},
 								},
 							},
-							ActionMonster:         nil,
-							ActionEquippedObject:  nil,
-							ActionStashedObject:   nil,
-							ActionTargetObject:    nil,
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation: &schema.ActionLocation{
-								LocationName:        tlRec.Name,
-								LocationDescription: tlRec.Description,
-								LocationDirection:   "north",
-								LocationDirections:  []string{"north", "south", "northwest"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										CharacterName: cRec.Name,
+										Name: ceoRec.Name,
 									},
 								},
-								LocationMonsters: []schema.ActionLocationMonster{
+								StashedObjects: []schema.ActionObject{
 									{
-										MonsterName: tlmRec.Name,
+										Name: csoRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+							},
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation: &schema.ActionLocation{
+								Name:        tlRec.Name,
+								Description: tlRec.Description,
+								Direction:   "north",
+								Directions:  []string{"north", "south", "northwest"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										ObjectName: tloRec.Name,
+										Name: cRec.Name,
+									},
+								},
+								Monsters: []schema.ActionLocationMonster{
+									{
+										Name: tlmRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: tloRec.Name,
 									},
 								},
 							},
@@ -432,120 +432,120 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						// Barricade looks north
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks north", cRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks north", cRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: ceoRec.Name,
-									},
-								},
-								CharacterStashedObjects: []schema.ActionObject{
-									{
-										ObjectName: csoRec.Name,
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionMonster:         nil,
-							ActionEquippedObject:  nil,
-							ActionStashedObject:   nil,
-							ActionTargetObject:    nil,
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation: &schema.ActionLocation{
-								LocationName:        tlRec.Name,
-								LocationDescription: tlRec.Description,
-								LocationDirection:   "north",
-								LocationDirections:  []string{"north", "south", "northwest"},
-								LocationMonsters: []schema.ActionLocationMonster{
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										MonsterName: tlmRec.Name,
+										Name: ceoRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								StashedObjects: []schema.ActionObject{
 									{
-										ObjectName: tloRec.Name,
+										Name: csoRec.Name,
+									},
+								},
+							},
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation: &schema.ActionLocation{
+								Name:        tlRec.Name,
+								Description: tlRec.Description,
+								Direction:   "north",
+								Directions:  []string{"north", "south", "northwest"},
+								Monsters: []schema.ActionLocationMonster{
+									{
+										Name: tlmRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: tloRec.Name,
 									},
 								},
 							},
@@ -595,110 +595,110 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks %s", cRec.Name, loRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks %s", cRec.Name, loRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: ceoRec.Name,
-									},
-								},
-								CharacterStashedObjects: []schema.ActionObject{
-									{
-										ObjectName: csoRec.Name,
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionMonster:        nil,
-							ActionEquippedObject: nil,
-							ActionStashedObject:  nil,
-							ActionTargetObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
+									{
+										Name: ceoRec.Name,
+									},
+								},
+								StashedObjects: []schema.ActionObject{
+									{
+										Name: csoRec.Name,
+									},
+								},
 							},
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation:  nil,
+							Monster:        nil,
+							EquippedObject: nil,
+							StashedObject:  nil,
+							TargetObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+							},
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
 						},
 					},
 				}
@@ -748,124 +748,124 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks %s", cRec.Name, tmRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks %s", cRec.Name, tmRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: ceoRec.Name,
-									},
-								},
-								CharacterStashedObjects: []schema.ActionObject{
-									{
-										ObjectName: csoRec.Name,
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionMonster:         nil,
-							ActionEquippedObject:  nil,
-							ActionStashedObject:   nil,
-							ActionTargetObject:    nil,
-							ActionTargetCharacter: nil,
-							ActionTargetMonster: &schema.ActionMonster{
-								MonsterName:                tmRec.Name,
-								MonsterStrength:            tmRec.Strength,
-								MonsterDexterity:           tmRec.Dexterity,
-								MonsterIntelligence:        tmRec.Intelligence,
-								MonsterHealth:              tmRec.Health,
-								MonsterFatigue:             tmRec.Fatigue,
-								MonsterCurrentStrength:     tmiRec.Strength,
-								MonsterCurrentDexterity:    tmiRec.Dexterity,
-								MonsterCurrentIntelligence: tmiRec.Intelligence,
-								MonsterCurrentHealth:       tmiRec.Health,
-								MonsterCurrentFatigue:      tmiRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: tmeoRec.Name,
+										Name: ceoRec.Name,
+									},
+								},
+								StashedObjects: []schema.ActionObject{
+									{
+										Name: csoRec.Name,
 									},
 								},
 							},
-							ActionTargetLocation: nil,
+							Monster:         nil,
+							EquippedObject:  nil,
+							StashedObject:   nil,
+							TargetObject:    nil,
+							TargetCharacter: nil,
+							TargetMonster: &schema.ActionMonster{
+								Name:                tmRec.Name,
+								Strength:            tmRec.Strength,
+								Dexterity:           tmRec.Dexterity,
+								Intelligence:        tmRec.Intelligence,
+								Health:              tmRec.Health,
+								Fatigue:             tmRec.Fatigue,
+								CurrentStrength:     tmiRec.Strength,
+								CurrentDexterity:    tmiRec.Dexterity,
+								CurrentIntelligence: tmiRec.Intelligence,
+								CurrentHealth:       tmiRec.Health,
+								CurrentFatigue:      tmiRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
+									{
+										Name: tmeoRec.Name,
+									},
+								},
+							},
+							TargetLocation: nil,
 						},
 					},
 				}
@@ -915,124 +915,124 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks %s", cRec.Name, tcRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks %s", cRec.Name, tcRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: ceoRec.Name,
-									},
-								},
-								CharacterStashedObjects: []schema.ActionObject{
-									{
-										ObjectName: csoRec.Name,
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionMonster:        nil,
-							ActionEquippedObject: nil,
-							ActionStashedObject:  nil,
-							ActionTargetObject:   nil,
-							ActionTargetCharacter: &schema.ActionCharacter{
-								CharacterName:                tcRec.Name,
-								CharacterStrength:            tcRec.Strength,
-								CharacterDexterity:           tcRec.Dexterity,
-								CharacterIntelligence:        tcRec.Intelligence,
-								CharacterHealth:              tcRec.Health,
-								CharacterFatigue:             tcRec.Fatigue,
-								CharacterCurrentStrength:     tciRec.Strength,
-								CharacterCurrentDexterity:    tciRec.Dexterity,
-								CharacterCurrentIntelligence: tciRec.Intelligence,
-								CharacterCurrentHealth:       tciRec.Health,
-								CharacterCurrentFatigue:      tciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: tceoRec.Name,
+										Name: ceoRec.Name,
+									},
+								},
+								StashedObjects: []schema.ActionObject{
+									{
+										Name: csoRec.Name,
 									},
 								},
 							},
-							ActionTargetMonster:  nil,
-							ActionTargetLocation: nil,
+							Monster:        nil,
+							EquippedObject: nil,
+							StashedObject:  nil,
+							TargetObject:   nil,
+							TargetCharacter: &schema.ActionCharacter{
+								Name:                tcRec.Name,
+								Strength:            tcRec.Strength,
+								Dexterity:           tcRec.Dexterity,
+								Intelligence:        tcRec.Intelligence,
+								Health:              tcRec.Health,
+								Fatigue:             tcRec.Fatigue,
+								CurrentStrength:     tciRec.Strength,
+								CurrentDexterity:    tciRec.Dexterity,
+								CurrentIntelligence: tciRec.Intelligence,
+								CurrentHealth:       tciRec.Health,
+								CurrentFatigue:      tciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
+									{
+										Name: tceoRec.Name,
+									},
+								},
+							},
+							TargetMonster:  nil,
+							TargetLocation: nil,
 						},
 					},
 				}
@@ -1080,117 +1080,117 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						{
-							ActionCommand:   "stash",
-							ActionNarrative: fmt.Sprintf("%s stashes %s", cRec.Name, toRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "stash",
+							Narrative: fmt.Sprintf("%s stashes %s", cRec.Name, toRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: ceoRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-								CharacterStashedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{},
+							},
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: toRec.Name,
+										Name: ceoRec.Name,
+									},
+								},
+								StashedObjects: []schema.ActionObject{
+									{
+										Name: toRec.Name,
 									},
 									{
-										ObjectName: csoRec.Name,
+										Name: csoRec.Name,
 									},
 								},
 							},
-							ActionMonster:        nil,
-							ActionEquippedObject: nil,
-							ActionStashedObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
-								ObjectIsEquipped:  false,
-								ObjectIsStashed:   true,
+							Monster:        nil,
+							EquippedObject: nil,
+							StashedObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+								IsEquipped:  false,
+								IsStashed:   true,
 							},
-							ActionDroppedObject: nil,
-							ActionTargetObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
-								ObjectIsEquipped:  false,
-								ObjectIsStashed:   true,
+							DroppedObject: nil,
+							TargetObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+								IsEquipped:  false,
+								IsStashed:   true,
 							},
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation:  nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
 						},
 					},
 				}
@@ -1238,117 +1238,117 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						{
-							ActionCommand:   "equip",
-							ActionNarrative: fmt.Sprintf("%s equips %s", cRec.Name, toRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "equip",
+							Narrative: fmt.Sprintf("%s equips %s", cRec.Name, toRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects: []schema.ActionObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: toRec.Name,
-									},
-									{
-										ObjectName: ceoRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-								CharacterStashedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{},
+							},
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: csoRec.Name,
+										Name: toRec.Name,
+									},
+									{
+										Name: ceoRec.Name,
+									},
+								},
+								StashedObjects: []schema.ActionObject{
+									{
+										Name: csoRec.Name,
 									},
 								},
 							},
-							ActionMonster: nil,
-							ActionEquippedObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
-								ObjectIsEquipped:  true,
-								ObjectIsStashed:   false,
+							Monster: nil,
+							EquippedObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+								IsEquipped:  true,
+								IsStashed:   false,
 							},
-							ActionStashedObject: nil,
-							ActionDroppedObject: nil,
-							ActionTargetObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
-								ObjectIsEquipped:  true,
-								ObjectIsStashed:   false,
+							StashedObject: nil,
+							DroppedObject: nil,
+							TargetObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+								IsEquipped:  true,
+								IsStashed:   false,
 							},
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation:  nil,
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
 						},
 					},
 				}
@@ -1395,117 +1395,117 @@ func TestPostActionHandler(t *testing.T) {
 					Data: []schema.ActionResponseData{
 						// Grumpy Dwarf looks
 						{
-							ActionCommand:   "look",
-							ActionNarrative: fmt.Sprintf("%s looks", mRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "look",
+							Narrative: fmt.Sprintf("%s looks", mRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: mRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
+										Name: mRec.Name,
+									},
+								},
+								Objects: []schema.ActionLocationObject{
+									{
+										Name: loRec.Name,
 									},
 								},
 							},
-							ActionCharacter: nil,
-							ActionMonster: &schema.ActionMonster{
-								MonsterName:                mRec.Name,
-								MonsterStrength:            mRec.Strength,
-								MonsterDexterity:           mRec.Dexterity,
-								MonsterIntelligence:        mRec.Intelligence,
-								MonsterHealth:              mRec.Health,
-								MonsterFatigue:             mRec.Fatigue,
-								MonsterCurrentStrength:     miRec.Strength,
-								MonsterCurrentDexterity:    miRec.Dexterity,
-								MonsterCurrentIntelligence: miRec.Intelligence,
-								MonsterCurrentHealth:       miRec.Health,
-								MonsterCurrentFatigue:      miRec.Fatigue,
-								MonsterEquippedObjects: []schema.ActionObject{
+							Character: nil,
+							Monster: &schema.ActionMonster{
+								Name:                mRec.Name,
+								Strength:            mRec.Strength,
+								Dexterity:           mRec.Dexterity,
+								Intelligence:        mRec.Intelligence,
+								Health:              mRec.Health,
+								Fatigue:             mRec.Fatigue,
+								CurrentStrength:     miRec.Strength,
+								CurrentDexterity:    miRec.Dexterity,
+								CurrentIntelligence: miRec.Intelligence,
+								CurrentHealth:       miRec.Health,
+								CurrentFatigue:      miRec.Fatigue,
+								EquippedObjects: []schema.ActionObject{
 									{
-										ObjectName: meoRec.Name,
+										Name: meoRec.Name,
 									},
 								},
 							},
 						},
 						{
-							ActionCommand:   "drop",
-							ActionNarrative: fmt.Sprintf("%s drops %s", cRec.Name, toRec.Name),
-							ActionLocation: schema.ActionLocation{
-								LocationName:        lRec.Name,
-								LocationDescription: lRec.Description,
-								LocationDirections:  []string{"north"},
-								LocationCharacters: []schema.ActionLocationCharacter{
+							Command:   "drop",
+							Narrative: fmt.Sprintf("%s drops %s", cRec.Name, toRec.Name),
+							Location: schema.ActionLocation{
+								Name:        lRec.Name,
+								Description: lRec.Description,
+								Directions:  []string{"north"},
+								Characters: []schema.ActionLocationCharacter{
 									{
-										CharacterName: cRec.Name,
+										Name: cRec.Name,
 									},
 									{
-										CharacterName: lcRec.Name,
-									},
-								},
-								LocationMonsters: []schema.ActionLocationMonster{
-									{
-										MonsterName: lmRec.Name,
+										Name: lcRec.Name,
 									},
 								},
-								LocationObjects: []schema.ActionLocationObject{
+								Monsters: []schema.ActionLocationMonster{
 									{
-										ObjectName: loRec.Name,
-									},
-									{
-										ObjectName: toRec.Name,
+										Name: lmRec.Name,
 									},
 								},
-							},
-							ActionCharacter: &schema.ActionCharacter{
-								CharacterName:                cRec.Name,
-								CharacterStrength:            cRec.Strength,
-								CharacterDexterity:           cRec.Dexterity,
-								CharacterIntelligence:        cRec.Intelligence,
-								CharacterHealth:              cRec.Health,
-								CharacterFatigue:             cRec.Fatigue,
-								CharacterCurrentStrength:     ciRec.Strength,
-								CharacterCurrentDexterity:    ciRec.Dexterity,
-								CharacterCurrentIntelligence: ciRec.Intelligence,
-								CharacterCurrentHealth:       ciRec.Health,
-								CharacterCurrentFatigue:      ciRec.Fatigue,
-								CharacterEquippedObjects:     []schema.ActionObject{},
-								CharacterStashedObjects: []schema.ActionObject{
+								Objects: []schema.ActionLocationObject{
 									{
-										ObjectName: csoRec.Name,
+										Name: loRec.Name,
+									},
+									{
+										Name: toRec.Name,
 									},
 								},
 							},
-							ActionMonster:        nil,
-							ActionEquippedObject: nil,
-							ActionStashedObject:  nil,
-							ActionDroppedObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
-								ObjectIsEquipped:  false,
-								ObjectIsStashed:   false,
+							Character: &schema.ActionCharacter{
+								Name:                cRec.Name,
+								Strength:            cRec.Strength,
+								Dexterity:           cRec.Dexterity,
+								Intelligence:        cRec.Intelligence,
+								Health:              cRec.Health,
+								Fatigue:             cRec.Fatigue,
+								CurrentStrength:     ciRec.Strength,
+								CurrentDexterity:    ciRec.Dexterity,
+								CurrentIntelligence: ciRec.Intelligence,
+								CurrentHealth:       ciRec.Health,
+								CurrentFatigue:      ciRec.Fatigue,
+								EquippedObjects:     []schema.ActionObject{},
+								StashedObjects: []schema.ActionObject{
+									{
+										Name: csoRec.Name,
+									},
+								},
 							},
-							ActionTargetObject: &schema.ActionObject{
-								ObjectName:        toRec.Name,
-								ObjectDescription: toRec.Description,
-								ObjectIsEquipped:  false,
-								ObjectIsStashed:   false,
+							Monster:        nil,
+							EquippedObject: nil,
+							StashedObject:  nil,
+							DroppedObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+								IsEquipped:  false,
+								IsStashed:   false,
 							},
-							ActionTargetCharacter: nil,
-							ActionTargetMonster:   nil,
-							ActionTargetLocation:  nil,
+							TargetObject: &schema.ActionObject{
+								Name:        toRec.Name,
+								Description: toRec.Description,
+								IsEquipped:  false,
+								IsStashed:   false,
+							},
+							TargetCharacter: nil,
+							TargetMonster:   nil,
+							TargetLocation:  nil,
 						},
 					},
 				}
@@ -1576,326 +1576,326 @@ func TestPostActionHandler(t *testing.T) {
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Command
-						require.Equal(t, expectData.ActionCommand, responseBody.Data[idx].ActionCommand, "Response action command equals expected")
+						require.Equal(t, expectData.Command, responseBody.Data[idx].Command, "Response action command equals expected")
 
 						// Narrative
-						require.Equal(t, expectData.ActionNarrative, responseBody.Data[idx].ActionNarrative, "Response action narrative equals expected")
+						require.Equal(t, expectData.Narrative, responseBody.Data[idx].Narrative, "Response action narrative equals expected")
 
 						// Current location
-						t.Logf("Checking location name >%s< >%s<", expectData.ActionLocation.LocationName, responseBody.Data[idx].ActionLocation.LocationName)
-						require.Equal(t, expectData.ActionLocation.LocationName, responseBody.Data[idx].ActionLocation.LocationName)
-						t.Logf("Checking location description >%s< >%s<", expectData.ActionLocation.LocationDescription, responseBody.Data[idx].ActionLocation.LocationDescription)
-						require.Equal(t, expectData.ActionLocation.LocationDescription, responseBody.Data[idx].ActionLocation.LocationDescription)
-						t.Logf("Checking location directions >%s< >%s<", expectData.ActionLocation.LocationDirections, responseBody.Data[idx].ActionLocation.LocationDirections)
-						require.Equal(t, expectData.ActionLocation.LocationDirections, responseBody.Data[idx].ActionLocation.LocationDirections)
+						t.Logf("Checking location name >%s< >%s<", expectData.Location.Name, responseBody.Data[idx].Location.Name)
+						require.Equal(t, expectData.Location.Name, responseBody.Data[idx].Location.Name)
+						t.Logf("Checking location description >%s< >%s<", expectData.Location.Description, responseBody.Data[idx].Location.Description)
+						require.Equal(t, expectData.Location.Description, responseBody.Data[idx].Location.Description)
+						t.Logf("Checking location directions >%s< >%s<", expectData.Location.Directions, responseBody.Data[idx].Location.Directions)
+						require.Equal(t, expectData.Location.Directions, responseBody.Data[idx].Location.Directions)
 
 						// Current location characters
-						t.Logf("Checking character count >%d< >%d<", len(expectData.ActionLocation.LocationCharacters), len(responseBody.Data[idx].ActionLocation.LocationCharacters))
-						if len(expectData.ActionLocation.LocationCharacters) > 0 {
-							for _, character := range responseBody.Data[idx].ActionLocation.LocationCharacters {
-								t.Logf("Response action location character name >%s<", character.CharacterName)
+						t.Logf("Checking character count >%d< >%d<", len(expectData.Location.Characters), len(responseBody.Data[idx].Location.Characters))
+						if len(expectData.Location.Characters) > 0 {
+							for _, character := range responseBody.Data[idx].Location.Characters {
+								t.Logf("Response action location character name >%s<", character.Name)
 							}
-							for _, character := range expectData.ActionLocation.LocationCharacters {
-								t.Logf("Checking action location character name >%s<", character.CharacterName)
-								require.True(t, responseBody.Data[idx].ActionLocation.LocationCharacters.HasCharacterWithName(character.CharacterName), "Response action location characters has character with name ")
+							for _, character := range expectData.Location.Characters {
+								t.Logf("Checking action location character name >%s<", character.Name)
+								require.True(t, responseBody.Data[idx].Location.Characters.HasCharacterWithName(character.Name), "Response action location characters has character with name ")
 							}
 						}
-						if len(expectData.ActionLocation.LocationCharacters) == 0 {
-							require.Equal(t, 0, len(responseBody.Data[idx].ActionLocation.LocationCharacters), "Location characters length is 0")
+						if len(expectData.Location.Characters) == 0 {
+							require.Equal(t, 0, len(responseBody.Data[idx].Location.Characters), "Location characters length is 0")
 						}
 
 						// Current location monsters
-						t.Logf("Checking monster count >%d< >%d<", len(expectData.ActionLocation.LocationMonsters), len(responseBody.Data[idx].ActionLocation.LocationMonsters))
-						require.Equal(t, len(expectData.ActionLocation.LocationMonsters), len(responseBody.Data[idx].ActionLocation.LocationMonsters), "Response action location monsters count equals expected")
-						if len(expectData.ActionLocation.LocationMonsters) > 0 {
-							for _, monster := range expectData.ActionLocation.LocationMonsters {
-								t.Logf("Checking action location monster name >%s<", monster.MonsterName)
-								require.True(t, responseBody.Data[idx].ActionLocation.LocationMonsters.HasMonsterWithName(monster.MonsterName))
+						t.Logf("Checking monster count >%d< >%d<", len(expectData.Location.Monsters), len(responseBody.Data[idx].Location.Monsters))
+						require.Equal(t, len(expectData.Location.Monsters), len(responseBody.Data[idx].Location.Monsters), "Response action location monsters count equals expected")
+						if len(expectData.Location.Monsters) > 0 {
+							for _, monster := range expectData.Location.Monsters {
+								t.Logf("Checking action location monster name >%s<", monster.Name)
+								require.True(t, responseBody.Data[idx].Location.Monsters.HasMonsterWithName(monster.Name))
 							}
 						}
-						if len(expectData.ActionLocation.LocationMonsters) == 0 {
-							require.Equal(t, 0, len(responseBody.Data[idx].ActionLocation.LocationMonsters), "Location monsters length is 0")
+						if len(expectData.Location.Monsters) == 0 {
+							require.Equal(t, 0, len(responseBody.Data[idx].Location.Monsters), "Location monsters length is 0")
 						}
 
 						// Current location objects (any order)
-						t.Logf("Checking object count >%d< >%d<", len(expectData.ActionLocation.LocationObjects), len(responseBody.Data[idx].ActionLocation.LocationObjects))
-						require.Equal(t, len(expectData.ActionLocation.LocationObjects), len(responseBody.Data[idx].ActionLocation.LocationObjects), "Response action location objects count equals expected")
-						if len(expectData.ActionLocation.LocationObjects) > 0 {
-							for _, object := range expectData.ActionLocation.LocationObjects {
-								t.Logf("Checking action location object name >%s<", object.ObjectName)
-								require.True(t, responseBody.Data[idx].ActionLocation.LocationObjects.HasObjectWithName(object.ObjectName))
+						t.Logf("Checking object count >%d< >%d<", len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects))
+						require.Equal(t, len(expectData.Location.Objects), len(responseBody.Data[idx].Location.Objects), "Response action location objects count equals expected")
+						if len(expectData.Location.Objects) > 0 {
+							for _, object := range expectData.Location.Objects {
+								t.Logf("Checking action location object name >%s<", object.Name)
+								require.True(t, responseBody.Data[idx].Location.Objects.HasObjectWithName(object.Name))
 							}
 						}
 
 						// Target location
-						if expectData.ActionTargetLocation != nil {
-							require.NotNil(t, responseBody.Data[idx].ActionTargetLocation, "Response target location is not empty")
-							t.Logf("Checking location name >%s< >%s<", expectData.ActionTargetLocation.LocationName, responseBody.Data[idx].ActionTargetLocation.LocationName)
-							require.Equal(t, expectData.ActionTargetLocation.LocationName, responseBody.Data[idx].ActionTargetLocation.LocationName)
-							t.Logf("Checking location description >%s< >%s<", expectData.ActionTargetLocation.LocationDescription, responseBody.Data[idx].ActionTargetLocation.LocationDescription)
-							require.Equal(t, expectData.ActionTargetLocation.LocationDescription, responseBody.Data[idx].ActionTargetLocation.LocationDescription)
-							t.Logf("Checking location direction >%s< >%s<", expectData.ActionTargetLocation.LocationDirection, responseBody.Data[idx].ActionTargetLocation.LocationDirection)
-							require.Equal(t, expectData.ActionTargetLocation.LocationDirection, responseBody.Data[idx].ActionTargetLocation.LocationDirection)
-							t.Logf("Checking location directions >%s< >%s<", expectData.ActionTargetLocation.LocationDirections, responseBody.Data[idx].ActionTargetLocation.LocationDirections)
-							require.Equal(t, expectData.ActionTargetLocation.LocationDirections, responseBody.Data[idx].ActionTargetLocation.LocationDirections)
+						if expectData.TargetLocation != nil {
+							require.NotNil(t, responseBody.Data[idx].TargetLocation, "Response target location is not empty")
+							t.Logf("Checking location name >%s< >%s<", expectData.TargetLocation.Name, responseBody.Data[idx].TargetLocation.Name)
+							require.Equal(t, expectData.TargetLocation.Name, responseBody.Data[idx].TargetLocation.Name)
+							t.Logf("Checking location description >%s< >%s<", expectData.TargetLocation.Description, responseBody.Data[idx].TargetLocation.Description)
+							require.Equal(t, expectData.TargetLocation.Description, responseBody.Data[idx].TargetLocation.Description)
+							t.Logf("Checking location direction >%s< >%s<", expectData.TargetLocation.Direction, responseBody.Data[idx].TargetLocation.Direction)
+							require.Equal(t, expectData.TargetLocation.Direction, responseBody.Data[idx].TargetLocation.Direction)
+							t.Logf("Checking location directions >%s< >%s<", expectData.TargetLocation.Directions, responseBody.Data[idx].TargetLocation.Directions)
+							require.Equal(t, expectData.TargetLocation.Directions, responseBody.Data[idx].TargetLocation.Directions)
 
 							// Target location characters
-							t.Logf("Checking character count >%d< >%d<", len(expectData.ActionTargetLocation.LocationCharacters), len(responseBody.Data[idx].ActionTargetLocation.LocationCharacters))
-							require.Equal(t, len(expectData.ActionTargetLocation.LocationCharacters), len(responseBody.Data[idx].ActionTargetLocation.LocationCharacters), "Response action target location characters count equals expected")
-							if len(expectData.ActionTargetLocation.LocationCharacters) > 0 {
-								for _, character := range expectData.ActionTargetLocation.LocationCharacters {
-									t.Logf("Checking action target location character name >%s<", character.CharacterName)
-									require.True(t, responseBody.Data[idx].ActionTargetLocation.LocationCharacters.HasCharacterWithName(character.CharacterName))
+							t.Logf("Checking character count >%d< >%d<", len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters))
+							require.Equal(t, len(expectData.TargetLocation.Characters), len(responseBody.Data[idx].TargetLocation.Characters), "Response action target location characters count equals expected")
+							if len(expectData.TargetLocation.Characters) > 0 {
+								for _, character := range expectData.TargetLocation.Characters {
+									t.Logf("Checking action target location character name >%s<", character.Name)
+									require.True(t, responseBody.Data[idx].TargetLocation.Characters.HasCharacterWithName(character.Name))
 								}
 							}
 
 							// Target location monsters
-							t.Logf("Checking monster count >%d< >%d<", len(expectData.ActionTargetLocation.LocationMonsters), len(responseBody.Data[idx].ActionTargetLocation.LocationMonsters))
-							require.Equal(t, len(expectData.ActionTargetLocation.LocationMonsters), len(responseBody.Data[idx].ActionTargetLocation.LocationMonsters), "Response action target location monsters count equals expected")
-							if len(expectData.ActionTargetLocation.LocationMonsters) > 0 {
-								for _, monster := range expectData.ActionTargetLocation.LocationMonsters {
-									t.Logf("Checking action target location monster name >%s<", monster.MonsterName)
-									require.True(t, responseBody.Data[idx].ActionTargetLocation.LocationMonsters.HasMonsterWithName(monster.MonsterName))
+							t.Logf("Checking monster count >%d< >%d<", len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters))
+							require.Equal(t, len(expectData.TargetLocation.Monsters), len(responseBody.Data[idx].TargetLocation.Monsters), "Response action target location monsters count equals expected")
+							if len(expectData.TargetLocation.Monsters) > 0 {
+								for _, monster := range expectData.TargetLocation.Monsters {
+									t.Logf("Checking action target location monster name >%s<", monster.Name)
+									require.True(t, responseBody.Data[idx].TargetLocation.Monsters.HasMonsterWithName(monster.Name))
 								}
 							}
 
 							// Target location objects
-							t.Logf("Checking object count >%d< >%d<", len(expectData.ActionTargetLocation.LocationObjects), len(responseBody.Data[idx].ActionTargetLocation.LocationObjects))
-							require.Equal(t, len(expectData.ActionTargetLocation.LocationObjects), len(responseBody.Data[idx].ActionTargetLocation.LocationObjects), "Response action target location objects count equals expected")
-							if len(expectData.ActionTargetLocation.LocationObjects) > 0 {
-								for _, object := range expectData.ActionTargetLocation.LocationObjects {
-									t.Logf("Checking action target location object name >%s<", object.ObjectName)
-									require.True(t, responseBody.Data[idx].ActionTargetLocation.LocationObjects.HasObjectWithName(object.ObjectName))
+							t.Logf("Checking object count >%d< >%d<", len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects))
+							require.Equal(t, len(expectData.TargetLocation.Objects), len(responseBody.Data[idx].TargetLocation.Objects), "Response action target location objects count equals expected")
+							if len(expectData.TargetLocation.Objects) > 0 {
+								for _, object := range expectData.TargetLocation.Objects {
+									t.Logf("Checking action target location object name >%s<", object.Name)
+									require.True(t, responseBody.Data[idx].TargetLocation.Objects.HasObjectWithName(object.Name))
 								}
 							}
 						}
 
 						// Response character
-						t.Logf("Checking character nil >%t< >%t<", isCharacterNil(expectData.ActionCharacter), isCharacterNil(responseBody.Data[idx].ActionCharacter))
-						require.Equal(t, isCharacterNil(expectData.ActionCharacter), isCharacterNil(responseBody.Data[idx].ActionCharacter), "Response character is nil or not nil as expected")
-						if !isCharacterNil(expectData.ActionCharacter) {
-							t.Logf("Checking action character name >%s< >%s<", expectData.ActionCharacter.CharacterName, responseBody.Data[idx].ActionCharacter.CharacterName)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterName, "Response character name is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterName, responseBody.Data[idx].ActionCharacter.CharacterName, "Response character name equals expected")
-							t.Logf("Checking action character strenth >%d< >%d<", expectData.ActionCharacter.CharacterStrength, responseBody.Data[idx].ActionCharacter.CharacterStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterStrength, "Response character strenth is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterStrength, responseBody.Data[idx].ActionCharacter.CharacterStrength, "Response character strength equals expected")
-							t.Logf("Checking action character dexterity >%d< >%d<", expectData.ActionCharacter.CharacterDexterity, responseBody.Data[idx].ActionCharacter.CharacterDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterDexterity, "Response character dexterity is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterDexterity, responseBody.Data[idx].ActionCharacter.CharacterDexterity, "Response character dexterity equals expected")
-							t.Logf("Checking action character intelligence >%d< >%d<", expectData.ActionCharacter.CharacterIntelligence, responseBody.Data[idx].ActionCharacter.CharacterIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterIntelligence, "Response character intelligence is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterIntelligence, responseBody.Data[idx].ActionCharacter.CharacterIntelligence, "Response character intelligence equals expected")
+						t.Logf("Checking character nil >%t< >%t<", isCharacterNil(expectData.Character), isCharacterNil(responseBody.Data[idx].Character))
+						require.Equal(t, isCharacterNil(expectData.Character), isCharacterNil(responseBody.Data[idx].Character), "Response character is nil or not nil as expected")
+						if !isCharacterNil(expectData.Character) {
+							t.Logf("Checking action character name >%s< >%s<", expectData.Character.Name, responseBody.Data[idx].Character.Name)
+							require.NotEmpty(t, responseBody.Data[idx].Character.Name, "Response character name is not empty")
+							require.Equal(t, expectData.Character.Name, responseBody.Data[idx].Character.Name, "Response character name equals expected")
+							t.Logf("Checking action character strenth >%d< >%d<", expectData.Character.Strength, responseBody.Data[idx].Character.Strength)
+							require.NotEmpty(t, responseBody.Data[idx].Character.Strength, "Response character strenth is not empty")
+							require.Equal(t, expectData.Character.Strength, responseBody.Data[idx].Character.Strength, "Response character strength equals expected")
+							t.Logf("Checking action character dexterity >%d< >%d<", expectData.Character.Dexterity, responseBody.Data[idx].Character.Dexterity)
+							require.NotEmpty(t, responseBody.Data[idx].Character.Dexterity, "Response character dexterity is not empty")
+							require.Equal(t, expectData.Character.Dexterity, responseBody.Data[idx].Character.Dexterity, "Response character dexterity equals expected")
+							t.Logf("Checking action character intelligence >%d< >%d<", expectData.Character.Intelligence, responseBody.Data[idx].Character.Intelligence)
+							require.NotEmpty(t, responseBody.Data[idx].Character.Intelligence, "Response character intelligence is not empty")
+							require.Equal(t, expectData.Character.Intelligence, responseBody.Data[idx].Character.Intelligence, "Response character intelligence equals expected")
 
-							t.Logf("Checking action character current strenth >%d< >%d<", expectData.ActionCharacter.CharacterCurrentStrength, responseBody.Data[idx].ActionCharacter.CharacterCurrentStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterCurrentStrength, "Response character current strenth is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterCurrentStrength, responseBody.Data[idx].ActionCharacter.CharacterCurrentStrength, "Response character current strength equals expected")
-							t.Logf("Checking action character current dexterity >%d< >%d<", expectData.ActionCharacter.CharacterCurrentDexterity, responseBody.Data[idx].ActionCharacter.CharacterCurrentDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterCurrentDexterity, "Response character dexterity is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterCurrentDexterity, responseBody.Data[idx].ActionCharacter.CharacterCurrentDexterity, "Response character current dexterity equals expected")
-							t.Logf("Checking action character current intelligence >%d< >%d<", expectData.ActionCharacter.CharacterCurrentIntelligence, responseBody.Data[idx].ActionCharacter.CharacterCurrentIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionCharacter.CharacterCurrentIntelligence, "Response character intelligence is not empty")
-							require.Equal(t, expectData.ActionCharacter.CharacterCurrentIntelligence, responseBody.Data[idx].ActionCharacter.CharacterCurrentIntelligence, "Response character current intelligence equals expected")
+							t.Logf("Checking action character current strenth >%d< >%d<", expectData.Character.CurrentStrength, responseBody.Data[idx].Character.CurrentStrength)
+							require.NotEmpty(t, responseBody.Data[idx].Character.CurrentStrength, "Response character current strenth is not empty")
+							require.Equal(t, expectData.Character.CurrentStrength, responseBody.Data[idx].Character.CurrentStrength, "Response character current strength equals expected")
+							t.Logf("Checking action character current dexterity >%d< >%d<", expectData.Character.CurrentDexterity, responseBody.Data[idx].Character.CurrentDexterity)
+							require.NotEmpty(t, responseBody.Data[idx].Character.CurrentDexterity, "Response character dexterity is not empty")
+							require.Equal(t, expectData.Character.CurrentDexterity, responseBody.Data[idx].Character.CurrentDexterity, "Response character current dexterity equals expected")
+							t.Logf("Checking action character current intelligence >%d< >%d<", expectData.Character.CurrentIntelligence, responseBody.Data[idx].Character.CurrentIntelligence)
+							require.NotEmpty(t, responseBody.Data[idx].Character.CurrentIntelligence, "Response character intelligence is not empty")
+							require.Equal(t, expectData.Character.CurrentIntelligence, responseBody.Data[idx].Character.CurrentIntelligence, "Response character current intelligence equals expected")
 
-							t.Logf("Checking action character health >%d< >%d<", expectData.ActionCharacter.CharacterHealth, responseBody.Data[idx].ActionCharacter.CharacterHealth)
-							require.Equal(t, expectData.ActionCharacter.CharacterHealth, responseBody.Data[idx].ActionCharacter.CharacterHealth, "Response character health equals expected")
-							t.Logf("Checking action character fatigue >%d< >%d<", expectData.ActionCharacter.CharacterFatigue, responseBody.Data[idx].ActionCharacter.CharacterFatigue)
-							require.Equal(t, expectData.ActionCharacter.CharacterFatigue, responseBody.Data[idx].ActionCharacter.CharacterFatigue, "Response character fatigue equals expected")
+							t.Logf("Checking action character health >%d< >%d<", expectData.Character.Health, responseBody.Data[idx].Character.Health)
+							require.Equal(t, expectData.Character.Health, responseBody.Data[idx].Character.Health, "Response character health equals expected")
+							t.Logf("Checking action character fatigue >%d< >%d<", expectData.Character.Fatigue, responseBody.Data[idx].Character.Fatigue)
+							require.Equal(t, expectData.Character.Fatigue, responseBody.Data[idx].Character.Fatigue, "Response character fatigue equals expected")
 
-							t.Logf("Checking action character current health >%d< >%d<", expectData.ActionCharacter.CharacterCurrentHealth, responseBody.Data[idx].ActionCharacter.CharacterCurrentHealth)
-							require.Equal(t, expectData.ActionCharacter.CharacterCurrentHealth, responseBody.Data[idx].ActionCharacter.CharacterCurrentHealth, "Response character current health equals expected")
-							t.Logf("Checking action character current fatigue >%d< >%d<", expectData.ActionCharacter.CharacterCurrentFatigue, responseBody.Data[idx].ActionCharacter.CharacterCurrentFatigue)
-							require.Equal(t, expectData.ActionCharacter.CharacterCurrentFatigue, responseBody.Data[idx].ActionCharacter.CharacterCurrentFatigue, "Response character current fatigue equals expected")
+							t.Logf("Checking action character current health >%d< >%d<", expectData.Character.CurrentHealth, responseBody.Data[idx].Character.CurrentHealth)
+							require.Equal(t, expectData.Character.CurrentHealth, responseBody.Data[idx].Character.CurrentHealth, "Response character current health equals expected")
+							t.Logf("Checking action character current fatigue >%d< >%d<", expectData.Character.CurrentFatigue, responseBody.Data[idx].Character.CurrentFatigue)
+							require.Equal(t, expectData.Character.CurrentFatigue, responseBody.Data[idx].Character.CurrentFatigue, "Response character current fatigue equals expected")
 
-							t.Logf("Checking action character equipped objects >%d< >%d<", len(expectData.ActionCharacter.CharacterEquippedObjects), len(responseBody.Data[idx].ActionCharacter.CharacterEquippedObjects))
-							require.Equal(t, len(expectData.ActionCharacter.CharacterEquippedObjects), len(responseBody.Data[idx].ActionCharacter.CharacterEquippedObjects), "Response character equipped object count equals expected")
+							t.Logf("Checking action character equipped objects >%d< >%d<", len(expectData.Character.EquippedObjects), len(responseBody.Data[idx].Character.EquippedObjects))
+							require.Equal(t, len(expectData.Character.EquippedObjects), len(responseBody.Data[idx].Character.EquippedObjects), "Response character equipped object count equals expected")
 
-							t.Logf("Checking action character stashed objects >%d< >%d<", len(expectData.ActionCharacter.CharacterStashedObjects), len(responseBody.Data[idx].ActionCharacter.CharacterStashedObjects))
-							require.Equal(t, len(expectData.ActionCharacter.CharacterStashedObjects), len(responseBody.Data[idx].ActionCharacter.CharacterStashedObjects), "Response character stashed object count equals expected")
+							t.Logf("Checking action character stashed objects >%d< >%d<", len(expectData.Character.StashedObjects), len(responseBody.Data[idx].Character.StashedObjects))
+							require.Equal(t, len(expectData.Character.StashedObjects), len(responseBody.Data[idx].Character.StashedObjects), "Response character stashed object count equals expected")
 						}
 
 						// Response target character
-						t.Logf("Checking target character nil >%t< >%t<", isCharacterNil(expectData.ActionTargetCharacter), isCharacterNil(responseBody.Data[idx].ActionTargetCharacter))
-						require.Equal(t, isCharacterNil(expectData.ActionTargetCharacter), isCharacterNil(responseBody.Data[idx].ActionTargetCharacter), "Response target character is nil or not nil as expected")
-						if !isCharacterNil(expectData.ActionTargetCharacter) {
-							t.Logf("Checking action target character name >%s< >%s<", expectData.ActionTargetCharacter.CharacterName, responseBody.Data[idx].ActionTargetCharacter.CharacterName)
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterName, responseBody.Data[idx].ActionTargetCharacter.CharacterName, "Response target character name equals expected")
+						t.Logf("Checking target character nil >%t< >%t<", isCharacterNil(expectData.TargetCharacter), isCharacterNil(responseBody.Data[idx].TargetCharacter))
+						require.Equal(t, isCharacterNil(expectData.TargetCharacter), isCharacterNil(responseBody.Data[idx].TargetCharacter), "Response target character is nil or not nil as expected")
+						if !isCharacterNil(expectData.TargetCharacter) {
+							t.Logf("Checking action target character name >%s< >%s<", expectData.TargetCharacter.Name, responseBody.Data[idx].TargetCharacter.Name)
+							require.Equal(t, expectData.TargetCharacter.Name, responseBody.Data[idx].TargetCharacter.Name, "Response target character name equals expected")
 
-							t.Logf("Checking action target character strenth >%d< >%d<", expectData.ActionTargetCharacter.CharacterStrength, responseBody.Data[idx].ActionTargetCharacter.CharacterStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetCharacter.CharacterStrength, "Response target character strength is not empty")
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterStrength, responseBody.Data[idx].ActionTargetCharacter.CharacterStrength, "Response target character strength equals expected")
-							t.Logf("Checking action target character dexterity >%d< >%d<", expectData.ActionTargetCharacter.CharacterDexterity, responseBody.Data[idx].ActionTargetCharacter.CharacterDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetCharacter.CharacterDexterity, "Response target character dexterity is not empty")
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterDexterity, responseBody.Data[idx].ActionTargetCharacter.CharacterDexterity, "Response target character dexterity equals expected")
-							t.Logf("Checking action target character intelligence >%d< >%d<", expectData.ActionTargetCharacter.CharacterIntelligence, responseBody.Data[idx].ActionTargetCharacter.CharacterIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetCharacter.CharacterIntelligence, "Response target character intelligence is not empty")
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterIntelligence, responseBody.Data[idx].ActionTargetCharacter.CharacterIntelligence, "Response target character intelligence equals expected")
+							t.Logf("Checking action target character strenth >%d< >%d<", expectData.TargetCharacter.Strength, responseBody.Data[idx].TargetCharacter.Strength)
+							require.NotEmpty(t, responseBody.Data[idx].TargetCharacter.Strength, "Response target character strength is not empty")
+							require.Equal(t, expectData.TargetCharacter.Strength, responseBody.Data[idx].TargetCharacter.Strength, "Response target character strength equals expected")
+							t.Logf("Checking action target character dexterity >%d< >%d<", expectData.TargetCharacter.Dexterity, responseBody.Data[idx].TargetCharacter.Dexterity)
+							require.NotEmpty(t, responseBody.Data[idx].TargetCharacter.Dexterity, "Response target character dexterity is not empty")
+							require.Equal(t, expectData.TargetCharacter.Dexterity, responseBody.Data[idx].TargetCharacter.Dexterity, "Response target character dexterity equals expected")
+							t.Logf("Checking action target character intelligence >%d< >%d<", expectData.TargetCharacter.Intelligence, responseBody.Data[idx].TargetCharacter.Intelligence)
+							require.NotEmpty(t, responseBody.Data[idx].TargetCharacter.Intelligence, "Response target character intelligence is not empty")
+							require.Equal(t, expectData.TargetCharacter.Intelligence, responseBody.Data[idx].TargetCharacter.Intelligence, "Response target character intelligence equals expected")
 
-							t.Logf("Checking target character current strenth >%d< >%d<", expectData.ActionTargetCharacter.CharacterCurrentStrength, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentStrength, "Response target character current strength is not empty")
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterCurrentStrength, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentStrength, "Response target character current strength equals expected")
-							t.Logf("Checking target character current dexterity >%d< >%d<", expectData.ActionTargetCharacter.CharacterCurrentDexterity, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentDexterity, "Response target character current dexterity is not empty")
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterCurrentDexterity, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentDexterity, "Response target character current dexterity equals expected")
-							t.Logf("Checking target character current intelligence >%d< >%d<", expectData.ActionTargetCharacter.CharacterCurrentIntelligence, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentIntelligence, "Response target character current intelligence is not empty")
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterCurrentIntelligence, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentIntelligence, "Response target character current intelligence equals expected")
+							t.Logf("Checking target character current strenth >%d< >%d<", expectData.TargetCharacter.CurrentStrength, responseBody.Data[idx].TargetCharacter.CurrentStrength)
+							require.NotEmpty(t, responseBody.Data[idx].TargetCharacter.CurrentStrength, "Response target character current strength is not empty")
+							require.Equal(t, expectData.TargetCharacter.CurrentStrength, responseBody.Data[idx].TargetCharacter.CurrentStrength, "Response target character current strength equals expected")
+							t.Logf("Checking target character current dexterity >%d< >%d<", expectData.TargetCharacter.CurrentDexterity, responseBody.Data[idx].TargetCharacter.CurrentDexterity)
+							require.NotEmpty(t, responseBody.Data[idx].TargetCharacter.CurrentDexterity, "Response target character current dexterity is not empty")
+							require.Equal(t, expectData.TargetCharacter.CurrentDexterity, responseBody.Data[idx].TargetCharacter.CurrentDexterity, "Response target character current dexterity equals expected")
+							t.Logf("Checking target character current intelligence >%d< >%d<", expectData.TargetCharacter.CurrentIntelligence, responseBody.Data[idx].TargetCharacter.CurrentIntelligence)
+							require.NotEmpty(t, responseBody.Data[idx].TargetCharacter.CurrentIntelligence, "Response target character current intelligence is not empty")
+							require.Equal(t, expectData.TargetCharacter.CurrentIntelligence, responseBody.Data[idx].TargetCharacter.CurrentIntelligence, "Response target character current intelligence equals expected")
 
-							t.Logf("Checking target character health >%d< >%d<", expectData.ActionTargetCharacter.CharacterHealth, responseBody.Data[idx].ActionTargetCharacter.CharacterHealth)
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterHealth, responseBody.Data[idx].ActionTargetCharacter.CharacterHealth, "Response target character health equals expected")
-							t.Logf("Checking target character fatigue >%d< >%d<", expectData.ActionTargetCharacter.CharacterFatigue, responseBody.Data[idx].ActionTargetCharacter.CharacterFatigue)
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterFatigue, responseBody.Data[idx].ActionTargetCharacter.CharacterFatigue, "Response target character fatigue equals expected")
+							t.Logf("Checking target character health >%d< >%d<", expectData.TargetCharacter.Health, responseBody.Data[idx].TargetCharacter.Health)
+							require.Equal(t, expectData.TargetCharacter.Health, responseBody.Data[idx].TargetCharacter.Health, "Response target character health equals expected")
+							t.Logf("Checking target character fatigue >%d< >%d<", expectData.TargetCharacter.Fatigue, responseBody.Data[idx].TargetCharacter.Fatigue)
+							require.Equal(t, expectData.TargetCharacter.Fatigue, responseBody.Data[idx].TargetCharacter.Fatigue, "Response target character fatigue equals expected")
 
-							t.Logf("Checking target character current health >%d< >%d<", expectData.ActionTargetCharacter.CharacterCurrentHealth, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentHealth)
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterCurrentHealth, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentHealth, "Response target character current health equals expected")
-							t.Logf("Checking target character current fatigue >%d< >%d<", expectData.ActionTargetCharacter.CharacterCurrentFatigue, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentFatigue)
-							require.Equal(t, expectData.ActionTargetCharacter.CharacterCurrentFatigue, responseBody.Data[idx].ActionTargetCharacter.CharacterCurrentFatigue, "Response target character current fatigue equals expected")
+							t.Logf("Checking target character current health >%d< >%d<", expectData.TargetCharacter.CurrentHealth, responseBody.Data[idx].TargetCharacter.CurrentHealth)
+							require.Equal(t, expectData.TargetCharacter.CurrentHealth, responseBody.Data[idx].TargetCharacter.CurrentHealth, "Response target character current health equals expected")
+							t.Logf("Checking target character current fatigue >%d< >%d<", expectData.TargetCharacter.CurrentFatigue, responseBody.Data[idx].TargetCharacter.CurrentFatigue)
+							require.Equal(t, expectData.TargetCharacter.CurrentFatigue, responseBody.Data[idx].TargetCharacter.CurrentFatigue, "Response target character current fatigue equals expected")
 
-							t.Logf("Checking target character equipped objects >%d< >%d<", len(expectData.ActionTargetCharacter.CharacterEquippedObjects), len(responseBody.Data[idx].ActionTargetCharacter.CharacterEquippedObjects))
-							require.Equal(t, len(expectData.ActionTargetCharacter.CharacterEquippedObjects), len(responseBody.Data[idx].ActionTargetCharacter.CharacterEquippedObjects), "Response target character equipped object count equals expected")
+							t.Logf("Checking target character equipped objects >%d< >%d<", len(expectData.TargetCharacter.EquippedObjects), len(responseBody.Data[idx].TargetCharacter.EquippedObjects))
+							require.Equal(t, len(expectData.TargetCharacter.EquippedObjects), len(responseBody.Data[idx].TargetCharacter.EquippedObjects), "Response target character equipped object count equals expected")
 
-							t.Logf("Checking target character stashed objects >%d< >%d<", len(expectData.ActionTargetCharacter.CharacterStashedObjects), len(responseBody.Data[idx].ActionTargetCharacter.CharacterStashedObjects))
-							require.Equal(t, len(expectData.ActionTargetCharacter.CharacterStashedObjects), len(responseBody.Data[idx].ActionTargetCharacter.CharacterStashedObjects), "Response target character stashed object count equals expected")
+							t.Logf("Checking target character stashed objects >%d< >%d<", len(expectData.TargetCharacter.StashedObjects), len(responseBody.Data[idx].TargetCharacter.StashedObjects))
+							require.Equal(t, len(expectData.TargetCharacter.StashedObjects), len(responseBody.Data[idx].TargetCharacter.StashedObjects), "Response target character stashed object count equals expected")
 						}
 
 						// Response monster
-						t.Logf("Checking monster nil >%t< >%t<", isMonsterNil(expectData.ActionMonster), isMonsterNil(responseBody.Data[idx].ActionMonster))
-						require.Equal(t, isMonsterNil(expectData.ActionMonster), isMonsterNil(responseBody.Data[idx].ActionMonster), "Response monster is nil or not nil as expected")
-						if !isMonsterNil(expectData.ActionMonster) {
-							t.Logf("Checking monster name >%s< >%s<", expectData.ActionMonster.MonsterName, responseBody.Data[idx].ActionMonster.MonsterName)
-							require.Equal(t, expectData.ActionMonster.MonsterName, responseBody.Data[idx].ActionMonster.MonsterName, "Response monster name equals expected")
+						t.Logf("Checking monster nil >%t< >%t<", isMonsterNil(expectData.Monster), isMonsterNil(responseBody.Data[idx].Monster))
+						require.Equal(t, isMonsterNil(expectData.Monster), isMonsterNil(responseBody.Data[idx].Monster), "Response monster is nil or not nil as expected")
+						if !isMonsterNil(expectData.Monster) {
+							t.Logf("Checking monster name >%s< >%s<", expectData.Monster.Name, responseBody.Data[idx].Monster.Name)
+							require.Equal(t, expectData.Monster.Name, responseBody.Data[idx].Monster.Name, "Response monster name equals expected")
 
-							t.Logf("Checking monster strenth >%d< >%d<", expectData.ActionMonster.MonsterStrength, responseBody.Data[idx].ActionMonster.MonsterStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionMonster.MonsterStrength, "Response monster strength is not empty")
-							require.Equal(t, expectData.ActionMonster.MonsterStrength, responseBody.Data[idx].ActionMonster.MonsterStrength, "Response monster strength equals expected")
-							t.Logf("Checking monster dexterity >%d< >%d<", expectData.ActionMonster.MonsterDexterity, responseBody.Data[idx].ActionMonster.MonsterDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionMonster.MonsterDexterity, "Response monster dexterity is not empty")
-							require.Equal(t, expectData.ActionMonster.MonsterDexterity, responseBody.Data[idx].ActionMonster.MonsterDexterity, "Response monster dexterity equals expected")
-							t.Logf("Checking monster intelligence >%d< >%d<", expectData.ActionMonster.MonsterIntelligence, responseBody.Data[idx].ActionMonster.MonsterIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionMonster.MonsterIntelligence, "Response monster intelligence is not empty")
-							require.Equal(t, expectData.ActionMonster.MonsterIntelligence, responseBody.Data[idx].ActionMonster.MonsterIntelligence, "Response monster intelligence equals expected")
+							t.Logf("Checking monster strenth >%d< >%d<", expectData.Monster.Strength, responseBody.Data[idx].Monster.Strength)
+							require.NotEmpty(t, responseBody.Data[idx].Monster.Strength, "Response monster strength is not empty")
+							require.Equal(t, expectData.Monster.Strength, responseBody.Data[idx].Monster.Strength, "Response monster strength equals expected")
+							t.Logf("Checking monster dexterity >%d< >%d<", expectData.Monster.Dexterity, responseBody.Data[idx].Monster.Dexterity)
+							require.NotEmpty(t, responseBody.Data[idx].Monster.Dexterity, "Response monster dexterity is not empty")
+							require.Equal(t, expectData.Monster.Dexterity, responseBody.Data[idx].Monster.Dexterity, "Response monster dexterity equals expected")
+							t.Logf("Checking monster intelligence >%d< >%d<", expectData.Monster.Intelligence, responseBody.Data[idx].Monster.Intelligence)
+							require.NotEmpty(t, responseBody.Data[idx].Monster.Intelligence, "Response monster intelligence is not empty")
+							require.Equal(t, expectData.Monster.Intelligence, responseBody.Data[idx].Monster.Intelligence, "Response monster intelligence equals expected")
 
-							t.Logf("Checking monster current strenth >%d< >%d<", expectData.ActionMonster.MonsterCurrentStrength, responseBody.Data[idx].ActionMonster.MonsterCurrentStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionMonster.MonsterCurrentStrength, "Response monster current strength is not empty")
-							require.Equal(t, expectData.ActionMonster.MonsterCurrentStrength, responseBody.Data[idx].ActionMonster.MonsterCurrentStrength, "Response monster current strength equals expected")
-							t.Logf("Checking monster current dexterity >%d< >%d<", expectData.ActionMonster.MonsterCurrentDexterity, responseBody.Data[idx].ActionMonster.MonsterCurrentDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionMonster.MonsterCurrentDexterity, "Response monster current dexterity is not empty")
-							require.Equal(t, expectData.ActionMonster.MonsterCurrentDexterity, responseBody.Data[idx].ActionMonster.MonsterCurrentDexterity, "Response monster current dexterity equals expected")
-							t.Logf("Checking monster current intelligence >%d< >%d<", expectData.ActionMonster.MonsterCurrentIntelligence, responseBody.Data[idx].ActionMonster.MonsterCurrentIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionMonster.MonsterCurrentIntelligence, "Response monster current intelligence is not empty")
-							require.Equal(t, expectData.ActionMonster.MonsterCurrentIntelligence, responseBody.Data[idx].ActionMonster.MonsterCurrentIntelligence, "Response monster current intelligence equals expected")
+							t.Logf("Checking monster current strenth >%d< >%d<", expectData.Monster.CurrentStrength, responseBody.Data[idx].Monster.CurrentStrength)
+							require.NotEmpty(t, responseBody.Data[idx].Monster.CurrentStrength, "Response monster current strength is not empty")
+							require.Equal(t, expectData.Monster.CurrentStrength, responseBody.Data[idx].Monster.CurrentStrength, "Response monster current strength equals expected")
+							t.Logf("Checking monster current dexterity >%d< >%d<", expectData.Monster.CurrentDexterity, responseBody.Data[idx].Monster.CurrentDexterity)
+							require.NotEmpty(t, responseBody.Data[idx].Monster.CurrentDexterity, "Response monster current dexterity is not empty")
+							require.Equal(t, expectData.Monster.CurrentDexterity, responseBody.Data[idx].Monster.CurrentDexterity, "Response monster current dexterity equals expected")
+							t.Logf("Checking monster current intelligence >%d< >%d<", expectData.Monster.CurrentIntelligence, responseBody.Data[idx].Monster.CurrentIntelligence)
+							require.NotEmpty(t, responseBody.Data[idx].Monster.CurrentIntelligence, "Response monster current intelligence is not empty")
+							require.Equal(t, expectData.Monster.CurrentIntelligence, responseBody.Data[idx].Monster.CurrentIntelligence, "Response monster current intelligence equals expected")
 
-							t.Logf("Checking monster health >%d< >%d<", expectData.ActionMonster.MonsterHealth, responseBody.Data[idx].ActionMonster.MonsterHealth)
-							require.Equal(t, expectData.ActionMonster.MonsterHealth, responseBody.Data[idx].ActionMonster.MonsterHealth, "Response monster health equals expected")
-							t.Logf("Checking monster fatigue >%d< >%d<", expectData.ActionMonster.MonsterFatigue, responseBody.Data[idx].ActionMonster.MonsterFatigue)
-							require.Equal(t, expectData.ActionMonster.MonsterFatigue, responseBody.Data[idx].ActionMonster.MonsterFatigue, "Response monster fatigue equals expected")
+							t.Logf("Checking monster health >%d< >%d<", expectData.Monster.Health, responseBody.Data[idx].Monster.Health)
+							require.Equal(t, expectData.Monster.Health, responseBody.Data[idx].Monster.Health, "Response monster health equals expected")
+							t.Logf("Checking monster fatigue >%d< >%d<", expectData.Monster.Fatigue, responseBody.Data[idx].Monster.Fatigue)
+							require.Equal(t, expectData.Monster.Fatigue, responseBody.Data[idx].Monster.Fatigue, "Response monster fatigue equals expected")
 
-							t.Logf("Checking monster current health >%d< >%d<", expectData.ActionMonster.MonsterCurrentHealth, responseBody.Data[idx].ActionMonster.MonsterCurrentHealth)
-							require.Equal(t, expectData.ActionMonster.MonsterCurrentHealth, responseBody.Data[idx].ActionMonster.MonsterCurrentHealth, "Response monster current health equals expected")
-							t.Logf("Checking monster current fatigue >%d< >%d<", expectData.ActionMonster.MonsterCurrentFatigue, responseBody.Data[idx].ActionMonster.MonsterCurrentFatigue)
-							require.Equal(t, expectData.ActionMonster.MonsterCurrentFatigue, responseBody.Data[idx].ActionMonster.MonsterCurrentFatigue, "Response monster current fatigue equals expected")
+							t.Logf("Checking monster current health >%d< >%d<", expectData.Monster.CurrentHealth, responseBody.Data[idx].Monster.CurrentHealth)
+							require.Equal(t, expectData.Monster.CurrentHealth, responseBody.Data[idx].Monster.CurrentHealth, "Response monster current health equals expected")
+							t.Logf("Checking monster current fatigue >%d< >%d<", expectData.Monster.CurrentFatigue, responseBody.Data[idx].Monster.CurrentFatigue)
+							require.Equal(t, expectData.Monster.CurrentFatigue, responseBody.Data[idx].Monster.CurrentFatigue, "Response monster current fatigue equals expected")
 						}
 
 						// Response target monster
-						t.Logf("Checking target monster nil >%t< >%t<", isMonsterNil(expectData.ActionTargetMonster), isMonsterNil(responseBody.Data[idx].ActionTargetMonster))
-						require.Equal(t, isMonsterNil(expectData.ActionTargetMonster), isMonsterNil(responseBody.Data[idx].ActionTargetMonster), "Response target monster is nil or not nil as expected")
-						if !isMonsterNil(expectData.ActionTargetMonster) {
-							t.Logf("Checking target monster name >%s< >%s<", expectData.ActionTargetMonster.MonsterName, responseBody.Data[idx].ActionTargetMonster.MonsterName)
-							require.Equal(t, expectData.ActionTargetMonster.MonsterName, responseBody.Data[idx].ActionTargetMonster.MonsterName, "Response target monster name equals expected")
+						t.Logf("Checking target monster nil >%t< >%t<", isMonsterNil(expectData.TargetMonster), isMonsterNil(responseBody.Data[idx].TargetMonster))
+						require.Equal(t, isMonsterNil(expectData.TargetMonster), isMonsterNil(responseBody.Data[idx].TargetMonster), "Response target monster is nil or not nil as expected")
+						if !isMonsterNil(expectData.TargetMonster) {
+							t.Logf("Checking target monster name >%s< >%s<", expectData.TargetMonster.Name, responseBody.Data[idx].TargetMonster.Name)
+							require.Equal(t, expectData.TargetMonster.Name, responseBody.Data[idx].TargetMonster.Name, "Response target monster name equals expected")
 
-							t.Logf("Checking target monster strenth >%d< >%d<", expectData.ActionTargetMonster.MonsterStrength, responseBody.Data[idx].ActionTargetMonster.MonsterStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetMonster.MonsterStrength, "Response target monster strength is not empty")
-							require.Equal(t, expectData.ActionTargetMonster.MonsterStrength, responseBody.Data[idx].ActionTargetMonster.MonsterStrength, "Response target monster strength equals expected")
-							t.Logf("Checking target monster dexterity >%d< >%d<", expectData.ActionTargetMonster.MonsterDexterity, responseBody.Data[idx].ActionTargetMonster.MonsterDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetMonster.MonsterDexterity, "Response target monster dexterity is not empty")
-							require.Equal(t, expectData.ActionTargetMonster.MonsterDexterity, responseBody.Data[idx].ActionTargetMonster.MonsterDexterity, "Response target monster dexterity equals expected")
-							t.Logf("Checking target monster intelligence >%d< >%d<", expectData.ActionTargetMonster.MonsterIntelligence, responseBody.Data[idx].ActionTargetMonster.MonsterIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetMonster.MonsterIntelligence, "Response target monster intelligence is not empty")
-							require.Equal(t, expectData.ActionTargetMonster.MonsterIntelligence, responseBody.Data[idx].ActionTargetMonster.MonsterIntelligence, "Response target monster intelligence equals expected")
+							t.Logf("Checking target monster strenth >%d< >%d<", expectData.TargetMonster.Strength, responseBody.Data[idx].TargetMonster.Strength)
+							require.NotEmpty(t, responseBody.Data[idx].TargetMonster.Strength, "Response target monster strength is not empty")
+							require.Equal(t, expectData.TargetMonster.Strength, responseBody.Data[idx].TargetMonster.Strength, "Response target monster strength equals expected")
+							t.Logf("Checking target monster dexterity >%d< >%d<", expectData.TargetMonster.Dexterity, responseBody.Data[idx].TargetMonster.Dexterity)
+							require.NotEmpty(t, responseBody.Data[idx].TargetMonster.Dexterity, "Response target monster dexterity is not empty")
+							require.Equal(t, expectData.TargetMonster.Dexterity, responseBody.Data[idx].TargetMonster.Dexterity, "Response target monster dexterity equals expected")
+							t.Logf("Checking target monster intelligence >%d< >%d<", expectData.TargetMonster.Intelligence, responseBody.Data[idx].TargetMonster.Intelligence)
+							require.NotEmpty(t, responseBody.Data[idx].TargetMonster.Intelligence, "Response target monster intelligence is not empty")
+							require.Equal(t, expectData.TargetMonster.Intelligence, responseBody.Data[idx].TargetMonster.Intelligence, "Response target monster intelligence equals expected")
 
-							t.Logf("Checking target monster current strenth >%d< >%d<", expectData.ActionTargetMonster.MonsterCurrentStrength, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentStrength)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentStrength, "Response target monster current strength is not empty")
-							require.Equal(t, expectData.ActionTargetMonster.MonsterCurrentStrength, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentStrength, "Response target monster current strength equals expected")
-							t.Logf("Checking target monster current dexterity >%d< >%d<", expectData.ActionTargetMonster.MonsterCurrentDexterity, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentDexterity)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentDexterity, "Response target monster current dexterity is not empty")
-							require.Equal(t, expectData.ActionTargetMonster.MonsterCurrentDexterity, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentDexterity, "Response target monster current dexterity equals expected")
-							t.Logf("Checking target monster current intelligence >%d< >%d<", expectData.ActionTargetMonster.MonsterCurrentIntelligence, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentIntelligence)
-							require.NotEmpty(t, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentIntelligence, "Response target monster current intelligence is not empty")
-							require.Equal(t, expectData.ActionTargetMonster.MonsterCurrentIntelligence, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentIntelligence, "Response target monster current intelligence equals expected")
+							t.Logf("Checking target monster current strenth >%d< >%d<", expectData.TargetMonster.CurrentStrength, responseBody.Data[idx].TargetMonster.CurrentStrength)
+							require.NotEmpty(t, responseBody.Data[idx].TargetMonster.CurrentStrength, "Response target monster current strength is not empty")
+							require.Equal(t, expectData.TargetMonster.CurrentStrength, responseBody.Data[idx].TargetMonster.CurrentStrength, "Response target monster current strength equals expected")
+							t.Logf("Checking target monster current dexterity >%d< >%d<", expectData.TargetMonster.CurrentDexterity, responseBody.Data[idx].TargetMonster.CurrentDexterity)
+							require.NotEmpty(t, responseBody.Data[idx].TargetMonster.CurrentDexterity, "Response target monster current dexterity is not empty")
+							require.Equal(t, expectData.TargetMonster.CurrentDexterity, responseBody.Data[idx].TargetMonster.CurrentDexterity, "Response target monster current dexterity equals expected")
+							t.Logf("Checking target monster current intelligence >%d< >%d<", expectData.TargetMonster.CurrentIntelligence, responseBody.Data[idx].TargetMonster.CurrentIntelligence)
+							require.NotEmpty(t, responseBody.Data[idx].TargetMonster.CurrentIntelligence, "Response target monster current intelligence is not empty")
+							require.Equal(t, expectData.TargetMonster.CurrentIntelligence, responseBody.Data[idx].TargetMonster.CurrentIntelligence, "Response target monster current intelligence equals expected")
 
-							t.Logf("Checking target monster health >%d< >%d<", expectData.ActionTargetMonster.MonsterHealth, responseBody.Data[idx].ActionTargetMonster.MonsterHealth)
-							require.Equal(t, expectData.ActionTargetMonster.MonsterHealth, responseBody.Data[idx].ActionTargetMonster.MonsterHealth, "Response target monster health equals expected")
-							t.Logf("Checking target monster fatigue >%d< >%d<", expectData.ActionTargetMonster.MonsterFatigue, responseBody.Data[idx].ActionTargetMonster.MonsterFatigue)
-							require.Equal(t, expectData.ActionTargetMonster.MonsterFatigue, responseBody.Data[idx].ActionTargetMonster.MonsterFatigue, "Response target monster fatigue equals expected")
+							t.Logf("Checking target monster health >%d< >%d<", expectData.TargetMonster.Health, responseBody.Data[idx].TargetMonster.Health)
+							require.Equal(t, expectData.TargetMonster.Health, responseBody.Data[idx].TargetMonster.Health, "Response target monster health equals expected")
+							t.Logf("Checking target monster fatigue >%d< >%d<", expectData.TargetMonster.Fatigue, responseBody.Data[idx].TargetMonster.Fatigue)
+							require.Equal(t, expectData.TargetMonster.Fatigue, responseBody.Data[idx].TargetMonster.Fatigue, "Response target monster fatigue equals expected")
 
-							t.Logf("Checking target monster current health >%d< >%d<", expectData.ActionTargetMonster.MonsterCurrentHealth, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentHealth)
-							require.Equal(t, expectData.ActionTargetMonster.MonsterCurrentHealth, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentHealth, "Response target monster current health equals expected")
-							t.Logf("Checking target monster current fatigue >%d< >%d<", expectData.ActionTargetMonster.MonsterCurrentFatigue, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentFatigue)
-							require.Equal(t, expectData.ActionTargetMonster.MonsterCurrentFatigue, responseBody.Data[idx].ActionTargetMonster.MonsterCurrentFatigue, "Response target monster current fatigue equals expected")
+							t.Logf("Checking target monster current health >%d< >%d<", expectData.TargetMonster.CurrentHealth, responseBody.Data[idx].TargetMonster.CurrentHealth)
+							require.Equal(t, expectData.TargetMonster.CurrentHealth, responseBody.Data[idx].TargetMonster.CurrentHealth, "Response target monster current health equals expected")
+							t.Logf("Checking target monster current fatigue >%d< >%d<", expectData.TargetMonster.CurrentFatigue, responseBody.Data[idx].TargetMonster.CurrentFatigue)
+							require.Equal(t, expectData.TargetMonster.CurrentFatigue, responseBody.Data[idx].TargetMonster.CurrentFatigue, "Response target monster current fatigue equals expected")
 						}
 
 						// Response target object
-						t.Logf("Checking target object nil >%t< >%t<", isObjectNil(expectData.ActionTargetObject), isObjectNil(responseBody.Data[idx].ActionTargetObject))
-						require.Equal(t, isObjectNil(expectData.ActionTargetObject), isObjectNil(responseBody.Data[idx].ActionTargetObject), "Response target object is nil or not nil as expected")
-						if !isObjectNil(expectData.ActionTargetObject) {
-							t.Logf("Checking target object name >%s< >%s<", expectData.ActionTargetObject.ObjectName, responseBody.Data[idx].ActionTargetObject.ObjectName)
-							require.Equal(t, expectData.ActionTargetObject.ObjectName, responseBody.Data[idx].ActionTargetObject.ObjectName, "Response target object name equals expected")
-							t.Logf("Checking target object description >%s< >%s<", expectData.ActionTargetObject.ObjectDescription, responseBody.Data[idx].ActionTargetObject.ObjectDescription)
-							require.Equal(t, expectData.ActionTargetObject.ObjectDescription, responseBody.Data[idx].ActionTargetObject.ObjectDescription, "Response target object description equals expected")
+						t.Logf("Checking target object nil >%t< >%t<", isObjectNil(expectData.TargetObject), isObjectNil(responseBody.Data[idx].TargetObject))
+						require.Equal(t, isObjectNil(expectData.TargetObject), isObjectNil(responseBody.Data[idx].TargetObject), "Response target object is nil or not nil as expected")
+						if !isObjectNil(expectData.TargetObject) {
+							t.Logf("Checking target object name >%s< >%s<", expectData.TargetObject.Name, responseBody.Data[idx].TargetObject.Name)
+							require.Equal(t, expectData.TargetObject.Name, responseBody.Data[idx].TargetObject.Name, "Response target object name equals expected")
+							t.Logf("Checking target object description >%s< >%s<", expectData.TargetObject.Description, responseBody.Data[idx].TargetObject.Description)
+							require.Equal(t, expectData.TargetObject.Description, responseBody.Data[idx].TargetObject.Description, "Response target object description equals expected")
 						}
 
 						// Response stashed object
-						t.Logf("Checking stashed object nil >%t< >%t<", isObjectNil(expectData.ActionStashedObject), isObjectNil(responseBody.Data[idx].ActionStashedObject))
-						require.Equal(t, isObjectNil(expectData.ActionStashedObject), isObjectNil(responseBody.Data[idx].ActionStashedObject), "Response stashed object is nil or not nil as expected")
-						if !isObjectNil(expectData.ActionStashedObject) {
-							t.Logf("Checking stashed object name >%s< >%s<", expectData.ActionStashedObject.ObjectName, responseBody.Data[idx].ActionStashedObject.ObjectName)
-							require.Equal(t, expectData.ActionStashedObject.ObjectName, responseBody.Data[idx].ActionStashedObject.ObjectName, "Response stashed object name equals expected")
-							t.Logf("Checking stashed object description >%s< >%s<", expectData.ActionStashedObject.ObjectDescription, responseBody.Data[idx].ActionStashedObject.ObjectDescription)
-							require.Equal(t, expectData.ActionStashedObject.ObjectDescription, responseBody.Data[idx].ActionStashedObject.ObjectDescription, "Response stashed object description equals expected")
+						t.Logf("Checking stashed object nil >%t< >%t<", isObjectNil(expectData.StashedObject), isObjectNil(responseBody.Data[idx].StashedObject))
+						require.Equal(t, isObjectNil(expectData.StashedObject), isObjectNil(responseBody.Data[idx].StashedObject), "Response stashed object is nil or not nil as expected")
+						if !isObjectNil(expectData.StashedObject) {
+							t.Logf("Checking stashed object name >%s< >%s<", expectData.StashedObject.Name, responseBody.Data[idx].StashedObject.Name)
+							require.Equal(t, expectData.StashedObject.Name, responseBody.Data[idx].StashedObject.Name, "Response stashed object name equals expected")
+							t.Logf("Checking stashed object description >%s< >%s<", expectData.StashedObject.Description, responseBody.Data[idx].StashedObject.Description)
+							require.Equal(t, expectData.StashedObject.Description, responseBody.Data[idx].StashedObject.Description, "Response stashed object description equals expected")
 
-							t.Logf("Checking stashed object IsEquipped >%t< >%t<", expectData.ActionStashedObject.ObjectIsEquipped, responseBody.Data[idx].ActionStashedObject.ObjectIsEquipped)
-							require.Equal(t, expectData.ActionStashedObject.ObjectIsEquipped, responseBody.Data[idx].ActionStashedObject.ObjectIsEquipped, "Response stashed object IsEquipped equals expected")
-							t.Logf("Checking stashed object IsStashed >%t< >%t<", expectData.ActionStashedObject.ObjectIsStashed, responseBody.Data[idx].ActionStashedObject.ObjectIsStashed)
-							require.Equal(t, expectData.ActionStashedObject.ObjectIsStashed, responseBody.Data[idx].ActionStashedObject.ObjectIsStashed, "Response stashed object IsStashed equals expected")
+							t.Logf("Checking stashed object IsEquipped >%t< >%t<", expectData.StashedObject.IsEquipped, responseBody.Data[idx].StashedObject.IsEquipped)
+							require.Equal(t, expectData.StashedObject.IsEquipped, responseBody.Data[idx].StashedObject.IsEquipped, "Response stashed object IsEquipped equals expected")
+							t.Logf("Checking stashed object IsStashed >%t< >%t<", expectData.StashedObject.IsStashed, responseBody.Data[idx].StashedObject.IsStashed)
+							require.Equal(t, expectData.StashedObject.IsStashed, responseBody.Data[idx].StashedObject.IsStashed, "Response stashed object IsStashed equals expected")
 						}
 
 						// Response equipped object
-						t.Logf("Checking equipped object nil >%t< >%t<", isObjectNil(expectData.ActionEquippedObject), isObjectNil(responseBody.Data[idx].ActionEquippedObject))
-						require.Equal(t, isObjectNil(expectData.ActionEquippedObject), isObjectNil(responseBody.Data[idx].ActionEquippedObject), "Response equipped object is nil or not nil as expected")
-						if !isObjectNil(expectData.ActionEquippedObject) {
-							t.Logf("Checking equipped object name >%s< >%s<", expectData.ActionEquippedObject.ObjectName, responseBody.Data[idx].ActionEquippedObject.ObjectName)
-							require.Equal(t, expectData.ActionEquippedObject.ObjectName, responseBody.Data[idx].ActionEquippedObject.ObjectName, "Response equipped object name equals expected")
-							t.Logf("Checking equipped object description >%s< >%s<", expectData.ActionEquippedObject.ObjectDescription, responseBody.Data[idx].ActionEquippedObject.ObjectDescription)
-							require.Equal(t, expectData.ActionEquippedObject.ObjectDescription, responseBody.Data[idx].ActionEquippedObject.ObjectDescription, "Response equipped object description equals expected")
+						t.Logf("Checking equipped object nil >%t< >%t<", isObjectNil(expectData.EquippedObject), isObjectNil(responseBody.Data[idx].EquippedObject))
+						require.Equal(t, isObjectNil(expectData.EquippedObject), isObjectNil(responseBody.Data[idx].EquippedObject), "Response equipped object is nil or not nil as expected")
+						if !isObjectNil(expectData.EquippedObject) {
+							t.Logf("Checking equipped object name >%s< >%s<", expectData.EquippedObject.Name, responseBody.Data[idx].EquippedObject.Name)
+							require.Equal(t, expectData.EquippedObject.Name, responseBody.Data[idx].EquippedObject.Name, "Response equipped object name equals expected")
+							t.Logf("Checking equipped object description >%s< >%s<", expectData.EquippedObject.Description, responseBody.Data[idx].EquippedObject.Description)
+							require.Equal(t, expectData.EquippedObject.Description, responseBody.Data[idx].EquippedObject.Description, "Response equipped object description equals expected")
 
-							t.Logf("Checking equipped object IsEquipped >%t< >%t<", expectData.ActionEquippedObject.ObjectIsEquipped, responseBody.Data[idx].ActionEquippedObject.ObjectIsEquipped)
-							require.Equal(t, expectData.ActionEquippedObject.ObjectIsEquipped, responseBody.Data[idx].ActionEquippedObject.ObjectIsEquipped, "Response equipped object IsEquipped equals expected")
-							t.Logf("Checking equipped object IsStashed >%t< >%t<", expectData.ActionEquippedObject.ObjectIsStashed, responseBody.Data[idx].ActionEquippedObject.ObjectIsStashed)
-							require.Equal(t, expectData.ActionEquippedObject.ObjectIsStashed, responseBody.Data[idx].ActionEquippedObject.ObjectIsStashed, "Response equipped object IsStashed equals expected")
+							t.Logf("Checking equipped object IsEquipped >%t< >%t<", expectData.EquippedObject.IsEquipped, responseBody.Data[idx].EquippedObject.IsEquipped)
+							require.Equal(t, expectData.EquippedObject.IsEquipped, responseBody.Data[idx].EquippedObject.IsEquipped, "Response equipped object IsEquipped equals expected")
+							t.Logf("Checking equipped object IsStashed >%t< >%t<", expectData.EquippedObject.IsStashed, responseBody.Data[idx].EquippedObject.IsStashed)
+							require.Equal(t, expectData.EquippedObject.IsStashed, responseBody.Data[idx].EquippedObject.IsStashed, "Response equipped object IsStashed equals expected")
 						}
 
 						// Response dropped object
-						t.Logf("Checking dropped object nil >%t< >%t<", isObjectNil(expectData.ActionDroppedObject), isObjectNil(responseBody.Data[idx].ActionDroppedObject))
-						require.Equal(t, isObjectNil(expectData.ActionDroppedObject), isObjectNil(responseBody.Data[idx].ActionDroppedObject), "Response dropped object is nil or not nil as expected")
-						if !isObjectNil(expectData.ActionDroppedObject) {
-							t.Logf("Checking dropped object name >%s< >%s<", expectData.ActionDroppedObject.ObjectName, responseBody.Data[idx].ActionDroppedObject.ObjectName)
-							require.Equal(t, expectData.ActionDroppedObject.ObjectName, responseBody.Data[idx].ActionDroppedObject.ObjectName, "Response dropped object name equals expected")
-							t.Logf("Checking dropped object description >%s< >%s<", expectData.ActionDroppedObject.ObjectDescription, responseBody.Data[idx].ActionDroppedObject.ObjectDescription)
-							require.Equal(t, expectData.ActionDroppedObject.ObjectDescription, responseBody.Data[idx].ActionDroppedObject.ObjectDescription, "Response dropped object description equals expected")
+						t.Logf("Checking dropped object nil >%t< >%t<", isObjectNil(expectData.DroppedObject), isObjectNil(responseBody.Data[idx].DroppedObject))
+						require.Equal(t, isObjectNil(expectData.DroppedObject), isObjectNil(responseBody.Data[idx].DroppedObject), "Response dropped object is nil or not nil as expected")
+						if !isObjectNil(expectData.DroppedObject) {
+							t.Logf("Checking dropped object name >%s< >%s<", expectData.DroppedObject.Name, responseBody.Data[idx].DroppedObject.Name)
+							require.Equal(t, expectData.DroppedObject.Name, responseBody.Data[idx].DroppedObject.Name, "Response dropped object name equals expected")
+							t.Logf("Checking dropped object description >%s< >%s<", expectData.DroppedObject.Description, responseBody.Data[idx].DroppedObject.Description)
+							require.Equal(t, expectData.DroppedObject.Description, responseBody.Data[idx].DroppedObject.Description, "Response dropped object description equals expected")
 
-							t.Logf("Checking dropped object is_dropped >%t< >%t<", expectData.ActionDroppedObject.ObjectIsEquipped, responseBody.Data[idx].ActionDroppedObject.ObjectIsEquipped)
-							require.Equal(t, expectData.ActionDroppedObject.ObjectIsEquipped, responseBody.Data[idx].ActionDroppedObject.ObjectIsEquipped, "Response dropped object is_dropped equals expected")
-							t.Logf("Checking dropped object IsStashed >%t< >%t<", expectData.ActionDroppedObject.ObjectIsStashed, responseBody.Data[idx].ActionDroppedObject.ObjectIsStashed)
-							require.Equal(t, expectData.ActionDroppedObject.ObjectIsStashed, responseBody.Data[idx].ActionDroppedObject.ObjectIsStashed, "Response dropped object IsStashed equals expected")
+							t.Logf("Checking dropped object is_dropped >%t< >%t<", expectData.DroppedObject.IsEquipped, responseBody.Data[idx].DroppedObject.IsEquipped)
+							require.Equal(t, expectData.DroppedObject.IsEquipped, responseBody.Data[idx].DroppedObject.IsEquipped, "Response dropped object is_dropped equals expected")
+							t.Logf("Checking dropped object IsStashed >%t< >%t<", expectData.DroppedObject.IsStashed, responseBody.Data[idx].DroppedObject.IsStashed)
+							require.Equal(t, expectData.DroppedObject.IsStashed, responseBody.Data[idx].DroppedObject.IsStashed, "Response dropped object IsStashed equals expected")
 						}
 					}
 				}
 
 				// Check dates and add teardown ID's
 				for _, data := range responseBody.Data {
-					require.False(t, data.ActionCreatedAt.IsZero(), "CreatedAt is not zero")
+					require.False(t, data.CreatedAt.IsZero(), "CreatedAt is not zero")
 					if method == http.MethodPost {
-						require.True(t, data.ActionUpdatedAt.IsZero(), "UpdatedAt is zero")
+						require.True(t, data.UpdatedAt.IsZero(), "UpdatedAt is zero")
 					}
 				}
 			}
