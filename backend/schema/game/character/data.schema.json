@@ -15,8 +15,6 @@
     "coins",
     "experience_points",
     "attribute_points",
-    "dungeon",
-    "location",
     "created_at"
   ],
   "properties": {
