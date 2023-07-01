@@ -19,21 +19,25 @@ import (
 
 // Repository -
 type Repository struct {
-	Config             Config
-	Log                logger.Logger
-	Tx                 *sqlx.Tx
-	Prepare            preparer.Repository
-	computedAttributes []string
-	attributeIndex     set.Set[string]
+	Config           Config
+	Log              logger.Logger
+	Tx               *sqlx.Tx
+	Prepare          preparer.Repository
+	createAttributes []string
+	updateAttributes []string
+
+	attributeIndex         set.Set[string]
+	readOnlyAttributeIndex set.Set[string]
 }
 
 var _ repositor.Repositor = &Repository{}
 
 // Config -
 type Config struct {
-	TableName   string
-	Attributes  []string
-	ArrayFields set.Set[string]
+	TableName          string
+	Attributes         []string
+	ReadonlyAttributes []string
+	ArrayFields        set.Set[string]
 }
 
 // Init -
@@ -60,17 +64,30 @@ func (r *Repository) Init() error {
 		return errors.New("repository ArrayFields is nil, cannot initialise")
 	}
 
-	computedAttributes := []string{}
+	readonlyAttributeIndex := map[string]struct{}{}
+	for _, attribute := range r.ReadonlyAttributes() {
+		readonlyAttributeIndex[attribute] = struct{}{}
+	}
+	r.readOnlyAttributeIndex = readonlyAttributeIndex
+
+	createAttributes := []string{}
+	updateAttributes := []string{}
 	attributeIndex := map[string]struct{}{}
 	for _, attribute := range r.Attributes() {
 		attributeIndex[attribute] = struct{}{}
-		if attribute == "created_at" ||
-			attribute == "deleted_at" {
+		if _, ok := readonlyAttributeIndex[attribute]; !ok {
+			createAttributes = append(createAttributes, attribute)
+		}
+		if attribute == "created_at" || attribute == "deleted_at" {
 			continue
 		}
-		computedAttributes = append(computedAttributes, attribute)
+		if _, ok := readonlyAttributeIndex[attribute]; !ok {
+			updateAttributes = append(updateAttributes, attribute)
+		}
 	}
-	r.computedAttributes = computedAttributes
+
+	r.createAttributes = createAttributes
+	r.updateAttributes = updateAttributes
 	r.attributeIndex = attributeIndex
 
 	return nil
@@ -83,6 +100,10 @@ func (r *Repository) TableName() string {
 
 func (r *Repository) Attributes() []string {
 	return r.Config.Attributes
+}
+
+func (r *Repository) ReadonlyAttributes() []string {
+	return r.Config.ReadonlyAttributes
 }
 
 func (r *Repository) ArrayFields() set.Set[string] {
@@ -162,8 +183,9 @@ func (r *Repository) GetManyRecs(opts *coresql.Options) (rows *sqlx.Rows, err er
 		return nil, err
 	}
 
-	r.Log.Debug("Query >%s<", querySQL)
-	r.Log.Debug("Parameters >%+v<", queryArgs)
+	r.Log.Debug("querySQL >%s<", querySQL)
+	r.Log.Debug("queryArgs >%+v<", queryArgs)
+
 	rows, err = tx.NamedQuery(querySQL, queryArgs)
 	if err != nil {
 		r.Log.Warn("SQL: >%s<", querySQL)
@@ -380,8 +402,8 @@ INSERT INTO %s (
 RETURNING %s
 `,
 		r.TableName(),
-		strings.Join(r.Attributes(), ",\n"),
-		colonPrefixedCommaNewlineSeparated(r.Attributes()),
+		strings.Join(r.createAttributes, ",\n"),
+		colonPrefixedCommaNewlineSeparated(r.createAttributes),
 		strings.Join(r.Attributes(), ", "))
 }
 
@@ -411,7 +433,7 @@ AND   deleted_at IS NULL
 RETURNING %s
 `,
 		r.TableName(),
-		equalsAndNewlineSeparated(r.computedAttributes),
+		equalsAndNewlineSeparated(r.updateAttributes),
 		strings.Join(r.Attributes(), ", "))
 }
 

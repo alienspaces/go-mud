@@ -37,9 +37,10 @@ func NewRepository(l logger.Logger, p preparer.Repository, tx *sqlx.Tx) (*Reposi
 
 			// Config
 			Config: repository.Config{
-				TableName:   TableName,
-				Attributes:  tag.GetFieldTagValues(record.Action{}, "db"),
-				ArrayFields: tag.GetArrayFieldTagValues(record.Action{}, "db"),
+				TableName:          TableName,
+				Attributes:         tag.GetFieldTagValues(record.Action{}, "db"),
+				ReadonlyAttributes: tag.GetReadonlyFieldTagValues(record.Action{}, "db"),
+				ArrayFields:        tag.GetArrayFieldTagValues(record.Action{}, "db"),
 			},
 		},
 	}

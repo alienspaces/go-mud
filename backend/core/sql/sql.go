@@ -167,8 +167,10 @@ func From(initialSQL string, opts *Options) (string, map[string]any, error) {
 			if param.ValB != nil {
 				// 'A' and 'B' are suffixed to avoid collision with the same column appearing multiple times in the
 				// same query but with different operators
-				queryArgs[col+colIdx+"A"] = param.Val
-				queryArgs[col+colIdx+"B"] = param.ValB
+				// queryArgs[col+colIdx+"A"] = param.Val
+				// queryArgs[col+colIdx+"B"] = param.ValB
+				queryArgs[col+"A"] = param.Val
+				queryArgs[col+"B"] = param.ValB
 			} else if param.Val != nil {
 				queryArgs[col] = param.Val
 			} else if len(param.Array) > 0 {

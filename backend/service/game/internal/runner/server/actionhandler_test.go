@@ -59,7 +59,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Look at the current room
 			TestCase: TestCase{
-				Name:              "Look at the current room",
+				Name:              "look at the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -225,7 +225,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Move north from the current room
 			TestCase: TestCase{
-				Name:              "Move north from the current room",
+				Name:              "move north from the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -391,7 +391,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Look north from the current room
 			TestCase: TestCase{
-				Name:              "Look north from the current room",
+				Name:              "look north from the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -555,7 +555,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Look at an item in the current room
 			TestCase: TestCase{
-				Name:              "Look at an item in the current room",
+				Name:              "look at an item in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -704,7 +704,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Look at a monster in the current room
 			TestCase: TestCase{
-				Name:              "Look at a monster in the current room",
+				Name:              "look at a monster in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -870,7 +870,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Look at themselves in the current room
 			TestCase: TestCase{
-				Name:              "Look at themselves in the current room",
+				Name:              "look at themselves in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -1036,7 +1036,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Stash object that is in the current room
 			TestCase: TestCase{
-				Name:              "Stash object that is in the current room",
+				Name:              "stash object that is in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -1193,7 +1193,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Equip object that is in the current room
 			TestCase: TestCase{
-				Name:              "Equip object that is in the current room",
+				Name:              "equip object that is in the current room",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -1350,7 +1350,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Drop object that is equipped
 			TestCase: TestCase{
-				Name:              "Drop object that is equipped",
+				Name:              "drop object that is equipped",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {
@@ -1506,7 +1506,7 @@ func TestPostActionHandler(t *testing.T) {
 		{
 			// Submit nothing
 			TestCase: TestCase{
-				Name:              "Submit nothing",
+				Name:              "submit nothing",
 				HandlerConfig:     testCaseHandlerConfig,
 				RequestPathParams: testCaseRequestPathParams,
 				RequestBody: func(data harness.Data) interface{} {

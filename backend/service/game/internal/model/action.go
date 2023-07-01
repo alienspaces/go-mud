@@ -1067,15 +1067,16 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 				{
 					Col: "turn_number",
 					Val: rec.TurnNumber,
+					Op:  coresql.OpLessThan,
 				},
 			},
-			Limit: 1,
 			OrderBy: []coresql.OrderBy{
 				{
 					Col:       "turn_number",
 					Direction: coresql.OrderDirectionDESC,
 				},
 			},
+			Limit: 1,
 		},
 	)
 	if err != nil {
@@ -1109,9 +1110,10 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 					Val: prevActionRec.LocationInstanceID,
 				},
 				{
-					Col: "serial_number",
-					Val: fmt.Sprintf("%d,%d", null.NullInt16ToInt16(prevActionRec.SerialNumber)+adjustAmount, null.NullInt16ToInt16(rec.SerialNumber)-adjustAmount),
-					Op:  coresql.OpBetween,
+					Col:  "serial_number",
+					Val:  fmt.Sprintf("%d", null.NullInt16ToInt16(prevActionRec.SerialNumber)+adjustAmount),
+					ValB: fmt.Sprintf("%d", null.NullInt16ToInt16(rec.SerialNumber)-adjustAmount),
+					Op:   coresql.OpBetween,
 				},
 			},
 		},

@@ -344,6 +344,8 @@ CREATE TABLE "turn" (
   CONSTRAINT "turn_dungeon_instance_id_fk" FOREIGN KEY (dungeon_instance_id) REFERENCES dungeon_instance(id)
 );
 
+CREATE SEQUENCE action_serial_number_seq;
+
 -- --
 -- -- actions
 -- --
@@ -354,7 +356,7 @@ CREATE TABLE "action" (
   "location_instance_id" uuid NOT NULL,
   "character_instance_id" uuid,
   "monster_instance_id" uuid,
-  "serial_number" SERIAL,
+  "serial_number" integer NOT NULL DEFAULT nextval('action_serial_number_seq'),
   "turn_number" integer NOT NULL DEFAULT 0,
   "resolved_command" text NOT NULL,
   "resolved_equipped_object_instance_id" uuid,
@@ -416,6 +418,8 @@ CREATE INDEX action_location_instance_id_idx ON action(location_instance_id);
 CREATE INDEX action_character_instance_id_idx ON action(character_instance_id);
 
 CREATE INDEX action_monster_instance_id_idx ON action(monster_instance_id);
+
+ALTER SEQUENCE action_serial_number_seq OWNED BY action.serial_number;
 
 -- table action_character
 CREATE TABLE "action_character" (

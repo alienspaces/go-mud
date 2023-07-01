@@ -3,6 +3,7 @@ package tag
 import (
 	"database/sql"
 	"reflect"
+	"strings"
 	"time"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/collection/set"
@@ -10,6 +11,7 @@ import (
 
 var nonRecurseTypeNames = set.New(
 	getTypeName(sql.NullString{}),
+	getTypeName(sql.NullInt16{}),
 	getTypeName(sql.NullInt32{}),
 	getTypeName(sql.NullInt64{}),
 	getTypeName(sql.NullTime{}),
@@ -37,6 +39,7 @@ func getValuesRecur(t reflect.Type, tag string, values *[]string, fp ...ExcludeF
 		} else if shouldExclude(field, fp...) {
 			continue
 		} else if attr, ok := shouldGetTagValue(field, tag); ok {
+			attr = strings.Split(attr, ",")[0]
 			*values = append(*values, attr)
 		}
 	}

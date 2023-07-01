@@ -10,9 +10,10 @@ import (
 )
 
 type nestedMultiTag struct {
-	A                      string `db:"db_A" json:"json_A"`
-	B                      string `db:"db_B" json:"json_B"`
-	nested                 `db:"nested" json:"NESTED"`
+	A      string `db:"db_A" json:"json_A"`
+	B      string `db:"db_B" json:"json_B"`
+	nested `db:"nested" json:"NESTED"`
+	//lint:ignore U1000 tags are tested
 	emptyNested            `db:"empty_nested" json:"EMPTY_NESTED"`
 	singleNestedDB         `db:"single_nested_db" json:"SINGLE_NESTED_DB"`
 	singleNestedJSON       `db:"single_nested_json" json:"SINGLE_NESTED_JSON"`
@@ -21,7 +22,8 @@ type nestedMultiTag struct {
 	f                      int `db:"db_f"`
 	G                      int `json:"json_G"`
 	h                      int
-	time                   time.Time `db:"db_time"`
+	//lint:ignore U1000 tags are tested
+	time time.Time `db:"db_time"`
 }
 
 type nested struct {
