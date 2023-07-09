@@ -16,7 +16,7 @@ import (
 func TestGetDungeonHandler(t *testing.T) {
 
 	// Test harness
-	th, err := NewTestHarness()
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
 	_, err = th.Setup()

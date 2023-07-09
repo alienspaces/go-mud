@@ -27,7 +27,7 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[string]server.HandlerConf
 		getDungeonLocations: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id/locations",
-			HandlerFunc: rnr.GetDungeonLocationsHandler,
+			HandlerFunc: rnr.getDungeonLocationsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -53,7 +53,7 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[string]server.HandlerConf
 		getDungeonLocation: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id/locations/:location_id",
-			HandlerFunc: rnr.GetDungeonLocationHandler,
+			HandlerFunc: rnr.getDungeonLocationHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -79,8 +79,8 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[string]server.HandlerConf
 	})
 }
 
-// GetDungeonLocationHandler -
-func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+// getDungeonLocationHandler -
+func (rnr *Runner) getDungeonLocationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 
 	var recs []*record.Location
 	var err error
@@ -152,8 +152,8 @@ func (rnr *Runner) GetDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 	return nil
 }
 
-// GetDungeonLocationsHandler -
-func (rnr *Runner) GetDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+// getDungeonLocationsHandler -
+func (rnr *Runner) getDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l.Info("** Get locations handler **")
 
 	// Path parameters

@@ -17,7 +17,7 @@ import (
 func TestPostCharacterHandler(t *testing.T) {
 
 	// Test harness
-	th, err := NewTestHarness()
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
 	_, err = th.Setup()
@@ -103,7 +103,7 @@ func TestPostCharacterHandler(t *testing.T) {
 
 func TestGetCharacterHandler(t *testing.T) {
 
-	th, err := NewTestHarness()
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
 	_, err = th.Setup()

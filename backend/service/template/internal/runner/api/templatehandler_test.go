@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 	"testing"
 
@@ -11,46 +13,47 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/harness"
 )
 
-func TestGetTemplate(t *testing.T) {
-
-	// test dependencies
-	c, l, s, err := newDefaultDependencies()
-	require.NoError(t, err, "NewDefaultDependencies returns without error")
+func Test_getTemplateHandler(t *testing.T) {
 
 	// test harness
-	th, err := newTestHarness(c, l, s, nil)
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
 	defer func() {
-		db, err := s.GetDb()
-		require.NoError(t, err, "getDb should return no error")
-
-		err = db.Close()
-		require.NoError(t, err, "close db should return no error")
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
 	}()
 
 	type testCase struct {
 		TestCase
-		expectResponse func(data *harness.Data) *template.Response
+		expectResponse func(data harness.Data) *template.Response
+	}
+
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
+		var responseBody *template.Response
+		err = json.NewDecoder(body).Decode(&responseBody)
+		return responseBody, err
 	}
 
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name: "GET - Get existing",
+				Name: "get existing",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerGetOneTemplate]
+					return rnr.HandlerConfig[getTemplate]
 				},
-				RequestPathParams: func(data *harness.Data) map[string]string {
+				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":template_id": data.TemplateRecs[0].ID,
 					}
 					return params
 				},
-				ResponseCode: http.StatusOK,
-				ResponseBody: testCaseResponseBodyGeneric[template.Response],
+				ResponseCode:    http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
 			},
-			expectResponse: func(data *harness.Data) *template.Response {
+			expectResponse: func(data harness.Data) *template.Response {
 				res := template.Response{
 					Data: &template.Data{
 						ID: data.TemplateRecs[0].ID,
@@ -61,11 +64,11 @@ func TestGetTemplate(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name: "GET - Get non-existant",
+				Name: "get non-existant",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerGetOneTemplate]
+					return rnr.HandlerConfig[getTemplate]
 				},
-				RequestPathParams: func(data *harness.Data) map[string]string {
+				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":template_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
 					}
@@ -86,10 +89,9 @@ func TestGetTemplate(t *testing.T) {
 				}
 				if tc.expectResponse != nil {
 					require.NotNil(t, body, "Response body is not nil")
-					er := tc.expectResponse(th.Data)
-					if er != nil {
-						ar := body.(template.Response)
-						require.NotNil(t, ar.Data, "Response data is not nil")
+					expectResponseBody := tc.expectResponse(th.Data)
+					if expectResponseBody != nil {
+						require.NotNil(t, expectResponseBody.Data, "Response data is not nil")
 					}
 				}
 			}
@@ -99,68 +101,69 @@ func TestGetTemplate(t *testing.T) {
 	}
 }
 
-func TestCreateTemplate(t *testing.T) {
-
-	// test dependencies
-	c, l, s, err := newDefaultDependencies()
-	require.NoError(t, err, "NewDefaultDependencies returns without error")
+func Test_postTemplatesHandler(t *testing.T) {
 
 	// test harness
-	th, err := newTestHarness(c, l, s, nil)
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
 	defer func() {
-		db, err := s.GetDb()
-		require.NoError(t, err, "getDb should return no error")
-
-		err = db.Close()
-		require.NoError(t, err, "close db should return no error")
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
 	}()
 
 	type testCase struct {
 		TestCase
-		expectResponse func(data *harness.Data) *template.Response
+		expectResponse func(data harness.Data) *template.Response
+	}
+
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
+		var responseBody *template.Response
+		err = json.NewDecoder(body).Decode(&responseBody)
+		return responseBody, err
 	}
 
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name: "POST - Create without ID",
+				Name: "create without ID",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerCreateOneTemplate]
+					return rnr.HandlerConfig[postTemplate]
 				},
-				RequestBody: func(data *harness.Data) interface{} {
+				RequestBody: func(data harness.Data) interface{} {
 					req := template.Request{
 						Data: &template.Data{},
 					}
 					return &req
 				},
-				ResponseCode: http.StatusCreated,
-				ResponseBody: testCaseResponseBodyGeneric[template.Response],
+				ResponseCode:    http.StatusCreated,
+				ResponseDecoder: testCaseResponseDecoder,
 			},
 		},
 		{
 			TestCase: TestCase{
-				Name: "POST - Create with ID",
+				Name: "create with ID",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerCreateOneTemplateWithID]
+					return rnr.HandlerConfig[postTemplateWithID]
 				},
-				RequestPathParams: func(data *harness.Data) map[string]string {
+				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":template_id": "e3a9e0f8-ce9c-477b-8b93-cf4da03af4c9",
 					}
 					return params
 				},
-				RequestBody: func(data *harness.Data) interface{} {
+				RequestBody: func(data harness.Data) interface{} {
 					req := template.Request{
 						Data: &template.Data{},
 					}
 					return &req
 				},
-				ResponseCode: http.StatusCreated,
-				ResponseBody: testCaseResponseBodyGeneric[template.Response],
+				ResponseCode:    http.StatusCreated,
+				ResponseDecoder: testCaseResponseDecoder,
 			},
-			expectResponse: func(data *harness.Data) *template.Response {
+			expectResponse: func(data harness.Data) *template.Response {
 				res := template.Response{
 					Data: &template.Data{
 						ID: "e3a9e0f8-ce9c-477b-8b93-cf4da03af4c9",
@@ -181,10 +184,9 @@ func TestCreateTemplate(t *testing.T) {
 				}
 				if tc.expectResponse != nil {
 					require.NotNil(t, body, "Response body is not nil")
-					er := tc.expectResponse(th.Data)
-					if er != nil {
-						ar := body.(template.Response)
-						require.NotNil(t, ar.Data, "Response data is not nil")
+					expectResponseBody := tc.expectResponse(th.Data)
+					if expectResponseBody != nil {
+						require.NotNil(t, expectResponseBody.Data, "Response data is not nil")
 					}
 				}
 			}
@@ -194,43 +196,44 @@ func TestCreateTemplate(t *testing.T) {
 	}
 }
 
-func TestUpdateTemplate(t *testing.T) {
-
-	// test dependencies
-	c, l, s, err := newDefaultDependencies()
-	require.NoError(t, err, "NewDefaultDependencies returns without error")
+func Test_putTemplatesHandler(t *testing.T) {
 
 	// test harness
-	th, err := newTestHarness(c, l, s, nil)
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
 	defer func() {
-		db, err := s.GetDb()
-		require.NoError(t, err, "getDb should return no error")
-
-		err = db.Close()
-		require.NoError(t, err, "close db should return no error")
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
 	}()
 
 	type testCase struct {
 		TestCase
-		expectResponse func(data *harness.Data) *template.Response
+		expectResponse func(data harness.Data) *template.Response
+	}
+
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
+		var responseBody *template.Response
+		err = json.NewDecoder(body).Decode(&responseBody)
+		return responseBody, err
 	}
 
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name: "PUT - Update existing",
+				Name: "update existing",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerUpdateOneTemplate]
+					return rnr.HandlerConfig[putTemplate]
 				},
-				RequestPathParams: func(data *harness.Data) map[string]string {
+				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":template_id": data.TemplateRecs[0].ID,
 					}
 					return params
 				},
-				RequestBody: func(data *harness.Data) interface{} {
+				RequestBody: func(data harness.Data) interface{} {
 					req := template.Request{
 						Data: &template.Data{
 							ID: data.TemplateRecs[0].ID,
@@ -238,10 +241,10 @@ func TestUpdateTemplate(t *testing.T) {
 					}
 					return &req
 				},
-				ResponseCode: http.StatusOK,
-				ResponseBody: testCaseResponseBodyGeneric[template.Response],
+				ResponseCode:    http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
 			},
-			expectResponse: func(data *harness.Data) *template.Response {
+			expectResponse: func(data harness.Data) *template.Response {
 				res := template.Response{
 					Data: &template.Data{
 						ID: data.TemplateRecs[0].ID,
@@ -252,17 +255,17 @@ func TestUpdateTemplate(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name: "PUT - Update non-existing",
+				Name: "update non-existing",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerUpdateOneTemplate]
+					return rnr.HandlerConfig[putTemplate]
 				},
-				RequestPathParams: func(data *harness.Data) map[string]string {
+				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":template_id": "17c19414-2d15-4d20-8fc3-36fc10341dc8",
 					}
 					return params
 				},
-				RequestBody: func(data *harness.Data) interface{} {
+				RequestBody: func(data harness.Data) interface{} {
 					req := template.Request{
 						Data: &template.Data{
 							ID: data.TemplateRecs[0].ID,
@@ -275,11 +278,11 @@ func TestUpdateTemplate(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name: "PUT - Update missing data",
+				Name: "update missing data",
 				HandlerConfig: func(rnr *Runner) server.HandlerConfig {
-					return rnr.HandlerConfig[HandlerUpdateOneTemplate]
+					return rnr.HandlerConfig[putTemplate]
 				},
-				RequestBody: func(data *harness.Data) interface{} {
+				RequestBody: func(data harness.Data) interface{} {
 					return nil
 				},
 				ResponseCode: http.StatusBadRequest,
@@ -297,10 +300,9 @@ func TestUpdateTemplate(t *testing.T) {
 				}
 				if tc.expectResponse != nil {
 					require.NotNil(t, body, "Response body is not nil")
-					er := tc.expectResponse(th.Data)
-					if er != nil {
-						ar := body.(template.Response)
-						require.NotNil(t, ar.Data, "Response data is not nil")
+					expectResponseBody := tc.expectResponse(th.Data)
+					if expectResponseBody != nil {
+						require.NotNil(t, expectResponseBody.Data, "Response data is not nil")
 					}
 				}
 			}

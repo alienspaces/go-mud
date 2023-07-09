@@ -18,7 +18,7 @@ func TestPostActionHandler(t *testing.T) {
 	t.Parallel()
 
 	// Test harness
-	th, err := NewTestHarness()
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
 
 	_, err = th.Setup()

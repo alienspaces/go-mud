@@ -11,183 +11,133 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/schema/template"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/template"
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/record"
 )
 
 const (
-	HandlerGetManyTemplates        = "get-many-templates"
-	HandlerGetOneTemplate          = "get-one-template"
-	HandlerCreateOneTemplate       = "create-one-template"
-	HandlerCreateOneTemplateWithID = "create-one-template-with-id"
-	HandlerUpdateOneTemplate       = "update-one-template"
+	getTemplates       string = "get-templates"
+	getTemplate        string = "get-template"
+	postTemplate       string = "post-template"
+	postTemplateWithID string = "post-template-with-id"
+	putTemplate        string = "put-template"
 )
 
-func (rnr *Runner) templateHandlerConfig(l logger.Logger, config map[string]server.HandlerConfig) (map[string]server.HandlerConfig, error) {
+func (rnr *Runner) TemplateHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	config[HandlerGetOneTemplate] = server.HandlerConfig{
-		Method:      http.MethodGet,
-		Path:        "/api/templates",
-		HandlerFunc: rnr.getTemplatesHandler,
-		MiddlewareConfig: server.MiddlewareConfig{
-			AuthenTypes: []server.AuthenticationType{
-				server.AuthenticationTypePublic,
-			},
-			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.response.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.response.schema.json",
-					},
-				},
-			},
+	requestSchema := &jsonschema.SchemaWithReferences{
+		Main: jsonschema.Schema{
+			Location: "schema/template",
+			Name:     "main.request.schema.json",
 		},
-		DocumentationConfig: server.DocumentationConfig{
-			Document:    true,
-			Description: "Query templates.",
+		References: []jsonschema.Schema{
+			{
+				Location: "schema/template",
+				Name:     "data.request.schema.json",
+			},
 		},
 	}
 
-	config[HandlerGetOneTemplate] = server.HandlerConfig{
-		Method:      http.MethodGet,
-		Path:        "/api/templates/:template_id",
-		HandlerFunc: rnr.getTemplateHandler,
-		MiddlewareConfig: server.MiddlewareConfig{
-			AuthenTypes: []server.AuthenticationType{
-				server.AuthenticationTypePublic,
-			},
-			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.response.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.response.schema.json",
-					},
-				},
-			},
+	responseSchema := &jsonschema.SchemaWithReferences{
+		Main: jsonschema.Schema{
+			Location: "schema/template",
+			Name:     "main.response.schema.json",
 		},
-		DocumentationConfig: server.DocumentationConfig{
-			Document:    true,
-			Description: "Get a template.",
+		References: []jsonschema.Schema{
+			{
+				Location: "schema/template",
+				Name:     "data.response.schema.json",
+			},
 		},
 	}
 
-	config[HandlerCreateOneTemplate] = server.HandlerConfig{
-		Method:      http.MethodPost,
-		Path:        "/api/templates",
-		HandlerFunc: rnr.PostTemplatesHandler,
-		MiddlewareConfig: server.MiddlewareConfig{
-			AuthenTypes: []server.AuthenticationType{
-				server.AuthenticationTypePublic,
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
+		getTemplates: {
+			Method:      http.MethodGet,
+			Path:        "/api/templates",
+			HandlerFunc: rnr.getTemplatesHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenticationTypePublic,
+				},
+				ValidateResponseSchema: responseSchema,
 			},
-			ValidateRequestSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.request.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.request.schema.json",
-					},
-				},
-			},
-			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.response.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.response.schema.json",
-					},
-				},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Query templates.",
 			},
 		},
-		DocumentationConfig: server.DocumentationConfig{
-			Document:    true,
-			Description: "Create a template.",
-		},
-	}
-
-	config[HandlerCreateOneTemplateWithID] = server.HandlerConfig{
-		Method:      http.MethodPost,
-		Path:        "/api/templates/:template_id",
-		HandlerFunc: rnr.PostTemplatesHandler,
-		MiddlewareConfig: server.MiddlewareConfig{
-			AuthenTypes: []server.AuthenticationType{
-				server.AuthenticationTypePublic,
+		getTemplate: {
+			Method:      http.MethodGet,
+			Path:        "/api/templates/:template_id",
+			HandlerFunc: rnr.getTemplateHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenticationTypePublic,
+				},
+				ValidateResponseSchema: responseSchema,
 			},
-			ValidateRequestSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.request.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.request.schema.json",
-					},
-				},
-			},
-			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.response.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.response.schema.json",
-					},
-				},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Get a template.",
 			},
 		},
-		DocumentationConfig: server.DocumentationConfig{
-			Document:    true,
-			Description: "Create a template.",
-		},
-	}
-
-	config[HandlerUpdateOneTemplate] = server.HandlerConfig{
-		Method:      http.MethodPut,
-		Path:        "/api/templates/:template_id",
-		HandlerFunc: rnr.PutTemplatesHandler,
-		MiddlewareConfig: server.MiddlewareConfig{
-			AuthenTypes: []server.AuthenticationType{
-				server.AuthenticationTypePublic,
+		postTemplate: {
+			Method:      http.MethodPost,
+			Path:        "/api/templates",
+			HandlerFunc: rnr.postTemplatesHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenticationTypePublic,
+				},
+				ValidateRequestSchema:  requestSchema,
+				ValidateResponseSchema: responseSchema,
 			},
-			ValidateRequestSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.request.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.request.schema.json",
-					},
-				},
-			},
-			ValidateResponseSchema: &jsonschema.SchemaWithReferences{
-				Main: jsonschema.Schema{
-					Name: "main.response.schema.json",
-				},
-				References: []jsonschema.Schema{
-					{
-						Name: "data.response.schema.json",
-					},
-				},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Create a template.",
 			},
 		},
-		DocumentationConfig: server.DocumentationConfig{
-			Document:    true,
-			Description: "Update a template.",
+		postTemplateWithID: {
+			Method:      http.MethodPost,
+			Path:        "/api/templates/:template_id",
+			HandlerFunc: rnr.postTemplatesHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenticationTypePublic,
+				},
+				ValidateRequestSchema:  requestSchema,
+				ValidateResponseSchema: responseSchema,
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Create a template.",
+			},
 		},
-	}
-
-	return config, nil
+		putTemplate: {
+			Method:      http.MethodPut,
+			Path:        "/api/templates/:template_id",
+			HandlerFunc: rnr.putTemplatesHandler,
+			MiddlewareConfig: server.MiddlewareConfig{
+				AuthenTypes: []server.AuthenticationType{
+					server.AuthenticationTypePublic,
+				},
+				ValidateRequestSchema:  requestSchema,
+				ValidateResponseSchema: responseSchema,
+			},
+			DocumentationConfig: server.DocumentationConfig{
+				Document:    true,
+				Description: "Update a template.",
+			},
+		},
+	})
 }
 
 // getTemplateHandler -
 func (rnr *Runner) getTemplateHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-
-	l.Info("** get template handler ** p >%#v< m >%#v<", pp, m)
+	l = loggerWithContext(l, "getTemplateHandler")
+	l.Info("** Get template handler **")
 
 	id := pp.ByName("template_id")
 
@@ -206,16 +156,23 @@ func (rnr *Runner) getTemplateHandler(w http.ResponseWriter, r *http.Request, pp
 		return err
 	}
 
+	// Resource not found
+	if rec == nil {
+		err := coreerror.NewNotFoundError("template", id)
+		server.WriteError(l, w, err)
+		return err
+	}
+
 	// response data
-	responseData, err := rnr.RecordToTemplateResponseData(rec)
+	data, err := rnr.RecordToTemplateResponseData(rec)
 	if err != nil {
 		l.Warn("failed mapping template response >%v<", err)
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	res := template.Response{
-		Data: responseData,
+	res := schema.Response{
+		Data: data,
 	}
 
 	err = server.WriteResponse(l, w, http.StatusOK, res)
@@ -229,19 +186,11 @@ func (rnr *Runner) getTemplateHandler(w http.ResponseWriter, r *http.Request, pp
 
 // getTemplatesHandler -
 func (rnr *Runner) getTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l.Info("Get templates handler pp >%#v< qp >%#v<", pp, qp)
+	l = loggerWithContext(l, "getTemplatesHandler")
 
-	var err error
-
-	l.Info("Querying template records")
-
-	// query parameters
 	opts := queryparam.ToSQLOptions(qp)
-	if err != nil {
-		l.Warn("failed to map collection query params to repository params >%v<", err)
-		server.WriteError(l, w, err)
-		return err
-	}
+
+	l.Info("Querying dungeon records with opts >%#v<", opts)
 
 	recs, err := m.(*model.Model).GetTemplateRecs(opts)
 	if err != nil {
@@ -250,7 +199,7 @@ func (rnr *Runner) getTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 	}
 
 	// assign response properties
-	data := []*template.Data{}
+	data := []*schema.Data{}
 	for _, rec := range recs {
 
 		// response data
@@ -263,7 +212,7 @@ func (rnr *Runner) getTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 		data = append(data, responseData)
 	}
 
-	res := template.CollectionResponse{
+	res := schema.CollectionResponse{
 		Data: data,
 	}
 
@@ -276,14 +225,14 @@ func (rnr *Runner) getTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 	return nil
 }
 
-// PostTemplatesHandler -
-func (rnr *Runner) PostTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+// postTemplatesHandler -
+func (rnr *Runner) postTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l.Info("Post templates handler pp >%#v< qp >%#v<", pp, qp)
 
 	// parameters
 	id := pp.ByName("template_id")
 
-	req, err := server.ReadRequest(l, r, &template.Request{})
+	req, err := server.ReadRequest(l, r, &schema.Request{})
 	if err != nil {
 		server.WriteSystemError(l, w, err)
 		return err
@@ -315,7 +264,7 @@ func (rnr *Runner) PostTemplatesHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// assign response properties
-	res := template.Response{
+	res := schema.Response{
 		Data: responseData,
 	}
 
@@ -328,8 +277,8 @@ func (rnr *Runner) PostTemplatesHandler(w http.ResponseWriter, r *http.Request, 
 	return nil
 }
 
-// PutTemplatesHandler -
-func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+// putTemplatesHandler -
+func (rnr *Runner) putTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l.Info("Put templates handler pp >%#v< qp >%#v<", pp, qp)
 
 	// parameters
@@ -343,7 +292,7 @@ func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 		return err
 	}
 
-	req, err := server.ReadRequest(l, r, &template.Request{})
+	req, err := server.ReadRequest(l, r, &schema.Request{})
 	if err != nil {
 		server.WriteSystemError(l, w, err)
 		return err
@@ -372,7 +321,7 @@ func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 	}
 
 	// assign response properties
-	res := template.Response{
+	res := schema.Response{
 		Data: responseData,
 	}
 
@@ -386,13 +335,13 @@ func (rnr *Runner) PutTemplatesHandler(w http.ResponseWriter, r *http.Request, p
 }
 
 // TemplateRequestDataToRecord -
-func (rnr *Runner) TemplateRequestDataToRecord(data *template.Data) (*record.Template, error) {
+func (rnr *Runner) TemplateRequestDataToRecord(data *schema.Data) (*record.Template, error) {
 	return &record.Template{}, nil
 }
 
 // RecordToTemplateResponseData -
-func (rnr *Runner) RecordToTemplateResponseData(templateRec *record.Template) (*template.Data, error) {
-	data := template.Data{
+func (rnr *Runner) RecordToTemplateResponseData(templateRec *record.Template) (*schema.Data, error) {
+	data := schema.Data{
 		ID:        templateRec.ID,
 		CreatedAt: templateRec.CreatedAt,
 		UpdatedAt: templateRec.UpdatedAt.Time,

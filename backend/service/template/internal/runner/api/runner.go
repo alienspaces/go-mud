@@ -46,29 +46,15 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 		config: *cfg,
 	}
 
-	r.ModellerFunc = r.Modeller
-
 	r.HandlerFunc = r.Handler
+	r.ModellerFunc = r.Modeller
+	r.RunDaemonFunc = r.RunDaemon
 	r.HandlerMiddlewareFuncs = r.middlewareFuncs
 
 	// Handler configuration
-	handlerConfig, err := buildHandlerConfig(r)
-	if err != nil {
-		err := fmt.Errorf("failed to initialise server.MessageConfig >%v<", err)
-		l.Warn(err.Error())
-		return nil, err
-	}
+	hc := r.TemplateHandlerConfig(nil)
 
-	r.HandlerConfig = handlerConfig
-
-	// Authentication
-	if err = server.ValidateAuthenticationTypes(r.HandlerConfig); err != nil {
-		l.Warn(err.Error())
-		return nil, err
-	}
-
-	// Daemon
-	r.RunDaemonFunc = r.RunDaemon
+	r.HandlerConfig = hc
 
 	return &r, nil
 }
@@ -96,4 +82,22 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 	}
 
 	return m, nil
+}
+
+// loggerWithContext provides a logger with function context
+func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
+	if l == nil {
+		return nil
+	}
+	return l.WithPackageContext("template/server").WithFunctionContext(functionName)
+}
+
+func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]server.HandlerConfig) map[string]server.HandlerConfig {
+	if hc1 == nil {
+		hc1 = map[string]server.HandlerConfig{}
+	}
+	for a, b := range hc2 {
+		hc1[a] = b
+	}
+	return hc1
 }

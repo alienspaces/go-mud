@@ -7,7 +7,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/log"
 	"gitlab.com/alienspaces/go-mud/backend/core/store"
 
-	"gitlab.com/alienspaces/go-mud/backend/service/template/internal/cli"
+	runner "gitlab.com/alienspaces/go-mud/backend/service/template/internal/cli"
 	templateConfig "gitlab.com/alienspaces/go-mud/backend/service/template/internal/config"
 )
 
@@ -22,7 +22,11 @@ func main() {
 
 	// If a new logger instance variable is instantiated, the existing logger instance will be unused
 	// and not be garbage collected during the run loop
-	l = log.NewLogger(c)
+	l, err = log.NewLogger(c)
+	if err != nil {
+		l.Error("failed new logger >%v<", err)
+		os.Exit(1)
+	}
 
 	s, err := store.NewStore(c, l)
 	if err != nil {

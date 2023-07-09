@@ -40,23 +40,43 @@ func newDefaultDependencies() (configurer.Configurer, logger.Logger, storer.Stor
 	return c, l, s, nil
 }
 
-func newTestHarness(c configurer.Configurer, l logger.Logger, s storer.Storer, config func() harness.DataConfig) (*harness.Testing, error) {
-	if config == nil {
-		config = func() harness.DataConfig {
-			return harness.DataConfig{
-				TemplateConfig: []harness.TemplateConfig{
-					{
-						Record: &record.Template{},
-					},
-				},
-			}
-		}
-	}
+func newTestHarness() (*harness.Testing, error) {
 
-	h, err := harness.NewTesting(c, l, s, config(), true)
+	// test dependencies
+	c, l, s, err := newDefaultDependencies()
 	if err != nil {
 		return nil, err
 	}
+
+	// Default config
+	config := harness.DataConfig{
+		TemplateConfig: []harness.TemplateConfig{
+			{
+				Record: &record.Template{},
+			},
+			{
+				Record: &record.Template{},
+			},
+			{
+				Record: &record.Template{},
+			},
+			{
+				Record: &record.Template{},
+			},
+			{
+				Record: &record.Template{},
+			},
+		},
+	}
+
+	h, err := harness.NewTesting(c, l, s, config)
+	if err != nil {
+		return nil, err
+	}
+
+	// For handler tests the test harness needs to commit data as the handler
+	// creates a new database transaction.
+	h.ShouldCommitData = true
 
 	return h, nil
 }

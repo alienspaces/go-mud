@@ -26,7 +26,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[
 		getDungeons: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons",
-			HandlerFunc: rnr.GetDungeonsHandler,
+			HandlerFunc: rnr.getDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -52,7 +52,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[
 		getDungeon: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id",
-			HandlerFunc: rnr.GetDungeonHandler,
+			HandlerFunc: rnr.getDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -78,10 +78,9 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[
 	})
 }
 
-// GetDungeonHandler -
-func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "GetDungeonHandler")
-	l.Info("** Get dungeon handler **")
+// getDungeonHandler -
+func (rnr *Runner) getDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "getDungeonHandler")
 
 	// Path parameters
 	id := pp.ByName("dungeon_id")
@@ -123,10 +122,9 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 	return nil
 }
 
-// GetDungeonsHandler -
-func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "GetDungeonsHandler")
-	l.Info("** Get dungeons handler **")
+// getDungeonsHandler -
+func (rnr *Runner) getDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "getDungeonsHandler")
 
 	opts := queryparam.ToSQLOptions(qp)
 

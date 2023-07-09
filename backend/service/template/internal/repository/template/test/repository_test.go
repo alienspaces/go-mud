@@ -37,7 +37,7 @@ func TestCreateOne(t *testing.T) {
 		require.NoError(t, err, "close db should return no error")
 	}()
 
-	h, err := harness.NewTesting(c, l, s, config, false)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	tests := []struct {
@@ -122,7 +122,7 @@ func TestGetOne(t *testing.T) {
 		require.NoError(t, err, "close db should return no error")
 	}()
 
-	h, err := harness.NewTesting(c, l, s, config, false)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	tests := []struct {
@@ -163,7 +163,7 @@ func TestGetOne(t *testing.T) {
 			r := h.Model.(*model.Model).TemplateRepository()
 			require.NotNil(t, r, "Repository is not nil")
 
-			rec, err := r.GetOne(tc.id(h.Data), nil)
+			rec, err := r.GetOne(tc.id(&h.Data), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetOne returns error")
 				return
@@ -198,7 +198,7 @@ func TestUpdateOne(t *testing.T) {
 		require.NoError(t, err, "close db should return no error")
 	}()
 
-	h, err := harness.NewTesting(c, l, s, config, false)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	tests := []struct {
@@ -277,7 +277,7 @@ func TestDeleteOne(t *testing.T) {
 		require.NoError(t, err, "close db should return no error")
 	}()
 
-	h, err := harness.NewTesting(c, l, s, config, false)
+	h, err := harness.NewTesting(c, l, s, config)
 	require.NoError(t, err, "NewTesting returns without error")
 
 	tests := []struct {

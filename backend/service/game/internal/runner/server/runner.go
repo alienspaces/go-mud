@@ -3,7 +3,9 @@ package runner
 import (
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
@@ -50,7 +52,7 @@ func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 	r.ModellerFunc = r.Modeller
 	r.RunDaemonFunc = r.RunDaemon
 
-	// Handler config
+	// Handler configuration
 	hc := r.CharacterHandlerConfig(nil)
 	hc = r.DungeonHandlerConfig(hc)
 	hc = r.DungeonCharacterHandlerConfig(hc)
@@ -73,15 +75,6 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 	return m, nil
 }
 
-func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
-	m, err := rnr.InitTx(l)
-	if err != nil {
-		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
-		return nil, err
-	}
-	return m.(*model.Model), nil
-}
-
 // loggerWithContext provides a logger with function context
 func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
@@ -98,4 +91,17 @@ func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]ser
 		hc1[a] = b
 	}
 	return hc1
+}
+
+func queryParamsToSQLOptions(qp *queryparam.QueryParams) *coresql.Options {
+
+	if len(qp.SortColumns) == 0 {
+		qp.SortColumns = []queryparam.SortColumn{
+			{
+				Col: "created_at",
+			},
+		}
+	}
+
+	return queryparam.ToSQLOptions(qp)
 }

@@ -4,6 +4,7 @@ use (
 	./backend/core
 	./backend/schema
 	./backend/service/game
+	./backend/service/template
 )
 
 replace (

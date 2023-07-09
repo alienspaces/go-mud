@@ -18,7 +18,7 @@ import (
 // Testing -
 type Testing struct {
 	harness.Testing
-	Data         *Data
+	Data         Data
 	DataConfig   DataConfig
 	teardownData teardownData
 }
@@ -29,7 +29,7 @@ type teardownData struct {
 }
 
 // NewTesting -
-func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, config DataConfig, shouldCommitData bool) (t *Testing, err error) {
+func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, config DataConfig) (t *Testing, err error) {
 
 	// harness
 	t = &Testing{}
@@ -45,7 +45,7 @@ func NewTesting(c configurer.Configurer, l logger.Logger, s storer.Storer, confi
 	t.RemoveDataFunc = t.RemoveData
 
 	t.DataConfig = config
-	t.Data = &Data{}
+	t.Data = Data{}
 	t.teardownData = teardownData{}
 
 	err = t.Init()
@@ -121,7 +121,7 @@ func (t *Testing) RemoveData() error {
 		}
 	}
 
-	t.Data = &Data{}
+	t.Data = Data{}
 	t.teardownData = teardownData{}
 
 	return nil

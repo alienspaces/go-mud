@@ -352,6 +352,15 @@ WHILE_RESULT_NOT_INCREMENTED:
 	return &pditr, nil
 }
 
+func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
+	m, err := rnr.InitTx(l)
+	if err != nil {
+		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
+		return nil, err
+	}
+	return m.(*model.Model), nil
+}
+
 // keepRunning decides whether the server should continue
 // to run based on current state etc..
 func keepRunning() bool {

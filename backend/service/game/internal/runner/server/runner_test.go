@@ -9,7 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 )
 
-func NewTestHarness() (*harness.Testing, error) {
+func newTestHarness() (*harness.Testing, error) {
 
 	// Default test harness data configuration
 	config := harness.DefaultDataConfig

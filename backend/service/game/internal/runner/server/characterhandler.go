@@ -9,7 +9,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
-	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
@@ -30,7 +29,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 		getCharacters: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/characters",
-			HandlerFunc: rnr.GetCharactersHandler,
+			HandlerFunc: rnr.getCharactersHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -64,7 +63,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 		getCharacter: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/characters/:character_id",
-			HandlerFunc: rnr.GetCharacterHandler,
+			HandlerFunc: rnr.getCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -98,7 +97,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 		postCharacter: {
 			Method:      http.MethodPost,
 			Path:        "/api/v1/characters",
-			HandlerFunc: rnr.PostCharacterHandler,
+			HandlerFunc: rnr.postCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
 					server.AuthenticationTypePublic,
@@ -130,7 +129,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 		putCharacter: {
 			Method:           http.MethodPut,
 			Path:             "/api/v1/characters",
-			HandlerFunc:      rnr.PutCharacterHandler,
+			HandlerFunc:      rnr.putCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
@@ -140,9 +139,9 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 	})
 }
 
-// GetCharacterHandler -
-func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "GetCharacterHandler")
+// getCharacterHandler -
+func (rnr *Runner) getCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "getCharacterHandler")
 	l.Info("** Get character handler **")
 
 	var recs []*record.Character
@@ -203,25 +202,11 @@ func (rnr *Runner) GetCharacterHandler(w http.ResponseWriter, r *http.Request, p
 	return nil
 }
 
-func QueryParamsToSQLOptions(qp *queryparam.QueryParams) *coresql.Options {
+// getCharactersHandler -
+func (rnr *Runner) getCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "getCharactersHandler")
 
-	if len(qp.SortColumns) == 0 {
-		qp.SortColumns = []queryparam.SortColumn{
-			{
-				Col: "created_at",
-			},
-		}
-	}
-
-	return queryparam.ToSQLOptions(qp)
-}
-
-// GetCharactersHandler -
-func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "GetCharactersHandler")
-	l.Info("** Get characters handler **")
-
-	opts := QueryParamsToSQLOptions(qp)
+	opts := queryParamsToSQLOptions(qp)
 
 	l.Info("Querying character records with params >%#v<", qp)
 
@@ -268,9 +253,9 @@ func (rnr *Runner) GetCharactersHandler(w http.ResponseWriter, r *http.Request, 
 	return nil
 }
 
-// PostCharacterHandler -
-func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "PostCharacterHandler")
+// postCharacterHandler -
+func (rnr *Runner) postCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "postCharacterHandler")
 	l.Info("** Post character handler **")
 
 	req := &schema.CharacterRequest{}
@@ -330,8 +315,8 @@ func (rnr *Runner) PostCharacterHandler(w http.ResponseWriter, r *http.Request, 
 }
 
 // PutCharactersHandler -
-func (rnr *Runner) PutCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "PutCharacterHandler")
+func (rnr *Runner) putCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "putCharacterHandler")
 	l.Info("** Put character handler **")
 
 	// Path parameters
