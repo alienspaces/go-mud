@@ -113,6 +113,13 @@ func (t *Testing) CreateData() error {
 func (t *Testing) RemoveData() error {
 	l := t.Logger("RemoveData")
 
+	// Quick cleanup when data is not committed
+	if !t.ShouldCommitData {
+		t.Data = Data{}
+		t.teardownData = teardownData{}
+		return nil
+	}
+
 	for _, rec := range t.teardownData.TemplateRecs {
 		err := t.removeTemplateRec(&rec)
 		if err != nil {
