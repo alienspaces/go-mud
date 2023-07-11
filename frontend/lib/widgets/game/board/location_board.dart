@@ -86,11 +86,18 @@ class BoardLocationWidget extends StatelessWidget {
               ),
             );
 
+            log.warning(
+                '++++ Current location name ${currentActionRec.actionLocation.locationName}');
+            if (currentActionRec.actionTargetLocation != null) {
+              log.warning(
+                  '++++ Target location name ${currentActionRec.actionTargetLocation!.locationName}');
+            }
+
             // Only render look grid when the target is not the current room
             if (currentActionRec.actionTargetLocation != null &&
                 currentActionRec.actionLocation.locationName !=
                     currentActionRec.actionTargetLocation!.locationName) {
-              log.fine('Rendering look target location');
+              log.warning('++++ Rendering look target location');
               widgets.add(
                 GameLocationGridLookWidget(
                   key: UniqueKey(),

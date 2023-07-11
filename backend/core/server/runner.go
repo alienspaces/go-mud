@@ -437,7 +437,7 @@ func (rnr *Runner) defaultRepositoryPreparerFunc(l logger.Logger) (preparer.Repo
 
 	// Return the existing preparer if we already have one
 	if rnr.RepositoryPreparer != nil {
-		l.Info("Returning existing repository preparer")
+		l.Debug("Returning existing repository preparer")
 		return rnr.RepositoryPreparer, nil
 	}
 
@@ -472,7 +472,7 @@ func (rnr *Runner) defaultQueryPreparerFunc(l logger.Logger) (preparer.Query, er
 	l = Logger(l, "defaultQueryPreparerFunc")
 
 	if rnr.QueryPreparer != nil {
-		l.Info("Returning existing query preparer")
+		l.Debug("Returning existing query preparer")
 		return rnr.QueryPreparer, nil
 	}
 

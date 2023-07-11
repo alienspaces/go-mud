@@ -41,7 +41,9 @@ class RecordEmptyException extends RepositoryException {
 
 /// Examines the API error and return a specific error class
 RepositoryException resolveApiException(String jsonString) {
-  Map<String, dynamic> json = jsonDecode(jsonString);
+  List<dynamic> jsonErrors = jsonDecode(jsonString);
+
+  var json = jsonErrors[0];
 
   var code = json['code'];
   var message = json['message'];

@@ -171,11 +171,13 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 	c := make(chan dungeonInstanceProcessingResult, 1)
 
+	cycles := 0
+
 	for keepRunning() {
 
 		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
-			l.Warn("failed daemon init cycle  >%v<", err)
+			l.Warn("failed daemon init cycle >%v<", err)
 			return err
 		}
 
@@ -183,6 +185,10 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 		if len(dungeonInstanceStates) == 0 {
 			time.Sleep(3000 * time.Millisecond)
 			continue
+		}
+
+		if cycles%20 == 0 {
+			l.Info("Daemon cycle >%d<", cycles)
 		}
 
 		runningCount := 0

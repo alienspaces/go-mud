@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
@@ -64,6 +65,8 @@ class DungeonListItemWidget extends StatelessWidget {
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     var characterRecord = characterCubit.characterRecord;
     if (characterRecord == null) {
+      log.warning(
+          'Character record from CharacterCubit is null, cannot display DungeonListItem');
       return Container();
     }
     if (characterRecord.dungeonID != null &&
@@ -127,12 +130,17 @@ class DungeonListItemWidget extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Text(dungeonRecord.dungeonName,
-                style: Theme.of(context).textTheme.displaySmall),
+            child: Text(
+              normaliseName(dungeonRecord.dungeonName),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Text(dungeonRecord.dungeonDescription),
+            child: Text(
+              dungeonRecord.dungeonDescription,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),

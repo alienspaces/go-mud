@@ -132,10 +132,10 @@ class API {
 
       String bodyData = jsonEncode({
         "data": {
-          "character_name": characterName,
-          "character_strength": characterStrength,
-          "character_dexterity": characterDexterity,
-          "character_intelligence": characterIntelligence,
+          "name": characterName,
+          "strength": characterStrength,
+          "dexterity": characterDexterity,
+          "intelligence": characterIntelligence,
         },
       });
       log.info('bodyData $bodyData');

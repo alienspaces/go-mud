@@ -56,7 +56,7 @@ class DungeonActionRecord extends Equatable {
 
   factory DungeonActionRecord.fromJson(Map<String, dynamic> json) {
     // Location
-    Map<String, dynamic>? location = json['action_location'];
+    Map<String, dynamic>? location = json['location'];
     if (location == null) {
       throw const FormatException('Missing "action_location" from JSON');
     }
@@ -64,11 +64,10 @@ class DungeonActionRecord extends Equatable {
     var locationData = LocationData.fromJson(location);
 
     // Character or Monster
-    Map<String, dynamic>? character = json['action_character'];
-    Map<String, dynamic>? monster = json['action_monster'];
+    Map<String, dynamic>? character = json['character'];
+    Map<String, dynamic>? monster = json['monster'];
     if (character == null && monster == null) {
-      throw const FormatException(
-          'Missing "action_character" or "action_monster" from JSON');
+      throw const FormatException('Missing "character" or "monster" from JSON');
     }
 
     MonsterDetailedData? monsterData;
@@ -82,42 +81,42 @@ class DungeonActionRecord extends Equatable {
     }
 
     // Equipped object
-    Map<String, dynamic>? equippedObject = json['action_equipped_object'];
+    Map<String, dynamic>? equippedObject = json['equipped_object'];
     ObjectDetailedData? equippedObjectData;
     if (equippedObject != null) {
       equippedObjectData = ObjectDetailedData.fromJson(equippedObject);
     }
 
     // Stashed object
-    Map<String, dynamic>? stashedObject = json['action_stashed_object'];
+    Map<String, dynamic>? stashedObject = json['stashed_object'];
     ObjectDetailedData? stashedObjectData;
     if (stashedObject != null) {
       stashedObjectData = ObjectDetailedData.fromJson(stashedObject);
     }
 
     // Dropped object
-    Map<String, dynamic>? droppedObject = json['action_dropped_object'];
+    Map<String, dynamic>? droppedObject = json['dropped_object'];
     ObjectDetailedData? droppedObjectData;
     if (droppedObject != null) {
       droppedObjectData = ObjectDetailedData.fromJson(droppedObject);
     }
 
     // Target object
-    Map<String, dynamic>? targetObject = json['action_target_object'];
+    Map<String, dynamic>? targetObject = json['target_object'];
     ObjectDetailedData? targetObjectData;
     if (targetObject != null) {
       targetObjectData = ObjectDetailedData.fromJson(targetObject);
     }
 
     // Target character
-    Map<String, dynamic>? targetCharacter = json['action_target_character'];
+    Map<String, dynamic>? targetCharacter = json['target_character'];
     CharacterDetailedData? targetCharacterData;
     if (targetCharacter != null) {
       targetCharacterData = CharacterDetailedData.fromJson(targetCharacter);
     }
 
     // Target monster
-    Map<String, dynamic>? targetMonster = json['action_target_monster'];
+    Map<String, dynamic>? targetMonster = json['target_monster'];
     MonsterDetailedData? targetMonsterData;
     if (targetMonster != null) {
       targetMonsterData = MonsterDetailedData.fromJson(targetMonster);
@@ -126,17 +125,17 @@ class DungeonActionRecord extends Equatable {
     // Target location
     LocationData? targetLocationData;
 
-    Map<String, dynamic>? targetLocation = json['action_target_location'];
+    Map<String, dynamic>? targetLocation = json['target_location'];
     if (targetLocation != null) {
       targetLocationData = LocationData.fromJson(targetLocation);
     }
 
     return DungeonActionRecord(
-      actionID: json['action_id'],
-      actionCommand: json['action_command'],
-      actionNarrative: json['action_narrative'],
-      actionTurnNumber: json['action_turn_number'],
-      actionSerialNumber: json['action_serial_number'],
+      actionID: json['id'],
+      actionCommand: json['command'],
+      actionNarrative: json['narrative'],
+      actionTurnNumber: json['turn_number'],
+      actionSerialNumber: json['serial_number'],
       actionLocation: locationData,
       actionCharacter: characterData,
       actionMonster: monsterData,
@@ -188,10 +187,10 @@ class LocationData {
   });
 
   factory LocationData.fromJson(Map<String, dynamic> json) {
-    List<dynamic> directions = json['location_directions'];
+    List<dynamic> directions = json['directions'];
 
     // Location objects
-    List<dynamic>? locationObjects = json['location_objects'];
+    List<dynamic>? locationObjects = json['objects'];
     List<ObjectData>? locationObjectData;
     if (locationObjects != null) {
       locationObjectData =
@@ -199,7 +198,7 @@ class LocationData {
     }
 
     // Location characters
-    List<dynamic>? locationCharacters = json['location_characters'];
+    List<dynamic>? locationCharacters = json['characters'];
     List<CharacterData>? locationCharacterData;
     if (locationCharacters != null) {
       locationCharacterData =
@@ -207,7 +206,7 @@ class LocationData {
     }
 
     // Location monsters
-    List<dynamic>? locationMonsters = json['location_monsters'];
+    List<dynamic>? locationMonsters = json['monsters'];
     List<MonsterData>? locationMonsterData;
     if (locationMonsters != null) {
       locationMonsterData =
@@ -215,9 +214,9 @@ class LocationData {
     }
 
     return LocationData(
-      locationName: json['location_name'],
-      locationDescription: json['location_description'],
-      locationDirection: json['location_direction'],
+      locationName: json['name'],
+      locationDescription: json['description'],
+      locationDirection: json['direction'],
       locationDirections: directions.map((e) => e.toString()).toList(),
       locationCharacters: locationCharacterData,
       locationMonsters: locationMonsterData,
@@ -231,7 +230,7 @@ class ObjectData {
   ObjectData({required this.name});
 
   factory ObjectData.fromJson(Map<String, dynamic> json) {
-    return ObjectData(name: json['object_name']);
+    return ObjectData(name: json['name']);
   }
 }
 
@@ -249,18 +248,18 @@ class ObjectDetailedData {
 
   factory ObjectDetailedData.fromJson(Map<String, dynamic> json) {
     return ObjectDetailedData(
-      objectName: json['object_name'],
-      objectDescription: json['object_description'],
-      objectIsStashed: json['object_is_stashed'],
-      objectIsEquipped: json['object_is_equipped'],
+      objectName: json['name'],
+      objectDescription: json['description'],
+      objectIsStashed: json['is_stashed'],
+      objectIsEquipped: json['is_equipped'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'object_name': objectName,
-        'object_description': objectDescription,
-        'object_is_stashed': objectIsStashed,
-        'object_is_equipped': objectIsEquipped,
+        'name': objectName,
+        'description': objectDescription,
+        'is_stashed': objectIsStashed,
+        'is_equipped': objectIsEquipped,
       };
 }
 
@@ -273,7 +272,7 @@ class CharacterData {
 
   factory CharacterData.fromJson(Map<String, dynamic> json) {
     return CharacterData(
-      name: json['character_name'],
+      name: json['name'],
     );
   }
 }
@@ -310,14 +309,14 @@ class CharacterDetailedData {
   });
 
   factory CharacterDetailedData.fromJson(Map<String, dynamic> json) {
-    List<dynamic>? equippedObjects = json['character_equipped_objects'];
+    List<dynamic>? equippedObjects = json['equipped_objects'];
     List<ObjectDetailedData>? equippedObjectData;
     if (equippedObjects != null) {
       equippedObjectData =
           equippedObjects.map((e) => ObjectDetailedData.fromJson(e)).toList();
     }
 
-    List<dynamic>? stashedObjects = json['character_stashed_objects'];
+    List<dynamic>? stashedObjects = json['stashed_objects'];
     List<ObjectDetailedData>? stashedObjectData;
     if (stashedObjects != null) {
       stashedObjectData =
@@ -325,34 +324,34 @@ class CharacterDetailedData {
     }
 
     return CharacterDetailedData(
-      characterName: json['character_name'],
-      characterStrength: json['character_strength'],
-      characterDexterity: json['character_dexterity'],
-      characterIntelligence: json['character_intelligence'],
-      characterCurrentStrength: json['character_current_strength'],
-      characterCurrentDexterity: json['character_current_dexterity'],
-      characterCurrentIntelligence: json['character_current_intelligence'],
-      characterHealth: json['character_health'],
-      characterFatigue: json['character_fatigue'],
-      characterCurrentHealth: json['character_current_health'],
-      characterCurrentFatigue: json['character_current_fatigue'],
+      characterName: json['name'],
+      characterStrength: json['strength'],
+      characterDexterity: json['dexterity'],
+      characterIntelligence: json['intelligence'],
+      characterCurrentStrength: json['current_strength'],
+      characterCurrentDexterity: json['current_dexterity'],
+      characterCurrentIntelligence: json['current_intelligence'],
+      characterHealth: json['health'],
+      characterFatigue: json['fatigue'],
+      characterCurrentHealth: json['current_health'],
+      characterCurrentFatigue: json['current_fatigue'],
       characterStashedObjects: stashedObjectData,
       characterEquippedObjects: equippedObjectData,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'character_name': characterName,
-        'character_strength': characterStrength,
-        'character_dexterity': characterDexterity,
-        'character_intelligence': characterIntelligence,
-        'character_current_strength': characterCurrentStrength,
-        'character_current_dexterity': characterCurrentDexterity,
-        'character_current_intelligence': characterCurrentIntelligence,
-        'character_health': characterHealth,
-        'character_fatigue': characterFatigue,
-        'character_current_health': characterCurrentHealth,
-        'character_current_fatigue': characterCurrentFatigue,
+        'name': characterName,
+        'strength': characterStrength,
+        'dexterity': characterDexterity,
+        'intelligence': characterIntelligence,
+        'current_strength': characterCurrentStrength,
+        'current_dexterity': characterCurrentDexterity,
+        'current_intelligence': characterCurrentIntelligence,
+        'health': characterHealth,
+        'fatigue': characterFatigue,
+        'current_health': characterCurrentHealth,
+        'current_fatigue': characterCurrentFatigue,
       };
 }
 
@@ -365,7 +364,7 @@ class MonsterData {
 
   factory MonsterData.fromJson(Map<String, dynamic> json) {
     return MonsterData(
-      name: json['monster_name'],
+      name: json['name'],
     );
   }
 }
@@ -400,7 +399,7 @@ class MonsterDetailedData {
   });
 
   factory MonsterDetailedData.fromJson(Map<String, dynamic> json) {
-    List<dynamic>? equippedObjects = json['monster_equipped_objects'];
+    List<dynamic>? equippedObjects = json['equipped_objects'];
     List<ObjectDetailedData>? equippedObjectData;
     if (equippedObjects != null) {
       equippedObjectData =
@@ -408,32 +407,32 @@ class MonsterDetailedData {
     }
 
     return MonsterDetailedData(
-      monsterName: json['monster_name'],
-      monsterStrength: json['monster_strength'],
-      monsterDexterity: json['monster_dexterity'],
-      monsterIntelligence: json['monster_intelligence'],
-      monsterCurrentStrength: json['monster_current_strength'],
-      monsterCurrentDexterity: json['monster_current_dexterity'],
-      monsterCurrentIntelligence: json['monster_current_intelligence'],
-      monsterHealth: json['monster_health'],
-      monsterFatigue: json['monster_fatigue'],
-      monsterCurrentHealth: json['monster_current_health'],
-      monsterCurrentFatigue: json['monster_current_fatigue'],
+      monsterName: json['name'],
+      monsterStrength: json['strength'],
+      monsterDexterity: json['dexterity'],
+      monsterIntelligence: json['intelligence'],
+      monsterCurrentStrength: json['current_strength'],
+      monsterCurrentDexterity: json['current_dexterity'],
+      monsterCurrentIntelligence: json['current_intelligence'],
+      monsterHealth: json['health'],
+      monsterFatigue: json['fatigue'],
+      monsterCurrentHealth: json['current_health'],
+      monsterCurrentFatigue: json['current_fatigue'],
       monsterEquippedObjects: equippedObjectData,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'monster_name': monsterName,
-        'monster_strength': monsterStrength,
-        'monster_dexterity': monsterDexterity,
-        'monster_intelligence': monsterIntelligence,
-        'monster_current_strength': monsterCurrentStrength,
-        'monster_current_dexterity': monsterCurrentDexterity,
-        'monster_current_intelligence': monsterCurrentIntelligence,
-        'monster_health': monsterHealth,
-        'monster_fatigue': monsterFatigue,
-        'monster_current_health': monsterCurrentHealth,
-        'monster_current_fatigue': monsterCurrentFatigue,
+        'name': monsterName,
+        'strength': monsterStrength,
+        'dexterity': monsterDexterity,
+        'intelligence': monsterIntelligence,
+        'current_strength': monsterCurrentStrength,
+        'current_dexterity': monsterCurrentDexterity,
+        'current_intelligence': monsterCurrentIntelligence,
+        'health': monsterHealth,
+        'fatigue': monsterFatigue,
+        'current_health': monsterCurrentHealth,
+        'current_fatigue': monsterCurrentFatigue,
       };
 }
