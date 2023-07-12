@@ -10,6 +10,7 @@ import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.da
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
+import 'package:go_mud_client/utility.dart';
 
 import 'package:go_mud_client/widgets/game/button/character_button.dart';
 import 'package:go_mud_client/widgets/game/button/monster_button.dart';
@@ -133,17 +134,20 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     switch (locationContent!.type) {
       case ContentType.character:
         {
-          returnWidget = _characterWidget(context, locationContent.name);
+          returnWidget =
+              _characterWidget(context, normaliseName(locationContent.name));
         }
         break;
       case ContentType.monster:
         {
-          returnWidget = _monsterWidget(context, locationContent.name);
+          returnWidget =
+              _monsterWidget(context, normaliseName(locationContent.name));
         }
         break;
       case ContentType.object:
         {
-          returnWidget = _objectWidget(context, locationContent.name);
+          returnWidget =
+              _objectWidget(context, normaliseName(locationContent.name));
         }
         break;
       default:

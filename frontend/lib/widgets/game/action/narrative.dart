@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
+import 'package:go_mud_client/utility.dart';
 
 class NarrativeLineFormat {
   final Color colour;
@@ -79,7 +80,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
           // Add narrative line
           var lineWidget = GameActionNarrativeLineWidget(
             key: UniqueKey(),
-            line: state.currentActionRec.actionNarrative,
+            line: normaliseName(state.currentActionRec.actionNarrative),
             format: characterNarrativeLineFormat,
             width: width,
           );
@@ -90,7 +91,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
           // Add narrative line
           var lineWidget = GameActionNarrativeLineWidget(
             key: UniqueKey(),
-            line: state.actionRec.actionNarrative,
+            line: normaliseName(state.actionRec.actionNarrative),
             format: otherNarrativeLineFormat,
             width: width,
           );
