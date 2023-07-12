@@ -7,8 +7,8 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/log"
 	"gitlab.com/alienspaces/go-mud/backend/core/store"
 
-	runner "gitlab.com/alienspaces/go-mud/backend/service/template/internal/cli"
 	templateConfig "gitlab.com/alienspaces/go-mud/backend/service/template/internal/config"
+	runner "gitlab.com/alienspaces/go-mud/backend/service/template/internal/runner/cli"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/store"
 
 	templateConfig "gitlab.com/alienspaces/go-mud/backend/service/template/internal/config"
-	runner "gitlab.com/alienspaces/go-mud/backend/service/template/internal/runner/api"
+	runner "gitlab.com/alienspaces/go-mud/backend/service/template/internal/runner/server"
 )
 
 func main() {

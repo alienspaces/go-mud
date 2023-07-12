@@ -73,8 +73,6 @@ func (rnr *Runner) middlewareFuncs() []server.MiddlewareFunc {
 
 // Modeller -
 func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
-	l.Info("Template Modeller")
-
 	m, err := model.NewModel(rnr.Config, l, rnr.Store)
 	if err != nil {
 		l.Warn("Failed new modeller >%v<", err)
