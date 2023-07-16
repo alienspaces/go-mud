@@ -8,7 +8,8 @@ import (
 
 // Modeller -
 type Modeller interface {
-	Init(pRepo preparer.Repository, pQ preparer.Query, tx *sqlx.Tx) (err error)
+	Init(repoPreparer preparer.Repository, queryPreparer preparer.Query, tx *sqlx.Tx) (err error)
+	SetTxLockTimeout(timeoutSecs float64) error
 	Commit() error
 	Rollback() error
 }

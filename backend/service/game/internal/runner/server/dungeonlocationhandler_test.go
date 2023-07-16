@@ -8,45 +8,34 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/auth"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 )
 
 func TestGetDungeonLocationHandler(t *testing.T) {
 
 	// Test harness
-	th, err := NewTestHarness()
+	th, err := newTestHarness()
 	require.NoError(t, err, "New test data returns without error")
+
+	_, err = th.Setup()
+	require.NoError(t, err, "Test data setup returns without error")
+	defer func() {
+		err = th.Teardown()
+		require.NoError(t, err, "Test data teardown returns without error")
+	}()
 
 	type testCase struct {
 		TestCase
 		expectResponseBody func(data harness.Data) *schema.LocationResponse
 	}
 
-	// validAuthToken - Generate a valid authentication token for this handler
-	validAuthToken := func() string {
-		authen, _ := auth.NewAuth(th.Config, th.Log)
-		token, _ := authen.EncodeJWT(&auth.Claims{
-			Roles:    []string{},
-			Identity: map[string]interface{}{},
-		})
-		return token
-	}
-
 	testCaseHandlerConfig := func(rnr *Runner) server.HandlerConfig {
 		return rnr.HandlerConfig[getDungeonLocation]
 	}
 
-	testCaseRequestHeaders := func(data harness.Data) map[string]string {
-		headers := map[string]string{
-			"Authorization": "Bearer " + validAuthToken(),
-		}
-		return headers
-	}
-
-	testCaseResponseBody := func(body io.Reader) (interface{}, error) {
+	testCaseResponseDecoder := func(body io.Reader) (interface{}, error) {
 		var responseBody *schema.LocationResponse
 		err = json.NewDecoder(body).Decode(&responseBody)
 		return responseBody, err
@@ -55,9 +44,8 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 	testCases := []testCase{
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get existing",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get existing",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id":  data.DungeonRecs[0].ID,
@@ -68,16 +56,16 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 				RequestBody: func(data harness.Data) interface{} {
 					return nil
 				},
-				ResponseBody: testCaseResponseBody,
-				ResponseCode: http.StatusOK,
+				ResponseDecoder: testCaseResponseDecoder,
+				ResponseCode:    http.StatusOK,
 			},
 			expectResponseBody: func(data harness.Data) *schema.LocationResponse {
 				res := schema.LocationResponse{
 					Data: []schema.LocationData{
 						{
-							LocationID:          data.LocationRecs[0].ID,
-							LocationName:        data.LocationRecs[0].Name,
-							LocationDescription: data.LocationRecs[0].Description,
+							ID:          data.LocationRecs[0].ID,
+							Name:        data.LocationRecs[0].Name,
+							Description: data.LocationRecs[0].Description,
 						},
 					},
 				}
@@ -86,9 +74,8 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get with non-existant dungeon",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get with non-existant dungeon",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id":  "dc73cc41-0c6d-4dc1-b79d-c41ea2761304",
@@ -104,9 +91,8 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 		},
 		{
 			TestCase: TestCase{
-				Name:           "GET - Get with non-existant location",
-				HandlerConfig:  testCaseHandlerConfig,
-				RequestHeaders: testCaseRequestHeaders,
+				Name:          "GET - Get with non-existant location",
+				HandlerConfig: testCaseHandlerConfig,
 				RequestPathParams: func(data harness.Data) map[string]string {
 					params := map[string]string{
 						":dungeon_id":  data.DungeonRecs[0].ID,
@@ -149,10 +135,10 @@ func TestGetDungeonLocationHandler(t *testing.T) {
 						require.NotNil(t, responseBody.Data[idx], "Response body index is not empty")
 
 						// Validate location
-						t.Logf("Checking location name >%s< >%s<", expectData.LocationName, responseBody.Data[idx].LocationName)
-						require.Equal(t, expectData.LocationName, responseBody.Data[idx].LocationName)
-						t.Logf("Checking location description >%s< >%s<", expectData.LocationDescription, responseBody.Data[idx].LocationDescription)
-						require.Equal(t, expectData.LocationDescription, responseBody.Data[idx].LocationDescription)
+						t.Logf("Checking location name >%s< >%s<", expectData.Name, responseBody.Data[idx].Name)
+						require.Equal(t, expectData.Name, responseBody.Data[idx].Name)
+						t.Logf("Checking location description >%s< >%s<", expectData.Description, responseBody.Data[idx].Description)
+						require.Equal(t, expectData.Description, responseBody.Data[idx].Description)
 					}
 				}
 			}

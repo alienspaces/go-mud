@@ -37,7 +37,7 @@ COPY --from=builder /go/bin/go-mud-game-cli /bin
 COPY --from=builder /go-mud/service/game/build/docker/entrypoint.sh .
 
 # schemas
-COPY --from=builder /go-mud/schema/docs ./schema/docs
+COPY --from=builder /go-mud/schema/game ./schema/game
 
 # migration tool
 COPY --from=builder /go/bin/migrate /bin

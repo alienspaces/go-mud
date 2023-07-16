@@ -3,7 +3,9 @@ package runner
 import (
 	"fmt"
 
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
@@ -14,6 +16,8 @@ import (
 // Runner -
 type Runner struct {
 	server.Runner
+	// Service specific configuration
+	config Config
 }
 
 // Fault -
@@ -27,29 +31,28 @@ var _ runnable.Runnable = &Runner{}
 // NewRunner -
 func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
 
-	r := Runner{}
-
-	r.Log = l
-	if r.Log == nil {
-		msg := "logger undefined, cannot init runner"
-		r.Log.Error(msg)
-		return nil, fmt.Errorf(msg)
+	cr, err := server.NewRunner(c, l)
+	if err != nil {
+		err := fmt.Errorf("failed core runner >%v<", err)
+		l.Warn(err.Error())
+		return nil, err
 	}
 
-	r.Config = c
-	if r.Config == nil {
-		msg := "configurer undefined, cannot init runner"
-		r.Log.Error(msg)
-		return nil, fmt.Errorf(msg)
+	cfg, err := NewConfig(c)
+	if err != nil {
+		return nil, err
 	}
 
-	r.RouterFunc = r.Router
-	r.MiddlewareFunc = r.Middleware
+	r := Runner{
+		Runner: *cr,
+		config: *cfg,
+	}
+
 	r.HandlerFunc = r.Handler
 	r.ModellerFunc = r.Modeller
 	r.RunDaemonFunc = r.RunDaemon
 
-	// Handler config
+	// Handler configuration
 	hc := r.CharacterHandlerConfig(nil)
 	hc = r.DungeonHandlerConfig(hc)
 	hc = r.DungeonCharacterHandlerConfig(hc)
@@ -72,15 +75,6 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 	return m, nil
 }
 
-func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
-	m, err := rnr.InitModeller(l)
-	if err != nil {
-		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
-		return nil, err
-	}
-	return m.(*model.Model), nil
-}
-
 // loggerWithContext provides a logger with function context
 func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
@@ -89,12 +83,25 @@ func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	return l.WithPackageContext("game/server").WithFunctionContext(functionName)
 }
 
-func mergeHandlerConfigs(hc1 map[server.HandlerConfigKey]server.HandlerConfig, hc2 map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 	if hc1 == nil {
-		hc1 = map[server.HandlerConfigKey]server.HandlerConfig{}
+		hc1 = map[string]server.HandlerConfig{}
 	}
 	for a, b := range hc2 {
 		hc1[a] = b
 	}
 	return hc1
+}
+
+func queryParamsToSQLOptions(qp *queryparam.QueryParams) *coresql.Options {
+
+	if len(qp.SortColumns) == 0 {
+		qp.SortColumns = []queryparam.SortColumn{
+			{
+				Col: "created_at",
+			},
+		}
+	}
+
+	return queryparam.ToSQLOptions(qp)
 }

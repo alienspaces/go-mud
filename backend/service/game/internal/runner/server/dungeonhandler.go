@@ -7,38 +7,38 @@ import (
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 const (
-	getDungeons server.HandlerConfigKey = "get-dungeons"
-	getDungeon  server.HandlerConfigKey = "get-dungeon"
+	getDungeons string = "get-dungeons"
+	getDungeon  string = "get-dungeon"
 )
 
-func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
 		getDungeons: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons",
-			HandlerFunc: rnr.GetDungeonsHandler,
+			HandlerFunc: rnr.getDungeonsHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
-				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+				ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeon",
+						Location: "schema/game/dungeon",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/game/dungeon",
 							Name:     "data.schema.json",
 						},
 					},
@@ -52,19 +52,19 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 		getDungeon: {
 			Method:      http.MethodGet,
 			Path:        "/api/v1/dungeons/:dungeon_id",
-			HandlerFunc: rnr.GetDungeonHandler,
+			HandlerFunc: rnr.getDungeonHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/dungeon",
+						Location: "schema/game/dungeon",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/game/dungeon",
 							Name:     "data.schema.json",
 						},
 					},
@@ -78,28 +78,16 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[server.HandlerConfigKey]server.Ha
 	})
 }
 
-// GetDungeonHandler -
-func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "GetDungeonHandler")
-	l.Info("** Get dungeon handler **")
+// getDungeonHandler -
+func (rnr *Runner) getDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "getDungeonHandler")
 
 	// Path parameters
 	id := pp.ByName("dungeon_id")
 
-	if id == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", id)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(id) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", id)
-		server.WriteError(l, w, err)
-		return err
-
-	}
-
 	l.Info("Getting dungeon record ID >%s<", id)
 
-	rec, err := m.(*model.Model).GetDungeonRec(id, false)
+	rec, err := m.(*model.Model).GetDungeonRec(id, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -107,7 +95,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if rec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", id)
+		err := coreerror.NewNotFoundError("dungeon", id)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -125,7 +113,7 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 		},
 	}
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err
@@ -134,23 +122,15 @@ func (rnr *Runner) GetDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 	return nil
 }
 
-// GetDungeonsHandler -
-func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "GetDungeonsHandler")
-	l.Info("** Get dungeons handler **")
+// getDungeonsHandler -
+func (rnr *Runner) getDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithContext(l, "getDungeonsHandler")
 
-	var recs []*record.Dungeon
-	var err error
+	opts := queryparam.ToSQLOptions(qp)
 
-	params := make(map[string]interface{})
-	for paramName, paramValue := range qp {
-		l.Info("Querying dungeon records with param name >%s< value >%v<", paramName, paramValue)
-		params[paramName] = paramValue
-	}
+	l.Info("Querying dungeon records with opts >%#v<", opts)
 
-	l.Info("Querying dungeon records with params >%#v<", params)
-
-	recs, err = m.(*model.Model).GetDungeonRecs(params, nil, false)
+	recs, err := m.(*model.Model).GetDungeonRecs(opts)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -176,7 +156,7 @@ func (rnr *Runner) GetDungeonsHandler(w http.ResponseWriter, r *http.Request, pp
 
 	l.Info("Responding with >%#v<", res)
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err

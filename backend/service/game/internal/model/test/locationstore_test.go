@@ -27,7 +27,7 @@ func TestCreateLocationRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -68,7 +68,7 @@ func TestCreateLocationRec(t *testing.T) {
 		func() {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -78,7 +78,7 @@ func TestCreateLocationRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec(th.Data)
@@ -106,7 +106,7 @@ func TestGetLocationRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -136,7 +136,7 @@ func TestGetLocationRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -146,10 +146,10 @@ func TestGetLocationRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetLocationRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetLocationRec(tc.id(), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetLocationRec returns error")
 				return
@@ -173,7 +173,7 @@ func TestUpdateLocationRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -207,7 +207,7 @@ func TestUpdateLocationRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -217,7 +217,7 @@ func TestUpdateLocationRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec()
@@ -245,7 +245,7 @@ func TestDeleteLocationRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -275,7 +275,7 @@ func TestDeleteLocationRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -285,7 +285,7 @@ func TestDeleteLocationRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			err := h.Model.(*model.Model).DeleteLocationRec(tc.id())
@@ -295,7 +295,7 @@ func TestDeleteLocationRec(t *testing.T) {
 			}
 			require.NoError(t, err, "DeleteLocationRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetLocationRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetLocationRec(tc.id(), nil)
 			require.NoError(t, err, "GetLocationRec returns without error")
 			require.Nil(t, rec, "GetLocationRec does not return record")
 		}()

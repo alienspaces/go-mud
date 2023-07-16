@@ -14,6 +14,7 @@ func XPaginationHeader(collectionLen int, pageSize int) func(http.ResponseWriter
 
 	return func(w http.ResponseWriter) error {
 		w.Header().Set(HeaderXPagination, XPaginationHeaderValue(hasMore))
+		w.Header().Set("Access-Control-Expose-Headers", HeaderXPagination)
 		return nil
 	}
 }

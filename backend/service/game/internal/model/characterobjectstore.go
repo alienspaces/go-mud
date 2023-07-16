@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetCharacterObjectRecs -
-func (m *Model) GetCharacterObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.CharacterObject, error) {
+func (m *Model) GetCharacterObjectRecs(opts *coresql.Options) ([]*record.CharacterObject, error) {
 
 	l := m.Logger("GetCharacterObjectRecs")
 
-	l.Debug("Getting dungeon character records params >%s<", params)
+	l.Debug("Getting dungeon character records opts >%#v<", opts)
 
 	r := m.CharacterObjectRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetCharacterObjectRec -
-func (m *Model) GetCharacterObjectRec(recID string, forUpdate bool) (*record.CharacterObject, error) {
+func (m *Model) GetCharacterObjectRec(recID string, lock *coresql.Lock) (*record.CharacterObject, error) {
 
 	l := m.Logger("GetCharacterObjectRec")
 
@@ -28,12 +29,11 @@ func (m *Model) GetCharacterObjectRec(recID string, forUpdate bool) (*record.Cha
 
 	r := m.CharacterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -87,7 +87,6 @@ func (m *Model) DeleteCharacterObjectRec(recID string) error {
 
 	r := m.CharacterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -110,7 +109,6 @@ func (m *Model) RemoveCharacterObjectRec(recID string) error {
 
 	r := m.CharacterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
+import 'package:go_mud_client/utility.dart';
 
 enum DescriptionOpacity { fadeIn, fadeOut }
 
@@ -63,7 +64,9 @@ class _GameLocationDescriptionWidgetState
                 alignment: Alignment.center,
                 margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
                 child: Text(
-                    widget.dungeonActionRecord.actionLocation.locationName,
+                    normaliseName(
+                      widget.dungeonActionRecord.actionLocation.locationName,
+                    ),
                     style: Theme.of(context).textTheme.headlineSmall),
               ),
               Container(

@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -14,9 +15,14 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 	if rec.ID == "" {
 		// Can only have a single turn record per dungeon instance
 		recs, err := m.GetTurnRecs(
-			map[string]interface{}{
-				"dungeon_instance_id": rec.DungeonInstanceID,
-			}, nil, false,
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "dungeon_instance_id",
+						Val: rec.DungeonInstanceID,
+					},
+				},
+			},
 		)
 		if err != nil {
 			l.Warn("failed to get many turn records >%v<", err)
@@ -29,7 +35,7 @@ func (m *Model) validateTurnRec(rec *record.Turn) error {
 		}
 	} else {
 		l.Debug("turn duration >%d", m.turnDuration)
-		currRec, err := m.GetTurnRec(rec.ID, false)
+		currRec, err := m.GetTurnRec(rec.ID, nil)
 		if err != nil {
 			l.Warn("failed getting existing turn record >%v<", err)
 			return err

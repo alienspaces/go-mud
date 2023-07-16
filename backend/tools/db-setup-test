@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Local development, database setup, ready for unit testing
+
+# copy development env
+cp .env.development .env
+
+# Environment
+source "${BASH_SOURCE%/*}"/env || exit $?
+
+source "${BASH_SOURCE%/*}"/db-start || exit $?
+
+source "${BASH_SOURCE%/*}"/db-migrate-up || exit $?

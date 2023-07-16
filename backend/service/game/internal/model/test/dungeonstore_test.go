@@ -28,7 +28,7 @@ func TestCreateDungeonRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -65,7 +65,7 @@ func TestCreateDungeonRec(t *testing.T) {
 		func() {
 
 			// Test harness
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -75,7 +75,7 @@ func TestCreateDungeonRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec()
@@ -109,7 +109,7 @@ func TestGetDungeonRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -139,7 +139,7 @@ func TestGetDungeonRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -149,10 +149,10 @@ func TestGetDungeonRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetDungeonRec(tc.id(), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetDungeonRec returns error")
 				return
@@ -182,7 +182,7 @@ func TestUpdateDungeonRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -216,7 +216,7 @@ func TestUpdateDungeonRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -226,7 +226,7 @@ func TestUpdateDungeonRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec()
@@ -260,7 +260,7 @@ func TestDeleteDungeonRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -290,7 +290,7 @@ func TestDeleteDungeonRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -300,7 +300,7 @@ func TestDeleteDungeonRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			err := h.Model.(*model.Model).DeleteDungeonRec(tc.id())
@@ -310,7 +310,7 @@ func TestDeleteDungeonRec(t *testing.T) {
 			}
 			require.NoError(t, err, "DeleteDungeonRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetDungeonRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetDungeonRec(tc.id(), nil)
 			require.NoError(t, err, "GetDungeonRec returns without error")
 			require.Nil(t, rec, "GetDungeonRec does not return record")
 		}()

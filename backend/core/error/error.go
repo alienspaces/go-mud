@@ -3,164 +3,241 @@ package error
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
+
+	"github.com/xeipuuv/gojsonschema"
 )
 
-const (
-	// TODO: (core) Change to data
-	ErrorCategoryValidation ErrorCategory = "validation"
-	// TODO: (core) Additional categories data, query_parameter and path parameter
-	ErrorCategoryResource ErrorCategory = "resource"
-	ErrorCategoryClient   ErrorCategory = "client"
-	ErrorCategoryServer   ErrorCategory = "server"
+var (
+	reArray = regexp.MustCompile(`(?m)\.(\d+)(\.)?`)
 )
 
-const (
-	// TODO: (core) Change the following to data.invalid
-	ErrorCodeValidationSchema ErrorCode = "validation.schema"
-	// TODO: (core) Change the following to data.invalid_json
-	ErrorCodeValidationJSON ErrorCode = "validation.invalid_json"
-	// TODO: (core) Change the following to query_parameter.invalid
-	ErrorCodeValidationQueryParam ErrorCode = "validation.invalid_query_parameter"
-	// TODO: (core) Change the following to path_parameter.invalid
-	ErrorCodeValidationPathParam   ErrorCode = "validation.invalid_path_parameter"
-	ErrorCodeResourceNotFound      ErrorCode = "resource.not_found"
-	ErrorCodeClientUnauthorized    ErrorCode = "client.unauthorized"
-	ErrorCodeClientUnauthenticated ErrorCode = "client.unauthenticated"
-	ErrorCodeServerUnavailable     ErrorCode = "server.unavailable"
-	ErrorCodeServerInternal        ErrorCode = "server.internal_error"
-)
-
-type Error struct {
-	HttpStatusCode         int                     `json:"-"`
-	ErrorCode              ErrorCode               `json:"code"`
-	Message                string                  `json:"message"`
-	SchemaValidationErrors []SchemaValidationError `json:"validationErrors,omitempty"`
+var internal = Error{
+	HttpStatusCode: http.StatusInternalServerError,
+	ErrorCode:      Internal,
+	Message:        "An internal error has occurred.",
 }
 
-func (e Error) Error() string {
-	return e.Message
+func NewInternalError() error {
+	return internal
 }
 
-type ErrorCategory string
-type ErrorCode string
-
-func NewErrorCode(ec ErrorCategory, et ErrorType, s string) ErrorCode {
-	return ErrorCode(fmt.Sprintf("%s.%s_%s", ec, et, s))
+var notFound = Error{
+	HttpStatusCode: http.StatusNotFound,
+	ErrorCode:      NotFound,
+	Message:        "Resource not found",
 }
 
-func HasErrorCode(err error, ec ErrorCode) bool {
-	e, err := ToError(err)
-	if err != nil {
-		return false
-	}
-
-	return e.ErrorCode == ec
-}
-
-func NewResourceNotFoundError(resourceName string, resourceID string) error {
-	e := GetRegistryError(ErrorCodeResourceNotFound)
-	e.Message = fmt.Sprintf("%s with ID >%s< not found", resourceName, resourceID)
-
-	return e
-}
-
-func NewServerInternalError() error {
-	return GetRegistryError(ErrorCodeServerInternal)
-}
-
-func NewServerUnavailableError() error {
-	return GetRegistryError(ErrorCodeServerUnavailable)
-}
-
-func NewClientUnauthorizedError() error {
-	return GetRegistryError(ErrorCodeClientUnauthorized)
-}
-
-func NewClientUnauthenticatedError(message string) error {
-	e := GetRegistryError(ErrorCodeClientUnauthenticated)
-	e.Message = message
-	return e
-}
-
-func NewValidationQueryParamError(message string) error {
-	e := GetRegistryError(ErrorCodeValidationQueryParam)
-	e.Message = message
-	return e
-}
-
-func ProcessValidationQueryParamError(err error) error {
-	e, conversionErr := ToError(err)
-	if conversionErr != nil {
-		return err
-	}
-
-	if len(e.SchemaValidationErrors) == 0 {
-		return NewValidationQueryParamError(e.Error())
-	}
-
-	errStr := strings.Builder{}
-	errStr.WriteString("Invalid query parameter(s): ")
-	for i, sve := range e.SchemaValidationErrors {
-		if sve.GetField() == "$" {
-			errStr.WriteString(fmt.Sprintf("(%d) %s; ", i+1, sve.Message))
-		} else {
-			errStr.WriteString(fmt.Sprintf("(%d) %s: %s; ", i+1, sve.GetField(), sve.Message))
-		}
-	}
-
-	formattedErrString := errStr.String()
-
-	// remove extra space and semicolon
-	formattedErrString = formattedErrString[0 : len(formattedErrString)-2]
-	formattedErrString += "."
-
-	return NewValidationQueryParamError(formattedErrString)
-}
-
-func NewValidationPathParamTypeError(param string, id string) error {
-	e := GetRegistryError(ErrorCodeValidationPathParam)
-	e.Message = fmt.Sprintf("Path parameter %s value >%s< is not a valid UUID", param, id)
-	return e
-}
-
-func NewValidationPathParamError(param, id, message string) error {
-	e := GetRegistryError(ErrorCodeValidationPathParam)
-	if message == "" {
-		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid", param, id)
-	} else {
-		e.Message = fmt.Sprintf("Path parameter %s value >%s< is not valid, %s", param, id, message)
+func NewNotFoundError(resource string, id string) error {
+	e := notFound
+	if resource != "" && id != "" {
+		e.Message = fmt.Sprintf("%s with ID >%s< not found", resource, id)
 	}
 	return e
 }
 
-func NewValidationJSONError(message string) error {
-	e := GetRegistryError(ErrorCodeValidationJSON)
+var unavailable = Error{
+	HttpStatusCode: http.StatusServiceUnavailable,
+	ErrorCode:      Unavailable,
+	Message:        "Server overloaded: unable to process request",
+}
+
+func NewUnavailableError() error {
+	return unavailable
+}
+
+var malformed = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      Malformed,
+	Message:        "Malformed data: unable to process the request",
+}
+
+func NewMalformedError() error {
+	return malformed
+}
+
+var unauthorized = Error{
+	HttpStatusCode: http.StatusForbidden,
+	ErrorCode:      Unauthorized,
+	Message:        "Permission to the requested resource is denied.",
+}
+
+func NewUnauthorizedError() error {
+	e := unauthorized
+	return e
+}
+
+var unauthenticated = Error{
+	HttpStatusCode: http.StatusUnauthorized,
+	ErrorCode:      Unauthenticated,
+	Message:        "Request is unauthenticated",
+}
+
+func NewUnauthenticatedError(message string, args ...any) error {
+	e := unauthenticated
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidParam = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidParam,
+	Message:        "Request contains invalid parameters",
+}
+
+func NewParamError(message string, args ...any) error {
+	e := invalidParam
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidHeader = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidHeader,
+	Message:        "Request contains invalid headers",
+}
+
+func NewHeaderError(message string, args ...any) error {
+	e := invalidHeader
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidData = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidData,
+	Message:        "Request body contains invalid data.",
+}
+
+func NewInvalidDataError(message string, args ...any) error {
+	e := invalidData
+	if message != "" {
+		e.Message = fmt.Sprintf(message, args...)
+	}
+	return e
+}
+
+var invalidAction = Error{
+	HttpStatusCode: http.StatusConflict,
+	ErrorCode:      InvalidAction,
+	Message:        "The request conflicts with the current state of the target resource.",
+}
+
+func NewInvalidActionError(message string) error {
+	e := invalidAction
 	if message != "" {
 		e.Message = message
 	}
 	return e
 }
 
-type ErrorType string
+var invalidJSON = Error{
+	HttpStatusCode: http.StatusBadRequest,
+	ErrorCode:      InvalidJSON,
+	Message:        "Request body failed JSON schema validation.",
+}
 
-const (
-	ErrorTypeUnsupported ErrorType = "unsupported"
-	ErrorTypeInvalid     ErrorType = "invalid"
-)
+func NewInvalidJSONError(resultErrors []gojsonschema.ResultError) error {
+	e := invalidJSON
 
-func NewValidationInvalidError(errorCodeSuffix string, message string) error {
+	resultErrors = filterNonUserFriendlyErrors(resultErrors)
+
+	for _, re := range resultErrors {
+		sve := setDataPath(SchemaValidationError{}, re)
+		sve = setMessage(sve, re)
+		e.SchemaValidationErrors = append(e.SchemaValidationErrors, sve)
+	}
+
+	return e
+}
+
+func filterNonUserFriendlyErrors(re []gojsonschema.ResultError) []gojsonschema.ResultError {
+	var friendly []gojsonschema.ResultError
+	var unfriendly []gojsonschema.ResultError
+
+	// These errors refer to conditionals in the schema that may not be understood by end-users.
+	for _, err := range re {
+		errType := err.Type()
+		switch errType {
+		case "number_any_of", "number_one_of", "number_all_of", "number_not", "condition_then", "condition_else":
+			unfriendly = append(unfriendly, err)
+		default:
+			friendly = append(friendly, err)
+		}
+	}
+
+	// The non-user friendly errors are _usually_ accompanied by a more specific user-friendly error.
+	if len(friendly) == 0 {
+		return unfriendly
+	}
+
+	return friendly
+}
+
+func setDataPath(sve SchemaValidationError, re gojsonschema.ResultError) SchemaValidationError {
+	var field string
+	if re.Type() == "required" {
+		field = re.Details()["property"].(string)
+	} else {
+		field = re.Field()
+	}
+
+	sve.DataPath = "$"
+
+	// not sure if it is possible for the field to be empty, but to be safe the path is set to "$"
+	switch field {
+	case "", "(root)":
+		return sve
+	}
+
+	// reformat fields with array index and prefix with "$." (e.g contacts.0.type -> $.contacts[0].type, contacts.0 -> $.contacts[0])
+	sve.DataPath = sve.DataPath + "." + reArray.ReplaceAllString(field, "[$1]$2")
+
+	return sve
+}
+
+// setMessage sets the detail of the validation error with the reformatted errors returned from the validation.
+func setMessage(sve SchemaValidationError, re gojsonschema.ResultError) SchemaValidationError {
+	switch re.Type() {
+	case "number_gte", "number_gt", "number_lte", "number_lt", "format", "pattern", "array_min_items", "array_max_items":
+		sve.Message = re.String()
+		if strings.Contains(sve.Message, " 1 items") {
+			sve.Message = strings.ReplaceAll(sve.Message, " 1 items", " 1 item")
+		}
+	default:
+		sve.Message = re.Description()
+	}
+
+	// clean up message to avoid repeating the property
+	if strings.Contains(sve.Message, re.Field()+": ") {
+		sve.Message = strings.ReplaceAll(sve.Message, re.Field()+": ", "")
+	}
+	if strings.Contains(sve.Message, re.Field()+" must") {
+		sve.Message = strings.ReplaceAll(sve.Message, re.Field()+" must", "Must")
+	}
+	if strings.Contains(sve.Message, re.Field()+" does") {
+		sve.Message = strings.ReplaceAll(sve.Message, re.Field()+" does", "Does")
+	}
+
+	return sve
+}
+
+// Dynamic error generation functions
+func CreateInvalidError(errorCodeSuffix string, message string, args ...any) error {
 	return Error{
 		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      NewErrorCode(ErrorCategoryValidation, ErrorTypeInvalid, errorCodeSuffix),
-		Message:        message,
+		ErrorCode:      CreateErrorCode("validation.invalid", errorCodeSuffix),
+		Message:        fmt.Sprintf(message, args...),
 	}
 }
 
-func NewValidationUnsupportedError(errorCodeSuffix string, message string) error {
-	return Error{
-		HttpStatusCode: http.StatusBadRequest,
-		ErrorCode:      NewErrorCode(ErrorCategoryValidation, ErrorTypeUnsupported, errorCodeSuffix),
-		Message:        message,
-	}
+func CreateErrorCode(errorType string, field string) ErrorCode {
+	return ErrorCode(fmt.Sprintf("%s_%s", errorType, field))
 }

@@ -27,7 +27,7 @@ func TestCreateCharacterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -70,7 +70,7 @@ func TestCreateCharacterRec(t *testing.T) {
 		func() {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -80,7 +80,7 @@ func TestCreateCharacterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec(th.Data)
@@ -108,7 +108,7 @@ func TestGetCharacterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -138,7 +138,7 @@ func TestGetCharacterRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -148,10 +148,10 @@ func TestGetCharacterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetCharacterRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetCharacterRec(tc.id(), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetCharacterRec returns error")
 				return
@@ -175,7 +175,7 @@ func TestUpdateCharacterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -209,7 +209,7 @@ func TestUpdateCharacterRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -219,7 +219,7 @@ func TestUpdateCharacterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec()
@@ -247,7 +247,7 @@ func TestDeleteCharacterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -277,7 +277,7 @@ func TestDeleteCharacterRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -287,7 +287,7 @@ func TestDeleteCharacterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			err := h.Model.(*model.Model).DeleteCharacterRec(tc.id())
@@ -297,7 +297,7 @@ func TestDeleteCharacterRec(t *testing.T) {
 			}
 			require.NoError(t, err, "DeleteCharacterRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetCharacterRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetCharacterRec(tc.id(), nil)
 			require.NoError(t, err, "GetCharacterRec returns without error")
 			require.Nil(t, rec, "GetCharacterRec does not return record")
 		}()

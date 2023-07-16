@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetMonsterObjectRecs -
-func (m *Model) GetMonsterObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.MonsterObject, error) {
+func (m *Model) GetMonsterObjectRecs(opts *coresql.Options) ([]*record.MonsterObject, error) {
 
 	l := m.Logger("GetMonsterObjectRecs")
 
-	l.Debug("Getting dungeon monster records params >%s<", params)
+	l.Debug("Getting dungeon monster records opts >%#v<", opts)
 
 	r := m.MonsterObjectRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetMonsterObjectRec -
-func (m *Model) GetMonsterObjectRec(recID string, forUpdate bool) (*record.MonsterObject, error) {
+func (m *Model) GetMonsterObjectRec(recID string, lock *coresql.Lock) (*record.MonsterObject, error) {
 
 	l := m.Logger("GetMonsterObjectRec")
 
@@ -28,12 +29,11 @@ func (m *Model) GetMonsterObjectRec(recID string, forUpdate bool) (*record.Monst
 
 	r := m.MonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -87,7 +87,6 @@ func (m *Model) DeleteMonsterObjectRec(recID string) error {
 
 	r := m.MonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -110,7 +109,6 @@ func (m *Model) RemoveMonsterObjectRec(recID string) error {
 
 	r := m.MonsterObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

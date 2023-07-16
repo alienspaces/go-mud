@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetActionMonsterRecs -
-func (m *Model) GetActionMonsterRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.ActionMonster, error) {
+func (m *Model) GetActionMonsterRecs(opts *coresql.Options) ([]*record.ActionMonster, error) {
 
 	l := m.Logger("GetActionMonsterRecs")
 
-	l.Debug("Getting dungeon action monster records params >%s<", params)
+	l.Debug("Getting dungeon action monster records opts >%#v<", opts)
 
 	r := m.ActionMonsterRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetActionMonsterRec -
-func (m *Model) GetActionMonsterRec(recID string, forUpdate bool) (*record.ActionMonster, error) {
+func (m *Model) GetActionMonsterRec(recID string, lock *coresql.Lock) (*record.ActionMonster, error) {
 
 	l := m.Logger("GetActionMonsterRec")
 
@@ -28,12 +29,11 @@ func (m *Model) GetActionMonsterRec(recID string, forUpdate bool) (*record.Actio
 
 	r := m.ActionMonsterRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -87,7 +87,6 @@ func (m *Model) DeleteActionMonsterRec(recID string) error {
 
 	r := m.ActionMonsterRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -110,7 +109,6 @@ func (m *Model) RemoveActionMonsterRec(recID string) error {
 
 	r := m.ActionMonsterRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

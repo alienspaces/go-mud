@@ -20,7 +20,9 @@ var _ configurer.Configurer = &Config{}
 func NewConfig() (*Config, error) {
 
 	// Core default required items
-	items := config.NewItems(config.DefaultRequiredItemKeys(), true)
+	items := config.NewItems(config.DefaultRequiredDBItemKeys(), true)
+	items = append(items, config.NewItems(config.DefaultRequiredItemKeys(), true)...)
+	items = append(items, config.NewItems(config.DefaultItemKeys(), false)...)
 
 	// Additional service required items
 	items = append(items, config.NewItems([]string{

@@ -1,6 +1,8 @@
 package record
 
-import "gitlab.com/alienspaces/go-mud/backend/core/repository"
+import (
+	"gitlab.com/alienspaces/go-mud/backend/core/repository"
+)
 
 type Monster struct {
 	Name             string `db:"name"`

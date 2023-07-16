@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -15,11 +15,11 @@ func (rnr *Runner) DungeonRequestDataToRecord(data schema.DungeonData, rec *reco
 func (rnr *Runner) RecordToDungeonResponseData(dungeonRec record.Dungeon) (schema.DungeonData, error) {
 
 	data := schema.DungeonData{
-		DungeonID:          dungeonRec.ID,
-		DungeonName:        dungeonRec.Name,
-		DungeonDescription: dungeonRec.Description,
-		DungeonCreatedAt:   dungeonRec.CreatedAt,
-		DungeonUpdatedAt:   dungeonRec.UpdatedAt.Time,
+		ID:          dungeonRec.ID,
+		Name:        dungeonRec.Name,
+		Description: dungeonRec.Description,
+		CreatedAt:   dungeonRec.CreatedAt,
+		UpdatedAt:   dungeonRec.UpdatedAt.Time,
 	}
 
 	return data, nil

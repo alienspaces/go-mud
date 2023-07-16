@@ -3,10 +3,10 @@ test-backend:
     POSTGRES_DB: go-mud
     POSTGRES_USER: go-mud-user
     POSTGRES_PASSWORD: go-mud-pass
-  image: $CI_REGISTRY/alienspaces/go-mud/golang:1.19.2-alpine3.16
+  image: $CI_REGISTRY/alienspaces/go-mud/golang:1.20.4-alpine3.18
   stage: test-backend
   services:
-    - name: $CI_REGISTRY/alienspaces/go-mud/postgres:13.7-alpine3.16
+    - name: $CI_REGISTRY/alienspaces/go-mud/postgres:15.3-alpine3.18
       alias: postgres
   before_script:
     - apk add build-base
@@ -15,7 +15,7 @@ test-backend:
     - apk add postgresql-client
   script:
     - cd backend
-    - ./script/test-ci
+    - ./tools/test-ci
 
 build-backend:
   image: $CI_REGISTRY/alienspaces/go-mud/docker:23.0.3
@@ -29,4 +29,4 @@ build-backend:
     - apk add bash
   script:
     - cd backend
-    - ./script/build
+    - ./tools/build

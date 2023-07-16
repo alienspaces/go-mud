@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"math/rand"
 	"strconv"
 	"time"
 
@@ -80,9 +79,6 @@ func NewModel(c configurer.Configurer, l logger.Logger, s storer.Storer) (*Model
 	}
 
 	m.turnDuration = time.Duration(turnDuration) * time.Millisecond
-
-	// Seed the random generator
-	rand.Seed(time.Now().UnixNano())
 
 	return m, nil
 }

@@ -26,7 +26,7 @@ func TestCompile(t *testing.T) {
 		},
 	}
 
-	s, err := Compile(schema)
+	s, err := Compile(&schema)
 	require.NoError(t, err, "Compile returns without error")
 	require.NotNil(t, s, "Compile returns a compiled schema")
 
@@ -36,7 +36,7 @@ func TestCompile(t *testing.T) {
 		Name:         "test.missing.schema.json",
 	})
 
-	s, err = Compile(schema)
+	s, err = Compile(&schema)
 	require.Error(t, err, "Compile returns with error")
 	require.Nil(t, s, "Compile does not return a compiled schema with error")
 }
@@ -61,7 +61,7 @@ func BenchmarkCompile(b *testing.B) {
 	}
 
 	for n := 0; n < b.N; n++ {
-		Compile(schema)
+		Compile(&schema)
 	}
 }
 
@@ -85,7 +85,7 @@ func Benchmark_compile(b *testing.B) {
 	}
 
 	for n := 0; n < b.N; n++ {
-		compile(schema)
+		compile(&schema)
 	}
 }
 

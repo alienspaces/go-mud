@@ -14,8 +14,8 @@ type Query struct {
 	Log logger.Logger
 	DB  *sqlx.DB
 
-	prepared map[string]bool
-	stmtList map[string]*sqlx.NamedStmt
+	stmt map[string]*sqlx.NamedStmt
+	sql  map[string]string
 }
 
 var _ preparer.Query = &Query{}
@@ -23,48 +23,57 @@ var _ preparer.Query = &Query{}
 func NewQueryPreparer(l logger.Logger) (*Query, error) {
 
 	pCfg := Query{
-		Log:      l,
-		prepared: make(map[string]bool),
-		stmtList: make(map[string]*sqlx.NamedStmt),
+		Log:  l,
+		stmt: make(map[string]*sqlx.NamedStmt),
+		sql:  make(map[string]string),
 	}
 
 	return &pCfg, nil
 }
 
 // Init - Initialise preparer with database tx
-func (q *Query) Init(db *sqlx.DB) error {
+func (p *Query) Init(db *sqlx.DB) error {
+	l := p.Log.WithFunctionContext("Init")
 
 	if db == nil {
 		msg := "database db is nil, cannot init"
-		q.Log.Warn(msg)
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
-	q.DB = db
+	p.DB = db
 
 	return nil
 }
 
-func (q *Query) Prepare(p preparable.Query) error {
+func (p *Query) Prepare(q preparable.Query) error {
+	l := p.Log.WithFunctionContext("Prepare")
+
+	name := q.Name()
+	sql := q.SQL()
 
 	// This function is called on every new Modeller initialisation (i.e., on every new DB transaction).
 	// To prevent memory leaks, we must protect against the same SQL statement being prepared multiple times.
-	if _, ok := q.prepared[p.Name()]; ok {
+	if _, ok := p.stmt[name]; ok {
 		return nil
 	}
 
-	stmt, err := q.DB.PrepareNamed(p.SQL())
+	stmt, err := p.DB.PrepareNamed(sql)
 	if err != nil {
-		q.Log.Warn("error preparing QuerySQL statement >%v<", err)
+		l.Warn("error preparing QuerySQL statement >%v<", err)
 		return err
 	}
 
-	q.prepared[p.Name()] = true
-	q.stmtList[p.Name()] = stmt
+	p.sql[name] = sql
+	p.stmt[name] = stmt
 
 	return nil
 }
 
-func (q *Query) Stmt(p preparable.Query) *sqlx.NamedStmt {
-	return q.stmtList[p.Name()]
+func (p *Query) Stmt(q preparable.Query) *sqlx.NamedStmt {
+	return p.stmt[q.Name()]
+}
+
+func (p *Query) SQL(q preparable.Query) string {
+	return p.sql[q.Name()]
 }

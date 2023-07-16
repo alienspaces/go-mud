@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/character/create.request.schema.json",
+  "title": "Create Character",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$ref": "#/definitions/data"
+    }
+  },
+  "required": ["data"],
+  "definitions": {
+    "data": {
+      "type": "object",
+      "required": ["name", "strength", "dexterity", "intelligence"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "strength": {
+          "type": "number"
+        },
+        "dexterity": {
+          "type": "number"
+        },
+        "intelligence": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

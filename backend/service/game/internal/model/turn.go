@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -26,9 +27,14 @@ func (m *Model) IncrementDungeonInstanceTurn(args *IncrementDungeonInstanceTurnA
 	l.Info("Increment dungeon instance ID >%s< turn", args.DungeonInstanceID)
 
 	recs, err := m.GetTurnRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": args.DungeonInstanceID,
-		}, nil, true,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: args.DungeonInstanceID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting turn records >%v<", err)
@@ -62,7 +68,7 @@ func (m *Model) IncrementDungeonInstanceTurn(args *IncrementDungeonInstanceTurnA
 		turnDuration = *args.TurnDuration
 	}
 
-	sinceLastIncremented := time.Since(nulltime.ToTime(rec.IncrementedAt))
+	sinceLastIncremented := time.Since(null.NullTimeToTime(rec.IncrementedAt))
 	l.Debug("Last incremented duration >%d<", sinceLastIncremented.Milliseconds())
 	l.Debug("Turn duration             >%d<", turnDuration.Milliseconds())
 
@@ -78,7 +84,7 @@ func (m *Model) IncrementDungeonInstanceTurn(args *IncrementDungeonInstanceTurnA
 	l.Debug("Can increment, since last incremented %d > duration %d", sinceLastIncremented.Milliseconds(), turnDuration.Milliseconds())
 
 	rec.TurnNumber++
-	rec.IncrementedAt = nulltime.FromTime(time.Now().UTC())
+	rec.IncrementedAt = null.NullTimeFromTime(time.Now().UTC())
 
 	err = m.UpdateTurnRec(rec)
 	if err != nil {

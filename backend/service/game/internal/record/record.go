@@ -1,6 +1,7 @@
 package record
 
 type ActionRecordSet struct {
+	// The current action record
 	ActionRec *Action
 	// The character performing the action
 	ActionCharacterRec *ActionCharacter
@@ -45,4 +46,45 @@ type LocationInstanceViewRecordSet struct {
 	MonsterInstanceViewRecs   []*MonsterInstanceView
 	ObjectInstanceViewRecs    []*ObjectInstanceView
 	LocationInstanceViewRecs  []*LocationInstanceView
+}
+
+func (l *LocationInstanceViewRecordSet) LocationDirections() []string {
+	d := []string{}
+
+	if l.LocationInstanceViewRec == nil {
+		return d
+	}
+
+	li := l.LocationInstanceViewRec
+	if li.NorthLocationInstanceID.Valid {
+		d = append(d, "north")
+	}
+	if li.NortheastLocationInstanceID.Valid {
+		d = append(d, "northeast")
+	}
+	if li.EastLocationInstanceID.Valid {
+		d = append(d, "east")
+	}
+	if li.SoutheastLocationInstanceID.Valid {
+		d = append(d, "southeast")
+	}
+	if li.SouthLocationInstanceID.Valid {
+		d = append(d, "south")
+	}
+	if li.SouthwestLocationInstanceID.Valid {
+		d = append(d, "southwest")
+	}
+	if li.WestLocationInstanceID.Valid {
+		d = append(d, "west")
+	}
+	if li.NorthwestLocationInstanceID.Valid {
+		d = append(d, "northwest")
+	}
+	if li.UpLocationInstanceID.Valid {
+		d = append(d, "up")
+	}
+	if li.DownLocationInstanceID.Valid {
+		d = append(d, "down")
+	}
+	return d
 }

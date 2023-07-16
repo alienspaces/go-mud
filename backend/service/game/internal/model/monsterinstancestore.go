@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetMonsterInstanceRecs -
-func (m *Model) GetMonsterInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.MonsterInstance, error) {
+func (m *Model) GetMonsterInstanceRecs(opts *coresql.Options) ([]*record.MonsterInstance, error) {
 
 	l := m.Logger("GetMonsterInstanceRecs")
 
-	l.Debug("Getting monster instance records params >%s<", params)
+	l.Debug("Getting monster instance records opts >%#v<", opts)
 
 	r := m.MonsterInstanceRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetMonsterInstanceRec -
-func (m *Model) GetMonsterInstanceRec(recID string, forUpdate bool) (*record.MonsterInstance, error) {
+func (m *Model) GetMonsterInstanceRec(recID string, lock *coresql.Lock) (*record.MonsterInstance, error) {
 
 	l := m.Logger("GetMonsterInstanceRec")
 
@@ -28,12 +29,11 @@ func (m *Model) GetMonsterInstanceRec(recID string, forUpdate bool) (*record.Mon
 
 	r := m.MonsterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -43,15 +43,15 @@ func (m *Model) GetMonsterInstanceRec(recID string, forUpdate bool) (*record.Mon
 }
 
 // GetMonsterInstanceViewRecs -
-func (m *Model) GetMonsterInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.MonsterInstanceView, error) {
+func (m *Model) GetMonsterInstanceViewRecs(opts *coresql.Options) ([]*record.MonsterInstanceView, error) {
 
 	l := m.Logger("GetMonsterInstanceViewRecs")
 
-	l.Debug("Getting monster instance view records params >%s<", params)
+	l.Debug("Getting monster instance view records opts >%#v<", opts)
 
 	r := m.MonsterInstanceViewRepository()
 
-	return r.GetMany(params, operators, false)
+	return r.GetMany(opts)
 }
 
 // GetMonsterInstanceViewRec -
@@ -63,12 +63,11 @@ func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstance
 
 	r := m.MonsterInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, false)
+	rec, err := r.GetOne(recID, nil)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -122,7 +121,6 @@ func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 
 	r := m.MonsterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -145,7 +143,6 @@ func (m *Model) RemoveMonsterInstanceRec(recID string) error {
 
 	r := m.MonsterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

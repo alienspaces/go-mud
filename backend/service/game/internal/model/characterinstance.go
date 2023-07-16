@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -65,11 +66,11 @@ func (m *Model) CharacterExitDungeon(characterID string) error {
 
 	if characterInstanceRec == nil {
 		l.Warn("character instance record is nil")
-		err := coreerror.NewServerInternalError()
+		err := coreerror.NewInternalError()
 		return err
 	}
 
-	characterRec, err := m.GetCharacterRec(characterID, true)
+	characterRec, err := m.GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed to get character ID >%s< record >%v<", characterID, err)
 		return err
@@ -87,9 +88,14 @@ func (m *Model) CharacterExitDungeon(characterID string) error {
 
 	// Replace character object records
 	characterObjectRecs, err := m.GetCharacterObjectRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed to get character ID >%s< object records >%v<", characterID, err)
@@ -118,7 +124,7 @@ CHARACTER_OBJECT_RECS:
 		}
 	}
 
-	// Update character object reocrds or create missing character object records the character now has
+	// Update character object records or create missing character object records the character now has
 CHARACTER_OBJECT_INSTANCE_RECS:
 	for iidx := range characterObjectInstanceRecs {
 		for idx := range characterObjectRecs {
@@ -164,13 +170,13 @@ CHARACTER_OBJECT_INSTANCE_RECS:
 func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID string) (*CharacterInstanceRecordSet, error) {
 	l := m.Logger("CreateCharacterInstance")
 
-	locationInstanceRec, err := m.GetLocationInstanceRec(locationInstanceID, false)
+	locationInstanceRec, err := m.GetLocationInstanceRec(locationInstanceID, nil)
 	if err != nil {
 		l.Warn("failed getting location instance record >%v<", err)
 		return nil, err
 	}
 
-	characterRec, err := m.GetCharacterRec(characterID, false)
+	characterRec, err := m.GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		return nil, err
@@ -203,9 +209,14 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 	}
 
 	characterObjectRecs, err := m.GetCharacterObjectRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting character object records >%v<", err)
@@ -219,7 +230,7 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 		objectInstanceRec := &record.ObjectInstance{
 			ObjectID:            characterObjectRec.ObjectID,
 			DungeonInstanceID:   locationInstanceRec.DungeonInstanceID,
-			CharacterInstanceID: nullstring.FromString(characterInstanceRec.ID),
+			CharacterInstanceID: null.NullStringFromString(characterInstanceRec.ID),
 			IsStashed:           characterObjectRec.IsStashed,
 			IsEquipped:          characterObjectRec.IsEquipped,
 		}
@@ -281,9 +292,16 @@ func (m *Model) GetCharacterInstanceObjectInstanceRecs(characterInstanceID strin
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterInstanceID,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: characterInstanceID,
+				},
+			},
+		},
+	)
 }
 
 // GetCharacterInstanceEquippedObjectInstanceRecs -
@@ -294,10 +312,20 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstance
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterInstanceID,
-		"is_equipped":           true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: characterInstanceID,
+				},
+				{
+					Col: "is_equipped",
+					Val: true,
+				},
+			},
+		},
+	)
 }
 
 // GetCharacterInstanceStashedObjectInstanceRecs -
@@ -308,10 +336,20 @@ func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceI
 
 	r := m.ObjectInstanceRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterInstanceID,
-		"is_stashed":            true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: characterInstanceID,
+				},
+				{
+					Col: "is_stashed",
+					Val: true,
+				},
+			},
+		},
+	)
 }
 
 // GetCharacterInstanceObjectInstanceViewRecs -
@@ -322,9 +360,16 @@ func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID s
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterInstanceID,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: characterInstanceID,
+				},
+			},
+		},
+	)
 }
 
 // GetCharacterInstanceEquippedObjectInstanceViewRecs -
@@ -335,10 +380,20 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInst
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterInstanceID,
-		"is_equipped":           true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: characterInstanceID,
+				},
+				{
+					Col: "is_equipped",
+					Val: true,
+				},
+			},
+		},
+	)
 }
 
 // GetCharacterInstanceStashedObjectInstanceViewRecs -
@@ -349,8 +404,18 @@ func (m *Model) GetCharacterInstanceStashedObjectInstanceViewRecs(characterInsta
 
 	r := m.ObjectInstanceViewRepository()
 
-	return r.GetMany(map[string]interface{}{
-		"character_instance_id": characterInstanceID,
-		"is_stashed":            true,
-	}, nil, false)
+	return r.GetMany(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_instance_id",
+					Val: characterInstanceID,
+				},
+				{
+					Col: "is_stashed",
+					Val: true,
+				},
+			},
+		},
+	)
 }

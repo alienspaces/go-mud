@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/character/query.schema.json",
+    "title": "Character Query Parameters",
+    "description": "Query parameter schema for character collection",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        }
+    }
+}

@@ -43,9 +43,12 @@ CREATE TABLE test (
 
 	q := Query{
 		query.Query{
-			Log:      l,
-			Preparer: pq,
-			Tx:       nil,
+			Log:     l,
+			Prepare: pq,
+			Tx:      nil,
+			Config: query.Config{
+				Name: "test",
+			},
 		},
 	}
 
@@ -84,7 +87,7 @@ func TestQueryPrepare(t *testing.T) {
 	// NOTE: Following tests are testing function calls with a successfully
 	// prepared "preparableQuery" thing
 
-	// Run the following tests within a function so we can utilise
+	// run the following tests within a function, so we can utilise
 	// a deferred function to teardown any database setup
 	func() {
 		_, l, s, err := NewDependencies()
@@ -115,8 +118,8 @@ func TestQueryPrepare(t *testing.T) {
 		err = p.Prepare(q)
 		require.NoError(t, err, "Prepare returns without error")
 
-		// sql := p.SQL()
-		// assert.NotEmpty(t, sql, "Function query returns SQL")
+		sql := p.SQL(q)
+		assert.NotEmpty(t, sql, "Function query returns SQL")
 
 		stmt := p.Stmt(q)
 		assert.NotNil(t, stmt, "Function stmt returns NamedStmt")
@@ -124,9 +127,10 @@ func TestQueryPrepare(t *testing.T) {
 
 	// NOTE: Following tests are testing function calls with an unprepared "preparable" thing
 
-	// Run the following tests within a function so we can utilise
+	// run the following tests within a function to we can utilise
 	// a deferred function to teardown any database setup
 	func() {
+
 		_, l, s, err := NewDependencies()
 		require.NoError(t, err, "NewDependencies returns without error")
 
@@ -151,7 +155,7 @@ func TestQueryPrepare(t *testing.T) {
 		}()
 
 		require.NoError(t, err, "Init preparer returns without error")
-		require.NotNil(t, q, "Query is not nil")
+		require.NotNil(t, q, "Querier is not nil")
 
 		stmt := p.Stmt(q)
 		assert.Nil(t, stmt, "Function stmt returns NamedStmt")

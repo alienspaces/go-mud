@@ -7,7 +7,6 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/prepare"
-
 	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
@@ -17,21 +16,29 @@ import (
 )
 
 // Runner - implements the runnerer interface
+
 type Runner struct {
-	Config            configurer.Configurer
-	Log               logger.Logger
-	Store             storer.Storer
-	PrepareRepository preparer.Repository
-	PrepareQuery      preparer.Query
-	Model             modeller.Modeller
+	Config             configurer.Configurer
+	Log                logger.Logger
+	Store              storer.Storer
+	RepositoryPreparer preparer.Repository
+	QueryPreparer      preparer.Query
+	Model              modeller.Modeller
 
 	// cli configuration - https://github.com/urfave/cli/blob/master/docs/v2/manual.md
 	App *cli.App
 
-	// composable functions
-	PreparerRepositoryFunc func() (preparer.Repository, error)
-	PreparerQueryFunc      func() (preparer.Query, error)
-	ModellerFunc           func() (modeller.Modeller, error)
+	// RepositoryPreparerFunc returns a repository preparer. Note that the runner InitDB method
+	// must be called beforehand to assign the default query preparer.
+	RepositoryPreparerFunc func() (preparer.Repository, error)
+	// QueryPreparerFunc returns a query preparer. Note that the runner InitDB method must be
+	// called beforehand to assign the default query preparer.
+	QueryPreparerFunc func() (preparer.Query, error)
+	ModellerFunc      func() (modeller.Modeller, error)
+
+	// Initialisation will be deferred, it becomes the responsiblity
+	// of the runner implementation to call init
+	DeferModelInitialisation bool
 }
 
 // ensure we comply with the Runnerer interface
@@ -40,59 +47,23 @@ var _ runnable.Runnable = &Runner{}
 // Init - override to perform custom initialization
 func (rnr *Runner) Init(s storer.Storer) error {
 
-	if rnr.Log == nil {
-		return fmt.Errorf("logger is nil, cannot initialise CLI runner")
-	}
-
-	rnr.Log.Info("** Initialise **")
+	rnr.Log.Info("** Init **")
 
 	// Storer
 	rnr.Store = s
 	if rnr.Store == nil {
-		msg := "storer undefined, cannot init runner"
+		msg := "store undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
-	// Initialise storer
-	err := rnr.Store.Init()
-	if err != nil {
-		rnr.Log.Warn("Failed store init >%v<", err)
-		return err
-	}
+	return nil
+}
 
-	// Repository
-	if rnr.PreparerRepositoryFunc == nil {
-		rnr.PreparerRepositoryFunc = rnr.PreparerRepository
-	}
+// InitDB initialises a database connection, the repository preparer and the query preparer
+func (rnr *Runner) InitDB() error {
 
-	p, err := rnr.PreparerRepositoryFunc()
-	if err != nil {
-		rnr.Log.Warn("Failed preparer func >%v<", err)
-		return err
-	}
-
-	rnr.PrepareRepository = p
-	if rnr.PrepareRepository == nil {
-		rnr.Log.Warn("Repository is nil, cannot continue")
-		return err
-	}
-
-	if rnr.PreparerQueryFunc == nil {
-		rnr.PreparerQueryFunc = rnr.PreparerQuery
-	}
-
-	pCfg, err := rnr.PreparerQueryFunc()
-	if err != nil {
-		rnr.Log.Warn("Failed preparer config func >%v<", err)
-		return err
-	}
-
-	rnr.PrepareQuery = pCfg
-	if rnr.PrepareQuery == nil {
-		rnr.Log.Warn("Repository config is nil, cannot continue")
-		return err
-	}
+	rnr.Log.Info("** InitDB **")
 
 	db, err := rnr.Store.GetDb()
 	if err != nil {
@@ -100,19 +71,48 @@ func (rnr *Runner) Init(s storer.Storer) error {
 		return err
 	}
 
-	// Initialise preparer
-	if err = rnr.PrepareRepository.Init(db); err != nil {
-		rnr.Log.Warn("Failed preparer init >%v<", err)
-		return err
+	// Repository
+	if rnr.RepositoryPreparerFunc == nil {
+		rnr.RepositoryPreparerFunc = rnr.defaultRepositoryPreparerFunc
 	}
-	if err = rnr.PrepareQuery.Init(db); err != nil {
-		rnr.Log.Warn("Failed preparer config init >%v<", err)
+
+	repoPreparer, err := rnr.RepositoryPreparerFunc()
+	if err != nil {
+		rnr.Log.Warn("Failed getting repository preparer func >%v<", err)
 		return err
 	}
 
-	// Modeller
-	if rnr.ModellerFunc == nil {
-		rnr.ModellerFunc = rnr.Modeller
+	rnr.RepositoryPreparer = repoPreparer
+	if rnr.RepositoryPreparer == nil {
+		rnr.Log.Warn("RepositoryPreparer is nil, cannot continue")
+		return err
+	}
+
+	if err = rnr.RepositoryPreparer.Init(db); err != nil {
+		rnr.Log.Warn("Failed preparer init >%v<", err)
+		return err
+	}
+
+	// Query
+	if rnr.QueryPreparerFunc == nil {
+		rnr.QueryPreparerFunc = rnr.defaultQueryPreparerFunc
+	}
+
+	queryPreparer, err := rnr.QueryPreparerFunc()
+	if err != nil {
+		rnr.Log.Warn("Failed getting query preparer func >%v<", err)
+		return err
+	}
+
+	rnr.QueryPreparer = queryPreparer
+	if rnr.QueryPreparer == nil {
+		rnr.Log.Warn("QueryPreparer config is nil, cannot continue")
+		return err
+	}
+
+	if err = rnr.QueryPreparer.Init(db); err != nil {
+		rnr.Log.Warn("Failed preparer config init >%v<", err)
+		return err
 	}
 
 	return nil
@@ -123,56 +123,104 @@ func (rnr *Runner) Run(args map[string]interface{}) (err error) {
 
 	rnr.Log.Debug("** Run **")
 
-	// store init
-	tx, err := rnr.Store.GetTx()
-	if err != nil {
-		rnr.Log.Warn("Failed getting tx >%v<", err)
-		return err
+	if !rnr.DeferModelInitialisation {
+		err := rnr.InitModel()
+		if err != nil {
+			rnr.Log.Warn("failed model init >%v<", err)
+			return err
+		}
 	}
 
-	// modeller
-	m, err := rnr.ModellerFunc()
-	if err != nil {
-		rnr.Log.Warn("Failed modeller func >%v<", err)
-		return err
-	}
-
-	if m == nil {
-		rnr.Log.Warn("Modeller is nil, cannot continue")
-		return err
-	}
-
-	// model init
-	err = m.Init(rnr.PrepareRepository, rnr.PrepareQuery, tx)
-	if err != nil {
-		rnr.Log.Warn("Failed model init >%v<", err)
-		return err
-	}
-	rnr.Model = m
-
-	// run
+	// Run
 	err = rnr.App.Run(os.Args)
 	if err != nil {
-		rnr.Log.Warn("Failed running app >%v<", err)
+		rnr.Log.Warn("failed running app >%v<", err)
 
 		// Rollback database transaction on error
-		tx.Rollback()
+		if rnr.Model != nil {
+			rnr.Log.Warn("rolling back database transaction")
+			rnr.Model.Rollback()
+		}
+
 		return err
 	}
 
 	// Commit database transaction
-	err = tx.Commit()
+	if rnr.Model != nil {
+		rnr.Log.Info("committing database transaction")
+		err = rnr.Model.Commit()
+		if err != nil {
+			rnr.Log.Warn("Failed model commit >%v<", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+// InitModel iniitialises a database connection, sources a new model and initialises the model
+// with a new database transaction.
+func (rnr *Runner) InitModel() error {
+
+	rnr.Log.Info("** Initialising model **")
+
+	err := rnr.InitDB()
 	if err != nil {
-		rnr.Log.Warn("Failed database transaction commit >%v<", err)
+		rnr.Log.Warn("failed initialising db >%v<", err)
+		return err
+	}
+
+	if rnr.ModellerFunc == nil {
+		rnr.ModellerFunc = rnr.DefaultModellerFunc
+	}
+
+	m, err := rnr.ModellerFunc()
+	if err != nil {
+		rnr.Log.Warn("Failed getting modeller >%v<", err)
+		return err
+	}
+
+	if m == nil {
+		rnr.Log.Warn("Model is nil, cannot continue")
+		return err
+	}
+
+	rnr.Model = m
+
+	err = rnr.InitModelTx()
+	if err != nil {
+		rnr.Log.Warn("Failed model init tx >%v<", err)
 		return err
 	}
 
 	return nil
 }
 
-func (rnr *Runner) PreparerRepository() (preparer.Repository, error) {
+// InitModelTx initialises the model with a new database transaction.
+func (rnr *Runner) InitModelTx() error {
 
-	rnr.Log.Info("** Repository **")
+	rnr.Log.Info("** Initialising model tx **")
+
+	tx, err := rnr.Store.GetTx()
+	if err != nil {
+		rnr.Log.Warn("Failed getting store transaction >%v<", err)
+		return err
+	}
+
+	err = rnr.Model.Init(rnr.RepositoryPreparer, rnr.QueryPreparer, tx)
+	if err != nil {
+		rnr.Log.Warn("Failed model init >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
+// defaultRepositoryPreparerFunc - returns a default uninitialised repository preparer, set the
+// property RepositoryPreparerFunc to provide your own custom repository preparer.
+func (rnr *Runner) defaultRepositoryPreparerFunc() (preparer.Repository, error) {
+
+	rnr.Log.Debug("** defaultRepositoryPreparerFunc **")
 
 	p, err := prepare.NewRepositoryPreparer(rnr.Log)
 	if err != nil {
@@ -183,9 +231,11 @@ func (rnr *Runner) PreparerRepository() (preparer.Repository, error) {
 	return p, nil
 }
 
-func (rnr *Runner) PreparerQuery() (preparer.Query, error) {
+// defaultQueryPreparerFunc - returns a default uninitialised query preparer, set the
+// property QueryPreparerFunc to provide your own custom query preparer.
+func (rnr *Runner) defaultQueryPreparerFunc() (preparer.Query, error) {
 
-	rnr.Log.Info("** Query **")
+	rnr.Log.Debug("** defaultQueryPreparerFunc **")
 
 	p, err := prepare.NewQueryPreparer(rnr.Log)
 	if err != nil {
@@ -196,10 +246,11 @@ func (rnr *Runner) PreparerQuery() (preparer.Query, error) {
 	return p, nil
 }
 
-// Modeller - default ModellerFunc does not provide a modeller
-func (rnr *Runner) Modeller() (modeller.Modeller, error) {
+// DefaultModellerFunc does not provide a modeller, set the property ModellerFunc to
+// provide your own custom modeller.
+func (rnr *Runner) DefaultModellerFunc() (modeller.Modeller, error) {
 
-	rnr.Log.Info("** Modeller **")
+	rnr.Log.Debug("** DefaultModellerFunc **")
 
 	return nil, nil
 }

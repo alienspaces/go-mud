@@ -2,40 +2,48 @@ package runner
 
 import (
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // characterResponseData
-func characterResponseData(l logger.Logger, characterRec *record.Character, instanceRecordSet *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
+func characterResponseData(l logger.Logger, characterRec *record.Character, rs *InstanceViewRecordSet) (schema.DungeonCharacterData, error) {
 
 	data := schema.DungeonCharacterData{
-		CharacterID:               characterRec.ID,
-		CharacterName:             characterRec.Name,
-		CharacterStrength:         characterRec.Strength,
-		CharacterDexterity:        characterRec.Dexterity,
-		CharacterIntelligence:     characterRec.Intelligence,
-		CharacterHealth:           characterRec.Health,
-		CharacterFatigue:          characterRec.Fatigue,
-		CharacterCoins:            characterRec.Coins,
-		CharacterExperiencePoints: characterRec.ExperiencePoints,
-		CharacterAttributePoints:  characterRec.AttributePoints,
-		CharacterCreatedAt:        characterRec.CreatedAt,
-		CharacterUpdatedAt:        characterRec.UpdatedAt.Time,
+		ID:               characterRec.ID,
+		Name:             characterRec.Name,
+		Strength:         characterRec.Strength,
+		Dexterity:        characterRec.Dexterity,
+		Intelligence:     characterRec.Intelligence,
+		Health:           characterRec.Health,
+		Fatigue:          characterRec.Fatigue,
+		Coins:            characterRec.Coins,
+		ExperiencePoints: characterRec.ExperiencePoints,
+		AttributePoints:  characterRec.AttributePoints,
+		CreatedAt:        characterRec.CreatedAt,
+		UpdatedAt:        characterRec.UpdatedAt.Time,
 	}
 
-	if instanceRecordSet != nil {
-		data.DungeonID = instanceRecordSet.DungeonInstanceViewRec.DungeonID
-		data.DungeonName = instanceRecordSet.DungeonInstanceViewRec.Name
-		data.DungeonDescription = instanceRecordSet.DungeonInstanceViewRec.Description
-		data.LocationID = instanceRecordSet.LocationInstanceViewRec.LocationID
-		data.LocationName = instanceRecordSet.LocationInstanceViewRec.Name
-		data.LocationDescription = instanceRecordSet.LocationInstanceViewRec.Description
-		data.CharacterCurrentStrength = instanceRecordSet.CharacterInstanceViewRec.CurrentStrength
-		data.CharacterCurrentDexterity = instanceRecordSet.CharacterInstanceViewRec.CurrentDexterity
-		data.CharacterCurrentIntelligence = instanceRecordSet.CharacterInstanceViewRec.CurrentIntelligence
-		data.CharacterCurrentHealth = instanceRecordSet.CharacterInstanceViewRec.CurrentHealth
-		data.CharacterCurrentFatigue = instanceRecordSet.CharacterInstanceViewRec.CurrentFatigue
+	if rs != nil {
+		dungeonData := schema.DungeonCharacterDungeonData{
+			ID:          rs.DungeonInstanceViewRec.DungeonID,
+			Name:        rs.DungeonInstanceViewRec.Name,
+			Description: rs.DungeonInstanceViewRec.Description,
+		}
+		data.Dungeon = &dungeonData
+
+		locationData := schema.DungeonCharacterLocationData{
+			ID:          rs.LocationInstanceViewRec.LocationID,
+			Name:        rs.LocationInstanceViewRec.Name,
+			Description: rs.LocationInstanceViewRec.Description,
+		}
+		data.Location = &locationData
+
+		data.CurrentStrength = rs.CharacterInstanceViewRec.CurrentStrength
+		data.CurrentDexterity = rs.CharacterInstanceViewRec.CurrentDexterity
+		data.CurrentIntelligence = rs.CharacterInstanceViewRec.CurrentIntelligence
+		data.CurrentHealth = rs.CharacterInstanceViewRec.CurrentHealth
+		data.CurrentFatigue = rs.CharacterInstanceViewRec.CurrentFatigue
 	}
 
 	return data, nil

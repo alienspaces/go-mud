@@ -66,7 +66,7 @@ func TestRetryRequest(t *testing.T) {
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				respData, err := json.Marshal(&Response{})
 				if err != nil {
-					l.Warn("failed encoding data >%v<", err)
+					l.Warn("Failed encoding data >%v<", err)
 					rw.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -114,7 +114,7 @@ func TestRetryRequest(t *testing.T) {
 
 				respData, err := json.Marshal(&Response{})
 				if err != nil {
-					l.Warn("failed encoding data >%v<", err)
+					l.Warn("Failed encoding data >%v<", err)
 					rw.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -188,7 +188,7 @@ func TestRetryRequest(t *testing.T) {
 
 				respData, err := json.Marshal(&Response{})
 				if err != nil {
-					l.Warn("failed encoding data >%v<", err)
+					l.Warn("Failed encoding data >%v<", err)
 					rw.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -225,7 +225,7 @@ func TestRetryRequest(t *testing.T) {
 			},
 			expectErr: true,
 		},
-		// TODO: (core) delete method not yet supported in core/client/client.go
+		// TODO delete method not yet supported in core/client/client.go
 		//{
 		//	name:   "Delete resource OK",
 		//	method: http.MethodDelete,
@@ -301,15 +301,18 @@ func TestRetryRequest(t *testing.T) {
 				if tc.requestData != nil {
 					err = cl.Create(tc.path, tc.params, tc.requestData, resp)
 				} else {
+					// for reqData to be in nil in Create, the interface type must be null
 					err = cl.Create(tc.path, tc.params, nil, resp)
 				}
 				testRequest(t, tc, "Post", resp, err)
 			} else if tc.method == http.MethodPut {
 				if tc.requestData != nil {
-					err = cl.Update(tc.path, tc.params, tc.requestData, resp)
+					_ = cl.Update(tc.path, tc.params, tc.requestData, resp)
 				} else {
-					err = cl.Update(tc.path, tc.params, nil, resp)
+					// for reqData to be in nil in Update, the interface type must be null
+					_ = cl.Update(tc.path, tc.params, nil, resp)
 				}
+				err = cl.Update(tc.path, tc.params, tc.requestData, resp)
 				testRequest(t, tc, "Update", resp, err)
 			} else if tc.method == http.MethodDelete {
 				err = cl.Delete(tc.path, tc.params, resp)

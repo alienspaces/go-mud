@@ -10,12 +10,12 @@ import (
 
 // CLI -
 type CLI struct {
-	Config            configurer.Configurer
-	Log               logger.Logger
-	Store             storer.Storer
-	PrepareRepository preparer.Repository
-	PrepareQuery      preparer.Query
-	Runner            runnable.Runnable
+	Config             configurer.Configurer
+	Log                logger.Logger
+	Store              storer.Storer
+	RepositoryPreparer preparer.Repository
+	QueryPreparer      preparer.Query
+	Runner             runnable.Runnable
 }
 
 // NewCLI -
@@ -39,17 +39,20 @@ func NewCLI(c configurer.Configurer, l logger.Logger, s storer.Storer, r runnabl
 // Init -
 func (cli *CLI) Init() error {
 
-	err := cli.Store.Init()
-	if err != nil {
-		return err
-	}
+	// TODO OX-71: Is this needed?
+	// err := cli.Store.Init()
+	// if err != nil {
+	// 	return err
+	// }
+
+	// TODO: alerting, retries
 	return cli.Runner.Init(cli.Store)
 }
 
 // Run -
 func (cli *CLI) Run(args map[string]interface{}) error {
 
-	// TODO: (core) Alerts, retries, reloads
+	// TODO:
 	// - alerting on errors
 	// - retries on start up
 	// - reload  on config changes

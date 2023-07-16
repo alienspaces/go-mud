@@ -27,10 +27,13 @@ class GameLocationDescriptionContainerWidget extends StatelessWidget {
           return false;
         }
 
-        if (currState is DungeonActionStatePlaying &&
-            currState.currentActionRec.actionLocation.locationName !=
-                currState.currentActionRec.actionTargetLocation!.locationName) {
-          return false;
+        if (currState is DungeonActionStatePlaying) {
+          var currentActionRec = currState.currentActionRec;
+          if (currentActionRec.actionTargetLocation != null &&
+              currentActionRec.actionLocation.locationName !=
+                  currentActionRec.actionTargetLocation!.locationName) {
+            return false;
+          }
         }
 
         return true;

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
@@ -51,7 +52,7 @@ func daemonRemoveDungeonInstanceState(dungeonInstanceStates map[string]*dungeonI
 func daemonGetDungeonInstanceRecs(l logger.Logger, m *model.Model) ([]*record.DungeonInstance, error) {
 	l = loggerWithContext(l, "daemonGetDungeonInstanceRecs")
 
-	diRecs, err := m.GetDungeonInstanceRecs(nil, nil, false)
+	diRecs, err := m.GetDungeonInstanceRecs(nil)
 	if err != nil {
 		l.Warn("failed getting dungeon instance records >%v<", err)
 		return nil, err
@@ -64,9 +65,14 @@ func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.Dun
 	l = loggerWithContext(l, "daemonDungeonInstanceEmpty")
 
 	ciRecs, err := m.GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"dungeon_instance_id": dir.ID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "dungeon_instance_id",
+					Val: dir.ID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting many character instance records >%v<", err)
@@ -165,11 +171,13 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 	c := make(chan dungeonInstanceProcessingResult, 1)
 
+	cycles := 0
+
 	for keepRunning() {
 
 		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
-			l.Warn("failed daemon init cycle  >%v<", err)
+			l.Warn("failed daemon init cycle >%v<", err)
 			return err
 		}
 
@@ -177,6 +185,10 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 		if len(dungeonInstanceStates) == 0 {
 			time.Sleep(3000 * time.Millisecond)
 			continue
+		}
+
+		if cycles%20 == 0 {
+			l.Info("Daemon cycle >%d<", cycles)
 		}
 
 		runningCount := 0
@@ -298,9 +310,16 @@ WHILE_RESULT_NOT_INCREMENTED:
 		pditr.incrementTurnResult = iditr
 
 		// Process monster instances
-		recs, err := m.GetMonsterInstanceRecs(map[string]interface{}{
-			"dungeon_instance_id": dungeonInstanceID,
-		}, nil, false)
+		recs, err := m.GetMonsterInstanceRecs(
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "dungeon_instance_id",
+						Val: dungeonInstanceID,
+					},
+				},
+			},
+		)
 		if err != nil {
 			l.Warn("failed getting dungeon ID >%s< monster instance records >%v<", dungeonInstanceID, err)
 			return nil, err
@@ -337,6 +356,15 @@ WHILE_RESULT_NOT_INCREMENTED:
 	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, pditr.incrementTurnResult.Record.TurnNumber)
 
 	return &pditr, nil
+}
+
+func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
+	m, err := rnr.InitTx(l)
+	if err != nil {
+		l.Warn("failed initialising database transaction, cannot authen >%v<", err)
+		return nil, err
+	}
+	return m.(*model.Model), nil
 }
 
 // keepRunning decides whether the server should continue

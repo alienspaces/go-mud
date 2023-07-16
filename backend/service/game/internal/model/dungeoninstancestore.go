@@ -4,19 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetDungeonInstanceViewRecs -
-func (m *Model) GetDungeonInstanceViewRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonInstanceView, error) {
+func (m *Model) GetDungeonInstanceViewRecs(opts *coresql.Options) ([]*record.DungeonInstanceView, error) {
 
 	l := m.Logger("GetDungeonInstanceViewRecs")
 
-	l.Debug("Getting dungeon records params >%s<", params)
+	l.Debug("Getting dungeon records opts >%#v<", opts)
 
 	r := m.DungeonInstanceViewRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetDungeonInstanceViewRec -
@@ -28,12 +29,11 @@ func (m *Model) GetDungeonInstanceViewRec(recID string) (*record.DungeonInstance
 
 	r := m.DungeonInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, false)
+	rec, err := r.GetOne(recID, nil)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -43,19 +43,19 @@ func (m *Model) GetDungeonInstanceViewRec(recID string) (*record.DungeonInstance
 }
 
 // GetDungeonInstanceRecs -
-func (m *Model) GetDungeonInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.DungeonInstance, error) {
+func (m *Model) GetDungeonInstanceRecs(opts *coresql.Options) ([]*record.DungeonInstance, error) {
 
 	l := m.Logger("GetDungeonInstanceRecs")
 
-	l.Debug("Getting dungeon records params >%s<", params)
+	l.Debug("Getting dungeon records opts >%#v<", opts)
 
 	r := m.DungeonInstanceRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetDungeonInstanceRec -
-func (m *Model) GetDungeonInstanceRec(recID string, forUpdate bool) (*record.DungeonInstance, error) {
+func (m *Model) GetDungeonInstanceRec(recID string, lock *coresql.Lock) (*record.DungeonInstance, error) {
 
 	l := m.Logger("GetDungeonInstanceRec")
 
@@ -63,12 +63,11 @@ func (m *Model) GetDungeonInstanceRec(recID string, forUpdate bool) (*record.Dun
 
 	r := m.DungeonInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -122,7 +121,6 @@ func (m *Model) DeleteDungeonInstanceRec(recID string) error {
 
 	r := m.DungeonInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -145,7 +143,6 @@ func (m *Model) RemoveDungeonInstanceRec(recID string) error {
 
 	r := m.DungeonInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

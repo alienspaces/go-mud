@@ -4,34 +4,34 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetObjectRecs -
-func (m *Model) GetObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Object, error) {
+func (m *Model) GetObjectRecs(opts *coresql.Options) ([]*record.Object, error) {
 
 	l := m.Logger("GetObjectRecs")
 
-	l.Debug("Getting dungeon object records params >%s<", params)
+	l.Debug("Getting dungeon object records opts >%#v<", opts)
 
 	r := m.ObjectRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetObjectRec -
-func (m *Model) GetObjectRec(recID string, forUpdate bool) (*record.Object, error) {
+func (m *Model) GetObjectRec(recID string, lock *coresql.Lock) (*record.Object, error) {
 
 	l := m.Logger("GetObjectRec")
 
 	r := m.ObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -85,7 +85,6 @@ func (m *Model) DeleteObjectRec(recID string) error {
 
 	r := m.ObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -108,7 +107,6 @@ func (m *Model) RemoveObjectRec(recID string) error {
 
 	r := m.ObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

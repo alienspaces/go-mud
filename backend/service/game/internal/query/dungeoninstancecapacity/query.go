@@ -4,6 +4,8 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/query"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/core/tag"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
@@ -24,12 +26,12 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 
 	q := &Query{
 		query.Query{
-			Log:      l,
-			Tx:       tx,
-			Preparer: p,
-			Alias:    "dic",
+			Log:     l,
+			Tx:      tx,
+			Prepare: p,
 			Config: query.Config{
-				Name: QueryName,
+				Name:        QueryName,
+				ArrayFields: tag.GetArrayFieldTagValues(record.DungeonInstanceCapacity{}, "db"),
 			},
 		},
 	}
@@ -40,7 +42,7 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 		return nil, err
 	}
 
-	err = q.Preparer.Prepare(q)
+	err = q.Prepare.Prepare(q)
 	if err != nil {
 		l.Error("failed preparing query >%v<", err)
 		return nil, err
@@ -60,13 +62,11 @@ func (q *Query) NewRecordArray() []*record.DungeonInstanceCapacity {
 }
 
 // GetMany -
-func (q *Query) GetMany(
-	params map[string]interface{},
-	paramOperators map[string]string) ([]*record.DungeonInstanceCapacity, error) {
+func (q *Query) GetMany(opts *coresql.Options) ([]*record.DungeonInstanceCapacity, error) {
 
 	recs := q.NewRecordArray()
 
-	rows, err := q.GetRows(q.SQL(), params, paramOperators)
+	rows, err := q.GetRows(opts)
 	if err != nil {
 		q.Log.Warn("failed query execution >%v<", err)
 		return nil, err
@@ -90,35 +90,12 @@ func (q *Query) GetMany(
 
 func (q *Query) SQL() string {
 	return `
-WITH 
-"dungeon_capacity" AS (
-    SELECT 
-        d.id        AS dungeon_id, 
-        count(l.id) AS dungeon_location_count
-    FROM dungeon d
-    JOIN location l 
-        ON l.dungeon_id = d.id
-    GROUP BY d.id
-), 
-"dungeon_instance_capacity" AS (
-    SELECT 
-        di.id         AS dungeon_instance_id,
-        di.dungeon_id AS dungeon_id,
-        count(ci.id)  AS dungeon_instance_character_count
-    FROM dungeon_instance di
-    LEFT JOIN character_instance ci 
-        ON ci.dungeon_instance_id = di.id        
-    GROUP BY di.id        
-)
 SELECT 
-    dic.dungeon_instance_id, 
-    dic.dungeon_instance_character_count,
-    dc.dungeon_id, 
-    dc.dungeon_location_count
-FROM dungeon_instance_capacity dic
-JOIN dungeon_capacity dc 
-    ON dc.dungeon_id = dic.dungeon_id
-    AND dc.dungeon_location_count > dic.dungeon_instance_character_count
+    dungeon_instance_id, 
+    dungeon_instance_character_count,
+    dungeon_id, 
+    dungeon_location_count
+FROM dungeon_instance_capacity_view
 WHERE 1 = 1
 `
 }

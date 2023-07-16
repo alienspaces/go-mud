@@ -17,16 +17,16 @@ class DungeonRecord extends Equatable {
       throw RecordEmptyException('DungeonRecord');
     }
     return DungeonRecord(
-      dungeonID: json['dungeon_id'],
-      dungeonName: json['dungeon_name'],
-      dungeonDescription: json['dungeon_description'],
+      dungeonID: json['id'],
+      dungeonName: json['name'],
+      dungeonDescription: json['description'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'dungeon_id': dungeonID,
-        'dungeon_name': dungeonName,
-        'dungeon_description': dungeonDescription,
+        'id': dungeonID,
+        'name': dungeonName,
+        'description': dungeonDescription,
       };
 
   @override

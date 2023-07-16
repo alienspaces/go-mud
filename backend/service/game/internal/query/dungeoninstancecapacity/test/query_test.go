@@ -8,9 +8,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
-	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/query/dungeoninstancecapacity"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 func TestGetMany(t *testing.T) {
@@ -25,16 +26,16 @@ func TestGetMany(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name      string
-		params    func(d harness.Data) map[string]interface{}
+		options   func(d harness.Data) *coresql.Options
 		expectErr bool
 	}{
 		{
 			name: "With no params",
-			params: func(d harness.Data) map[string]interface{} {
+			options: func(d harness.Data) *coresql.Options {
 				return nil
 			},
 			expectErr: false,
@@ -42,7 +43,7 @@ func TestGetMany(t *testing.T) {
 	}
 
 	// harness setup
-	err = h.Setup()
+	_, err = h.Setup()
 	require.NoError(t, err, "Setup returns without error")
 	defer func() {
 		err = h.Teardown()
@@ -56,15 +57,14 @@ func TestGetMany(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			// query
-			q, err := dungeoninstancecapacity.NewQuery(l, h.QueryPreparer, h.Tx())
-			require.NoError(t, err, "NewQuery returns without error")
+			q := h.Model.(*model.Model).DungeonInstanceCapacityQuery()
 			require.NotNil(t, q, "Query is not nil")
 
-			recs, err := q.GetMany(tc.params(h.Data), nil)
+			recs, err := q.GetMany(tc.options(h.Data))
 			if tc.expectErr == true {
 				require.Error(t, err, "GetMany returns error")
 				return

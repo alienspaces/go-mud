@@ -5,86 +5,102 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	coreConfig "gitlab.com/alienspaces/go-mud/backend/core/config"
+	coreconfig "gitlab.com/alienspaces/go-mud/backend/core/config"
 	"gitlab.com/alienspaces/go-mud/backend/core/log"
 )
 
 func Test_getPostgresDB(t *testing.T) {
-	setThenRestoreEnv := func(key string, value string) func(*coreConfig.Config) func() {
-		return func(conf *coreConfig.Config) func() {
-			oldEnvValue := conf.Get(key)
-			conf.Set(key, value)
+	c, err := coreconfig.NewConfigWithDefaults(nil, false)
+	require.NoError(t, err)
 
-			return func() {
-				conf.Set(key, oldEnvValue)
-			}
-		}
-	}
+	l, err := log.NewLogger(c)
+	require.NoError(t, err, "NewLogger returns without error")
+
+	s, err := NewStore(c, l)
+	require.NoError(t, err, "NewStore returns without error")
+
+	defaultConnectionConfig, err := s.GetConnectionConfig()
+	require.NoError(t, err)
 
 	tests := map[string]struct {
-		setup   func(*coreConfig.Config) func()
+		config  func() *Config
 		wantErr bool
 	}{
 		"without APP_SERVER_DB_HOST": {
-			setup:   setThenRestoreEnv("APP_SERVER_DB_HOST", ""),
+			config: func() *Config {
+				c := *defaultConnectionConfig
+				c.Host = ""
+				return &c
+			},
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_PORT": {
-			setup:   setThenRestoreEnv("APP_SERVER_DB_PORT", ""),
+			config: func() *Config {
+				c := *defaultConnectionConfig
+				c.Port = ""
+				return &c
+			},
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_NAME": {
-			setup:   setThenRestoreEnv("APP_SERVER_DB_NAME", ""),
+			config: func() *Config {
+				c := *defaultConnectionConfig
+				c.Database = ""
+				return &c
+			},
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_USER": {
-			setup:   setThenRestoreEnv("APP_SERVER_DB_USER", ""),
+			config: func() *Config {
+				c := *defaultConnectionConfig
+				c.User = ""
+				return &c
+			},
 			wantErr: true,
 		},
 		"without APP_SERVER_DB_PASSWORD": {
-			setup:   setThenRestoreEnv("APP_SERVER_DB_PASSWORD", ""),
+			config: func() *Config {
+				c := *defaultConnectionConfig
+				c.Password = ""
+				return &c
+			},
 			wantErr: true,
 		},
-		"invalid config": {
-			setup:   setThenRestoreEnv("APP_SERVER_DB_HOST", "a"),
+		"missing config": {
+			config: func() *Config {
+				return nil
+			},
 			wantErr: true,
 		},
-		"with config": {
+		"valid config": {
+			config: func() *Config {
+				c := *defaultConnectionConfig
+				return &c
+			},
 			wantErr: false,
 		},
 	}
-
-	conf, err := coreConfig.NewConfigWithDefaults(nil, false)
-	require.NoError(t, err)
-
-	logger, err := log.NewLogger(conf)
-	require.NoError(t, err)
 
 	for tcName, tc := range tests {
 
 		t.Logf("Running test >%s<", tcName)
 
 		func() {
-			if tc.setup != nil {
-				teardown := tc.setup(conf)
-				defer func() {
-					teardown()
-				}()
-			}
+			config := tc.config()
 
-			db, err := getPostgresDB(conf, logger)
+			db, err := connectPostgresDB(l, config)
 			defer func() {
 				if db != nil {
 					db.Close()
 				}
 			}()
 			if tc.wantErr {
-				require.Error(t, err, "getPostgresDB returns with error")
+				require.Error(t, err, "connectPostgresDB returns with error")
 				return
 			}
 
-			require.NoError(t, err, "getPostgresDB returns without error")
-			require.NotNil(t, db, "getPostgresDB returns db connection")
+			require.NoError(t, err, "connectPostgresDB returns without error")
+			require.NotNil(t, db, "connectPostgresDB returns db connection")
 		}()
 	}
 }

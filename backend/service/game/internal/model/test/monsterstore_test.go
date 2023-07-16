@@ -27,7 +27,7 @@ func TestCreateMonsterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -72,7 +72,7 @@ func TestCreateMonsterRec(t *testing.T) {
 		func() {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -82,7 +82,7 @@ func TestCreateMonsterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec(th.Data)
@@ -110,7 +110,7 @@ func TestGetMonsterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -140,7 +140,7 @@ func TestGetMonsterRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -150,10 +150,10 @@ func TestGetMonsterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
-			rec, err := h.Model.(*model.Model).GetMonsterRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetMonsterRec(tc.id(), nil)
 			if tc.err == true {
 				require.Error(t, err, "GetMonsterRec returns error")
 				return
@@ -177,7 +177,7 @@ func TestUpdateMonsterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	require.NoError(t, err, "NewTesting returns without error")
 
@@ -211,7 +211,7 @@ func TestUpdateMonsterRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -221,7 +221,7 @@ func TestUpdateMonsterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			rec := tc.rec()
@@ -249,7 +249,7 @@ func TestDeleteMonsterRec(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	h.CommitData = true
+	h.ShouldCommitData = true
 
 	tests := []struct {
 		name string
@@ -279,7 +279,7 @@ func TestDeleteMonsterRec(t *testing.T) {
 		func() {
 
 			// harness setup
-			err = h.Setup()
+			_, err = h.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = h.RollbackTx()
@@ -289,7 +289,7 @@ func TestDeleteMonsterRec(t *testing.T) {
 			}()
 
 			// init tx
-			err = h.InitTx(nil)
+			_, err = h.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			err := h.Model.(*model.Model).DeleteMonsterRec(tc.id())
@@ -299,7 +299,7 @@ func TestDeleteMonsterRec(t *testing.T) {
 			}
 			require.NoError(t, err, "DeleteMonsterRec returns without error")
 
-			rec, err := h.Model.(*model.Model).GetMonsterRec(tc.id(), false)
+			rec, err := h.Model.(*model.Model).GetMonsterRec(tc.id(), nil)
 			require.NoError(t, err, "GetMonsterRec returns without error")
 			require.Nil(t, rec, "GetMonsterRec does not return record")
 		}()

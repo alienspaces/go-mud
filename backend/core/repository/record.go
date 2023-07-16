@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-
-	"gitlab.com/alienspaces/go-mud/backend/core/nulltime"
+	"github.com/r3labs/diff/v3"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 )
 
 // NOTE:
@@ -26,6 +26,44 @@ type Record struct {
 	DeletedAt sql.NullTime `db:"deleted_at"`
 }
 
+func (r *Record) clearID() {
+	r.ID = ""
+}
+func (r *Record) clearTimestamps() {
+	r.CreatedAt = time.Time{}
+	r.UpdatedAt = null.NullTimeFromTime(time.Time{})
+	r.DeletedAt = null.NullTimeFromTime(time.Time{})
+}
+
+type EqualityFlag string
+
+const EqualityFlagExcludeID EqualityFlag = "eo-exclude-id"
+const EqualityFlagExcludeTimestamps EqualityFlag = "flag-exclude-timestamps"
+
+type EquatableRecord interface {
+	clearID()
+	clearTimestamps()
+}
+
+func RecordEqual(p, pp EquatableRecord, flags ...EqualityFlag) (bool, error) {
+	changelog, err := RecordDiff(p, pp, flags...)
+	return len(changelog) == 0, err
+}
+
+func RecordDiff(p, pp EquatableRecord, flags ...EqualityFlag) (diff.Changelog, error) {
+	for idx := range flags {
+		switch flags[idx] {
+		case EqualityFlagExcludeTimestamps:
+			p.clearTimestamps()
+			pp.clearTimestamps()
+		case EqualityFlagExcludeID:
+			p.clearID()
+			pp.clearID()
+		}
+	}
+	return diff.Diff(p, pp)
+}
+
 // NewRecordID -
 func NewRecordID() string {
 	uuidByte, _ := uuid.NewRandom()
@@ -33,29 +71,14 @@ func NewRecordID() string {
 	return uuidString
 }
 
-// NewCreatedAt -
-func NewCreatedAt() time.Time {
+// NewRecordTimestamp -
+func NewRecordTimestamp() time.Time {
 	return timestamp()
 }
 
-// NewUpdatedAt -
-func NewUpdatedAt() sql.NullTime {
-	return nulltime.FromTime(timestamp())
-}
-
-// NewProcessedAt -
-func NewProcessedAt() sql.NullTime {
-	return nulltime.FromTime(timestamp())
-}
-
-// NewFailedAt -
-func NewFailedAt() sql.NullTime {
-	return nulltime.FromTime(timestamp())
-}
-
-// NewDeletedAt -
-func NewDeletedAt() sql.NullTime {
-	return nulltime.FromTime(timestamp())
+// NewRecordNullTimestamp -
+func NewRecordNullTimestamp() sql.NullTime {
+	return null.NullTimeFromTime(timestamp())
 }
 
 func timestamp() time.Time {

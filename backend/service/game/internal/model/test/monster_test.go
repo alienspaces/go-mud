@@ -27,7 +27,7 @@ func TestGetMonsterEquippedObjectRecs(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name             string
@@ -62,7 +62,7 @@ func TestGetMonsterEquippedObjectRecs(t *testing.T) {
 			t.Logf("Run test >%s<", tc.name)
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -72,7 +72,7 @@ func TestGetMonsterEquippedObjectRecs(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			dungeonMonsterID := tc.dungeonMonsterID(th.Data)
@@ -109,7 +109,7 @@ func TestGetMonsterStashedObjectRecs(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name             string
@@ -144,7 +144,7 @@ func TestGetMonsterStashedObjectRecs(t *testing.T) {
 			t.Logf("Run test >%s<", tc.name)
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -154,7 +154,7 @@ func TestGetMonsterStashedObjectRecs(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			dungeonMonsterID := tc.dungeonMonsterID(th.Data)

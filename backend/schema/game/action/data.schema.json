@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gitlab.com/alienspaces/go-mud/backend/schema/game/action/data.schema.json",
+  "title": "Dungeon Action Data",
+  "description": "Dungeon action data",
+  "type": "object",
+  "required": [
+    "id",
+    "command",
+    "turn_number",
+    "serial_number",
+    "location",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "command": {
+      "type": "string"
+    },
+    "narrative": {
+      "type": "string"
+    },
+    "turn_number": {
+      "type": "integer"
+    },
+    "serial_number": {
+      "type": "integer"
+    },
+    "location": {
+      "$ref": "#/$defs/location"
+    },
+    "character": {
+      "$ref": "#/$defs/character"
+    },
+    "monster": {
+      "$ref": "#/$defs/monster"
+    },
+    "equipped_object": {
+      "$ref": "#/$defs/object"
+    },
+    "stashed_object": {
+      "$ref": "#/$defs/object"
+    },
+    "target_object": {
+      "$ref": "#/$defs/object"
+    },
+    "target_character": {
+      "$ref": "#/$defs/character"
+    },
+    "target_monster": {
+      "$ref": "#/$defs/monster"
+    },
+    "target_location": {
+      "$ref": "#/$defs/location"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "location": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "directions"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "directions": {
+          "type": "array"
+        },
+        "characters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/location_character"
+          }
+        },
+        "monsters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/location_monster"
+          }
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/location_object"
+          }
+        }
+      }
+    },
+    "location_character": {
+      "type": "object",
+      "required": [
+        "name",
+        "health",
+        "fatigue",
+        "current_health",
+        "current_fatigue"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "fatigue": {
+          "type": "integer"
+        },
+        "current_health": {
+          "type": "integer"
+        },
+        "current_fatigue": {
+          "type": "integer"
+        }
+      }
+    },
+    "location_monster": {
+      "type": "object",
+      "required": [
+        "name",
+        "health",
+        "fatigue",
+        "current_health",
+        "current_fatigue"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "fatigue": {
+          "type": "integer"
+        },
+        "current_health": {
+          "type": "integer"
+        },
+        "current_fatigue": {
+          "type": "integer"
+        }
+      }
+    },
+    "location_object": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "character": {
+      "type": "object",
+      "required": [
+        "name", 
+        "strength", 
+        "dexterity",
+        "intelligence",
+        "current_strength", 
+        "current_dexterity",
+        "current_intelligence",
+        "health",
+        "fatigue"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "current_strength": {
+          "type": "integer"
+        },
+        "current_dexterity": {
+          "type": "integer"
+        },
+        "current_intelligence": {
+          "type": "integer"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "fatigue": {
+          "type": "integer"
+        },
+        "current_health": {
+          "type": "integer"
+        },
+        "current_fatigue": {
+          "type": "integer"
+        },
+        "equipped_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object"
+          }
+        },
+        "stashed_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object"
+          }
+        }
+      }
+    },
+    "monster": {
+      "type": "object",
+      "required": [
+        "name", 
+        "strength", 
+        "dexterity",
+        "intelligence",
+        "current_strength", 
+        "current_dexterity",
+        "current_intelligence",
+        "health",
+        "fatigue"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "current_strength": {
+          "type": "integer"
+        },
+        "current_dexterity": {
+          "type": "integer"
+        },
+        "current_intelligence": {
+          "type": "integer"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "fatigue": {
+          "type": "integer"
+        },
+        "current_health": {
+          "type": "integer"
+        },
+        "current_fatigue": {
+          "type": "integer"
+        },
+        "equipped_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object"
+          }
+        },
+        "stashed_objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/object"
+          }
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "is_stashed",
+        "is_equipped"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "is_stashed": {
+          "type": "boolean"
+        },
+        "is_equipped": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

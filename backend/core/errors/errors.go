@@ -15,7 +15,12 @@ func (e *Error) Error() string {
 	return err
 }
 
-// Add will add an error to the stack of registered errors
+// Pop will remove the first error that was added to the queue
+func (e *Error) Pop() {
+	e.Errors = e.Errors[1:]
+}
+
+// Add will add an error to the queue of registered errors
 func (e *Error) Add(err error) {
 	e.Errors = append(e.Errors, err)
 }

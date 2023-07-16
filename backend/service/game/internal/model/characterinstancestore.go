@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -13,9 +14,14 @@ func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*recor
 	l := m.Logger("GetCharacterInstanceRecByCharacterID")
 
 	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting character ID >%s< instance records >%v<", characterID, err)
@@ -29,7 +35,7 @@ func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*recor
 
 	if len(characterInstanceRecs) > 1 {
 		l.Warn("unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewServerInternalError()
+		err := coreerror.NewInternalError()
 		return nil, err
 	}
 
@@ -37,31 +43,30 @@ func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*recor
 }
 
 // GetCharacterInstanceRecs -
-func (m *Model) GetCharacterInstanceRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.CharacterInstance, error) {
+func (m *Model) GetCharacterInstanceRecs(opts *coresql.Options) ([]*record.CharacterInstance, error) {
 
 	l := m.Logger("GetCharacterInstanceRecs")
 
-	l.Debug("Getting character instance records params >%s<", params)
+	l.Debug("Getting character instance records opts >%#v<", opts)
 
 	r := m.CharacterInstanceRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetCharacterInstanceRec -
-func (m *Model) GetCharacterInstanceRec(recID string, forUpdate bool) (*record.CharacterInstance, error) {
+func (m *Model) GetCharacterInstanceRec(recID string, lock *coresql.Lock) (*record.CharacterInstance, error) {
 	l := m.Logger("GetCharacterInstanceRec")
 
 	l.Debug("Getting character instance record ID >%s<", recID)
 
 	r := m.CharacterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -75,9 +80,14 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 	l := m.Logger("GetCharacterInstanceViewRecByCharacterID")
 
 	characterInstanceViewRecs, err := m.GetCharacterInstanceViewRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		l.Warn("failed getting character ID >%s< character instance view records >%v<", characterID, err)
@@ -91,7 +101,7 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 
 	if len(characterInstanceViewRecs) > 1 {
 		l.Warn("unexpected number of character instance view records returned >%d<", len(characterInstanceViewRecs))
-		err := coreerror.NewServerInternalError()
+		err := coreerror.NewInternalError()
 		return nil, err
 	}
 
@@ -99,15 +109,15 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 }
 
 // GetCharacterInstanceRecs -
-func (m *Model) GetCharacterInstanceViewRecs(params map[string]interface{}, operators map[string]string) ([]*record.CharacterInstanceView, error) {
+func (m *Model) GetCharacterInstanceViewRecs(opts *coresql.Options) ([]*record.CharacterInstanceView, error) {
 
 	l := m.Logger("GetCharacterInstanceViewRecs")
 
-	l.Debug("Getting character instance view records params >%s<", params)
+	l.Debug("Getting character instance view records opts >%#v<", opts)
 
 	r := m.CharacterInstanceViewRepository()
 
-	return r.GetMany(params, operators, false)
+	return r.GetMany(opts)
 }
 
 // GetCharacterInstanceRec -
@@ -119,12 +129,11 @@ func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInst
 
 	r := m.CharacterInstanceViewRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, false)
+	rec, err := r.GetOne(recID, nil)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -178,7 +187,6 @@ func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 
 	r := m.CharacterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -201,7 +209,6 @@ func (m *Model) RemoveCharacterInstanceRec(recID string) error {
 
 	r := m.CharacterInstanceRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

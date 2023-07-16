@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetLocationObjectRecs -
-func (m *Model) GetLocationObjectRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.LocationObject, error) {
+func (m *Model) GetLocationObjectRecs(opts *coresql.Options) ([]*record.LocationObject, error) {
 
 	l := m.Logger("GetLocationObjectRecs")
 
-	l.Debug("Getting dungeon location records params >%s<", params)
+	l.Debug("Getting dungeon location records opts >%#v<", opts)
 
 	r := m.LocationObjectRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetLocationObjectRec -
-func (m *Model) GetLocationObjectRec(recID string, forUpdate bool) (*record.LocationObject, error) {
+func (m *Model) GetLocationObjectRec(recID string, lock *coresql.Lock) (*record.LocationObject, error) {
 
 	l := m.Logger("GetLocationObjectRec")
 
@@ -28,12 +29,11 @@ func (m *Model) GetLocationObjectRec(recID string, forUpdate bool) (*record.Loca
 
 	r := m.LocationObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -87,7 +87,6 @@ func (m *Model) DeleteLocationObjectRec(recID string) error {
 
 	r := m.LocationObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -110,7 +109,6 @@ func (m *Model) RemoveLocationObjectRec(recID string) error {
 
 	r := m.LocationObjectRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

@@ -4,23 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetLocationRecs -
-func (m *Model) GetLocationRecs(params map[string]interface{}, operators map[string]string, forUpdate bool) ([]*record.Location, error) {
+func (m *Model) GetLocationRecs(opts *coresql.Options) ([]*record.Location, error) {
 
 	l := m.Logger("GetLocationRecs")
 
-	l.Debug("Getting location records params >%s<", params)
+	l.Debug("Getting location records opts >%#v<", opts)
 
 	r := m.LocationRepository()
 
-	return r.GetMany(params, operators, forUpdate)
+	return r.GetMany(opts)
 }
 
 // GetLocationRec -
-func (m *Model) GetLocationRec(recID string, forUpdate bool) (*record.Location, error) {
+func (m *Model) GetLocationRec(recID string, lock *coresql.Lock) (*record.Location, error) {
 
 	l := m.Logger("GetLocationRec")
 
@@ -28,12 +29,11 @@ func (m *Model) GetLocationRec(recID string, forUpdate bool) (*record.Location, 
 
 	r := m.LocationRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return nil, fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
 
-	rec, err := r.GetOne(recID, forUpdate)
+	rec, err := r.GetOne(recID, lock)
 	if err == sql.ErrNoRows {
 		l.Warn("No record found ID >%s<", recID)
 		return nil, nil
@@ -86,7 +86,6 @@ func (m *Model) DeleteLocationRec(recID string) error {
 
 	r := m.LocationRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}
@@ -109,7 +108,6 @@ func (m *Model) RemoveLocationRec(recID string) error {
 
 	r := m.LocationRepository()
 
-	// validate UUID
 	if !m.IsUUID(recID) {
 		return fmt.Errorf("ID >%s< is not a valid UUID", recID)
 	}

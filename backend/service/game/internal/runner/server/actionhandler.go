@@ -8,48 +8,50 @@ import (
 
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
-	"gitlab.com/alienspaces/go-mud/backend/schema"
+	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
 )
 
 const (
-	postAction server.HandlerConfigKey = "post-action"
+	postAction string = "post-action"
 )
 
-func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.HandlerConfig) map[server.HandlerConfigKey]server.HandlerConfig {
+func (rnr *Runner) ActionHandlerConfig(hc map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 
-	return mergeHandlerConfigs(hc, map[server.HandlerConfigKey]server.HandlerConfig{
+	return mergeHandlerConfigs(hc, map[string]server.HandlerConfig{
 		postAction: {
 			Method:      http.MethodPost,
 			Path:        "/api/v1/dungeons/:dungeon_id/characters/:character_id/actions",
 			HandlerFunc: rnr.PostActionHandler,
 			MiddlewareConfig: server.MiddlewareConfig{
 				AuthenTypes: []server.AuthenticationType{
-					server.AuthenTypePublic,
+					server.AuthenticationTypePublic,
 				},
-				ValidateRequestSchema: jsonschema.SchemaWithReferences{
+				ValidateRequestSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/action",
+						Location: "schema/game/action",
 						Name:     "create.request.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/dungeon",
+							Location: "schema/game/dungeon",
 							Name:     "data.schema.json",
 						},
 					},
 				},
-				ValidateResponseSchema: jsonschema.SchemaWithReferences{
+				ValidateResponseSchema: &jsonschema.SchemaWithReferences{
 					Main: jsonschema.Schema{
-						Location: "schema/docs/action",
+						Location: "schema/game/action",
 						Name:     "response.schema.json",
 					},
 					References: []jsonschema.Schema{
 						{
-							Location: "schema/docs/action",
+							Location: "schema/game/action",
 							Name:     "data.schema.json",
 						},
 					},
@@ -64,7 +66,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[server.HandlerConfigKey]server.Han
 }
 
 // PostActionHandler -
-func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp map[string]interface{}, l logger.Logger, m modeller.Modeller) error {
+func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
 	l = loggerWithContext(l, "PostActionHandler")
 	l.Info("** Post action handler **")
 
@@ -72,29 +74,9 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	dungeonID := pp.ByName("dungeon_id")
 	characterID := pp.ByName("character_id")
 
-	if dungeonID == "" {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(dungeonID) {
-		err := coreerror.NewValidationPathParamTypeError("dungeon_id", dungeonID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	if characterID == "" {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
-		server.WriteError(l, w, err)
-		return err
-	} else if !m.(*model.Model).IsUUID(characterID) {
-		err := coreerror.NewValidationPathParamTypeError("character_id", characterID)
-		server.WriteError(l, w, err)
-		return err
-	}
-
 	l.Info("Getting dungeon record ID >%s<", dungeonID)
 
-	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, false)
+	dungeonRec, err := m.(*model.Model).GetDungeonRec(dungeonID, nil)
 	if err != nil {
 		l.Warn("failed getting dungeon record >%v<", err)
 		server.WriteError(l, w, err)
@@ -103,14 +85,14 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if dungeonRec == nil {
-		err := coreerror.NewResourceNotFoundError("dungeon", dungeonID)
+		err := coreerror.NewNotFoundError("dungeon", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	l.Info("Getting character record ID >%s<", characterID)
 
-	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, false)
+	characterRec, err := m.(*model.Model).GetCharacterRec(characterID, nil)
 	if err != nil {
 		l.Warn("failed getting character record >%v<", err)
 		server.WriteError(l, w, err)
@@ -119,14 +101,14 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	// Resource not found
 	if characterRec == nil {
-		err := coreerror.NewResourceNotFoundError("character", characterID)
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	req := schema.ActionRequest{}
+	req := &schema.ActionRequest{}
 
-	err = server.ReadRequest(l, r, &req)
+	req, err = server.ReadRequest(l, r, req)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
@@ -137,9 +119,14 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	l.Info("Verifying character instance for dungeon_id >%s< character_id >%s<", dungeonID, characterID)
 
 	characterInstanceRecs, err := m.(*model.Model).GetCharacterInstanceRecs(
-		map[string]interface{}{
-			"character_id": characterID,
-		}, nil, false,
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
 	)
 	if err != nil {
 		server.WriteError(l, w, err)
@@ -147,28 +134,28 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if len(characterInstanceRecs) == 0 {
-		err := coreerror.NewValidationPathParamError("character_id", characterID, "character has not entered a dungeon")
+		err := coreerror.NewNotFoundError("character", characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if len(characterInstanceRecs) > 1 {
 		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewServerInternalError()
+		err := coreerror.NewInternalError()
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	characterInstanceRec := characterInstanceRecs[0]
 
-	dungeonInstanceRec, err := m.(*model.Model).GetDungeonInstanceRec(characterInstanceRec.DungeonInstanceID, false)
+	dungeonInstanceRec, err := m.(*model.Model).GetDungeonInstanceRec(characterInstanceRec.DungeonInstanceID, nil)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
 	}
 
 	if dungeonInstanceRec == nil {
-		err := coreerror.NewValidationPathParamError("dungeon_id", dungeonID, "dungeon does not exists")
+		err := coreerror.NewNotFoundError("dungeon_id", dungeonID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -225,23 +212,23 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	for idx := range res.Data {
-		if res.Data[idx].ActionCharacter != nil {
-			l.Info("Response ActionCharacter >%s<", res.Data[idx].ActionCharacter.CharacterName)
-			for oidx := range res.Data[idx].ActionCharacter.CharacterEquippedObjects {
-				l.Info("         -   >%#v<", res.Data[idx].ActionCharacter.CharacterEquippedObjects[oidx])
-			}
+		if res.Data[idx].Character != nil {
+			l.Info("Response Character Name >%s<", res.Data[idx].Character.Name)
+			// for oidx := range res.Data[idx].Character.EquippedObjects {
+			// 	l.Info("         -   >%#v<", res.Data[idx].Character.EquippedObjects[oidx])
+			// }
 		}
-		if res.Data[idx].ActionMonster != nil {
-			l.Info("Response ActionMonster >%s<", res.Data[idx].ActionMonster.MonsterName)
+		if res.Data[idx].Monster != nil {
+			l.Info("Response Monster Name>%s<", res.Data[idx].Monster.Name)
 		}
-		l.Info("Response ActionLocation LocationName >%s<", res.Data[idx].ActionLocation.LocationName)
-		l.Info("Response - Action ID >%s<", res.Data[idx].ActionID)
-		l.Info("Response - Action Command >%s<", res.Data[idx].ActionCommand)
-		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].ActionTurnNumber)
-		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].ActionSerialNumber)
+		l.Info("Response - Location Name >%s<", res.Data[idx].Location.Name)
+		l.Info("Response - Action ID >%s<", res.Data[idx].ID)
+		l.Info("Response - Action Command >%s<", res.Data[idx].Command)
+		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].TurnNumber)
+		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].SerialNumber)
 	}
 
-	err = server.WriteResponse(l, w, res)
+	err = server.WriteResponse(l, w, http.StatusOK, res)
 	if err != nil {
 		l.Warn("failed writing response >%v<", err)
 		return err

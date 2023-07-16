@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/dependencies"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/model"
@@ -27,7 +27,7 @@ func TestConsecutiveProcessCharacterActions(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name                string
@@ -94,7 +94,7 @@ func TestConsecutiveProcessCharacterActions(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -104,7 +104,7 @@ func TestConsecutiveProcessCharacterActions(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			dungeonInstanceID := tc.dungeonInstanceID(th.Data)
@@ -151,7 +151,7 @@ func TestConsecutiveProcessMonsterActions(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name              string
@@ -218,7 +218,7 @@ func TestConsecutiveProcessMonsterActions(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -228,7 +228,7 @@ func TestConsecutiveProcessMonsterActions(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			dungeonInstanceID := tc.dungeonInstanceID(th.Data)
@@ -277,7 +277,7 @@ func TestProcessCharacterAction(t *testing.T) {
 	require.NoError(t, err, "NewTesting returns without error")
 
 	// harness commit data
-	th.CommitData = true
+	th.ShouldCommitData = true
 
 	tests := []struct {
 		name                  string
@@ -325,7 +325,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -388,7 +388,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -531,7 +531,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -615,7 +615,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -694,7 +694,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -773,7 +773,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -850,7 +850,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -929,7 +929,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1004,7 +1004,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1079,7 +1079,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1163,7 +1163,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1252,7 +1252,7 @@ func TestProcessCharacterAction(t *testing.T) {
 					ActionRec: &record.Action{
 						DungeonInstanceID:   diRec.ID,
 						LocationInstanceID:  liRec.ID,
-						CharacterInstanceID: nullstring.FromString(ciRec.ID),
+						CharacterInstanceID: null.NullStringFromString(ciRec.ID),
 					},
 					ActionCharacterRec: &record.ActionCharacter{
 						Name:                cRec.Name,
@@ -1301,7 +1301,7 @@ func TestProcessCharacterAction(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			// Test harness
-			err = th.Setup()
+			_, err = th.Setup()
 			require.NoError(t, err, "Setup returns without error")
 			defer func() {
 				err = th.RollbackTx()
@@ -1311,7 +1311,7 @@ func TestProcessCharacterAction(t *testing.T) {
 			}()
 
 			// init tx
-			err = th.InitTx(nil)
+			_, err = th.InitTx()
 			require.NoError(t, err, "InitTx returns without error")
 
 			dungeonInstanceID := tc.dungeonInstanceID(th.Data)

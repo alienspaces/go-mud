@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"gitlab.com/alienspaces/go-mud/backend/core/nullstring"
+	"gitlab.com/alienspaces/go-mud/backend/core/null"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/mapper"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -177,11 +178,11 @@ func (m *Model) performActionUse(args *PerformActionArgs) (*record.Action, error
 	actionRec := args.ActionRec
 
 	if actionRec.ResolvedTargetMonsterInstanceID.Valid {
-		l.Debug("Using object ID >%s< on monster ID >%s<", nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID), nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID))
+		l.Debug("Using object ID >%s< on monster ID >%s<", null.NullStringToString(actionRec.ResolvedTargetObjectInstanceID), null.NullStringToString(actionRec.ResolvedTargetMonsterInstanceID))
 	} else if actionRec.ResolvedTargetCharacterInstanceID.Valid {
-		l.Debug("Using object ID >%s< on character ID >%s<", nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID), nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+		l.Debug("Using object ID >%s< on character ID >%s<", null.NullStringToString(actionRec.ResolvedTargetObjectInstanceID), null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID))
 	} else {
-		l.Debug("Using object ID >%s<", nullstring.ToString(actionRec.ResolvedTargetObjectInstanceID))
+		l.Debug("Using object ID >%s<", null.NullStringToString(actionRec.ResolvedTargetObjectInstanceID))
 	}
 
 	return actionRec, nil
@@ -206,7 +207,7 @@ func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, err
 			return nil, fmt.Errorf(msg)
 		}
 
-		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, coresql.ForUpdate)
 		if err != nil {
 			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
@@ -232,7 +233,7 @@ func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, err
 			return nil, fmt.Errorf(msg)
 		}
 
-		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, coresql.ForUpdate)
 		if err != nil {
 			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
@@ -272,7 +273,7 @@ func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, err
 			return nil, fmt.Errorf(msg)
 		}
 
-		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, coresql.ForUpdate)
 		if err != nil {
 			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
@@ -298,7 +299,7 @@ func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, err
 			return nil, fmt.Errorf(msg)
 		}
 
-		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, coresql.ForUpdate)
 		if err != nil {
 			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
@@ -338,7 +339,7 @@ func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, erro
 			return nil, fmt.Errorf(msg)
 		}
 
-		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, coresql.ForUpdate)
 		if err != nil {
 			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
@@ -369,7 +370,7 @@ func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, erro
 			return nil, fmt.Errorf(msg)
 		}
 
-		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, true)
+		objectInstanceRec, err := m.GetObjectInstanceRec(objectInstanceID, coresql.ForUpdate)
 		if err != nil {
 			l.Warn("failed getting dungeon object instance record >%v<", err)
 			return nil, err
@@ -409,13 +410,13 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 	if actionRec.CharacterInstanceID.Valid {
 
 		// TODO: 10-implement-effects: Get equipped weapon for character, establish attack bonuses, damage rating etc
-		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
+		if null.NullStringIsValid(actionRec.ResolvedEquippedObjectInstanceID) {
 			l.Info("Attacking with weapon")
 		}
 
-		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
+		if null.NullStringIsValid(actionRec.ResolvedTargetCharacterInstanceID) {
 			l.Info("Character attacking character")
-			tciRec, err := m.GetCharacterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID), true)
+			tciRec, err := m.GetCharacterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID), coresql.ForUpdate)
 			if err != nil {
 				l.Warn("failed getting character instance record >%s<", err)
 				return nil, err
@@ -431,9 +432,9 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 
 			// TODO: 12-implement-death: Remove character instance when dead
 
-		} else if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+		} else if null.NullStringIsValid(actionRec.ResolvedTargetMonsterInstanceID) {
 			l.Info("Character attacking monster")
-			tmiRec, err := m.GetMonsterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID), true)
+			tmiRec, err := m.GetMonsterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetMonsterInstanceID), coresql.ForUpdate)
 			if err != nil {
 				l.Warn("failed getting monster instance record >%s<", err)
 				return nil, err
@@ -453,20 +454,20 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 	} else if actionRec.MonsterInstanceID.Valid {
 
 		// TODO: Get equipped weapon for monster, establish attack bonuses, damage rating etc
-		if nullstring.IsValid(actionRec.ResolvedEquippedObjectInstanceID) {
+		if null.NullStringIsValid(actionRec.ResolvedEquippedObjectInstanceID) {
 			l.Info("Attacking with weapon")
 		}
 
-		if nullstring.IsValid(actionRec.ResolvedTargetCharacterInstanceID) {
+		if null.NullStringIsValid(actionRec.ResolvedTargetCharacterInstanceID) {
 			l.Info("Monster attacking character")
-			tciRec, err := m.GetCharacterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID), true)
+			tciRec, err := m.GetCharacterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID), coresql.ForUpdate)
 			if err != nil {
 				l.Warn("failed getting character instance record >%s<", err)
 				return nil, err
 			}
 
 			if tciRec == nil {
-				err := fmt.Errorf("failed getting character instance record ID >%s<", nullstring.ToString(actionRec.ResolvedTargetCharacterInstanceID))
+				err := fmt.Errorf("failed getting character instance record ID >%s<", null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID))
 				l.Warn(err.Error())
 				return nil, err
 			}
@@ -481,9 +482,9 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 
 			// TODO: 12-implement-death: Remove character instance when dead
 
-		} else if nullstring.IsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+		} else if null.NullStringIsValid(actionRec.ResolvedTargetMonsterInstanceID) {
 			l.Info("Monster attacking monster")
-			tmiRec, err := m.GetMonsterInstanceRec(nullstring.ToString(actionRec.ResolvedTargetMonsterInstanceID), true)
+			tmiRec, err := m.GetMonsterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetMonsterInstanceID), coresql.ForUpdate)
 			if err != nil {
 				l.Warn("failed getting monster instance record >%s<", err)
 				return nil, err

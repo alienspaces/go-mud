@@ -4,6 +4,8 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/query"
+	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/core/tag"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/preparer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/querier"
@@ -24,11 +26,12 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 
 	q := &Query{
 		query.Query{
-			Log:      l,
-			Tx:       tx,
-			Preparer: p,
+			Log:     l,
+			Tx:      tx,
+			Prepare: p,
 			Config: query.Config{
-				Name: QueryName,
+				Name:        QueryName,
+				ArrayFields: tag.GetArrayFieldTagValues(record.DungeonEntityInstanceTurn{}, "db"),
 			},
 		},
 	}
@@ -39,7 +42,7 @@ func NewQuery(l logger.Logger, p preparer.Query, tx *sqlx.Tx) (*Query, error) {
 		return nil, err
 	}
 
-	err = q.Preparer.Prepare(q)
+	err = q.Prepare.Prepare(q)
 	if err != nil {
 		l.Error("failed preparing query >%v<", err)
 		return nil, err
@@ -59,13 +62,11 @@ func (q *Query) NewRecordArray() []*record.DungeonEntityInstanceTurn {
 }
 
 // GetMany -
-func (q *Query) GetMany(
-	params map[string]interface{},
-	paramOperators map[string]string) ([]*record.DungeonEntityInstanceTurn, error) {
+func (q *Query) GetMany(opts *coresql.Options) ([]*record.DungeonEntityInstanceTurn, error) {
 
 	recs := q.NewRecordArray()
 
-	rows, err := q.GetRows(q.SQL(), params, paramOperators)
+	rows, err := q.GetRows(opts)
 	if err != nil {
 		q.Log.Warn("failed query execution >%v<", err)
 		return nil, err
