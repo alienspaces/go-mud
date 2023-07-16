@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Local development, database setup, with seed data, ready for manual testing
+# Local development, database setup, ready for unit testing
 
 # copy development env
 cp .env.development .env
@@ -11,5 +11,3 @@ source "${BASH_SOURCE%/*}"/env || exit $?
 source "${BASH_SOURCE%/*}"/db-start || exit $?
 
 source "${BASH_SOURCE%/*}"/db-migrate-up || exit $?
-
-source "${BASH_SOURCE%/*}"/db-load-seed-data || exit $?

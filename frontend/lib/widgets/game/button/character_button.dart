@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/style.dart';
+import 'package:go_mud_client/utility.dart';
 
 import 'package:go_mud_client/cubit/target.dart';
 
@@ -28,7 +29,7 @@ class _CharacterButtonWidgetState extends State<CharacterButtonWidget> {
           selectTarget(context, widget.characterName);
         },
         style: gameButtonStyle,
-        child: Text(widget.characterName),
+        child: Text(normaliseName(widget.characterName)),
       ),
     );
   }

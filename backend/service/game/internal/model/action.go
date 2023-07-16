@@ -13,6 +13,12 @@ type EntityType string
 const EntityTypeMonster EntityType = "monster"
 const EntityTypeCharacter EntityType = "character"
 
+type Memory struct {
+	ActionRec           *record.Action
+	ActionCharacterRecs []*record.ActionCharacter
+	ActionMonsterRecs   []*record.ActionMonster
+}
+
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
 	l := m.Logger("ProcessCharacterAction")
@@ -204,7 +210,7 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 	l.Info("Location instance ID >%s< record set object instance recs >%d<", locationInstanceRecordSet.LocationInstanceViewRec.ID, len(locationInstanceRecordSet.ObjectInstanceViewRecs))
 
 	// Get the monsters memory action records
-	maRecs, err := m.GetMonsterInstanceMemoryActionRecs(rec)
+	memories, err := m.GetMonsterInstanceMemories(rec)
 	if err != nil {
 		l.Warn("failed getting monster instance action memory records >%v<", err)
 		return nil, err
@@ -213,7 +219,7 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 	sentence, err := m.decideAction(&DeciderArgs{
 		MonsterInstanceViewRec:    rec,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
-		MemoryActionRecs:          maRecs,
+		Memories:                  memories,
 	})
 	if err != nil {
 		l.Warn("failed deciding action >%v<", err)
@@ -984,7 +990,7 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 	}
 	locationInstanceRecordSet.ObjectInstanceViewRecs = objectInstanceViewRecs
 
-	locationInstanceIDs := []string{}
+	locationInstanceIDs := []any{}
 	if locationInstanceViewRec.NorthLocationInstanceID.Valid {
 		locationInstanceIDs = append(locationInstanceIDs, locationInstanceViewRec.NorthLocationInstanceID.String)
 	}
@@ -1020,8 +1026,8 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 		&coresql.Options{
 			Params: []coresql.Param{
 				{
-					Col: "id",
-					Val: locationInstanceIDs,
+					Col:   "id",
+					Array: locationInstanceIDs,
 				},
 			},
 		},
@@ -1129,8 +1135,14 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 	return actionRecs, nil
 }
 
-func (m *Model) GetMonsterInstanceMemoryActionRecs(rec *record.MonsterInstanceView) ([]*record.Action, error) {
-	l := m.Logger("GetMonsterInstanceMemoryActionRecs")
+// TODO: We need more than just the action records, we also need the characters and monsters
+// that were at the location the action occurred, as those details are valid memories that
+// need to be referenced when deciding what action to take..
+
+func (m *Model) GetMonsterInstanceMemories(rec *record.MonsterInstanceView) ([]*Memory, error) {
+	l := m.Logger("GetMonsterInstanceMemories")
+
+	var memories []*Memory
 
 	// Maybe need a view here to make it easier to union monster actions and other actions?
 	maRecs, err := m.GetActionRecs(
@@ -1180,25 +1192,70 @@ func (m *Model) GetMonsterInstanceMemoryActionRecs(rec *record.MonsterInstanceVi
 	l.Info("Have >%d< monster action records", len(maRecs))
 	l.Info("Have >%d< resolved monster target action records", len(oaRecs))
 
-	aRecs := []*record.Action{}
 	for len(maRecs) > 0 {
 		if len(oaRecs) > 0 {
 			if null.NullInt16ToInt16(maRecs[0].SerialNumber) > null.NullInt16ToInt16(oaRecs[0].SerialNumber) {
-				aRecs = append(aRecs, maRecs[0])
+				memories = append(memories, &Memory{
+					ActionRec: maRecs[0],
+				})
 				maRecs = maRecs[1:]
 			} else {
-				aRecs = append(aRecs, oaRecs[0])
-				maRecs = maRecs[1:]
+				memories = append(memories, &Memory{
+					ActionRec: oaRecs[0],
+				})
+				oaRecs = oaRecs[1:]
 			}
 			continue
 		}
-		aRecs = append(aRecs, maRecs[0])
+		memories = append(memories, &Memory{
+			ActionRec: maRecs[0],
+		})
 		maRecs = maRecs[1:]
 	}
 
-	l.Info("Have >%d< total memory records", len(aRecs))
+	for idx := range memories {
 
-	return aRecs, nil
+		actionCharacterRecs, err := m.GetActionCharacterRecs(
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "action_id",
+						Val: memories[idx].ActionRec.ID,
+					},
+				},
+			},
+		)
+		if err != nil {
+			l.Warn("failed getting action ID >%s< action character records >%v<", memories[idx].ActionRec.ID, err)
+			return nil, err
+		}
+
+		memories[idx].ActionCharacterRecs = actionCharacterRecs
+
+		actionMonsterRecs, err := m.GetActionMonsterRecs(
+			&coresql.Options{
+				Params: []coresql.Param{
+					{
+						Col: "action_id",
+						Val: memories[idx].ActionRec.ID,
+					},
+				},
+			},
+		)
+		if err != nil {
+			l.Warn("failed getting action ID >%s< action monster records >%v<", memories[idx].ActionRec.ID, err)
+			return nil, err
+		}
+
+		memories[idx].ActionMonsterRecs = actionMonsterRecs
+	}
+
+	// TODO: 15-implement-monster-goals
+	// Add action object records so monsters can look for specific items
+	// as one of their goals.
+	l.Info("Have >%d< total memories", len(memories))
+
+	return memories, nil
 }
 
 func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecordSet) (*record.ActionRecordSet, error) {
