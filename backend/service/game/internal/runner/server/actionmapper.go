@@ -420,6 +420,8 @@ func actionNarrativeResponseData(l logger.Logger, set record.ActionRecordSet) (s
 	}
 
 	switch set.ActionRec.ResolvedCommand {
+	case record.ActionCommandAttack:
+		desc += " attacks "
 	case record.ActionCommandMove:
 		desc += " moves "
 	case record.ActionCommandLook:

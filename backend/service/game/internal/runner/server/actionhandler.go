@@ -214,9 +214,6 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	for idx := range res.Data {
 		if res.Data[idx].Character != nil {
 			l.Info("Response Character Name >%s<", res.Data[idx].Character.Name)
-			// for oidx := range res.Data[idx].Character.EquippedObjects {
-			// 	l.Info("         -   >%#v<", res.Data[idx].Character.EquippedObjects[oidx])
-			// }
 		}
 		if res.Data[idx].Monster != nil {
 			l.Info("Response Monster Name>%s<", res.Data[idx].Monster.Name)
@@ -224,6 +221,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 		l.Info("Response - Location Name >%s<", res.Data[idx].Location.Name)
 		l.Info("Response - Action ID >%s<", res.Data[idx].ID)
 		l.Info("Response - Action Command >%s<", res.Data[idx].Command)
+		l.Info("Response - Action Narrative >%s<", res.Data[idx].Narrative)
 		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].TurnNumber)
 		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].SerialNumber)
 	}
