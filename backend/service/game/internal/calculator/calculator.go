@@ -13,7 +13,7 @@ func CalculateCharacterHealth(rec *record.Character) (*record.Character, error) 
 
 func CalculateCharacterFatigue(rec *record.Character) (*record.Character, error) {
 
-	rec.Health = rec.Strength + rec.Intelligence*10
+	rec.Fatigue = rec.Strength + rec.Intelligence*10
 
 	return rec, nil
 }
@@ -27,7 +27,7 @@ func CalculateMonsterHealth(rec *record.Monster) (*record.Monster, error) {
 
 func CalculateMonsterFatigue(rec *record.Monster) (*record.Monster, error) {
 
-	rec.Health = rec.Strength + rec.Intelligence*10
+	rec.Fatigue = rec.Strength + rec.Intelligence*10
 
 	return rec, nil
 }
