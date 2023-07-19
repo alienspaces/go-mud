@@ -43,6 +43,11 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: 10-implement-effects:
+	// Process any active effects that are still applied to the character.
+
+	// TODO: 12-implement-death: Remove character instance when dead
+
 	// Get the current dungeon location set of related records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(civRec.LocationInstanceID, true)
 	if err != nil {
@@ -257,6 +262,11 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: 10-implement-effects:
+	// Process any active effects that are still applied to the monster.
+
+	// TODO: 12-implement-death: Remove monster instance when dead
+
 	// Get the current dungeon location set of related records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(mivRec.LocationInstanceID, true)
 	if err != nil {
@@ -386,16 +396,6 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		l.Warn("failed creating action record set records >%v<", err)
 		return nil, err
 	}
-
-	// actionMemoryRecs, err := m.memoriseAction(&MemoriserArgs{ActionRecordSet: actionRecordSet})
-	// if err != nil {
-	// 	l.Warn("failed memorising action >%v<", err)
-	// 	return nil, err
-	// }
-
-	// l.Info("Recorded >%d< memory records", len(actionMemoryRecs))
-
-	// actionRecordSet.ActionMemoryRecs = actionMemoryRecs
 
 	return actionRecordSet, nil
 }

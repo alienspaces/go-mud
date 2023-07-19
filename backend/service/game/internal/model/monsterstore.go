@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/calculator"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -53,11 +54,21 @@ func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 
 	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
 	rec.ExperiencePoints = defaultExperiencePoints
-	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)
-	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
 	rec.Coins = defaultCoins
 
-	err := m.validateMonsterRec(rec)
+	rec, err := calculator.CalculateMonsterHealth(rec)
+	if err != nil {
+		l.Debug("Failed calculating monster health >%v<", err)
+		return err
+	}
+
+	rec, err = calculator.CalculateMonsterFatigue(rec)
+	if err != nil {
+		l.Debug("Failed calculating monster fatigue >%v<", err)
+		return err
+	}
+
+	err = m.validateMonsterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err

@@ -288,6 +288,11 @@ type processDungeonInstanceTurnResult struct {
 func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*processDungeonInstanceTurnResult, error) {
 	l = loggerWithContext(l, "processDungeonInstanceTurn")
 
+	// TODO: 10-implement-effects:
+	// Process any active effects that are still applied to the character.
+
+	// TODO: 12-implement-death: Remove character instance when dead
+
 	pditr := processDungeonInstanceTurnResult{}
 
 WHILE_RESULT_NOT_INCREMENTED:

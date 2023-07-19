@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/calculator"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
@@ -58,11 +59,21 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
 	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
 	rec.ExperiencePoints = defaultExperiencePoints
-	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)
-	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
 	rec.Coins = defaultCoins
 
-	err := m.validateCharacterRec(rec)
+	rec, err := calculator.CalculateCharacterHealth(rec)
+	if err != nil {
+		l.Debug("Failed calculating character health >%v<", err)
+		return err
+	}
+
+	rec, err = calculator.CalculateCharacterFatigue(rec)
+	if err != nil {
+		l.Debug("Failed calculating character fatigue >%v<", err)
+		return err
+	}
+
+	err = m.validateCharacterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -138,12 +149,4 @@ func (m *Model) RemoveCharacterRec(recID string) error {
 	}
 
 	return r.RemoveOne(recID)
-}
-
-func (m *Model) calculateHealth(strength int, dexterity int) int {
-	return strength + dexterity*10
-}
-
-func (m *Model) calculateFatigue(strength int, intelligence int) int {
-	return strength + intelligence*10
 }
