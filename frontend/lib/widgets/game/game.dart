@@ -50,8 +50,8 @@ class _GameWidgetState extends State<GameWidget> {
               children: <Widget>[
                 // ignore: avoid_unnecessary_containers
                 Container(
-                  child: Column(
-                    children: const <Widget>[
+                  child: const Column(
+                    children: <Widget>[
                       // Location description
                       Expanded(
                         flex: 3,
