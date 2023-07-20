@@ -27,4 +27,4 @@ test-frontend:
       alias: game-server
   script:
     - cd frontend
-    - ./script/test
+    - ./tools/test

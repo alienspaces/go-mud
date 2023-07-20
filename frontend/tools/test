@@ -17,5 +17,5 @@ fi
 
 
 flutter pub get
-dart ./tool/generate.dart
+dart ./tools/generate.dart
 flutter test $1 --reporter expanded --concurrency 1
