@@ -46,7 +46,7 @@ A location may at most contain a total of 15 entities, encompassing monsters, ch
  --- --- --- --- ---
 ```
 
-Mundane objects that have no significant special abilities and aren't a quest object will be stacked at a location while other objects, monsters and characters will each contribute to the number of entities at that location.
+Objects, monsters and characters each contribute to the number of entities at that location.
 
 When a location has reached the maximum number of 15 entities, no new monsters, characters or objects can enter, spawn or otherwise be added to that location. 
 

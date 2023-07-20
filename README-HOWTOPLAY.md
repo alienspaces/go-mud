@@ -62,7 +62,9 @@ drop dragon tongue
 
 ### Attack and Defend Actions
 
-📝 [Issue-2](https://gitlab.com/alienspaces/go-mud/-/issues/2)
+📝 [Issue-6](https://gitlab.com/alienspaces/go-mud/-/issues/6)
+📝 [Issue-7](https://gitlab.com/alienspaces/go-mud/-/issues/7)
+📝 [Issue-10](https://gitlab.com/alienspaces/go-mud/-/issues/10)
 
 A character equipped with a melee weapon can attack any target if the target is in the same room. A character equipped with two weapons, one in each hand, can specify which weapon to use.
 
