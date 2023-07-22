@@ -71,7 +71,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	// Resolve the initial action turn
+	// Resolve the action turn
 	actionRec, err = m.resolveActionTurn(&ResolveActionTurnArgs{
 		ActionRec:         actionRec,
 		EntityType:        EntityTypeCharacter,
@@ -79,7 +79,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		DungeonInstanceID: locationInstanceRecordSet.LocationInstanceViewRec.DungeonInstanceID,
 	})
 	if err != nil {
-		l.Warn("failed resolving action turn >%v<", err)
+		l.Warn("failed resolving action turn, maybe too early >%v<", err)
 		return nil, err
 	}
 
