@@ -16,6 +16,10 @@ const (
 	ErrorCodeCharacterNameTaken     coreerror.ErrorCode = "character.name_taken"
 )
 
+func NewInternalError(message string, args ...any) error {
+	return coreerror.NewInternalError(message, args...)
+}
+
 func NewCharacterNameTakenError(rec *record.Character) error {
 	msg := fmt.Sprintf("character name >%s< has been taken", rec.Name)
 	return coreerror.Error{
@@ -25,7 +29,7 @@ func NewCharacterNameTakenError(rec *record.Character) error {
 	}
 }
 
-func NewActionInvalidError(message string) error {
+func NewInvalidActionError(message string) error {
 	return coreerror.Error{
 		HttpStatusCode: http.StatusBadRequest,
 		ErrorCode:      ErrorCodeActionInvalid,
@@ -33,7 +37,7 @@ func NewActionInvalidError(message string) error {
 	}
 }
 
-func NewActionInvalidDirectionError(message string) error {
+func NewInvalidDirectionError(message string) error {
 	return coreerror.Error{
 		HttpStatusCode: http.StatusBadRequest,
 		ErrorCode:      ErrorCodeActionInvalidDirection,
@@ -41,7 +45,7 @@ func NewActionInvalidDirectionError(message string) error {
 	}
 }
 
-func NewActionInvalidTargetError(message string) error {
+func NewInvalidTargetError(message string) error {
 	return coreerror.Error{
 		HttpStatusCode: http.StatusBadRequest,
 		ErrorCode:      ErrorCodeActionInvalidTarget,

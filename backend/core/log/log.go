@@ -31,29 +31,15 @@ type Config struct {
 
 var _ logger.Logger = &Log{}
 
-// Level -
-type Level uint32
-
-const (
+var levelMap = map[logger.Level]zerolog.Level{
 	// DebugLevel -
-	DebugLevel = 5
+	logger.DebugLevel: zerolog.DebugLevel,
 	// InfoLevel -
-	InfoLevel = 4
+	logger.InfoLevel: zerolog.InfoLevel,
 	// WarnLevel -
-	WarnLevel = 3
+	logger.WarnLevel: zerolog.WarnLevel,
 	// ErrorLevel -
-	ErrorLevel = 2
-)
-
-var levelMap = map[Level]zerolog.Level{
-	// DebugLevel -
-	DebugLevel: zerolog.DebugLevel,
-	// InfoLevel -
-	InfoLevel: zerolog.InfoLevel,
-	// WarnLevel -
-	WarnLevel: zerolog.WarnLevel,
-	// ErrorLevel -
-	ErrorLevel: zerolog.ErrorLevel,
+	logger.ErrorLevel: zerolog.ErrorLevel,
 }
 
 func NewDefaultLogger() *Log {
@@ -148,7 +134,7 @@ func (l *Log) Printf(format string, args ...interface{}) {
 }
 
 // Level -
-func (l *Log) Level(level Level) {
+func (l *Log) Level(level logger.Level) {
 	if lvl, ok := levelMap[level]; ok {
 		l.log = l.log.Level(lvl)
 	}
@@ -222,26 +208,39 @@ func (l *Log) WithFunctionContext(value string) logger.Logger {
 	return &ctxLog
 }
 
+func (l *Log) Write(lvl logger.Level, msg string, args ...any) {
+	switch lvl {
+	case logger.DebugLevel:
+		l.Debug(msg, args...)
+	case logger.InfoLevel:
+		l.Info(msg, args...)
+	case logger.WarnLevel:
+		l.Warn(msg, args...)
+	case logger.ErrorLevel:
+		l.Error(msg, args...)
+	}
+}
+
 // Debug -
-func (l *Log) Debug(msg string, args ...interface{}) {
+func (l *Log) Debug(msg string, args ...any) {
 	ctxLog := l.log.With().Fields(l.fields).Logger()
 	ctxLog.Debug().Msgf(msg, args...)
 }
 
 // Info -
-func (l *Log) Info(msg string, args ...interface{}) {
+func (l *Log) Info(msg string, args ...any) {
 	ctxLog := l.log.With().Fields(l.fields).Logger()
 	ctxLog.Info().Msgf(msg, args...)
 }
 
 // Warn -
-func (l *Log) Warn(msg string, args ...interface{}) {
+func (l *Log) Warn(msg string, args ...any) {
 	ctxLog := l.log.With().Fields(l.fields).Logger()
 	ctxLog.Warn().Msgf(msg, args...)
 }
 
 // Error -
-func (l *Log) Error(msg string, args ...interface{}) {
+func (l *Log) Error(msg string, args ...any) {
 	ctxLog := l.log.With().Fields(l.fields).Logger()
 	ctxLog.Error().Msgf(msg, args...)
 }

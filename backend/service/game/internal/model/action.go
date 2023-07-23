@@ -46,8 +46,6 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	// TODO: 10-implement-effects:
 	// Process any active effects that are still applied to the character.
 
-	// TODO: 12-implement-death: Remove character instance when dead
-
 	// Get the current dungeon location set of related records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(civRec.LocationInstanceID, true)
 	if err != nil {
@@ -60,8 +58,20 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: 12-implement-death: Remove character instance when dead
+	resolved, err := m.resolveCommand(&ResolveCommandArgs{
+		Sentence:                  sentence,
+		EntityType:                EntityTypeCharacter,
+		EntityInstanceID:          civRec.ID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
+	if err != nil {
+		l.Warn("failed resolving command >%v<", err)
+		return nil, err
+	}
+
 	// Resolve the submitted character action
-	actionRec, err := m.resolveAction(sentence, &ResolveActionArgs{
+	actionRec, err := m.resolveAction(resolved, &ResolveActionArgs{
 		EntityType:                EntityTypeCharacter,
 		EntityInstanceID:          civRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
@@ -265,8 +275,6 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	// TODO: 10-implement-effects:
 	// Process any active effects that are still applied to the monster.
 
-	// TODO: 12-implement-death: Remove monster instance when dead
-
 	// Get the current dungeon location set of related records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(mivRec.LocationInstanceID, true)
 	if err != nil {
@@ -279,8 +287,20 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: 12-implement-death: Remove monster instance when dead
+	resolved, err := m.resolveCommand(&ResolveCommandArgs{
+		Sentence:                  sentence,
+		EntityType:                EntityTypeMonster,
+		EntityInstanceID:          mivRec.ID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
+	if err != nil {
+		l.Warn("failed resolving command >%v<", err)
+		return nil, err
+	}
+
 	// Resolve the submitted monster action
-	actionRec, err := m.resolveAction(sentence, &ResolveActionArgs{
+	actionRec, err := m.resolveAction(resolved, &ResolveActionArgs{
 		EntityType:                EntityTypeMonster,
 		EntityInstanceID:          mivRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,

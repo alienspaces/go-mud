@@ -8,6 +8,58 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+type ResolveCommandArgs struct {
+	Sentence                  string
+	EntityType                EntityType
+	EntityInstanceID          string
+	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
+}
+
+type ResolvedCommand struct {
+	Command  string
+	Sentence string
+}
+
+// IDEA: Some commands require an additional argument, we can probably short
+// circuit that check here...
+func (m *Model) resolveCommand(args *ResolveCommandArgs) (*ResolvedCommand, error) {
+	l := m.Logger("resolveCommand")
+
+	if args == nil {
+		return nil, NewInternalError("missing resolve command arguments")
+	}
+
+	sentence := args.Sentence
+	sentenceWords := strings.Split(sentence, " ")
+	resolved := ResolvedCommand{}
+
+	l.Debug("Have sentence words >%v<", sentenceWords)
+
+	for _, actionCommand := range validActionCommands {
+		l.Debug("Checking dungeon action >%s<", actionCommand)
+		// NOTE: The appended space is important
+		if strings.Contains(sentence, actionCommand+" ") {
+			l.Debug("Sentence contains action >%s<", actionCommand)
+			sentence = strings.Replace(sentence, actionCommand+" ", "", 1)
+			resolved.Command = actionCommand
+			resolved.Sentence = sentence
+		} else if sentence == actionCommand {
+			l.Debug("Sentence equals action >%s<", actionCommand)
+			sentence = strings.Replace(sentence, actionCommand, "", 1)
+			resolved.Command = actionCommand
+			resolved.Sentence = sentence
+		}
+	}
+
+	l.Debug("Resolved command >%#v<", resolved)
+
+	if resolved.Command == "" {
+		return nil, NewInvalidActionError("command empty or not recognised")
+	}
+
+	return &resolved, nil
+}
+
 var validActionCommands []string = []string{
 	record.ActionCommandMove,
 	record.ActionCommandLook,
@@ -24,18 +76,11 @@ type ResolveActionArgs struct {
 	LocationInstanceRecordSet *record.LocationInstanceViewRecordSet
 }
 
-type ResolverSentence struct {
-	Command  string
-	Sentence string
-}
-
-func (m *Model) resolveAction(sentence string, args *ResolveActionArgs) (*record.Action, error) {
+func (m *Model) resolveAction(resolved *ResolvedCommand, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveAction")
 
-	resolved, err := m.resolveCommand(sentence)
-	if err != nil {
-		l.Warn("failed resolving command >%v<", err)
-		return nil, err
+	if args == nil {
+		return nil, NewInternalError("missing resolve action arguments")
 	}
 
 	resolveFuncs := map[string]func(sentence string, args *ResolveActionArgs) (*record.Action, error){
@@ -66,41 +111,6 @@ func (m *Model) resolveAction(sentence string, args *ResolveActionArgs) (*record
 	return actionRec, nil
 }
 
-// IDEA: Some commands require an additional argument, we can probably short
-// circuit that check here...
-func (m *Model) resolveCommand(sentence string) (*ResolverSentence, error) {
-	l := m.Logger("resolveCommand")
-
-	sentenceWords := strings.Split(sentence, " ")
-	resolved := ResolverSentence{}
-
-	l.Debug("Have sentence words >%v<", sentenceWords)
-
-	for _, actionCommand := range validActionCommands {
-		l.Debug("Checking dungeon action >%s<", actionCommand)
-		// NOTE: The appended space is important
-		if strings.Contains(sentence, actionCommand+" ") {
-			l.Debug("Sentence contains action >%s<", actionCommand)
-			sentence = strings.Replace(sentence, actionCommand+" ", "", 1)
-			resolved.Command = actionCommand
-			resolved.Sentence = sentence
-		} else if sentence == actionCommand {
-			l.Debug("Sentence equals action >%s<", actionCommand)
-			sentence = strings.Replace(sentence, actionCommand, "", 1)
-			resolved.Command = actionCommand
-			resolved.Sentence = sentence
-		}
-	}
-
-	l.Debug("Resolved command >%#v<", resolved)
-
-	if resolved.Command == "" {
-		return nil, NewActionInvalidError("command empty or not recognised")
-	}
-
-	return &resolved, nil
-}
-
 func (m *Model) resolveActionMove(sentence string, args *ResolveActionArgs) (*record.Action, error) {
 	l := m.Logger("resolveActionMove")
 
@@ -120,7 +130,7 @@ func (m *Model) resolveActionMove(sentence string, args *ResolveActionArgs) (*re
 	}
 
 	if targetLocationInstanceID == "" || targetLocationDirection == "" {
-		return nil, NewActionInvalidDirectionError("you cannot move that direction")
+		return nil, NewInvalidDirectionError("you cannot move that direction")
 	}
 
 	dungeonActionRec := record.Action{
@@ -319,7 +329,7 @@ func (m *Model) resolveActionUse(sentence string, args *ResolveActionArgs) (*rec
 
 	// No location or equipped object found
 	if targetObjectInstanceID == "" {
-		return nil, NewActionInvalidTargetError("failed to get object from location or equipped objects, cannot resolve use action")
+		return nil, NewInvalidTargetError("failed to get object from location or equipped objects, cannot resolve use action")
 	}
 
 	// Use object on ... a monster?
@@ -401,7 +411,7 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*
 	}
 
 	if targetMonsterInstanceID == "" && targetCharacterInstanceID == "" {
-		return nil, NewActionInvalidTargetError("failed to find target monster or character, cannot resolve attack action")
+		return nil, NewInvalidTargetError("failed to find target monster or character, cannot resolve attack action")
 	}
 
 	dungeonActionRec := record.Action{
@@ -502,7 +512,7 @@ func (m *Model) resolveActionStash(sentence string, args *ResolveActionArgs) (*r
 	}
 
 	if stashedObjectInstanceID == "" {
-		return nil, NewActionInvalidTargetError("failed to identify object to stash, cannot resolve stash action")
+		return nil, NewInvalidTargetError("failed to identify object to stash, cannot resolve stash action")
 	}
 
 	dungeonActionRec := record.Action{
@@ -568,7 +578,7 @@ func (m *Model) resolveActionEquip(sentence string, args *ResolveActionArgs) (*r
 	}
 
 	if equippedObjectInstanceID == "" {
-		return nil, NewActionInvalidTargetError("failed to identify object to equip, cannot resolve equip action")
+		return nil, NewInvalidTargetError("failed to identify object to equip, cannot resolve equip action")
 	}
 
 	dungeonActionRec := record.Action{
@@ -656,7 +666,7 @@ func (m *Model) resolveActionDrop(sentence string, args *ResolveActionArgs) (*re
 	}
 
 	if droppedObjectInstanceID == "" {
-		return nil, NewActionInvalidTargetError("failed to identify object to drop, cannot resolve drop action")
+		return nil, NewInvalidTargetError("failed to identify object to drop, cannot resolve drop action")
 	}
 
 	dungeonActionRec := record.Action{

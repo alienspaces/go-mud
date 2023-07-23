@@ -1,5 +1,18 @@
 package logger
 
+type Level int
+
+const (
+	// DebugLevel -
+	DebugLevel Level = 5
+	// InfoLevel -
+	InfoLevel Level = 4
+	// WarnLevel -
+	WarnLevel Level = 3
+	// ErrorLevel -
+	ErrorLevel Level = 2
+)
+
 // Logger -
 type Logger interface {
 	NewInstance() (Logger, error)
@@ -7,8 +20,9 @@ type Logger interface {
 	WithApplicationContext(value string) Logger
 	WithPackageContext(value string) Logger
 	WithFunctionContext(value string) Logger
-	Debug(msg string, args ...interface{})
-	Info(msg string, args ...interface{})
-	Warn(msg string, args ...interface{})
-	Error(msg string, args ...interface{})
+	Write(level Level, msg string, args ...any)
+	Debug(msg string, args ...any)
+	Info(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Error(msg string, args ...any)
 }

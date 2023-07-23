@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 
-	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
@@ -65,8 +64,8 @@ func (m *Model) CharacterExitDungeon(characterID string) error {
 	}
 
 	if characterInstanceRec == nil {
-		l.Warn("character instance record is nil")
-		err := coreerror.NewInternalError()
+		err := NewInternalError("character instance record is nil")
+		l.Warn(err.Error())
 		return err
 	}
 

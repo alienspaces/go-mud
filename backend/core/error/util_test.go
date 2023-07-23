@@ -56,7 +56,7 @@ func TestToError(t *testing.T) {
 		{
 			name: "internal",
 			args: args{
-				e: NewInternalError(),
+				e: NewInternalError("internal"),
 			},
 			want: internal,
 		},

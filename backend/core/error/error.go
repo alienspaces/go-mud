@@ -19,8 +19,13 @@ var internal = Error{
 	Message:        "An internal error has occurred.",
 }
 
-func NewInternalError() error {
-	return internal
+func NewInternalError(message string, args ...any) error {
+	e := internal
+	if message != "" {
+		e.LogLevel = 2
+		e.LogMessage = fmt.Sprintf(message, args...)
+	}
+	return e
 }
 
 var notFound = Error{

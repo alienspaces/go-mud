@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -140,8 +141,8 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if len(characterInstanceRecs) > 1 {
-		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewInternalError()
+		err := coreerror.NewInternalError(fmt.Sprintf("unexpected number of character instance records returned >%d<", len(characterInstanceRecs)))
+		l.Warn(err.Error())
 		server.WriteError(l, w, err)
 		return err
 	}
