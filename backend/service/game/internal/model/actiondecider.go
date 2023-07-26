@@ -111,6 +111,12 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 		// Highest priority are characters that have attacked the monster
 		if len(pidx) != 0 && len(lirs.CharacterInstanceViewRecs) != 0 {
 			for idx := range lirs.CharacterInstanceViewRecs {
+
+				// No point attacking an already dead character
+				if lirs.CharacterInstanceViewRecs[idx].CurrentHealth <= 0 {
+					continue
+				}
+
 				if _, ok := pidx[lirs.CharacterInstanceViewRecs[idx].ID]; ok {
 					targetName = lirs.CharacterInstanceViewRecs[idx].Name
 					l.Warn("Choosing priority character instance >%s<", targetName)
@@ -122,6 +128,12 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 		// Second highest priority are other monster that have attacked the monster
 		if targetName == "" && len(pidx) != 0 && len(lirs.MonsterInstanceViewRecs) != 0 {
 			for idx := range lirs.MonsterInstanceViewRecs {
+
+				// No point attacking an already dead monster
+				if lirs.MonsterInstanceViewRecs[idx].CurrentHealth <= 0 {
+					continue
+				}
+
 				if _, ok := pidx[lirs.MonsterInstanceViewRecs[idx].ID]; ok {
 					targetName = lirs.MonsterInstanceViewRecs[idx].Name
 					l.Warn("Choosing priority monster instance >%s<", targetName)
@@ -132,9 +144,20 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 
 		// Third priority is simply any characters present in the room
 		if targetName == "" && len(lirs.CharacterInstanceViewRecs) != 0 {
-			rIdx := rand.Intn(len(lirs.CharacterInstanceViewRecs))
-			targetName = lirs.CharacterInstanceViewRecs[rIdx].Name
-			l.Warn("Choosing random character instance >%s<", targetName)
+
+			// No point randomly attacking a dead person!
+			civRecs := []record.CharacterInstanceView{}
+			for idx := range lirs.CharacterInstanceViewRecs {
+				if lirs.CharacterInstanceViewRecs[idx].CurrentHealth > 0 {
+					civRecs = append(civRecs, *lirs.CharacterInstanceViewRecs[idx])
+				}
+			}
+
+			if len(civRecs) > 0 {
+				rIdx := rand.Intn(len(civRecs))
+				targetName = civRecs[rIdx].Name
+				l.Warn("Choosing random character instance >%s<", targetName)
+			}
 		}
 	}
 

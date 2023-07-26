@@ -20,13 +20,31 @@ type ResolvedCommand struct {
 	Sentence string
 }
 
-// IDEA: Some commands require an additional argument, we can probably short
-// circuit that check here...
 func (m *Model) resolveCommand(args *ResolveCommandArgs) (*ResolvedCommand, error) {
 	l := m.Logger("resolveCommand")
 
 	if args == nil {
 		return nil, NewInternalError("missing resolve command arguments")
+	}
+
+	// You cannot do anything when you are dead
+	if args.EntityType == EntityTypeCharacter {
+		for idx := range args.LocationInstanceRecordSet.CharacterInstanceViewRecs {
+			if args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].ID == args.EntityInstanceID &&
+				args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].CurrentHealth <= 0 {
+				l.Warn("Character name >%s< has died", args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].Name)
+				return nil, nil
+			}
+		}
+	} else if args.EntityType == EntityTypeMonster {
+		for idx := range args.LocationInstanceRecordSet.MonsterInstanceViewRecs {
+			if args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].ID == args.EntityInstanceID &&
+				args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].CurrentHealth <= 0 {
+				l.Warn("Monster name >%s< has died", args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].Name)
+				return nil, nil
+			}
+		}
+
 	}
 
 	sentence := args.Sentence

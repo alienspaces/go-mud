@@ -58,7 +58,6 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, fmt.Errorf(msg)
 	}
 
-	// TODO: 12-implement-death: Remove character instance when dead
 	resolved, err := m.resolveCommand(&ResolveCommandArgs{
 		Sentence:                  sentence,
 		EntityType:                EntityTypeCharacter,
@@ -68,6 +67,11 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 	if err != nil {
 		l.Warn("failed resolving command >%v<", err)
 		return nil, err
+	}
+
+	if resolved == nil {
+		l.Info("no command resolved, you might be dead")
+		return nil, nil
 	}
 
 	// Resolve the submitted character action
@@ -287,7 +291,6 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, fmt.Errorf(msg)
 	}
 
-	// TODO: 12-implement-death: Remove monster instance when dead
 	resolved, err := m.resolveCommand(&ResolveCommandArgs{
 		Sentence:                  sentence,
 		EntityType:                EntityTypeMonster,
@@ -297,6 +300,11 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	if err != nil {
 		l.Warn("failed resolving command >%v<", err)
 		return nil, err
+	}
+
+	if resolved == nil {
+		l.Info("no command resolved, you might be dead")
+		return nil, nil
 	}
 
 	// Resolve the submitted monster action
