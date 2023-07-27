@@ -303,8 +303,9 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 	}
 
 	if resolved == nil {
-		l.Info("no command resolved, you might be dead")
-		return nil, nil
+		err := NewInternalError("command was not resolved")
+		l.Warn(err.Error())
+		return nil, err
 	}
 
 	// Resolve the submitted monster action

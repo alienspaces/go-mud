@@ -32,19 +32,20 @@ func (m *Model) resolveCommand(args *ResolveCommandArgs) (*ResolvedCommand, erro
 		for idx := range args.LocationInstanceRecordSet.CharacterInstanceViewRecs {
 			if args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].ID == args.EntityInstanceID &&
 				args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].CurrentHealth <= 0 {
-				l.Warn("Character name >%s< has died", args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].Name)
-				return nil, nil
+				err := NewInvalidActionError("character name >%s< has died", args.LocationInstanceRecordSet.CharacterInstanceViewRecs[idx].Name)
+				l.Warn(err.Error())
+				return nil, err
 			}
 		}
 	} else if args.EntityType == EntityTypeMonster {
 		for idx := range args.LocationInstanceRecordSet.MonsterInstanceViewRecs {
 			if args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].ID == args.EntityInstanceID &&
 				args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].CurrentHealth <= 0 {
-				l.Warn("Monster name >%s< has died", args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].Name)
-				return nil, nil
+				err := NewInvalidActionError("monster name >%s< has died", args.LocationInstanceRecordSet.MonsterInstanceViewRecs[idx].Name)
+				l.Warn(err.Error())
+				return nil, err
 			}
 		}
-
 	}
 
 	sentence := args.Sentence
@@ -72,7 +73,9 @@ func (m *Model) resolveCommand(args *ResolveCommandArgs) (*ResolvedCommand, erro
 	l.Debug("Resolved command >%#v<", resolved)
 
 	if resolved.Command == "" {
-		return nil, NewInvalidActionError("command empty or not recognised")
+		err := NewInvalidActionError("command empty or not recognised, could not resolve command from >%#v<", args)
+		l.Warn(err.Error())
+		return nil, err
 	}
 
 	return &resolved, nil

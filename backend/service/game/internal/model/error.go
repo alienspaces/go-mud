@@ -29,7 +29,10 @@ func NewCharacterNameTakenError(rec *record.Character) error {
 	}
 }
 
-func NewInvalidActionError(message string) error {
+func NewInvalidActionError(message string, args ...any) error {
+	if len(args) > 0 {
+		message = fmt.Sprintf(message, args...)
+	}
 	return coreerror.Error{
 		HttpStatusCode: http.StatusBadRequest,
 		ErrorCode:      ErrorCodeActionInvalid,
