@@ -191,6 +191,8 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 			l.Info("Daemon cycle >%d<", cycles)
 		}
 
+		cycles++
+
 		runningCount := 0
 		for dungeonInstanceID := range dungeonInstanceStates {
 			switch dungeonInstanceStates[dungeonInstanceID].state {
