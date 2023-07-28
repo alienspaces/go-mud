@@ -7,13 +7,9 @@ import (
 
 // Get is a convenience method wrapping RetryRequest
 func (c *Client) Get(path string, params map[string]string, respData interface{}) error {
+	l := c.Log.WithContext("function", "Get")
 
-	c.Log.Context("function", "Get")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
-
-	c.Log.Debug("Request path >%s< params >%#v< respData >%#v<", path, params, respData)
+	l.Debug("Request path >%s< params >%#v< respData >%#v<", path, params, respData)
 
 	err := c.RetryRequest(
 		http.MethodGet,
@@ -23,7 +19,7 @@ func (c *Client) Get(path string, params map[string]string, respData interface{}
 		respData,
 	)
 	if err != nil {
-		c.Log.Warn(fmt.Sprintf("Failed request >%v<", err))
+		l.Warn(fmt.Sprintf("Failed request >%v<", err))
 		return err
 	}
 
@@ -32,17 +28,13 @@ func (c *Client) Get(path string, params map[string]string, respData interface{}
 
 // Create is a convenience method wrapping RetryRequest
 func (c *Client) Create(path string, params map[string]string, reqData interface{}, respData interface{}) error {
+	l := c.Log.WithContext("function", "Create")
 
-	c.Log.Context("function", "Create")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
-
-	c.Log.Debug("Request path >%s< params >%#v< reqData >%#v< respData >%#v<", path, params, reqData, respData)
+	l.Debug("Request path >%s< params >%#v< reqData >%#v< respData >%#v<", path, params, reqData, respData)
 
 	if reqData == nil {
 		msg := fmt.Sprintf("Request data is nil >%v<, cannot create resource", reqData)
-		c.Log.Warn(msg)
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
@@ -54,7 +46,7 @@ func (c *Client) Create(path string, params map[string]string, reqData interface
 		respData,
 	)
 	if err != nil {
-		c.Log.Warn(fmt.Sprintf("Failed request >%v<", err))
+		l.Warn(fmt.Sprintf("Failed request >%v<", err))
 		return err
 	}
 
@@ -63,17 +55,13 @@ func (c *Client) Create(path string, params map[string]string, reqData interface
 
 // Update is a convenience method wrapping RetryRequest
 func (c *Client) Update(path string, params map[string]string, reqData interface{}, respData interface{}) error {
+	l := c.Log.WithContext("function", "Update")
 
-	c.Log.Context("function", "Update")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
-
-	c.Log.Debug("Request path >%s< params >%#v< reqData >%#v< respData >%#v<", path, params, reqData, respData)
+	l.Debug("Request path >%s< params >%#v< reqData >%#v< respData >%#v<", path, params, reqData, respData)
 
 	if reqData == nil {
 		msg := fmt.Sprintf("Request data is nil >%v<, cannot update resource", reqData)
-		c.Log.Warn(msg)
+		l.Warn(msg)
 		return fmt.Errorf(msg)
 	}
 
@@ -85,7 +73,7 @@ func (c *Client) Update(path string, params map[string]string, reqData interface
 		respData,
 	)
 	if err != nil {
-		c.Log.Warn(fmt.Sprintf("Failed request >%v<", err))
+		l.Warn(fmt.Sprintf("Failed request >%v<", err))
 		return err
 	}
 
@@ -94,11 +82,7 @@ func (c *Client) Update(path string, params map[string]string, reqData interface
 
 // Delete is a convenience method wrapping RetryRequest
 func (c *Client) Delete(path string, params map[string]string, respData interface{}) error {
-
-	c.Log.Context("function", "Delete")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
+	l := c.Log.WithContext("function", "Delete")
 
 	err := c.RetryRequest(
 		http.MethodDelete,
@@ -108,7 +92,7 @@ func (c *Client) Delete(path string, params map[string]string, respData interfac
 		respData,
 	)
 	if err != nil {
-		c.Log.Warn(fmt.Sprintf("Failed request >%v<", err))
+		l.Warn(fmt.Sprintf("Failed request >%v<", err))
 		return err
 	}
 

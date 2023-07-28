@@ -11,7 +11,7 @@ import (
 // GetActionCharacterRecs -
 func (m *Model) GetActionCharacterRecs(opts *coresql.Options) ([]*record.ActionCharacter, error) {
 
-	l := m.Logger("GetActionCharacterRecs")
+	l := m.loggerWithContext("GetActionCharacterRecs")
 
 	l.Debug("Getting dungeon action character records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetActionCharacterRecs(opts *coresql.Options) ([]*record.ActionC
 // GetActionCharacterRec -
 func (m *Model) GetActionCharacterRec(recID string, lock *coresql.Lock) (*record.ActionCharacter, error) {
 
-	l := m.Logger("GetActionCharacterRec")
+	l := m.loggerWithContext("GetActionCharacterRec")
 
 	l.Debug("Getting dungeon action character rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetActionCharacterRec(recID string, lock *coresql.Lock) (*record
 // CreateActionCharacterRec -
 func (m *Model) CreateActionCharacterRec(rec *record.ActionCharacter) error {
 
-	l := m.Logger("CreateActionCharacterRec")
+	l := m.loggerWithContext("CreateActionCharacterRec")
 
 	l.Debug("Creating dungeon action character record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateActionCharacterRec(rec *record.ActionCharacter) error {
 // UpdateActionCharacterRec -
 func (m *Model) UpdateActionCharacterRec(rec *record.ActionCharacter) error {
 
-	l := m.Logger("UpdateActionCharacterRec")
+	l := m.loggerWithContext("UpdateActionCharacterRec")
 
 	l.Debug("Updating dungeon action character record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateActionCharacterRec(rec *record.ActionCharacter) error {
 // DeleteActionCharacterRec -
 func (m *Model) DeleteActionCharacterRec(recID string) error {
 
-	l := m.Logger("DeleteActionCharacterRec")
+	l := m.loggerWithContext("DeleteActionCharacterRec")
 
 	l.Debug("Deleting dungeon action character rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteActionCharacterRec(recID string) error {
 // RemoveActionCharacterRec -
 func (m *Model) RemoveActionCharacterRec(recID string) error {
 
-	l := m.Logger("RemoveActionCharacterRec")
+	l := m.loggerWithContext("RemoveActionCharacterRec")
 
 	l.Debug("Removing dungeon action character rec ID >%s<", recID)
 

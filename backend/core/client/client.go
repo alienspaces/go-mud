@@ -247,18 +247,14 @@ RETRY:
 
 // Request -
 func (c *Client) Request(method, url string, data []byte) (*http.Response, error) {
-
-	c.Log.Context("function", "Request")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
+	l := c.Log.WithContext("function", "Request")
 
 	var err error
 
 	if c.Verbose {
-		c.Log.Info("Client request URL >%s< data length >%d<", url, len(data))
+		l.Info("Client request URL >%s< data length >%d<", url, len(data))
 	} else {
-		c.Log.Debug("Client request URL >%s< data length >%d<", url, len(data))
+		l.Debug("Client request URL >%s< data length >%d<", url, len(data))
 	}
 
 	var resp *http.Response
@@ -275,47 +271,47 @@ func (c *Client) Request(method, url string, data []byte) (*http.Response, error
 
 		// Get
 		if c.Verbose {
-			c.Log.Info("Method %s", method)
+			l.Info("Method %s", method)
 		} else {
-			c.Log.Debug("Method %s", method)
+			l.Debug("Method %s", method)
 		}
 
 		req, err = http.NewRequest(method, url, nil)
 		if err != nil {
-			c.Log.Warn("Failed client request >%v<", err)
+			l.Warn("Failed client request >%v<", err)
 			return nil, err
 		}
 
 		err := c.SetHeaders(req)
 		if err != nil {
-			c.Log.Warn("Failed setting headers >%v<", err)
+			l.Warn("Failed setting headers >%v<", err)
 			return nil, err
 		}
 
 		err = c.SetAuthHeaders(req)
 		if err != nil {
-			c.Log.Warn("Failed setting request auth headers >%v<", err)
+			l.Warn("Failed setting request auth headers >%v<", err)
 			return nil, err
 		}
 
 		if c.RequestLogFunc != nil {
 			requestDump, err = httputil.DumpRequest(req, true)
 			if err != nil {
-				c.Log.Warn("Failed request dump >%v<", err)
+				l.Warn("Failed request dump >%v<", err)
 				return nil, err
 			}
 		}
 
 		resp, err = client.Do(req)
 		if err != nil {
-			c.Log.Warn("Failed client request >%v<", err)
+			l.Warn("Failed client request >%v<", err)
 			return resp, err
 		}
 
 		if c.RequestLogFunc != nil {
 			responseDump, err := httputil.DumpResponse(resp, true)
 			if err != nil {
-				c.Log.Warn("Failed response dump >%v<", err)
+				l.Warn("Failed response dump >%v<", err)
 				return nil, err
 			}
 			c.RequestLogFunc(url, string(requestDump), string(responseDump))
@@ -325,26 +321,26 @@ func (c *Client) Request(method, url string, data []byte) (*http.Response, error
 
 		// Post / Put
 		if c.Verbose {
-			c.Log.Info("Method %s", method)
+			l.Info("Method %s", method)
 		} else {
-			c.Log.Debug("Method %s", method)
+			l.Debug("Method %s", method)
 		}
 
 		req, err = http.NewRequest(method, url, bytes.NewBuffer(data))
 		if err != nil {
-			c.Log.Warn("Failed client request >%v<", err)
+			l.Warn("Failed client request >%v<", err)
 			return nil, err
 		}
 
 		err := c.SetHeaders(req)
 		if err != nil {
-			c.Log.Warn("Failed setting headers >%v<", err)
+			l.Warn("Failed setting headers >%v<", err)
 			return nil, err
 		}
 
 		err = c.SetAuthHeaders(req)
 		if err != nil {
-			c.Log.Warn("Failed setting request auth headers >%v<", err)
+			l.Warn("Failed setting request auth headers >%v<", err)
 			return nil, err
 		}
 
@@ -353,21 +349,21 @@ func (c *Client) Request(method, url string, data []byte) (*http.Response, error
 		if c.RequestLogFunc != nil {
 			requestDump, err = httputil.DumpRequest(req, true)
 			if err != nil {
-				c.Log.Warn("Failed request dump >%v<", err)
+				l.Warn("Failed request dump >%v<", err)
 				return nil, err
 			}
 		}
 
 		resp, err = client.Do(req)
 		if err != nil {
-			c.Log.Warn("Failed client request >%#v< >%v<", resp, err)
+			l.Warn("Failed client request >%#v< >%v<", resp, err)
 			return resp, err
 		}
 
 		if c.RequestLogFunc != nil {
 			responseDump, err = httputil.DumpResponse(resp, true)
 			if err != nil {
-				c.Log.Warn("Failed response dump >%v<", err)
+				l.Warn("Failed response dump >%v<", err)
 				return nil, err
 			}
 			if c.Verbose {
@@ -384,11 +380,11 @@ func (c *Client) Request(method, url string, data []byte) (*http.Response, error
 	default:
 		// boom
 		msg := fmt.Sprintf("Method >%s< currently unsupported!", method)
-		c.Log.Warn(msg)
+		l.Warn(msg)
 		return nil, fmt.Errorf(msg)
 	}
 
-	c.Log.Debug("Client response status >%s<", resp.Status)
+	l.Debug("Client response status >%s<", resp.Status)
 
 	// Check response code
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusAccepted {
@@ -512,15 +508,11 @@ func (c *Client) RegisterRequestLogFunc(logFunc func(url, request, response stri
 
 // EncodeData is a convenience function that encodes struct data into bytes
 func (c *Client) EncodeData(data interface{}) ([]byte, error) {
-
-	c.Log.Context("function", "EncodeData")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
+	l := c.Log.WithContext("function", "EncodeData")
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
-		c.Log.Warn("Failed encoding data >%v<", err)
+		l.Warn("Failed encoding data >%v<", err)
 		return nil, err
 	}
 	return dataBytes, nil
@@ -528,18 +520,14 @@ func (c *Client) EncodeData(data interface{}) ([]byte, error) {
 
 // DecodeData is a convenience function that decodes bytes into struct data
 func (c *Client) DecodeData(rc io.ReadCloser, data interface{}) error {
-
-	c.Log.Context("function", "DecodeData")
-	defer func() {
-		c.Log.Context("function", "")
-	}()
+	l := c.Log.WithContext("function", "DecodeData")
 
 	// close before returning
 	defer rc.Close()
 
 	err := json.NewDecoder(rc).Decode(&data)
 	if err != nil && err.Error() != "EOF" {
-		c.Log.Warn("Failed decoding data >%v<", err)
+		l.Warn("Failed decoding data >%v<", err)
 		return err
 	}
 	return nil

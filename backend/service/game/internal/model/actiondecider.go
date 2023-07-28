@@ -26,7 +26,7 @@ type DeciderArgs struct {
 }
 
 func (m *Model) decideAction(args *DeciderArgs) (string, error) {
-	l := m.Logger("decideAction")
+	l := m.loggerWithContext("decideAction")
 
 	l.Info("Deciding action args >%#v<", args)
 
@@ -90,7 +90,7 @@ func (m *Model) getPriorityAttackTargetIndex(memories []*Memory, targetInstanceI
 }
 
 func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
-	l := m.Logger("decideActionAttack")
+	l := m.loggerWithContext("decideActionAttack")
 
 	lirs := args.LocationInstanceRecordSet
 
@@ -171,7 +171,7 @@ func (m *Model) decideActionAttack(args *DeciderArgs) (string, error) {
 }
 
 func (m *Model) decideActionStash(args *DeciderArgs) (string, error) {
-	l := m.Logger("decideActionStash")
+	l := m.loggerWithContext("decideActionStash")
 
 	lirs := args.LocationInstanceRecordSet
 
@@ -337,7 +337,7 @@ func (m *Model) getPriorityLookCharacter(args *DeciderArgs) (string, error) {
 }
 
 func (m *Model) decideActionLook(args *DeciderArgs) (string, error) {
-	l := m.Logger("decideActionLook")
+	l := m.loggerWithContext("decideActionLook")
 
 	lirs := args.LocationInstanceRecordSet
 
@@ -449,7 +449,7 @@ func (m *Model) getPriorityMoveDirections(memories []*Memory, lirs *record.Locat
 }
 
 func (m *Model) decideActionMove(args *DeciderArgs) (string, error) {
-	l := m.Logger("decideActionAttack")
+	l := m.loggerWithContext("decideActionAttack")
 
 	action := ""
 	lirs := args.LocationInstanceRecordSet

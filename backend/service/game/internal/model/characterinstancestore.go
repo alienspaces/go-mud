@@ -11,7 +11,7 @@ import (
 
 // GetCharacterInstanceRecByCharacterID -
 func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*record.CharacterInstance, error) {
-	l := m.Logger("GetCharacterInstanceRecByCharacterID")
+	l := m.loggerWithContext("GetCharacterInstanceRecByCharacterID")
 
 	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
 		&coresql.Options{
@@ -45,7 +45,7 @@ func (m *Model) GetCharacterInstanceRecByCharacterID(characterID string) (*recor
 // GetCharacterInstanceRecs -
 func (m *Model) GetCharacterInstanceRecs(opts *coresql.Options) ([]*record.CharacterInstance, error) {
 
-	l := m.Logger("GetCharacterInstanceRecs")
+	l := m.loggerWithContext("GetCharacterInstanceRecs")
 
 	l.Debug("Getting character instance records opts >%#v<", opts)
 
@@ -56,7 +56,7 @@ func (m *Model) GetCharacterInstanceRecs(opts *coresql.Options) ([]*record.Chara
 
 // GetCharacterInstanceRec -
 func (m *Model) GetCharacterInstanceRec(recID string, lock *coresql.Lock) (*record.CharacterInstance, error) {
-	l := m.Logger("GetCharacterInstanceRec")
+	l := m.loggerWithContext("GetCharacterInstanceRec")
 
 	l.Debug("Getting character instance record ID >%s<", recID)
 
@@ -77,7 +77,7 @@ func (m *Model) GetCharacterInstanceRec(recID string, lock *coresql.Lock) (*reco
 
 // GetCharacterInstanceViewRecByCharacterID -
 func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*record.CharacterInstanceView, error) {
-	l := m.Logger("GetCharacterInstanceViewRecByCharacterID")
+	l := m.loggerWithContext("GetCharacterInstanceViewRecByCharacterID")
 
 	characterInstanceViewRecs, err := m.GetCharacterInstanceViewRecs(
 		&coresql.Options{
@@ -111,7 +111,7 @@ func (m *Model) GetCharacterInstanceViewRecByCharacterID(characterID string) (*r
 // GetCharacterInstanceRecs -
 func (m *Model) GetCharacterInstanceViewRecs(opts *coresql.Options) ([]*record.CharacterInstanceView, error) {
 
-	l := m.Logger("GetCharacterInstanceViewRecs")
+	l := m.loggerWithContext("GetCharacterInstanceViewRecs")
 
 	l.Debug("Getting character instance view records opts >%#v<", opts)
 
@@ -123,7 +123,7 @@ func (m *Model) GetCharacterInstanceViewRecs(opts *coresql.Options) ([]*record.C
 // GetCharacterInstanceRec -
 func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInstanceView, error) {
 
-	l := m.Logger("GetCharacterInstanceViewRec")
+	l := m.loggerWithContext("GetCharacterInstanceViewRec")
 
 	l.Debug("Getting character instance view record ID >%s<", recID)
 
@@ -145,7 +145,7 @@ func (m *Model) GetCharacterInstanceViewRec(recID string) (*record.CharacterInst
 // CreateCharacterInstanceRec -
 func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error {
 
-	l := m.Logger("CreateCharacterInstanceRec")
+	l := m.loggerWithContext("CreateCharacterInstanceRec")
 
 	l.Debug("Creating character record >%#v<", rec)
 
@@ -163,7 +163,7 @@ func (m *Model) CreateCharacterInstanceRec(rec *record.CharacterInstance) error 
 // UpdateCharacterInstanceRec -
 func (m *Model) UpdateCharacterInstanceRec(rec *record.CharacterInstance) error {
 
-	l := m.Logger("UpdateCharacterInstanceRec")
+	l := m.loggerWithContext("UpdateCharacterInstanceRec")
 
 	l.Debug("Updating character record >%#v<", rec)
 
@@ -181,7 +181,7 @@ func (m *Model) UpdateCharacterInstanceRec(rec *record.CharacterInstance) error 
 // DeleteCharacterInstanceRec -
 func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 
-	l := m.Logger("DeleteCharacterInstanceRec")
+	l := m.loggerWithContext("DeleteCharacterInstanceRec")
 
 	l.Debug("Deleting character rec ID >%s<", recID)
 
@@ -203,7 +203,7 @@ func (m *Model) DeleteCharacterInstanceRec(recID string) error {
 // RemoveCharacterInstanceRec -
 func (m *Model) RemoveCharacterInstanceRec(recID string) error {
 
-	l := m.Logger("RemoveCharacterInstanceRec")
+	l := m.loggerWithContext("RemoveCharacterInstanceRec")
 
 	l.Debug("Removing character rec ID >%s<", recID)
 

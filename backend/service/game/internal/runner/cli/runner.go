@@ -19,6 +19,7 @@ type Runner struct {
 
 // NewRunner -
 func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
+	l = l.WithContext(logger.ContextApplication, "gamecli")
 
 	r := Runner{}
 

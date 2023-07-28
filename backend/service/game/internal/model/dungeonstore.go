@@ -11,7 +11,7 @@ import (
 // GetDungeonRecs -
 func (m *Model) GetDungeonRecs(opts *coresql.Options) ([]*record.Dungeon, error) {
 
-	l := m.Logger("GetDungeonRecs")
+	l := m.loggerWithContext("GetDungeonRecs")
 
 	l.Debug("Getting dungeon records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetDungeonRecs(opts *coresql.Options) ([]*record.Dungeon, error)
 // GetDungeonRec -
 func (m *Model) GetDungeonRec(recID string, lock *coresql.Lock) (*record.Dungeon, error) {
 
-	l := m.Logger("GetDungeonRec")
+	l := m.loggerWithContext("GetDungeonRec")
 
 	l.Debug("Getting dungeon rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetDungeonRec(recID string, lock *coresql.Lock) (*record.Dungeon
 // CreateDungeonRec -
 func (m *Model) CreateDungeonRec(rec *record.Dungeon) error {
 
-	l := m.Logger("CreateDungeonRec")
+	l := m.loggerWithContext("CreateDungeonRec")
 
 	l.Debug("Creating dungeon record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateDungeonRec(rec *record.Dungeon) error {
 // UpdateDungeonRec -
 func (m *Model) UpdateDungeonRec(rec *record.Dungeon) error {
 
-	l := m.Logger("UpdateDungeonRec")
+	l := m.loggerWithContext("UpdateDungeonRec")
 
 	l.Debug("Updating dungeon record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateDungeonRec(rec *record.Dungeon) error {
 // DeleteDungeonRec -
 func (m *Model) DeleteDungeonRec(recID string) error {
 
-	l := m.Logger("DeleteDungeonRec")
+	l := m.loggerWithContext("DeleteDungeonRec")
 
 	l.Debug("Deleting dungeon rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteDungeonRec(recID string) error {
 // RemoveDungeonRec -
 func (m *Model) RemoveDungeonRec(recID string) error {
 
-	l := m.Logger("RemoveDungeonRec")
+	l := m.loggerWithContext("RemoveDungeonRec")
 
 	l.Debug("Removing dungeon rec ID >%s<", recID)
 

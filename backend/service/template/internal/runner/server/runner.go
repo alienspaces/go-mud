@@ -28,6 +28,7 @@ var _ runnable.Runnable = &Runner{}
 
 // NewRunner -
 func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
+	l = l.WithContext(logger.ContextApplication, "template-server")
 
 	cr, err := server.NewRunner(c, l)
 	if err != nil {
@@ -82,14 +83,6 @@ func (rnr *Runner) Modeller(l logger.Logger) (modeller.Modeller, error) {
 	return m, nil
 }
 
-// loggerWithContext provides a logger with function context
-func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
-	if l == nil {
-		return nil
-	}
-	return l.WithPackageContext("template/server").WithFunctionContext(functionName)
-}
-
 func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]server.HandlerConfig) map[string]server.HandlerConfig {
 	if hc1 == nil {
 		hc1 = map[string]server.HandlerConfig{}
@@ -98,4 +91,12 @@ func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]ser
 		hc1[a] = b
 	}
 	return hc1
+}
+
+// loggerWithContext provides a logger with function context
+func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
+	if l == nil {
+		return nil
+	}
+	return l.WithPackageContext("template/server").WithFunctionContext(functionName)
 }

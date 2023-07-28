@@ -13,10 +13,17 @@ const (
 	ErrorLevel Level = 2
 )
 
+const (
+	ContextApplication string = "application"
+	ContextPackage     string = "package"
+	ContextFunction    string = "function"
+	ContextCorrelation string = "correlation"
+)
+
 // Logger -
 type Logger interface {
 	NewInstance() (Logger, error)
-	Context(key, value string)
+	WithContext(key, value string) Logger
 	WithApplicationContext(value string) Logger
 	WithPackageContext(value string) Logger
 	WithFunctionContext(value string) Logger

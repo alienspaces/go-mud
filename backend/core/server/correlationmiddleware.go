@@ -29,7 +29,7 @@ func (rnr *Runner) CorrelationMiddleware(hc HandlerConfig, h Handle) (Handle, er
 		ctx = context.WithValue(ctx, ctxKeyCorrelationID, correlationID)
 		r = r.WithContext(ctx)
 
-		l.Context("correlation-id", correlationID)
+		l = l.WithContext(logger.ContextCorrelation, correlationID)
 
 		// NOTE: Log every request here at info log level
 		l.Info("Request method >%s< path >%s<", r.Method, r.RequestURI)

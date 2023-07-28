@@ -21,7 +21,7 @@ type Memory struct {
 
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
-	l := m.Logger("ProcessCharacterAction")
+	l := m.loggerWithContext("ProcessCharacterAction")
 
 	l.Info("Processing character ID >%s< action command >%s<", characterInstanceID, sentence)
 
@@ -201,7 +201,7 @@ type DecideMonsterActionResult struct {
 
 // DecideMonsterAction -
 func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterActionResult, error) {
-	l := m.Logger("DecideMonsterAction")
+	l := m.loggerWithContext("DecideMonsterAction")
 
 	l.Info("Deciding monster instance ID >%s< action", monsterInstanceID)
 
@@ -254,7 +254,7 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 
 // ProcessMonsterAction - Processes a submitted character action
 func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
-	l := m.Logger("ProcessMonsterAction")
+	l := m.loggerWithContext("ProcessMonsterAction")
 
 	l.Info("Processing monster ID >%s< action command >%s<", monsterInstanceID, sentence)
 
@@ -430,7 +430,7 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 }
 
 func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, error) {
-	l := m.Logger("GetActionRecordSet")
+	l := m.loggerWithContext("GetActionRecordSet")
 
 	actionRecordSet := record.ActionRecordSet{}
 
@@ -956,7 +956,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 }
 
 func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forUpdate bool) (*record.LocationInstanceViewRecordSet, error) {
-	l := m.Logger("GetLocationInstanceViewRecordSet")
+	l := m.loggerWithContext("GetLocationInstanceViewRecordSet")
 
 	locationInstanceRecordSet := &record.LocationInstanceViewRecordSet{}
 
@@ -1075,7 +1075,7 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 // for the entity associated with the given action record. The given action record
 // is then appended to the result providing the full list.
 func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.Action, error) {
-	l := m.Logger("GetActionRecsSincePreviousAction")
+	l := m.loggerWithContext("GetActionRecsSincePreviousAction")
 
 	if rec == nil {
 		return nil, fmt.Errorf("missing action record argument, cannot get action record since previous action")
@@ -1169,7 +1169,7 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 // need to be referenced when deciding what action to take..
 
 func (m *Model) GetMonsterInstanceMemories(rec *record.MonsterInstanceView) ([]*Memory, error) {
-	l := m.Logger("GetMonsterInstanceMemories")
+	l := m.loggerWithContext("GetMonsterInstanceMemories")
 
 	var memories []*Memory
 
@@ -1288,7 +1288,7 @@ func (m *Model) GetMonsterInstanceMemories(rec *record.MonsterInstanceView) ([]*
 }
 
 func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecordSet) (*record.ActionRecordSet, error) {
-	l := m.Logger("createActionRecordSetRecords")
+	l := m.loggerWithContext("createActionRecordSetRecords")
 
 	actionRec := actionRecordSet.ActionRec
 
@@ -1409,7 +1409,7 @@ func (m *Model) createTargetActionLocationRecordSet(actionID, locationInstanceID
 }
 
 func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID string, locationType LocationType) (*record.ActionLocationRecordSet, error) {
-	l := m.Logger("createActionLocationRecordSet")
+	l := m.loggerWithContext("createActionLocationRecordSet")
 
 	// TODO: Think we should be using turn_number here to get relevant records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(locationInstanceID, true)
@@ -1540,7 +1540,7 @@ func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID strin
 }
 
 func (m *Model) createActionTargetCharacterRecs(actionID, locationInstanceID, characterInstanceID string) (*record.ActionCharacter, []*record.ActionCharacterObject, error) {
-	l := m.Logger("createActionTargetCharacterRecs")
+	l := m.loggerWithContext("createActionTargetCharacterRecs")
 
 	l.Info("Creating action ID >%s< character instance ID >%s< records", actionID, characterInstanceID)
 
@@ -1605,7 +1605,7 @@ func (m *Model) createActionTargetCharacterRecs(actionID, locationInstanceID, ch
 }
 
 func (m *Model) createActionTargetMonsterRecs(actionID, locationInstanceID, monsterInstanceID string) (*record.ActionMonster, []*record.ActionMonsterObject, error) {
-	l := m.Logger("createActionTargetMonsterRecs")
+	l := m.loggerWithContext("createActionTargetMonsterRecs")
 
 	l.Info("Creating action ID >%s< monster instance ID >%s< records", actionID, monsterInstanceID)
 
@@ -1670,7 +1670,7 @@ func (m *Model) createActionTargetMonsterRecs(actionID, locationInstanceID, mons
 }
 
 func (m *Model) createActionObjectRec(actionID, locationInstanceID, objectInstanceID, recordType string) (*record.ActionObject, error) {
-	l := m.Logger("createActionObjectRec")
+	l := m.loggerWithContext("createActionObjectRec")
 
 	targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(objectInstanceID)
 	if err != nil {

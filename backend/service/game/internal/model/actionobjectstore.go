@@ -11,7 +11,7 @@ import (
 // GetActionObjectRecs -
 func (m *Model) GetActionObjectRecs(opts *coresql.Options) ([]*record.ActionObject, error) {
 
-	l := m.Logger("GetActionObjectRecs")
+	l := m.loggerWithContext("GetActionObjectRecs")
 
 	l.Debug("Getting dungeon action object records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetActionObjectRecs(opts *coresql.Options) ([]*record.ActionObje
 // GetActionObjectRec -
 func (m *Model) GetActionObjectRec(recID string, lock *coresql.Lock) (*record.ActionObject, error) {
 
-	l := m.Logger("GetActionObjectRec")
+	l := m.loggerWithContext("GetActionObjectRec")
 
 	l.Debug("Getting dungeon action object rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetActionObjectRec(recID string, lock *coresql.Lock) (*record.Ac
 // CreateActionObjectRec -
 func (m *Model) CreateActionObjectRec(rec *record.ActionObject) error {
 
-	l := m.Logger("CreateActionObjectRec")
+	l := m.loggerWithContext("CreateActionObjectRec")
 
 	l.Debug("Creating dungeon action object record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateActionObjectRec(rec *record.ActionObject) error {
 // UpdateActionObjectRec -
 func (m *Model) UpdateActionObjectRec(rec *record.ActionObject) error {
 
-	l := m.Logger("UpdateActionObjectRec")
+	l := m.loggerWithContext("UpdateActionObjectRec")
 
 	l.Debug("Updating dungeon action object record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateActionObjectRec(rec *record.ActionObject) error {
 // DeleteActionObjectRec -
 func (m *Model) DeleteActionObjectRec(recID string) error {
 
-	l := m.Logger("DeleteActionObjectRec")
+	l := m.loggerWithContext("DeleteActionObjectRec")
 
 	l.Debug("Deleting dungeon action object rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteActionObjectRec(recID string) error {
 // RemoveActionObjectRec -
 func (m *Model) RemoveActionObjectRec(recID string) error {
 
-	l := m.Logger("RemoveActionObjectRec")
+	l := m.loggerWithContext("RemoveActionObjectRec")
 
 	l.Debug("Removing dungeon action object rec ID >%s<", recID)
 

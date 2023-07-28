@@ -149,63 +149,43 @@ func (l *Log) Context(key, value string) {
 	l.fields[key] = value
 }
 
-// WithApplicationContext - Shallow copied logger instance with new application context and existing package and function context
-func (l *Log) WithApplicationContext(value string) logger.Logger {
+var contextFields = []string{
+	logger.ContextApplication,
+	logger.ContextPackage,
+	logger.ContextFunction,
+	logger.ContextCorrelation,
+}
+
+func (l *Log) WithContext(key, value string) logger.Logger {
 	ctxLog := *l
 	fields := map[string]interface{}{
-		"application": value,
+		key: value,
 	}
-	if value, ok := ctxLog.fields["package"]; ok {
-		fields["package"] = value
+	for _, field := range contextFields {
+		if field == key {
+			continue
+		}
+		if value, ok := ctxLog.fields[field]; ok {
+			fields[field] = value
+		}
 	}
-	if value, ok := ctxLog.fields["function"]; ok {
-		fields["function"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
-
 	ctxLog.fields = fields
 	return &ctxLog
+}
+
+// WithApplicationContext - Shallow copied logger instance with new application context and existing package and function context
+func (l *Log) WithApplicationContext(value string) logger.Logger {
+	return l.WithContext(logger.ContextApplication, value)
 }
 
 // WithPackageContext - Shallow copied logger instance with new package context and existing application and function context
 func (l *Log) WithPackageContext(value string) logger.Logger {
-	ctxLog := *l
-	fields := map[string]interface{}{
-		"package": value,
-	}
-	if value, ok := ctxLog.fields["application"]; ok {
-		fields["application"] = value
-	}
-	if value, ok := ctxLog.fields["function"]; ok {
-		fields["function"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
-	ctxLog.fields = fields
-	return &ctxLog
+	return l.WithContext(logger.ContextPackage, value)
 }
 
 // WithFunctionContext - Shallow copied logger instance with new function context and existing application and package context
 func (l *Log) WithFunctionContext(value string) logger.Logger {
-	ctxLog := *l
-	fields := map[string]interface{}{
-		"function": value,
-	}
-	if value, ok := ctxLog.fields["application"]; ok {
-		fields["application"] = value
-	}
-	if value, ok := ctxLog.fields["package"]; ok {
-		fields["package"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
-
-	ctxLog.fields = fields
-	return &ctxLog
+	return l.WithContext(logger.ContextFunction, value)
 }
 
 func (l *Log) Write(lvl logger.Level, msg string, args ...any) {

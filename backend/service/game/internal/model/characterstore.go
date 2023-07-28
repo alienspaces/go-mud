@@ -17,7 +17,7 @@ const defaultAttributePoints = 36
 // GetCharacterRecs -
 func (m *Model) GetCharacterRecs(opts *coresql.Options) ([]*record.Character, error) {
 
-	l := m.Logger("GetCharacterRecs")
+	l := m.loggerWithContext("GetCharacterRecs")
 
 	l.Debug("Getting dungeon character records opts >%#v<", opts)
 
@@ -29,7 +29,7 @@ func (m *Model) GetCharacterRecs(opts *coresql.Options) ([]*record.Character, er
 // GetCharacterRec -
 func (m *Model) GetCharacterRec(recID string, lock *coresql.Lock) (*record.Character, error) {
 
-	l := m.Logger("GetCharacterRec")
+	l := m.loggerWithContext("GetCharacterRec")
 
 	l.Debug("Getting dungeon character rec ID >%s<", recID)
 
@@ -51,7 +51,7 @@ func (m *Model) GetCharacterRec(recID string, lock *coresql.Lock) (*record.Chara
 // CreateCharacterRec -
 func (m *Model) CreateCharacterRec(rec *record.Character) error {
 
-	l := m.Logger("CreateCharacterRec")
+	l := m.loggerWithContext("CreateCharacterRec")
 
 	l.Debug("Creating dungeon character record >%#v<", rec)
 
@@ -92,7 +92,7 @@ func (m *Model) CreateCharacterRec(rec *record.Character) error {
 // UpdateCharacterRec -
 func (m *Model) UpdateCharacterRec(rec *record.Character) error {
 
-	l := m.Logger("UpdateCharacterRec")
+	l := m.loggerWithContext("UpdateCharacterRec")
 
 	l.Debug("Updating dungeon character record >%#v<", rec)
 
@@ -110,7 +110,7 @@ func (m *Model) UpdateCharacterRec(rec *record.Character) error {
 // DeleteCharacterRec -
 func (m *Model) DeleteCharacterRec(recID string) error {
 
-	l := m.Logger("DeleteCharacterRec")
+	l := m.loggerWithContext("DeleteCharacterRec")
 
 	l.Debug("Deleting dungeon character rec ID >%s<", recID)
 
@@ -132,7 +132,7 @@ func (m *Model) DeleteCharacterRec(recID string) error {
 // RemoveCharacterRec -
 func (m *Model) RemoveCharacterRec(recID string) error {
 
-	l := m.Logger("RemoveCharacterRec")
+	l := m.loggerWithContext("RemoveCharacterRec")
 
 	l.Debug("Removing dungeon character rec ID >%s<", recID)
 

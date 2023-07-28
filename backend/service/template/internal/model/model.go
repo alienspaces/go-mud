@@ -45,7 +45,7 @@ func (m *Model) NewQueriers(p preparer.Query, tx *sqlx.Tx) ([]querier.Querier, e
 
 // NewRepositories - Custom repositories for this model
 func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor.Repositor, error) {
-	l := m.Logger("NewRepositories")
+	l := m.loggerWithContext("NewRepositories")
 
 	repositoryList := []repositor.Repositor{}
 
@@ -62,7 +62,7 @@ func (m *Model) NewRepositories(p preparer.Repository, tx *sqlx.Tx) ([]repositor
 
 // TemplateRepository -
 func (m *Model) TemplateRepository() *template.Repository {
-	l := m.Logger("TemplateRepository")
+	l := m.loggerWithContext("TemplateRepository")
 
 	r := m.Repositories[template.TableName]
 	if r == nil {
@@ -73,7 +73,7 @@ func (m *Model) TemplateRepository() *template.Repository {
 	return r.(*template.Repository)
 }
 
-// Logger - Returns a logger with package context and provided function context
-func (m *Model) Logger(functionName string) logger.Logger {
+// loggerWithContext - Returns a logger with package context and provided function context
+func (m *Model) loggerWithContext(functionName string) logger.Logger {
 	return m.Log.WithPackageContext("model").WithFunctionContext(functionName)
 }

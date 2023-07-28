@@ -30,6 +30,7 @@ var _ runnable.Runnable = &Runner{}
 
 // NewRunner -
 func NewRunner(c configurer.Configurer, l logger.Logger) (*Runner, error) {
+	l = l.WithContext(logger.ContextApplication, "gameserver")
 
 	cr, err := server.NewRunner(c, l)
 	if err != nil {
@@ -80,7 +81,7 @@ func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}
-	return l.WithPackageContext("game/server").WithFunctionContext(functionName)
+	return l.WithPackageContext("runner").WithFunctionContext(functionName)
 }
 
 func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]server.HandlerConfig) map[string]server.HandlerConfig {

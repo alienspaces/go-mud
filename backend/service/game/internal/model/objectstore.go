@@ -11,7 +11,7 @@ import (
 // GetObjectRecs -
 func (m *Model) GetObjectRecs(opts *coresql.Options) ([]*record.Object, error) {
 
-	l := m.Logger("GetObjectRecs")
+	l := m.loggerWithContext("GetObjectRecs")
 
 	l.Debug("Getting dungeon object records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetObjectRecs(opts *coresql.Options) ([]*record.Object, error) {
 // GetObjectRec -
 func (m *Model) GetObjectRec(recID string, lock *coresql.Lock) (*record.Object, error) {
 
-	l := m.Logger("GetObjectRec")
+	l := m.loggerWithContext("GetObjectRec")
 
 	r := m.ObjectRepository()
 
@@ -43,7 +43,7 @@ func (m *Model) GetObjectRec(recID string, lock *coresql.Lock) (*record.Object, 
 // CreateObjectRec -
 func (m *Model) CreateObjectRec(rec *record.Object) error {
 
-	l := m.Logger("CreateObjectRec")
+	l := m.loggerWithContext("CreateObjectRec")
 
 	l.Debug("Creating dungeon object record >%#v<", rec)
 
@@ -61,7 +61,7 @@ func (m *Model) CreateObjectRec(rec *record.Object) error {
 // UpdateObjectRec -
 func (m *Model) UpdateObjectRec(rec *record.Object) error {
 
-	l := m.Logger("UpdateObjectRec")
+	l := m.loggerWithContext("UpdateObjectRec")
 
 	l.Debug("Updating dungeon object record >%#v<", rec)
 
@@ -79,7 +79,7 @@ func (m *Model) UpdateObjectRec(rec *record.Object) error {
 // DeleteObjectRec -
 func (m *Model) DeleteObjectRec(recID string) error {
 
-	l := m.Logger("DeleteObjectRec")
+	l := m.loggerWithContext("DeleteObjectRec")
 
 	l.Debug("Deleting dungeon object rec ID >%s<", recID)
 
@@ -101,7 +101,7 @@ func (m *Model) DeleteObjectRec(recID string) error {
 // RemoveObjectRec -
 func (m *Model) RemoveObjectRec(recID string) error {
 
-	l := m.Logger("RemoveObjectRec")
+	l := m.loggerWithContext("RemoveObjectRec")
 
 	l.Debug("Removing dungeon object rec ID >%s<", recID)
 

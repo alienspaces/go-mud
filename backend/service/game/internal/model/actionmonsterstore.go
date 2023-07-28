@@ -11,7 +11,7 @@ import (
 // GetActionMonsterRecs -
 func (m *Model) GetActionMonsterRecs(opts *coresql.Options) ([]*record.ActionMonster, error) {
 
-	l := m.Logger("GetActionMonsterRecs")
+	l := m.loggerWithContext("GetActionMonsterRecs")
 
 	l.Debug("Getting dungeon action monster records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetActionMonsterRecs(opts *coresql.Options) ([]*record.ActionMon
 // GetActionMonsterRec -
 func (m *Model) GetActionMonsterRec(recID string, lock *coresql.Lock) (*record.ActionMonster, error) {
 
-	l := m.Logger("GetActionMonsterRec")
+	l := m.loggerWithContext("GetActionMonsterRec")
 
 	l.Debug("Getting dungeon action monster rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetActionMonsterRec(recID string, lock *coresql.Lock) (*record.A
 // CreateActionMonsterRec -
 func (m *Model) CreateActionMonsterRec(rec *record.ActionMonster) error {
 
-	l := m.Logger("CreateActionMonsterRec")
+	l := m.loggerWithContext("CreateActionMonsterRec")
 
 	l.Debug("Creating dungeon action monster record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateActionMonsterRec(rec *record.ActionMonster) error {
 // UpdateActionMonsterRec -
 func (m *Model) UpdateActionMonsterRec(rec *record.ActionMonster) error {
 
-	l := m.Logger("UpdateActionMonsterRec")
+	l := m.loggerWithContext("UpdateActionMonsterRec")
 
 	l.Debug("Updating dungeon action monster record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateActionMonsterRec(rec *record.ActionMonster) error {
 // DeleteActionMonsterRec -
 func (m *Model) DeleteActionMonsterRec(recID string) error {
 
-	l := m.Logger("DeleteActionMonsterRec")
+	l := m.loggerWithContext("DeleteActionMonsterRec")
 
 	l.Debug("Deleting dungeon action monster rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteActionMonsterRec(recID string) error {
 // RemoveActionMonsterRec -
 func (m *Model) RemoveActionMonsterRec(recID string) error {
 
-	l := m.Logger("RemoveActionMonsterRec")
+	l := m.loggerWithContext("RemoveActionMonsterRec")
 
 	l.Debug("Removing dungeon action monster rec ID >%s<", recID)
 

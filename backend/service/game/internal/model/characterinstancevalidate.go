@@ -10,7 +10,7 @@ import (
 
 // validateCreateCharacterInstanceRec - validates creating a character instance record
 func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance) error {
-	l := m.Logger("validateCreateCharacterInstanceRec")
+	l := m.loggerWithContext("validateCreateCharacterInstanceRec")
 
 	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
 		&coresql.Options{
@@ -45,7 +45,7 @@ func (m *Model) validateCreateCharacterInstanceRec(rec *record.CharacterInstance
 
 // validateUpdateCharacterInstanceRec - validates updating a character instance record
 func (m *Model) validateUpdateCharacterInstanceRec(rec *record.CharacterInstance) error {
-	l := m.Logger("validateUpdateCharacterInstanceRec")
+	l := m.loggerWithContext("validateUpdateCharacterInstanceRec")
 
 	err := m.validateCharacterInstanceAttributes(rec)
 	if err != nil {
@@ -58,7 +58,7 @@ func (m *Model) validateUpdateCharacterInstanceRec(rec *record.CharacterInstance
 
 // validateDeleteCharacterInstanceRec - validates deleting a character instance record
 func (m *Model) validateDeleteCharacterInstanceRec(recID string) error {
-	l := m.Logger("validateDeleteCharacterInstanceRec")
+	l := m.loggerWithContext("validateDeleteCharacterInstanceRec")
 
 	rec, err := m.GetCharacterInstanceRec(recID, nil)
 	if err != nil {

@@ -122,6 +122,8 @@ func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInsta
 		return nil, err
 	}
 
+	l.Info("Have >%d< dungeon instance records", len(diRecs))
+
 	// When there are no characters instances in a particular dungeon instance
 	// for a certain period of time, delete the dungeon instance.
 	for idx := range diRecs {
@@ -181,17 +183,16 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 			return err
 		}
 
+		cycles++
+		if cycles%20 == 0 {
+			l.Info("Daemon cycle >%d<", cycles)
+		}
+
 		// When there is nothing to process, wait and check for new instances again
 		if len(dungeonInstanceStates) == 0 {
 			time.Sleep(3000 * time.Millisecond)
 			continue
 		}
-
-		if cycles%20 == 0 {
-			l.Info("Daemon cycle >%d<", cycles)
-		}
-
-		cycles++
 
 		runningCount := 0
 		for dungeonInstanceID := range dungeonInstanceStates {
