@@ -20,17 +20,7 @@ func CharacterConfig() []harness.CharacterConfig {
 }
 
 func MonsterConfig() []harness.MonsterConfig {
-	return []harness.MonsterConfig{
-		{
-			Record: record.Monster{
-				Record: repository.Record{
-					ID: "fb032d39-48a4-4806-bd56-f9cba910bbf4",
-				},
-				Name:        "Giant Grey Rat",
-				Description: "A very large grey rat.",
-			},
-		},
-	}
+	return []harness.MonsterConfig{}
 }
 
 func ObjectConfig() []harness.ObjectConfig {
@@ -81,11 +71,6 @@ func DungeonConfig() harness.DungeonConfig {
 				LocationObjectConfig: []harness.LocationObjectConfig{
 					{
 						ObjectName: "Yellow Chewed Bone",
-					},
-				},
-				LocationMonsterConfig: []harness.LocationMonsterConfig{
-					{
-						MonsterName: "Giant Grey Rat",
 					},
 				},
 			},

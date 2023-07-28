@@ -47,6 +47,15 @@ func MonsterConfig() []harness.MonsterConfig {
 				Description: "A particularly angrey specimen of a goblin",
 			},
 		},
+		{
+			Record: record.Monster{
+				Record: repository.Record{
+					ID: "fb032d39-48a4-4806-bd56-f9cba910bbf4",
+				},
+				Name:        "Giant Grey Rat",
+				Description: "A very large grey rat.",
+			},
+		},
 	}
 }
 
