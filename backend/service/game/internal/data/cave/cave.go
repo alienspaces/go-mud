@@ -110,11 +110,6 @@ func DungeonConfig() harness.DungeonConfig {
 						ObjectName: "Rusted Sword",
 					},
 				},
-				LocationMonsterConfig: []harness.LocationMonsterConfig{
-					{
-						MonsterName: "Grumpy Dwarf",
-					},
-				},
 			},
 			{
 				Record: record.Location{
@@ -127,11 +122,6 @@ func DungeonConfig() harness.DungeonConfig {
 				NorthLocationName:     "Cave Room",
 				SouthLocationName:     "Cave Entrance",
 				NorthwestLocationName: "Narrow Tunnel",
-				LocationMonsterConfig: []harness.LocationMonsterConfig{
-					{
-						MonsterName: "Angry Goblin",
-					},
-				},
 			},
 			{
 				Record: record.Location{
@@ -169,6 +159,11 @@ func DungeonConfig() harness.DungeonConfig {
 				},
 				SoutheastLocationName: "Narrow Tunnel",
 				DownLocationName:      "Dark Room",
+				LocationMonsterConfig: []harness.LocationMonsterConfig{
+					{
+						MonsterName: "Angry Goblin",
+					},
+				},
 			},
 			{
 				Record: record.Location{
@@ -179,6 +174,11 @@ func DungeonConfig() harness.DungeonConfig {
 					Description: "A dark room.",
 				},
 				UpLocationName: "Dark Narrow Tunnel",
+				LocationMonsterConfig: []harness.LocationMonsterConfig{
+					{
+						MonsterName: "Grumpy Dwarf",
+					},
+				},
 			},
 		},
 		DungeonInstanceConfig: []harness.DungeonInstanceConfig{
