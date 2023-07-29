@@ -1,5 +1,8 @@
 package cabin
 
+// The Cabin has no aggressive monsters but employ all other game features
+// that should provide ample testing opportunities for frontend clients.
+
 import (
 	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"

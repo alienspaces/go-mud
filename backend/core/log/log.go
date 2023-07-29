@@ -120,12 +120,12 @@ func (l *Log) Init() {
 }
 
 // NewInstance - Create a new log instance based off configuration of this instance
-func (l *Log) NewInstance() (logger.Logger, error) {
+func (l *Log) NewInstance(fields map[string]interface{}) logger.Logger {
 	return &Log{
-		fields: make(map[string]interface{}),
+		fields: fields,
 		Config: l.Config,
-		log:    l.log.With().Logger(),
-	}, nil
+		log:    l.log.With().Fields(fields).Logger(),
+	}
 }
 
 // Printf -
@@ -140,50 +140,31 @@ func (l *Log) Level(level logger.Level) {
 	}
 }
 
-// Context - set logging
-func (l *Log) Context(key, value string) {
-	if value == "" {
-		delete(l.fields, key)
-		return
-	}
-	l.fields[key] = value
-}
-
-var contextFields = []string{
-	logger.ContextApplication,
-	logger.ContextPackage,
-	logger.ContextFunction,
-	logger.ContextCorrelation,
-}
-
 func (l *Log) WithContext(key, value string) logger.Logger {
-	ctxLog := *l
 	fields := map[string]interface{}{
 		key: value,
 	}
-	for _, field := range contextFields {
+	for field, value := range l.fields {
 		if field == key {
 			continue
 		}
-		if value, ok := ctxLog.fields[field]; ok {
-			fields[field] = value
-		}
+		fields[field] = value
 	}
-	ctxLog.fields = fields
-	return &ctxLog
+	i := l.NewInstance(fields)
+	return i
 }
 
-// WithApplicationContext - Shallow copied logger instance with new application context and existing package and function context
+// WithApplicationContext - New logger instance with new application context and existing package and function context
 func (l *Log) WithApplicationContext(value string) logger.Logger {
 	return l.WithContext(logger.ContextApplication, value)
 }
 
-// WithPackageContext - Shallow copied logger instance with new package context and existing application and function context
+// WithPackageContext - New logger instance with new package context and existing application and function context
 func (l *Log) WithPackageContext(value string) logger.Logger {
 	return l.WithContext(logger.ContextPackage, value)
 }
 
-// WithFunctionContext - Shallow copied logger instance with new function context and existing application and package context
+// WithFunctionContext - New logger instance with new function context and existing application and package context
 func (l *Log) WithFunctionContext(value string) logger.Logger {
 	return l.WithContext(logger.ContextFunction, value)
 }
@@ -203,24 +184,20 @@ func (l *Log) Write(lvl logger.Level, msg string, args ...any) {
 
 // Debug -
 func (l *Log) Debug(msg string, args ...any) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Debug().Msgf(msg, args...)
+	l.log.Debug().Msgf(msg, args...)
 }
 
 // Info -
 func (l *Log) Info(msg string, args ...any) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Info().Msgf(msg, args...)
+	l.log.Info().Msgf(msg, args...)
 }
 
 // Warn -
 func (l *Log) Warn(msg string, args ...any) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Warn().Msgf(msg, args...)
+	l.log.Warn().Msgf(msg, args...)
 }
 
 // Error -
 func (l *Log) Error(msg string, args ...any) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Error().Msgf(msg, args...)
+	l.log.Error().Msgf(msg, args...)
 }

@@ -79,7 +79,7 @@ func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.Dun
 		return empty, err
 	}
 
-	l.Info("Dungeon instance ID >%s< character instance count >%d<", dir.ID, len(ciRecs))
+	l.Debug("Dungeon instance ID >%s< character instance count >%d<", dir.ID, len(ciRecs))
 
 	return len(ciRecs) == 0, nil
 }
@@ -122,7 +122,7 @@ func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInsta
 		return nil, err
 	}
 
-	l.Info("Have >%d< dungeon instance records", len(diRecs))
+	l.Debug("Dungeon instance count >%d<", len(diRecs))
 
 	// When there are no characters instances in a particular dungeon instance
 	// for a certain period of time, delete the dungeon instance.
@@ -177,6 +177,8 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 	for keepRunning() {
 
+		l = loggerWithCycleContext(l, cycles)
+
 		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
 			l.Warn("failed daemon init cycle >%v<", err)
@@ -196,6 +198,9 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 		runningCount := 0
 		for dungeonInstanceID := range dungeonInstanceStates {
+
+			l = loggerWithInstanceContext(l, dungeonInstanceID)
+
 			switch dungeonInstanceStates[dungeonInstanceID].state {
 			case processStatePending:
 				l.Debug("(pending) Kicking off dungeon instance ID >%s< turn >%d<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].turn)
@@ -290,6 +295,7 @@ type processDungeonInstanceTurnResult struct {
 
 func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*processDungeonInstanceTurnResult, error) {
 	l = loggerWithContext(l, "processDungeonInstanceTurn")
+	l = loggerWithInstanceContext(l, dungeonInstanceID)
 
 	// TODO: 10-implement-effects:
 	// Process any active effects that are still applied to the character.
@@ -333,10 +339,10 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		l.Info("Processing turn >%d< with >%d< monster instance records", iditr.Record.TurnNumber, len(recs))
+		l.Debug("Processing turn >%d< with >%d< monster instance records", iditr.Record.TurnNumber, len(recs))
 
 		for idx := range recs {
-			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
+			l.Debug("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
 			dmar, err := m.DecideMonsterAction(recs[idx].ID)
 			if err != nil {
 				l.Warn("failed deciding monster instance ID >%s< action >%v<", recs[idx].ID, err)
@@ -356,7 +362,7 @@ WHILE_RESULT_NOT_INCREMENTED:
 				return nil, err
 			}
 
-			l.Info("Processed monster instance ID >%s< action >%#v<", dmar.MonsterInstanceID, ars.ActionRec)
+			l.Debug("Processed monster instance ID >%s< action >%#v<", dmar.MonsterInstanceID, ars.ActionRec)
 			pditr.monsterInstanceActionRecordSets = append(pditr.monsterInstanceActionRecordSets, ars)
 		}
 	}
@@ -379,4 +385,20 @@ func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
 // to run based on current state etc..
 func keepRunning() bool {
 	return true
+}
+
+// loggerWithCycleContext provides a logger with function context
+func loggerWithCycleContext(l logger.Logger, cycle int) logger.Logger {
+	if l == nil {
+		return nil
+	}
+	return l.WithContext("cycle", fmt.Sprintf("%d", cycle))
+}
+
+// loggerWithInstanceContext provides a logger with function context
+func loggerWithInstanceContext(l logger.Logger, instanceID string) logger.Logger {
+	if l == nil {
+		return nil
+	}
+	return l.WithContext("instance", instanceID)
 }

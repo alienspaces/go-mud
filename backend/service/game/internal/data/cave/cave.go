@@ -1,5 +1,8 @@
 package cave
 
+// The Cave is full of aggressive monsters and traps that are all hell bent on
+// cutting and crushing the life from anyone and anything  that ventures within.
+
 import (
 	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
@@ -144,6 +147,11 @@ func DungeonConfig() harness.DungeonConfig {
 				LocationObjectConfig: []harness.LocationObjectConfig{
 					{
 						ObjectName: "Silver Key",
+					},
+				},
+				LocationMonsterConfig: []harness.LocationMonsterConfig{
+					{
+						MonsterName: "Giant Grey Rat",
 					},
 				},
 			},

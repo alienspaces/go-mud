@@ -41,11 +41,11 @@ func TestNewLogger(t *testing.T) {
 	l.Warn("Test level >%s<", "warn")
 	l.Error("Test level >%s<", "error")
 
-	l.Context("correlation-id", "abcdefg")
+	l.WithContext("correlation-id", "abcdefg")
 
 	l.Debug("Test level >%s<", "debug")
 
-	l.Context("correlation-id", "hijklmn")
+	l.WithContext("correlation-id", "hijklmn")
 
 	l.Debug("Test level >%s<", "debug")
 
@@ -71,11 +71,11 @@ func TestNewLoggerWithConfig(t *testing.T) {
 	l.Warn("Test level >%s<", "warn")
 	l.Error("Test level >%s<", "error")
 
-	l.Context("correlation-id", "abcdefg")
+	l.WithContext("correlation-id", "abcdefg")
 
 	l.Debug("Test level >%s<", "debug")
 
-	l.Context("correlation-id", "hijklmn")
+	l.WithContext("correlation-id", "hijklmn")
 
 	l.Debug("Test level >%s<", "debug")
 

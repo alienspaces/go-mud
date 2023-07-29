@@ -22,7 +22,7 @@ const (
 
 // Logger -
 type Logger interface {
-	NewInstance() (Logger, error)
+	NewInstance(fields map[string]interface{}) Logger
 	WithContext(key, value string) Logger
 	WithApplicationContext(value string) Logger
 	WithPackageContext(value string) Logger
