@@ -19,6 +19,10 @@ const (
 	processStateError   processState = "error"
 )
 
+const (
+	decayTurns int = 10
+)
+
 type dungeonInstanceState struct {
 	turn  int
 	state processState
@@ -304,6 +308,7 @@ func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstance
 
 WHILE_RESULT_NOT_INCREMENTED:
 	for pditr.incrementTurnResult == nil || !pditr.incrementTurnResult.Incremented {
+
 		// Increment turn
 		iditr, err := m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
 			DungeonInstanceID: dungeonInstanceID,
@@ -321,34 +326,18 @@ WHILE_RESULT_NOT_INCREMENTED:
 
 		pditr.incrementTurnResult = iditr
 
-		// TODO: 12-implement-death: Remove character instance when dead
-		crecs, err := m.GetCharacterInstanceRecs(
-			&coresql.Options{
-				Params: []coresql.Param{
-					{
-						Col: "dungeon_instance_id",
-						Val: dungeonInstanceID,
-					},
-				},
-			},
-		)
+		// Decay dead characters and remove completely decayed characters
+		err = decayCharacters(l, m, dungeonInstanceID)
 		if err != nil {
-			l.Warn("failed getting dungeon ID >%s< character instance records >%v<", dungeonInstanceID, err)
+			l.Warn("failed decaying characters >%v<", err)
 			return nil, err
 		}
 
-		for idx := range crecs {
-			l.Info("Processing character instance ID >%s< character ID >%s<", crecs[idx].ID, crecs[idx].CharacterID)
-
-			// 12-implement-death:
-			// Remove character instance when dead character has been decaying for 10 turns
-			if crecs[idx].Health <= 0 {
-				err := m.CharacterExitDungeon(crecs[idx].CharacterID)
-				if err != nil {
-					l.Warn("failed character instance ID >%s< exit dungeon >%v<", crecs[idx].ID, err)
-					return nil, err
-				}
-			}
+		// Decay dead monsters and remove completely decayed monsters
+		err = decayMonsters(l, m, dungeonInstanceID)
+		if err != nil {
+			l.Warn("failed decaying monsters >%v<", err)
+			return nil, err
 		}
 
 		// Process monster instances
@@ -398,6 +387,102 @@ WHILE_RESULT_NOT_INCREMENTED:
 	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, pditr.incrementTurnResult.Record.TurnNumber)
 
 	return &pditr, nil
+}
+
+func decayCharacters(l logger.Logger, m *model.Model, dungeonInstanceID string) error {
+	l = loggerWithFunctionContext(l, "decayCharacters")
+
+	// Decay dead character instances
+	crecs, err := m.GetCharacterInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: record.FieldCharacterInstanceDungeonInstanceID,
+					Val: dungeonInstanceID,
+				},
+				{
+					Col: record.FieldCharacterInstanceHealth,
+					Val: 0,
+					Op:  coresql.OpLessThanEqual,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting dungeon ID >%s< character instance records >%v<", dungeonInstanceID, err)
+		return err
+	}
+
+	for idx := range crecs {
+		l.Info("Decaying character instance ID >%s< character ID >%s<", crecs[idx].ID, crecs[idx].CharacterID)
+
+		crec := crecs[idx]
+		crec.Decay += 1
+
+		err := m.UpdateCharacterInstanceRec(crec)
+		if err != nil {
+			l.Warn("failed updating character instance ID >%s< decay >%v<", crec.ID, err)
+			return err
+		}
+
+		if crec.Decay >= decayTurns {
+			err := m.DeleteCharacterInstance(crec.CharacterID)
+			if err != nil {
+				l.Warn("failed exiting decayed character instance ID >%s< from dungeon >%v<", crec.ID, err)
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func decayMonsters(l logger.Logger, m *model.Model, dungeonInstanceID string) error {
+	l = loggerWithFunctionContext(l, "decayMonsters")
+
+	// Decay dead monster instances
+	mrecs, err := m.GetMonsterInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: record.FieldMonsterInstanceDungeonInstanceID,
+					Val: dungeonInstanceID,
+				},
+				{
+					Col: record.FieldMonsterInstanceHealth,
+					Val: 0,
+					Op:  coresql.OpLessThanEqual,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting dungeon ID >%s< monster instance records >%v<", dungeonInstanceID, err)
+		return err
+	}
+
+	for idx := range mrecs {
+		l.Info("Decaying monster instance ID >%s< monster ID >%s<", mrecs[idx].ID, mrecs[idx].MonsterID)
+
+		mrec := mrecs[idx]
+		mrec.Decay += 1
+
+		err := m.UpdateMonsterInstanceRec(mrec)
+		if err != nil {
+			l.Warn("failed updating monster instance ID >%s< decay >%v<", mrec.ID, err)
+			return err
+		}
+
+		if mrec.Decay >= decayTurns {
+			err := m.DeleteMonsterInstance(mrec.MonsterID)
+			if err != nil {
+				l.Warn("failed exiting decayed monster instance ID >%s< from dungeon >%v<", mrec.ID, err)
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {

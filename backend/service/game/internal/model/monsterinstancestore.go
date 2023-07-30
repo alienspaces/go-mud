@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -40,6 +41,39 @@ func (m *Model) GetMonsterInstanceRec(recID string, lock *coresql.Lock) (*record
 	}
 
 	return rec, err
+}
+
+// GetMonsterInstanceViewRecByMonsterID -
+func (m *Model) GetMonsterInstanceViewRecByMonsterID(monsterID string) (*record.MonsterInstanceView, error) {
+	l := m.loggerWithFunctionContext("GetMonsterInstanceViewRecByMonsterID")
+
+	monsterInstanceViewRecs, err := m.GetMonsterInstanceViewRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_id",
+					Val: monsterID,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting monster ID >%s< monster instance view records >%v<", monsterID, err)
+		return nil, err
+	}
+
+	if len(monsterInstanceViewRecs) == 0 {
+		l.Warn("monster with ID >%s< has no monster instance view record", monsterID)
+		return nil, nil
+	}
+
+	if len(monsterInstanceViewRecs) > 1 {
+		err := coreerror.NewInternalError("unexpected number of monster instance view records returned >%d<", len(monsterInstanceViewRecs))
+		l.Warn(err.Error())
+		return nil, err
+	}
+
+	return monsterInstanceViewRecs[0], nil
 }
 
 // GetMonsterInstanceViewRecs -
