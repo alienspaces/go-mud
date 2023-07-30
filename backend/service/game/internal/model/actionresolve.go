@@ -21,7 +21,7 @@ type ResolvedCommand struct {
 }
 
 func (m *Model) resolveCommand(args *ResolveCommandArgs) (*ResolvedCommand, error) {
-	l := m.loggerWithContext("resolveCommand")
+	l := m.loggerWithFunctionContext("resolveCommand")
 
 	if args == nil {
 		return nil, NewInternalError("missing resolve command arguments")
@@ -98,7 +98,7 @@ type ResolveActionArgs struct {
 }
 
 func (m *Model) resolveAction(resolved *ResolvedCommand, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveAction")
+	l := m.loggerWithFunctionContext("resolveAction")
 
 	if args == nil {
 		return nil, NewInternalError("missing resolve action arguments")
@@ -133,7 +133,7 @@ func (m *Model) resolveAction(resolved *ResolvedCommand, args *ResolveActionArgs
 }
 
 func (m *Model) resolveActionMove(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionMove")
+	l := m.loggerWithFunctionContext("resolveActionMove")
 
 	var err error
 	var targetLocationInstanceID string
@@ -174,7 +174,7 @@ func (m *Model) resolveActionMove(sentence string, args *ResolveActionArgs) (*re
 // TODO: (game) A fair amount of common code between action use and action look, consider building
 // some shared functions for identifying objects, characters or monsters at a location.
 func (m *Model) resolveActionLook(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionLook")
+	l := m.loggerWithFunctionContext("resolveActionLook")
 
 	var err error
 	var targetLocationInstanceID string
@@ -290,7 +290,7 @@ func (m *Model) resolveActionLook(sentence string, args *ResolveActionArgs) (*re
 // TODO: (game) A fair amount of common code between action use and action look, consider building
 // some shared functions for identifying objects, characters or monsters at a location.
 func (m *Model) resolveActionUse(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionUse")
+	l := m.loggerWithFunctionContext("resolveActionUse")
 
 	var err error
 	var targetObjectInstanceID string
@@ -398,7 +398,7 @@ func (m *Model) resolveActionUse(sentence string, args *ResolveActionArgs) (*rec
 // TODO: 11-implement-safe-locations: Check whether the current location is a safe location
 // or not and disallow the attack action when it is.
 func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionAttack")
+	l := m.loggerWithFunctionContext("resolveActionAttack")
 
 	var targetMonsterInstanceID string
 	var targetCharacterInstanceID string
@@ -488,7 +488,7 @@ func (m *Model) resolveActionAttack(sentence string, args *ResolveActionArgs) (*
 }
 
 func (m *Model) resolveActionStash(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionStash")
+	l := m.loggerWithFunctionContext("resolveActionStash")
 
 	var stashedObjectInstanceID string
 
@@ -554,7 +554,7 @@ func (m *Model) resolveActionStash(sentence string, args *ResolveActionArgs) (*r
 }
 
 func (m *Model) resolveActionEquip(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionEquip")
+	l := m.loggerWithFunctionContext("resolveActionEquip")
 
 	var equippedObjectInstanceID string
 
@@ -620,7 +620,7 @@ func (m *Model) resolveActionEquip(sentence string, args *ResolveActionArgs) (*r
 }
 
 func (m *Model) resolveActionDrop(sentence string, args *ResolveActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionDrop")
+	l := m.loggerWithFunctionContext("resolveActionDrop")
 
 	var droppedObjectInstanceID string
 
@@ -749,7 +749,7 @@ func (m *Model) resolveSentenceLocationDirection(sentence string, locationInstan
 }
 
 func (m *Model) getObjectFromSentence(sentence string, objectInstanceViewRecs []*record.ObjectInstanceView) (*record.ObjectInstanceView, error) {
-	l := m.loggerWithContext("getObjectFromSentence")
+	l := m.loggerWithFunctionContext("getObjectFromSentence")
 
 	for _, objectInstanceViewRec := range objectInstanceViewRecs {
 		l.Info("Sentence >%s< contains >%s<", sentence, strings.ToLower(objectInstanceViewRec.Name))
@@ -761,7 +761,7 @@ func (m *Model) getObjectFromSentence(sentence string, objectInstanceViewRecs []
 }
 
 func (m *Model) resolveSentenceMonster(sentence string, monsterInstanceViewRecs []*record.MonsterInstanceView) (*record.MonsterInstanceView, error) {
-	l := m.loggerWithContext("resolveSentenceMonster")
+	l := m.loggerWithFunctionContext("resolveSentenceMonster")
 
 	for idx := range monsterInstanceViewRecs {
 		mivr := monsterInstanceViewRecs[idx]
@@ -774,7 +774,7 @@ func (m *Model) resolveSentenceMonster(sentence string, monsterInstanceViewRecs 
 }
 
 func (m *Model) resolveSentenceCharacter(sentence string, characterInstanceViewRecs []*record.CharacterInstanceView) (*record.CharacterInstanceView, error) {
-	l := m.loggerWithContext("resolveSentenceCharacter")
+	l := m.loggerWithFunctionContext("resolveSentenceCharacter")
 
 	for idx := range characterInstanceViewRecs {
 		civr := characterInstanceViewRecs[idx]

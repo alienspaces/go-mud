@@ -11,7 +11,7 @@ import (
 // GetLocationObjectRecs -
 func (m *Model) GetLocationObjectRecs(opts *coresql.Options) ([]*record.LocationObject, error) {
 
-	l := m.loggerWithContext("GetLocationObjectRecs")
+	l := m.loggerWithFunctionContext("GetLocationObjectRecs")
 
 	l.Debug("Getting dungeon location records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetLocationObjectRecs(opts *coresql.Options) ([]*record.Location
 // GetLocationObjectRec -
 func (m *Model) GetLocationObjectRec(recID string, lock *coresql.Lock) (*record.LocationObject, error) {
 
-	l := m.loggerWithContext("GetLocationObjectRec")
+	l := m.loggerWithFunctionContext("GetLocationObjectRec")
 
 	l.Debug("Getting dungeon location rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetLocationObjectRec(recID string, lock *coresql.Lock) (*record.
 // CreateLocationObjectRec -
 func (m *Model) CreateLocationObjectRec(rec *record.LocationObject) error {
 
-	l := m.loggerWithContext("CreateLocationObjectRec")
+	l := m.loggerWithFunctionContext("CreateLocationObjectRec")
 
 	l.Debug("Creating dungeon location record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateLocationObjectRec(rec *record.LocationObject) error {
 // UpdateLocationObjectRec -
 func (m *Model) UpdateLocationObjectRec(rec *record.LocationObject) error {
 
-	l := m.loggerWithContext("UpdateLocationObjectRec")
+	l := m.loggerWithFunctionContext("UpdateLocationObjectRec")
 
 	l.Debug("Updating dungeon location record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateLocationObjectRec(rec *record.LocationObject) error {
 // DeleteLocationObjectRec -
 func (m *Model) DeleteLocationObjectRec(recID string) error {
 
-	l := m.loggerWithContext("DeleteLocationObjectRec")
+	l := m.loggerWithFunctionContext("DeleteLocationObjectRec")
 
 	l.Debug("Deleting dungeon location rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteLocationObjectRec(recID string) error {
 // RemoveLocationObjectRec -
 func (m *Model) RemoveLocationObjectRec(recID string) error {
 
-	l := m.loggerWithContext("RemoveLocationObjectRec")
+	l := m.loggerWithFunctionContext("RemoveLocationObjectRec")
 
 	l.Debug("Removing dungeon location rec ID >%s<", recID)
 

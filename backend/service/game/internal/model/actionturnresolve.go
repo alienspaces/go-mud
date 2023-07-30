@@ -15,7 +15,7 @@ type ResolveActionTurnArgs struct {
 }
 
 func (m *Model) resolveActionTurn(args *ResolveActionTurnArgs) (*record.Action, error) {
-	l := m.loggerWithContext("resolveActionTurn")
+	l := m.loggerWithFunctionContext("resolveActionTurn")
 
 	if args == nil {
 		err := fmt.Errorf("required args is nill, cannot resolve action turn")

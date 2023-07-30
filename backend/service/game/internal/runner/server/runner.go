@@ -99,8 +99,8 @@ func queryParamsToSQLOptions(qp *queryparam.QueryParams) *coresql.Options {
 	return queryparam.ToSQLOptions(qp)
 }
 
-// loggerWithContext provides a logger with function context
-func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
+// loggerWithFunctionContext provides a logger with function context
+func loggerWithFunctionContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}

@@ -41,7 +41,7 @@ func checkPerformActionArgs(args *PerformActionArgs) error {
 }
 
 func (m *Model) performAction(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performCharacterAction")
+	l := m.loggerWithFunctionContext("performCharacterAction")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -82,7 +82,7 @@ func (m *Model) performAction(args *PerformActionArgs) (*record.Action, error) {
 }
 
 func (m *Model) performActionMove(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionMove")
+	l := m.loggerWithFunctionContext("performActionMove")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -135,7 +135,7 @@ func (m *Model) performActionMove(args *PerformActionArgs) (*record.Action, erro
 }
 
 func (m *Model) performActionLook(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionLook")
+	l := m.loggerWithFunctionContext("performActionLook")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -165,7 +165,7 @@ func (m *Model) performActionLook(args *PerformActionArgs) (*record.Action, erro
 }
 
 func (m *Model) performActionUse(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionUse")
+	l := m.loggerWithFunctionContext("performActionUse")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -186,7 +186,7 @@ func (m *Model) performActionUse(args *PerformActionArgs) (*record.Action, error
 }
 
 func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionStash")
+	l := m.loggerWithFunctionContext("performActionStash")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -252,7 +252,7 @@ func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, err
 }
 
 func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionEquip")
+	l := m.loggerWithFunctionContext("performActionEquip")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -318,7 +318,7 @@ func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, err
 }
 
 func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionDrop")
+	l := m.loggerWithFunctionContext("performActionDrop")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -395,7 +395,7 @@ func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, erro
 
 // TODO: 10-implement-effects: Calculate to-hit, weapon damage, effects etc
 func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, error) {
-	l := m.loggerWithContext("performActionAttack")
+	l := m.loggerWithFunctionContext("performActionAttack")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)

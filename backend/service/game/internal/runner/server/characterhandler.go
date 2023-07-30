@@ -141,7 +141,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 
 // getCharacterHandler -
 func (rnr *Runner) getCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "getCharacterHandler")
+	l = loggerWithFunctionContext(l, "getCharacterHandler")
 	l.Info("** Get character handler **")
 
 	var recs []*record.Character
@@ -204,7 +204,7 @@ func (rnr *Runner) getCharacterHandler(w http.ResponseWriter, r *http.Request, p
 
 // getCharactersHandler -
 func (rnr *Runner) getCharactersHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "getCharactersHandler")
+	l = loggerWithFunctionContext(l, "getCharactersHandler")
 
 	opts := queryParamsToSQLOptions(qp)
 
@@ -255,7 +255,7 @@ func (rnr *Runner) getCharactersHandler(w http.ResponseWriter, r *http.Request, 
 
 // postCharacterHandler -
 func (rnr *Runner) postCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "postCharacterHandler")
+	l = loggerWithFunctionContext(l, "postCharacterHandler")
 	l.Info("** Post character handler **")
 
 	req := &schema.CharacterRequest{}
@@ -316,7 +316,7 @@ func (rnr *Runner) postCharacterHandler(w http.ResponseWriter, r *http.Request, 
 
 // PutCharactersHandler -
 func (rnr *Runner) putCharacterHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "putCharacterHandler")
+	l = loggerWithFunctionContext(l, "putCharacterHandler")
 	l.Info("** Put character handler **")
 
 	// Path parameters

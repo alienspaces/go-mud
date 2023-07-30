@@ -12,7 +12,7 @@ import (
 // GetMonsterRecs -
 func (m *Model) GetMonsterRecs(opts *coresql.Options) ([]*record.Monster, error) {
 
-	l := m.loggerWithContext("GetMonsterRecs")
+	l := m.loggerWithFunctionContext("GetMonsterRecs")
 
 	l.Debug("Getting dungeon monster records opts >%#v<", opts)
 
@@ -24,7 +24,7 @@ func (m *Model) GetMonsterRecs(opts *coresql.Options) ([]*record.Monster, error)
 // GetMonsterRec -
 func (m *Model) GetMonsterRec(recID string, lock *coresql.Lock) (*record.Monster, error) {
 
-	l := m.loggerWithContext("GetMonsterRec")
+	l := m.loggerWithFunctionContext("GetMonsterRec")
 
 	l.Debug("Getting dungeon monster rec ID >%s<", recID)
 
@@ -46,7 +46,7 @@ func (m *Model) GetMonsterRec(recID string, lock *coresql.Lock) (*record.Monster
 // CreateMonsterRec -
 func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 
-	l := m.loggerWithContext("CreateMonsterRec")
+	l := m.loggerWithFunctionContext("CreateMonsterRec")
 
 	l.Debug("Creating dungeon monster record >%#v<", rec)
 
@@ -80,7 +80,7 @@ func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 // UpdateMonsterRec -
 func (m *Model) UpdateMonsterRec(rec *record.Monster) error {
 
-	l := m.loggerWithContext("UpdateMonsterRec")
+	l := m.loggerWithFunctionContext("UpdateMonsterRec")
 
 	l.Debug("Updating dungeon monster record >%#v<", rec)
 
@@ -98,7 +98,7 @@ func (m *Model) UpdateMonsterRec(rec *record.Monster) error {
 // DeleteMonsterRec -
 func (m *Model) DeleteMonsterRec(recID string) error {
 
-	l := m.loggerWithContext("DeleteMonsterRec")
+	l := m.loggerWithFunctionContext("DeleteMonsterRec")
 
 	l.Debug("Deleting dungeon monster rec ID >%s<", recID)
 
@@ -120,7 +120,7 @@ func (m *Model) DeleteMonsterRec(recID string) error {
 // RemoveMonsterRec -
 func (m *Model) RemoveMonsterRec(recID string) error {
 
-	l := m.loggerWithContext("RemoveMonsterRec")
+	l := m.loggerWithFunctionContext("RemoveMonsterRec")
 
 	l.Debug("Removing dungeon monster rec ID >%s<", recID)
 

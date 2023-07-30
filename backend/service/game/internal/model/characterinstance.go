@@ -15,7 +15,7 @@ type CharacterInstanceRecordSet struct {
 
 // CharacterEnterDungeon -
 func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*CharacterInstanceRecordSet, error) {
-	l := m.loggerWithContext("CharacterEnterDungeon")
+	l := m.loggerWithFunctionContext("CharacterEnterDungeon")
 
 	dungeonInstance, err := m.GetAvailableDungeonInstanceViewRecordSet(dungeonID)
 	if err != nil {
@@ -54,7 +54,7 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*Character
 
 // CharacterExitDungeon -
 func (m *Model) CharacterExitDungeon(characterID string) error {
-	l := m.loggerWithContext("CharacterExitDungeon")
+	l := m.loggerWithFunctionContext("CharacterExitDungeon")
 
 	// Update character record
 	characterInstanceRec, err := m.GetCharacterInstanceRecByCharacterID(characterID)
@@ -167,7 +167,7 @@ CHARACTER_OBJECT_INSTANCE_RECS:
 
 // CreateCharacterInstance -
 func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID string) (*CharacterInstanceRecordSet, error) {
-	l := m.loggerWithContext("CreateCharacterInstance")
+	l := m.loggerWithFunctionContext("CreateCharacterInstance")
 
 	locationInstanceRec, err := m.GetLocationInstanceRec(locationInstanceID, nil)
 	if err != nil {
@@ -253,7 +253,7 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 
 // DeleteCharacterInstance -
 func (m *Model) DeleteCharacterInstance(characterID string) error {
-	l := m.loggerWithContext("DeleteCharacterInstance")
+	l := m.loggerWithFunctionContext("DeleteCharacterInstance")
 
 	characterInstanceRec, err := m.GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {
@@ -305,7 +305,7 @@ func (m *Model) GetCharacterInstanceObjectInstanceRecs(characterInstanceID strin
 
 // GetCharacterInstanceEquippedObjectInstanceRecs -
 func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
-	l := m.loggerWithContext("GetCharacterInstanceEquippedObjectInstanceRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceEquippedObjectInstanceRecs")
 
 	l.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
@@ -329,7 +329,7 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstance
 
 // GetCharacterInstanceStashedObjectInstanceRecs -
 func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
-	l := m.loggerWithContext("GetCharacterInstanceStashedObjectInstanceRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceStashedObjectInstanceRecs")
 
 	l.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 
@@ -353,7 +353,7 @@ func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceI
 
 // GetCharacterInstanceObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
-	l := m.loggerWithContext("GetCharacterInstanceObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceObjectInstanceViewRecs")
 
 	l.Info("Getting character instance ID >%s< object records", characterInstanceID)
 
@@ -373,7 +373,7 @@ func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID s
 
 // GetCharacterInstanceEquippedObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
-	l := m.loggerWithContext("GetCharacterInstanceEquippedObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceEquippedObjectInstanceViewRecs")
 
 	l.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
@@ -397,7 +397,7 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInst
 
 // GetCharacterInstanceStashedObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
-	l := m.loggerWithContext("GetCharacterInstanceStashedObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceStashedObjectInstanceViewRecs")
 
 	l.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 

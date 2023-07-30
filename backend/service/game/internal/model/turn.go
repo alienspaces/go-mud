@@ -22,7 +22,7 @@ type IncrementDungeonInstanceTurnResult struct {
 
 // IncrementDungeonInstanceTurnRec -
 func (m *Model) IncrementDungeonInstanceTurn(args *IncrementDungeonInstanceTurnArgs) (*IncrementDungeonInstanceTurnResult, error) {
-	l := m.loggerWithContext("IncrementDungeonInstanceTurn")
+	l := m.loggerWithFunctionContext("IncrementDungeonInstanceTurn")
 
 	l.Debug("Increment dungeon instance ID >%s< turn", args.DungeonInstanceID)
 

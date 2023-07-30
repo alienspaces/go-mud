@@ -11,7 +11,7 @@ import (
 // GetCharacterObjectRecs -
 func (m *Model) GetCharacterObjectRecs(opts *coresql.Options) ([]*record.CharacterObject, error) {
 
-	l := m.loggerWithContext("GetCharacterObjectRecs")
+	l := m.loggerWithFunctionContext("GetCharacterObjectRecs")
 
 	l.Debug("Getting dungeon character records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetCharacterObjectRecs(opts *coresql.Options) ([]*record.Charact
 // GetCharacterObjectRec -
 func (m *Model) GetCharacterObjectRec(recID string, lock *coresql.Lock) (*record.CharacterObject, error) {
 
-	l := m.loggerWithContext("GetCharacterObjectRec")
+	l := m.loggerWithFunctionContext("GetCharacterObjectRec")
 
 	l.Debug("Getting dungeon character rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetCharacterObjectRec(recID string, lock *coresql.Lock) (*record
 // CreateCharacterObjectRec -
 func (m *Model) CreateCharacterObjectRec(rec *record.CharacterObject) error {
 
-	l := m.loggerWithContext("CreateCharacterObjectRec")
+	l := m.loggerWithFunctionContext("CreateCharacterObjectRec")
 
 	l.Debug("Creating dungeon character record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateCharacterObjectRec(rec *record.CharacterObject) error {
 // UpdateCharacterObjectRec -
 func (m *Model) UpdateCharacterObjectRec(rec *record.CharacterObject) error {
 
-	l := m.loggerWithContext("UpdateCharacterObjectRec")
+	l := m.loggerWithFunctionContext("UpdateCharacterObjectRec")
 
 	l.Debug("Updating dungeon character record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateCharacterObjectRec(rec *record.CharacterObject) error {
 // DeleteCharacterObjectRec -
 func (m *Model) DeleteCharacterObjectRec(recID string) error {
 
-	l := m.loggerWithContext("DeleteCharacterObjectRec")
+	l := m.loggerWithFunctionContext("DeleteCharacterObjectRec")
 
 	l.Debug("Deleting dungeon character rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteCharacterObjectRec(recID string) error {
 // RemoveCharacterObjectRec -
 func (m *Model) RemoveCharacterObjectRec(recID string) error {
 
-	l := m.loggerWithContext("RemoveCharacterObjectRec")
+	l := m.loggerWithFunctionContext("RemoveCharacterObjectRec")
 
 	l.Debug("Removing dungeon character rec ID >%s<", recID)
 

@@ -93,8 +93,8 @@ func mergeHandlerConfigs(hc1 map[string]server.HandlerConfig, hc2 map[string]ser
 	return hc1
 }
 
-// loggerWithContext provides a logger with function context
-func loggerWithContext(l logger.Logger, functionName string) logger.Logger {
+// loggerWithFunctionContext provides a logger with function context
+func loggerWithFunctionContext(l logger.Logger, functionName string) logger.Logger {
 	if l == nil {
 		return nil
 	}

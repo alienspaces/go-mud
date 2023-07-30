@@ -7,7 +7,7 @@ import (
 
 // GetCharacterEquippedObjectRecs -
 func (m *Model) GetCharacterEquippedObjectRecs(characterID string) ([]*record.Object, error) {
-	l := m.loggerWithContext("GetCharacterEquippedObjectRecs")
+	l := m.loggerWithFunctionContext("GetCharacterEquippedObjectRecs")
 
 	l.Debug("Getting character ID >%s< equipped object records", characterID)
 
@@ -47,7 +47,7 @@ func (m *Model) GetCharacterEquippedObjectRecs(characterID string) ([]*record.Ob
 // GetCharacterStashedObjectRecs -
 func (m *Model) GetCharacterStashedObjectRecs(characterID string) ([]*record.Object, error) {
 
-	l := m.loggerWithContext("GetCharacterStashedObjectRecs")
+	l := m.loggerWithFunctionContext("GetCharacterStashedObjectRecs")
 
 	l.Debug("Getting character ID >%s< stashed object records", characterID)
 

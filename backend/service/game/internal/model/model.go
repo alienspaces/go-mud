@@ -630,7 +630,7 @@ func (m *Model) DungeonEntityInstanceTurnQuery() *dungeonentityinstanceturn.Quer
 	return q.(*dungeonentityinstanceturn.Query)
 }
 
-// loggerWithContext -
-func (m *Model) loggerWithContext(functionName string) logger.Logger {
+// loggerWithFunctionContext -
+func (m *Model) loggerWithFunctionContext(functionName string) logger.Logger {
 	return m.Log.WithPackageContext("model").WithFunctionContext(functionName)
 }

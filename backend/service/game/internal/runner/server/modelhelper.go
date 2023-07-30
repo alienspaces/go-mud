@@ -17,7 +17,7 @@ type InstanceViewRecordSet struct {
 }
 
 func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m modeller.Modeller, characterID string) (*InstanceViewRecordSet, error) {
-	l = loggerWithContext(l, "getInstanceViewRecordSetByCharacterID")
+	l = loggerWithFunctionContext(l, "getInstanceViewRecordSetByCharacterID")
 
 	characterInstanceViewRec, err := m.(*model.Model).GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {

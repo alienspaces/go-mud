@@ -13,7 +13,7 @@ import (
 // GetTurnRecs -
 func (m *Model) GetTurnRecs(opts *coresql.Options) ([]*record.Turn, error) {
 
-	l := m.loggerWithContext("GetTurnRecs")
+	l := m.loggerWithFunctionContext("GetTurnRecs")
 
 	l.Debug("Getting turn records opts >%#v<", opts)
 
@@ -25,7 +25,7 @@ func (m *Model) GetTurnRecs(opts *coresql.Options) ([]*record.Turn, error) {
 // GetTurnRec -
 func (m *Model) GetTurnRec(recID string, lock *coresql.Lock) (*record.Turn, error) {
 
-	l := m.loggerWithContext("GetTurnRec")
+	l := m.loggerWithFunctionContext("GetTurnRec")
 
 	l.Debug("Getting turn rec ID >%s<", recID)
 
@@ -46,7 +46,7 @@ func (m *Model) GetTurnRec(recID string, lock *coresql.Lock) (*record.Turn, erro
 
 // CreateTurnRec -
 func (m *Model) CreateTurnRec(rec *record.Turn) error {
-	l := m.loggerWithContext("CreateTurnRec")
+	l := m.loggerWithFunctionContext("CreateTurnRec")
 
 	// Initial defaults
 	rec.TurnNumber = 1
@@ -67,7 +67,7 @@ func (m *Model) CreateTurnRec(rec *record.Turn) error {
 
 // UpdateTurnRec -
 func (m *Model) UpdateTurnRec(rec *record.Turn) error {
-	l := m.loggerWithContext("UpdateTurnRec")
+	l := m.loggerWithFunctionContext("UpdateTurnRec")
 
 	l.Debug("Updating turn record >%#v<", rec)
 
@@ -84,7 +84,7 @@ func (m *Model) UpdateTurnRec(rec *record.Turn) error {
 
 // DeleteTurnRec -
 func (m *Model) DeleteTurnRec(recID string) error {
-	l := m.loggerWithContext("DeleteTurnRec")
+	l := m.loggerWithFunctionContext("DeleteTurnRec")
 
 	l.Debug("Deleting turn rec ID >%s<", recID)
 
@@ -106,7 +106,7 @@ func (m *Model) DeleteTurnRec(recID string) error {
 // RemoveTurnRec -
 func (m *Model) RemoveTurnRec(recID string) error {
 
-	l := m.loggerWithContext("RemoveTurnRec")
+	l := m.loggerWithFunctionContext("RemoveTurnRec")
 
 	l.Debug("Removing turn rec ID >%s<", recID)
 

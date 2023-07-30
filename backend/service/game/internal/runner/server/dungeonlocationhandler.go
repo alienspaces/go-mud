@@ -81,6 +81,7 @@ func (rnr *Runner) DungeonLocationHandlerConfig(hc map[string]server.HandlerConf
 
 // getDungeonLocationHandler -
 func (rnr *Runner) getDungeonLocationHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
+	l = loggerWithFunctionContext(l, "getDungeonLocationHandler")
 
 	var recs []*record.Location
 	var err error
@@ -154,7 +155,7 @@ func (rnr *Runner) getDungeonLocationHandler(w http.ResponseWriter, r *http.Requ
 
 // getDungeonLocationsHandler -
 func (rnr *Runner) getDungeonLocationsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l.Info("** Get locations handler **")
+	l = loggerWithFunctionContext(l, "getDungeonsHandler")
 
 	// Path parameters
 	dungeonID := pp.ByName("dungeon_id")
