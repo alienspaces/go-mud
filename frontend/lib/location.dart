@@ -7,14 +7,31 @@ const int roomLocationCount = 14;
 
 enum ContentType { character, monster, object }
 
+// class LocationContent {
+//   // final int index;
+//   final ContentType type;
+//   final String name;
+//   final int? health;
+//   final int? fatigue;
+//   LocationContent({
+//     // required this.index,
+//     required this.type,
+//     required this.name,
+//     this.health,
+//     this.fatigue,
+//   });
+// }
+
 class LocationContent {
-  int index;
-  String name;
-  ContentType type;
+  final ContentType type;
+  final String name;
+  final int? health;
+  final int? fatigue;
   LocationContent({
-    required this.index,
-    required this.name,
     required this.type,
+    required this.name,
+    this.health,
+    this.fatigue,
   });
 }
 
@@ -32,27 +49,40 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   List<int> unpopulated = locationUnpopulated[locationData.locationName] ??
       [for (var i = 0; i < roomLocationCount; i++) i];
 
-  Map<String, ContentType> newLocationContents = {};
+  Map<String, LocationContent> newLocationContents = {};
   List<String> roomContentNames = [];
 
   log.fine('*** Dungeon objects ${locationData.locationObjects?.length}');
   if (locationData.locationObjects != null) {
     for (var dungeonObject in locationData.locationObjects!) {
-      newLocationContents[dungeonObject.name] = ContentType.object;
+      newLocationContents[dungeonObject.name] = LocationContent(
+        type: ContentType.object,
+        name: dungeonObject.name,
+      );
       roomContentNames.add(dungeonObject.name);
     }
   }
   log.fine('*** Dungeon characters ${locationData.locationCharacters?.length}');
   if (locationData.locationCharacters != null) {
     for (var dungeonCharacter in locationData.locationCharacters!) {
-      newLocationContents[dungeonCharacter.name] = ContentType.character;
+      newLocationContents[dungeonCharacter.name] = LocationContent(
+        type: ContentType.character,
+        name: dungeonCharacter.name,
+        health: dungeonCharacter.health,
+        fatigue: dungeonCharacter.fatigue,
+      );
       roomContentNames.add(dungeonCharacter.name);
     }
   }
   log.fine('*** Dungeon monsters ${locationData.locationMonsters?.length}');
   if (locationData.locationMonsters != null) {
     for (var dungeonMonster in locationData.locationMonsters!) {
-      newLocationContents[dungeonMonster.name] = ContentType.monster;
+      newLocationContents[dungeonMonster.name] = LocationContent(
+        type: ContentType.monster,
+        name: dungeonMonster.name,
+        health: dungeonMonster.health,
+        fatigue: dungeonMonster.fatigue,
+      );
       roomContentNames.add(dungeonMonster.name);
     }
   }
@@ -81,11 +111,16 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   log.fine('*** Unpopulated before ${unpopulated.length}');
 
   // Allocate remaining objects, characters and monsters
-  newLocationContents.forEach((name, type) {
+  newLocationContents.forEach((name, contentData) {
     var contentIdx = unpopulated.removeAt(0);
     populatedByName[name] = contentIdx;
-    populatedByIndex[contentIdx] =
-        LocationContent(index: contentIdx, name: name, type: type);
+    populatedByIndex[contentIdx] = LocationContent(
+      // index: contentIdx,
+      type: contentData.type,
+      name: name,
+      health: contentData.health,
+      fatigue: contentData.fatigue,
+    );
   });
 
   log.fine('*** Unpopulated after ${unpopulated.length}');

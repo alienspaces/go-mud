@@ -265,14 +265,20 @@ class ObjectDetailedData {
 
 class CharacterData {
   final String name;
+  final int health;
+  final int fatigue;
 
   CharacterData({
     required this.name,
+    required this.health,
+    required this.fatigue,
   });
 
   factory CharacterData.fromJson(Map<String, dynamic> json) {
     return CharacterData(
       name: json['name'],
+      health: json['health'],
+      fatigue: json['fatigue'],
     );
   }
 }
@@ -357,14 +363,20 @@ class CharacterDetailedData {
 
 class MonsterData {
   final String name;
+  final int health;
+  final int fatigue;
 
   MonsterData({
     required this.name,
+    required this.health,
+    required this.fatigue,
   });
 
   factory MonsterData.fromJson(Map<String, dynamic> json) {
     return MonsterData(
       name: json['name'],
+      health: json['health'],
+      fatigue: json['fatigue'],
     );
   }
 }

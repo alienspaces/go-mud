@@ -133,17 +133,17 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     switch (locationContent!.type) {
       case ContentType.character:
         {
-          returnWidget = _characterWidget(context, locationContent.name);
+          returnWidget = _characterWidget(context, locationContent);
         }
         break;
       case ContentType.monster:
         {
-          returnWidget = _monsterWidget(context, locationContent.name);
+          returnWidget = _monsterWidget(context, locationContent);
         }
         break;
       case ContentType.object:
         {
-          returnWidget = _objectWidget(context, locationContent.name);
+          returnWidget = _objectWidget(context, locationContent);
         }
         break;
       default:
@@ -154,19 +154,23 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     return returnWidget;
   }
 
+  // TODO: 12-implement-death: Add health fatigue to character display
+
   // Character widget
-  Widget _characterWidget(BuildContext context, String characterName) {
-    return CharacterButtonWidget(characterName: characterName);
+  Widget _characterWidget(BuildContext context, LocationContent character) {
+    return CharacterButtonWidget(characterName: character.name);
   }
 
+  // TODO: 12-implement-death: Add health fatigue to monster display
+
   // Monster widget
-  Widget _monsterWidget(BuildContext context, String monsterName) {
-    return MonsterButtonWidget(monsterName: monsterName);
+  Widget _monsterWidget(BuildContext context, LocationContent monster) {
+    return MonsterButtonWidget(monsterName: monster.name);
   }
 
   // Object widget
-  Widget _objectWidget(BuildContext context, String objectName) {
-    return ObjectButtonWidget(objectName: objectName);
+  Widget _objectWidget(BuildContext context, LocationContent object) {
+    return ObjectButtonWidget(objectName: object.name);
   }
 
   // Empty widget
