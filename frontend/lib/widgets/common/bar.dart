@@ -23,7 +23,7 @@ Widget bar(
   }
   double widthFactor = currentValue / fullValue;
 
-  log.info('label $label widthFactor $widthFactor width $width height $height');
+  log.fine('label $label widthFactor $widthFactor width $width height $height');
 
   return Container(
     height: height,

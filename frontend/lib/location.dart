@@ -1,5 +1,4 @@
 // Application packages
-import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
 
 // Room content location maps
@@ -32,8 +31,6 @@ Map<String, List<int>> locationUnpopulated = {};
 // location in the same location index for each turn so they do not
 // appear to jump around in the location.
 Map<int, LocationContent> getLocationContents(LocationData locationData) {
-  final log = getLogger('getLocationContents', null);
-
   // Existing allocation content indexed by their current location index
   Map<int, LocationContent> populatedByIndex =
       locationPopulatedByIndex[locationData.locationName] ?? {};
@@ -52,8 +49,6 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   List<String> roomContentNames = [];
 
   // Add location objects to content to be allocated
-  log.fine('*** Dungeon objects ${locationData.locationObjects?.length}');
-
   if (locationData.locationObjects != null) {
     for (var dungeonObject in locationData.locationObjects!) {
       allocateContent[dungeonObject.name] = LocationContent(
@@ -65,18 +60,8 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   }
 
   // Add location characters to content to be allocated
-  log.fine('*** Dungeon characters ${locationData.locationCharacters?.length}');
-
   if (locationData.locationCharacters != null) {
     for (var character in locationData.locationCharacters!) {
-      log.info(
-        'Character ${character.name} '
-        'health ${character.health} '
-        'currentHealth ${character.currentHealth} '
-        'fatigue ${character.fatigue} '
-        'currentFatigue ${character.currentFatigue}',
-      );
-
       allocateContent[character.name] = LocationContent(
         type: ContentType.character,
         name: character.name,
@@ -90,18 +75,8 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   }
 
   // Add location monsters to content to be allocated
-  log.fine('*** Dungeon monsters ${locationData.locationMonsters?.length}');
-
   if (locationData.locationMonsters != null) {
     for (var monster in locationData.locationMonsters!) {
-      log.info(
-        'Monster ${monster.name} '
-        'health ${monster.health} '
-        'currentHealth ${monster.currentHealth} '
-        'fatigue ${monster.fatigue} '
-        'currentFatigue ${monster.currentFatigue}',
-      );
-
       allocateContent[monster.name] = LocationContent(
         type: ContentType.monster,
         name: monster.name,
@@ -114,25 +89,21 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
     }
   }
 
-  // TODO: 12-implement-death: "Replace" here
-
-  // Remove objects, characters or monsters already allocated and remove
-  // object, characters and monsters that are no longer present
-  // var currentLocationContent = populatedByIndex.values.toList();
-
+  // Replace objects, characters and monsters that are already allocated and
+  // remove object, characters and monsters that are no longer present
   for (var idx = 0; idx < roomLocationCount; idx++) {
     var contentData = populatedByIndex[idx];
     if (contentData == null) {
       continue;
     }
     if (allocateContent[contentData.name] != null) {
-      log.info("Replacing idx $idx content name ${contentData.name}");
-      // Replace existing object, character or monster
+      // Replace in populated indexes
       populatedByIndex[idx] = allocateContent[contentData.name]!;
       populatedByName[contentData.name] = idx;
       // Remove from list that needs allocating
       allocateContent.remove(contentData.name);
     } else {
+      // Remove from populated indexes
       populatedByName.remove(contentData.name);
       populatedByIndex.remove(idx);
       unpopulated.remove(idx);
@@ -142,16 +113,12 @@ Map<int, LocationContent> getLocationContents(LocationData locationData) {
   // Shuffle unpopulated room locations
   unpopulated.shuffle();
 
-  log.fine('*** Unpopulated before ${unpopulated.length}');
-
   // Allocate remaining objects, characters and monsters
   allocateContent.forEach((name, contentData) {
     var contentIdx = unpopulated.removeAt(0);
     populatedByName[name] = contentIdx;
     populatedByIndex[contentIdx] = contentData;
   });
-
-  log.fine('*** Unpopulated after ${unpopulated.length}');
 
   locationPopulatedByIndex[locationData.locationName] = populatedByIndex;
   locationPopulatedByName[locationData.locationName] = populatedByName;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 // Application packages
-import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/cubit/target.dart';
@@ -29,17 +28,6 @@ class MonsterButtonWidget extends StatefulWidget {
 class _MonsterButtonWidgetState extends State<MonsterButtonWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('MonsterButtonWidget', 'build');
-    log.fine('Building..');
-
-    log.info(
-      'Monster ${widget.name} '
-      'health ${widget.health} '
-      'currentHealth ${widget.currentHealth} '
-      'fatigue ${widget.fatigue} '
-      'currentFatigue ${widget.currentFatigue}',
-    );
-
     return Stack(
       fit: StackFit.expand,
       children: [

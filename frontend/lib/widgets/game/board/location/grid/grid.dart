@@ -125,8 +125,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Room widget
   Widget _roomWidget(BuildContext context,
       Map<int, LocationContent> locationContents, int idx) {
-    final log = getLogger('Grid', '_roomWidget');
-
     if (locationContents[idx] == null) {
       return _emptyWidget('E$idx');
     }
@@ -136,14 +134,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     if (locationContent == null) {
       return _emptyWidget('E$idx');
     }
-
-    log.info(
-      'Location type ${locationContent.type} '
-      'health ${locationContent.health} '
-      'currentHealth ${locationContent.currentHealth} '
-      'fatigue ${locationContent.fatigue} '
-      'currentFatigue ${locationContent.currentFatigue}',
-    );
 
     switch (locationContent.type) {
       case ContentType.character:
@@ -239,13 +229,8 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationGridWidget', 'build');
-
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.fine(
-            'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
-
         // Set grid member dimensions
         gridMemberWidth = (constraints.maxWidth / 5) - 2;
         gridMemberHeight = (constraints.maxHeight / 5) - 2;
@@ -255,10 +240,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
         if (gridMemberWidth > gridMemberHeight) {
           gridMemberWidth = gridMemberHeight;
         }
-
-        log.fine(
-          '(B-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
-        );
 
         return IgnorePointer(
           ignoring: widget.readonly ? true : false,
