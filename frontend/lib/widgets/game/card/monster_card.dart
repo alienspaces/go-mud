@@ -38,6 +38,8 @@ void displayMonsterCard(
             monster.monsterCurrentStrength,
             null,
             null,
+            null,
+            1,
           ),
         ),
         Expanded(
@@ -48,6 +50,8 @@ void displayMonsterCard(
             monster.monsterCurrentDexterity,
             null,
             null,
+            null,
+            1,
           ),
         ),
         Expanded(
@@ -58,6 +62,8 @@ void displayMonsterCard(
             monster.monsterCurrentIntelligence,
             null,
             null,
+            null,
+            1,
           ),
         ),
         Expanded(
@@ -68,6 +74,8 @@ void displayMonsterCard(
             monster.monsterCurrentHealth,
             null,
             null,
+            Colors.green,
+            1,
           ),
         ),
         Expanded(
@@ -78,6 +86,8 @@ void displayMonsterCard(
             monster.monsterCurrentFatigue,
             null,
             null,
+            Colors.yellow,
+            1,
           ),
         ),
         const Expanded(

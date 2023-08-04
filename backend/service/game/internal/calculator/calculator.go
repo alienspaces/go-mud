@@ -34,14 +34,14 @@ func CalculateMonsterFatigue(rec *record.Monster) (*record.Monster, error) {
 
 func CalculateCharacterDamage(rec *record.CharacterInstanceView, set *record.LocationInstanceViewRecordSet) (int, error) {
 
-	dmg := rec.Strength / 2
+	dmg := (rec.Strength / 2) + 5
 
 	return dmg, nil
 }
 
 func CalculateMonsterDamage(rec *record.MonsterInstanceView, set *record.LocationInstanceViewRecordSet) (int, error) {
 
-	dmg := rec.Strength / 2
+	dmg := rec.Strength / 4
 
 	return dmg, nil
 }

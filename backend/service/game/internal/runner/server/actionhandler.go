@@ -225,6 +225,22 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 		l.Info("Response - Action Narrative >%s<", res.Data[idx].Narrative)
 		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].TurnNumber)
 		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].SerialNumber)
+
+		for cidx := range res.Data[idx].Location.Characters {
+			l.Info("Response - Location character Name >%s<", res.Data[idx].Location.Characters[cidx].Name)
+			l.Info("Response - Location character Health >%d<", res.Data[idx].Location.Characters[cidx].Health)
+			l.Info("Response - Location character CurrentHealth >%d<", res.Data[idx].Location.Characters[cidx].CurrentHealth)
+			l.Info("Response - Location character Fatigue >%d<", res.Data[idx].Location.Characters[cidx].Fatigue)
+			l.Info("Response - Location character CurrentFatigue >%d<", res.Data[idx].Location.Characters[cidx].CurrentFatigue)
+		}
+
+		for midx := range res.Data[idx].Location.Monsters {
+			l.Info("Response - Location monster Name >%s<", res.Data[idx].Location.Monsters[midx].Name)
+			l.Info("Response - Location monster Health >%d<", res.Data[idx].Location.Monsters[midx].Health)
+			l.Info("Response - Location monster CurrentHealth >%d<", res.Data[idx].Location.Monsters[midx].CurrentHealth)
+			l.Info("Response - Location monster Fatigue >%d<", res.Data[idx].Location.Monsters[midx].Fatigue)
+			l.Info("Response - Location monster CurrentFatigue >%d<", res.Data[idx].Location.Monsters[midx].CurrentFatigue)
+		}
 	}
 
 	err = server.WriteResponse(l, w, http.StatusOK, res)

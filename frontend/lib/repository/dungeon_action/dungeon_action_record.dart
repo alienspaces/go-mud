@@ -267,11 +267,15 @@ class CharacterData {
   final String name;
   final int health;
   final int fatigue;
+  final int currentHealth;
+  final int currentFatigue;
 
   CharacterData({
     required this.name,
     required this.health,
     required this.fatigue,
+    required this.currentHealth,
+    required this.currentFatigue,
   });
 
   factory CharacterData.fromJson(Map<String, dynamic> json) {
@@ -279,6 +283,8 @@ class CharacterData {
       name: json['name'],
       health: json['health'],
       fatigue: json['fatigue'],
+      currentHealth: json['current_health'],
+      currentFatigue: json['current_fatigue'],
     );
   }
 }
@@ -365,11 +371,15 @@ class MonsterData {
   final String name;
   final int health;
   final int fatigue;
+  final int currentHealth;
+  final int currentFatigue;
 
   MonsterData({
     required this.name,
     required this.health,
     required this.fatigue,
+    required this.currentHealth,
+    required this.currentFatigue,
   });
 
   factory MonsterData.fromJson(Map<String, dynamic> json) {
@@ -377,6 +387,8 @@ class MonsterData {
       name: json['name'],
       health: json['health'],
       fatigue: json['fatigue'],
+      currentHealth: json['current_health'],
+      currentFatigue: json['current_fatigue'],
     );
   }
 }

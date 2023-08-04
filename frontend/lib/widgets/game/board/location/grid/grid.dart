@@ -125,12 +125,27 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   // Room widget
   Widget _roomWidget(BuildContext context,
       Map<int, LocationContent> locationContents, int idx) {
+    final log = getLogger('Grid', '_roomWidget');
+
     if (locationContents[idx] == null) {
       return _emptyWidget('E$idx');
     }
+
     Widget returnWidget;
     var locationContent = locationContents[idx];
-    switch (locationContent!.type) {
+    if (locationContent == null) {
+      return _emptyWidget('E$idx');
+    }
+
+    log.info(
+      'Location type ${locationContent.type} '
+      'health ${locationContent.health} '
+      'currentHealth ${locationContent.currentHealth} '
+      'fatigue ${locationContent.fatigue} '
+      'currentFatigue ${locationContent.currentFatigue}',
+    );
+
+    switch (locationContent.type) {
       case ContentType.character:
         {
           returnWidget = _characterWidget(context, locationContent);
@@ -154,18 +169,26 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     return returnWidget;
   }
 
-  // TODO: 12-implement-death: Add health fatigue to character display
-
   // Character widget
   Widget _characterWidget(BuildContext context, LocationContent character) {
-    return CharacterButtonWidget(characterName: character.name);
+    return CharacterButtonWidget(
+      name: character.name,
+      health: character.health ?? 0,
+      currentHealth: character.currentHealth ?? 0,
+      fatigue: character.fatigue ?? 0,
+      currentFatigue: character.currentFatigue ?? 0,
+    );
   }
-
-  // TODO: 12-implement-death: Add health fatigue to monster display
 
   // Monster widget
   Widget _monsterWidget(BuildContext context, LocationContent monster) {
-    return MonsterButtonWidget(monsterName: monster.name);
+    return MonsterButtonWidget(
+      name: monster.name,
+      health: monster.health ?? 0,
+      currentHealth: monster.currentHealth ?? 0,
+      fatigue: monster.fatigue ?? 0,
+      currentFatigue: monster.currentFatigue ?? 0,
+    );
   }
 
   // Object widget
