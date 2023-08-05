@@ -5,16 +5,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/navigation.dart';
+
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
+
+import 'package:go_mud_client/repository/character/character_repository.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 
 class DungeonListItemWidget extends StatelessWidget {
   final NavigationCallbacks callbacks;
+  final CharacterRecord characterRecord;
   final DungeonRecord dungeonRecord;
-  const DungeonListItemWidget(
-      {Key? key, required this.callbacks, required this.dungeonRecord})
-      : super(key: key);
+  const DungeonListItemWidget({
+    Key? key,
+    required this.callbacks,
+    required this.characterRecord,
+    required this.dungeonRecord,
+  }) : super(key: key);
 
   /// Sets the current dungeon state to the provided dungeon
   void _enterDungeon(
@@ -28,10 +35,10 @@ class DungeonListItemWidget extends StatelessWidget {
     final dungeonCharacterCubit =
         BlocProvider.of<DungeonCharacterCubit>(context);
 
-    await dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
 
-    // ignore: use_build_context_synchronously
-    callbacks.openGamePage(context);
+    await dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
+    await characterCubit.refreshCharacter(characterID);
   }
 
   void _exitDungeon(
@@ -45,36 +52,33 @@ class DungeonListItemWidget extends StatelessWidget {
     final dungeonCharacterCubit =
         BlocProvider.of<DungeonCharacterCubit>(context);
 
-    await dungeonCharacterCubit.exitDungeonCharacter(dungeonID, characterID);
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
 
-    // ignore: use_build_context_synchronously
-    callbacks.openCharacterPage(context);
+    await dungeonCharacterCubit.exitDungeonCharacter(dungeonID, characterID);
+    await characterCubit.refreshCharacter(characterID);
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('DungeonListItemWidget', 'build');
-    log.fine(
-        'Select current dungeon ${dungeonRecord.dungeonID} ${dungeonRecord.dungeonName}');
+    log.fine('Dungeon ${dungeonRecord.dungeonID} ${dungeonRecord.dungeonName}');
+
+    if (characterRecord.dungeonID != null &&
+        characterRecord.dungeonID != dungeonRecord.dungeonID) {
+      log.warning(
+          "character is not in this dungeon, not displaying dungeon list item");
+      return const SizedBox.shrink();
+    }
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
       textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
     );
 
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
-    var characterRecord = characterCubit.characterRecord;
-    if (characterRecord == null) {
-      log.warning(
-          'Character record from CharacterCubit is null, cannot display DungeonListItem');
-      return Container();
-    }
-    if (characterRecord.dungeonID != null &&
-        characterRecord.dungeonID != dungeonRecord.dungeonID) {
-      // TODO: (client) Could choose to not display dungeon list item at all under this scenario
-    }
-
     List<Widget> children = [];
+
+    // Character not in dungeon
+
     if (characterRecord.dungeonID == null) {
       children = <Widget>[
         Container(
@@ -90,7 +94,11 @@ class DungeonListItemWidget extends StatelessWidget {
           ),
         ),
       ];
-    } else if (characterRecord.dungeonID != null &&
+    }
+
+    // Character in this dungeon
+
+    else if (characterRecord.dungeonID != null &&
         characterRecord.dungeonID == dungeonRecord.dungeonID) {
       children = <Widget>[
         Container(

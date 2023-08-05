@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/navigation.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
@@ -11,18 +13,39 @@ import 'package:go_mud_client/widgets/game/action/command.dart';
 import 'package:go_mud_client/widgets/game/board/location/description/description_container.dart';
 import 'package:go_mud_client/widgets/game/card/card.dart';
 
-class GameWidget extends StatefulWidget {
-  const GameWidget({Key? key}) : super(key: key);
+class GameContainerWidget extends StatefulWidget {
+  final NavigationCallbacks callbacks;
+
+  const GameContainerWidget({
+    Key? key,
+    required this.callbacks,
+  }) : super(key: key);
 
   @override
-  State<GameWidget> createState() => _GameWidgetState();
+  State<GameContainerWidget> createState() => _GameContainerWidgetState();
 }
 
-class _GameWidgetState extends State<GameWidget> {
+class _GameContainerWidgetState extends State<GameContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameWidget', 'build');
+    final log = getLogger('GameContainerWidget', 'build');
     log.info('Building..');
+
+    final characterCubit = BlocProvider.of<CharacterCubit>(
+      context,
+      listen: true,
+    );
+
+    var characterRecord = characterCubit.characterRecord;
+    if (characterRecord == null) {
+      log.warning("character record is null, cannot display game");
+      return const SizedBox.shrink();
+    }
+
+    if (characterRecord.dungeonID == null) {
+      log.warning("character record dungeon id is null, cannot display game");
+      return const SizedBox.shrink();
+    }
 
     return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
       listener: (context, state) {
@@ -34,12 +57,14 @@ class _GameWidgetState extends State<GameWidget> {
         if (state is DungeonCharacterStateCreate) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            child: const Text("GameWidget - Entering"),
+            color: Colors.purple[50],
+            child: const Text("GameContainerWidget - Entering"),
           );
         } else if (state is DungeonCharacterStateCreateError) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            child: const Text("GameWidget - Error"),
+            color: Colors.purple[50],
+            child: const Text("GameContainerWidget - Error"),
           );
         } else if (state is DungeonCharacterStateCreated) {
           // ignore: avoid_unnecessary_containers
@@ -90,7 +115,8 @@ class _GameWidgetState extends State<GameWidget> {
 
         // ignore: avoid_unnecessary_containers
         return Container(
-          child: const Text("Empty"),
+          color: Colors.purple[50],
+          child: const Text("Game Empty"),
         );
       },
     );

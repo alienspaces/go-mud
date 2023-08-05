@@ -26,43 +26,58 @@ class _CharacterContainerWidgetState extends State<CharacterContainerWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterContainerWidget', 'build');
-    log.fine('Building..');
 
     return BlocConsumer<CharacterCubit, CharacterState>(
       listener: (BuildContext context, CharacterState state) {
-        log.fine('listener...');
+        //
       },
       builder: (BuildContext context, CharacterState characterState) {
         List<Widget> pageWidgets = [];
 
         if (characterState is CharacterStateCreate ||
             characterState is CharacterStateCreateError) {
-          log.info('Displaying character create');
-          // ignore: avoid_unnecessary_containers
+          log.info('Displaying character create widget');
+
+          //
+          // Create character widget
+          //
           pageWidgets.add(Container(
+            color: Colors.brown,
             child: CharacterCreateWidget(
               callbacks: widget.callbacks,
             ),
           ));
         } else {
-          log.info('Displaying character list');
-          // ignore: avoid_unnecessary_containers
+          log.info('Displaying character list widget');
+
+          //
+          // Character list widget
+          //
           pageWidgets.add(Container(
+            color: Colors.brown,
             child: CharacterListWidget(
               callbacks: widget.callbacks,
             ),
           ));
 
-          // ignore: avoid_unnecessary_containers
+          log.info('Displaying character create button widget');
+
+          //
+          // Create character button
+          //
           pageWidgets.add(Container(
+            color: Colors.brown,
             child: CharacterCreateButtonWidget(
               callbacks: widget.callbacks,
             ),
           ));
         }
 
-        return Column(
-          children: pageWidgets,
+        return Container(
+          color: Colors.brown,
+          child: Column(
+            children: pageWidgets,
+          ),
         );
       },
     );

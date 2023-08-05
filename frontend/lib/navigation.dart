@@ -52,19 +52,19 @@ class _NavigationState extends State<Navigation> {
     });
   }
 
-  void openDungeonPage(BuildContext context) {
-    final log = getLogger('Navigation', 'openDungeonPage');
-    log.fine('Opening dungeon page..');
-    setState(() {
-      _pageList = [DungeonPage.pageName];
-    });
-  }
-
   void openCharacterPage(BuildContext context) {
     final log = getLogger('Navigation', 'openCharacterPage');
     log.fine('Opening character page..');
     setState(() {
       _pageList = [CharacterPage.pageName];
+    });
+  }
+
+  void openDungeonPage(BuildContext context) {
+    final log = getLogger('Navigation', 'openDungeonPage');
+    log.fine('Opening dungeon page..');
+    setState(() {
+      _pageList = [DungeonPage.pageName];
     });
   }
 
@@ -102,13 +102,13 @@ class _NavigationState extends State<Navigation> {
           log.fine('Adding ${HomePage.pageName}');
           pages.add(HomePage(callbacks: callbacks));
           break;
-        case DungeonPage.pageName:
-          log.fine('Adding ${DungeonPage.pageName}');
-          pages.add(DungeonPage(callbacks: callbacks));
-          break;
         case CharacterPage.pageName:
           log.fine('Adding ${CharacterPage.pageName}');
           pages.add(CharacterPage(callbacks: callbacks));
+          break;
+        case DungeonPage.pageName:
+          log.fine('Adding ${DungeonPage.pageName}');
+          pages.add(DungeonPage(callbacks: callbacks));
           break;
         case GamePage.pageName:
           log.fine('Adding ${GamePage.pageName}');

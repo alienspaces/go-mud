@@ -26,9 +26,6 @@ class CharacterListItemWidget extends StatelessWidget {
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
     characterCubit.selectCharacter(characterRecord);
-
-    log.info('Opening dungeon page');
-    callbacks.openDungeonPage(context);
   }
 
   @override

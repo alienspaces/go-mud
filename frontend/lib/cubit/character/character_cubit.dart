@@ -107,17 +107,31 @@ class CharacterCubit extends Cubit<CharacterState> {
 
   Future<void> loadCharacter(String characterID) async {
     final log = getLogger('CharacterCubit', 'loadCharacter');
-    log.fine('Creating character ID $characterID');
+    log.fine('Loading character ID $characterID');
 
     emit(const CharacterStateLoading());
 
     CharacterRecord? loadedCharacterRecord =
         await repositories.characterRepository.getOne(characterID);
 
-    log.fine('Created character $loadedCharacterRecord');
+    log.fine('Loaded character $loadedCharacterRecord');
 
     if (loadedCharacterRecord != null) {
       emit(CharacterStateSelected(characterRecord: loadedCharacterRecord));
+    }
+  }
+
+  Future<void> refreshCharacter(String characterID) async {
+    final log = getLogger('CharacterCubit', 'refreshCharacter');
+    log.fine('Refreshing character ID $characterID');
+
+    emit(const CharacterStateLoading());
+
+    CharacterRecord? characterRecord =
+        await repositories.characterRepository.getOne(characterID);
+
+    if (characterRecord != null) {
+      return selectCharacter(characterRecord);
     }
   }
 

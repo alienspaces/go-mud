@@ -38,8 +38,10 @@ class CharacterStateCreateError extends CharacterState {
 class CharacterStateError extends CharacterState {
   final CharacterRecord characterRecord;
   final String message;
-  const CharacterStateError(
-      {required this.characterRecord, required this.message});
+  const CharacterStateError({
+    required this.characterRecord,
+    required this.message,
+  });
 
   @override
   List<Object> get props => [message];
@@ -58,8 +60,10 @@ class CharacterStateLoaded extends CharacterState {
   final List<CharacterRecord>? characterRecords;
   final CharacterRecord? currentCharacterRecord;
 
-  const CharacterStateLoaded(
-      {required this.characterRecords, this.currentCharacterRecord});
+  const CharacterStateLoaded({
+    required this.characterRecords,
+    this.currentCharacterRecord,
+  });
 
   @override
   List<Object?> get props => [characterRecords, currentCharacterRecord];
@@ -76,7 +80,10 @@ class CharacterStateLoadError extends CharacterState {
 @immutable
 class CharacterStateSelected extends CharacterState {
   final CharacterRecord characterRecord;
-  const CharacterStateSelected({required this.characterRecord});
+
+  const CharacterStateSelected({
+    required this.characterRecord,
+  });
 
   @override
   List<Object> get props => [characterRecord];

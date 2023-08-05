@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/home/home_container.dart';
+import 'package:go_mud_client/widgets/home/home.dart';
+import 'package:go_mud_client/widgets/character/character.dart';
+import 'package:go_mud_client/widgets/dungeon/dungeon.dart';
+import 'package:go_mud_client/widgets/game/game.dart';
 
 class HomePage extends Page {
   static const String pageName = 'HomePage';
@@ -65,7 +68,17 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         alignment: Alignment.center,
-        child: HomeContainerWidget(callbacks: widget.callbacks),
+
+        // TODO:12-implement-death: Make this a stack of bloc consumer containers
+        // child: HomeContainerWidget(callbacks: widget.callbacks),
+        child: Stack(
+          children: [
+            HomeContainerWidget(callbacks: widget.callbacks),
+            CharacterContainerWidget(callbacks: widget.callbacks),
+            DungeonContainerWidget(callbacks: widget.callbacks),
+            GameContainerWidget(callbacks: widget.callbacks),
+          ],
+        ),
       ),
     );
   }
