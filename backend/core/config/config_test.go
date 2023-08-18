@@ -18,7 +18,7 @@ func TestNewConfig(t *testing.T) {
 			setup:  func() func() { return func() {} },
 			dotEnv: false,
 			items: []Item{
-				Item{
+				{
 					Key:      "HOME",
 					Required: true,
 				},
@@ -88,7 +88,7 @@ func TestGet(t *testing.T) {
 	}{
 		"Get valid environment value": {
 			items: []Item{
-				Item{
+				{
 					Key:      "HOME",
 					Required: true,
 				},
@@ -100,7 +100,7 @@ func TestGet(t *testing.T) {
 		},
 		"Get invalid environment value": {
 			items: []Item{
-				Item{
+				{
 					Key:      "WORK",
 					Required: true,
 				},

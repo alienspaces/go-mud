@@ -1,4 +1,4 @@
-package client
+package httpclient
 
 import (
 	"encoding/json"
@@ -11,16 +11,13 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/backend/core/config"
 	"gitlab.com/alienspaces/go-mud/backend/core/log"
-	"gitlab.com/alienspaces/go-mud/backend/core/type/configurer"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 type requestData struct {
 	Request
-	Name         string
-	Strength     int
-	Intelligence int
-	Dexterity    int
+	Name string
+	Age  int
 }
 
 type clientTestCase struct {
@@ -34,34 +31,34 @@ type clientTestCase struct {
 }
 
 // NewDefaultDependencies -
-func NewDefaultDependencies() (configurer.Configurer, logger.Logger, error) {
+func NewDefaultDependencies() (logger.Logger, error) {
 
-	c, err := config.NewConfigWithDefaults(nil, false)
+	c, err := config.NewConfig(nil, false)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	l, err := log.NewLogger(c)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return c, l, nil
+	return l, nil
 }
 
 func TestRetryRequest(t *testing.T) {
 
-	c, l, err := NewDefaultDependencies()
+	l, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	tests := []clientTestCase{
 		{
 			name:   "Get resource OK",
 			method: http.MethodGet,
-			path:   "/api/games/:game_id/mages",
+			path:   "/api/collections/:collection_id/members",
 			params: map[string]string{
-				"id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"id":            "52fdfc07-2182-454f-963f-5f0f9a621d72",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
 			},
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				respData, err := json.Marshal(&Response{})
@@ -78,7 +75,7 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Get resource BadRequest",
 			method: http.MethodGet,
-			path:   "/api/kobolds/:kobold_id",
+			path:   "/api/collections/:collection_id",
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				rw.WriteHeader(http.StatusBadRequest)
 			},
@@ -87,13 +84,13 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Post resource OK",
 			method: http.MethodPost,
-			path:   "/api/orcs/:orc_id",
+			path:   "/api/collections/:collection_id",
 			params: map[string]string{
-				"orc_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
+				"collection_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			requestData: &requestData{
-				Name:     "Brain Basher",
-				Strength: 10,
+				Name: "John",
+				Age:  10,
 			},
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				requestData := requestData{}
@@ -103,11 +100,11 @@ func TestRetryRequest(t *testing.T) {
 					return
 				}
 
-				if requestData.Name != "Brain Basher" {
+				if requestData.Name != "John" {
 					rw.WriteHeader(http.StatusBadRequest)
 					return
 				}
-				if requestData.Strength != 10 {
+				if requestData.Age != 10 {
 					rw.WriteHeader(http.StatusBadRequest)
 					return
 				}
@@ -126,13 +123,13 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Post resource BadRequest",
 			method: http.MethodPost,
-			path:   "/api/trolls/:troll_id",
+			path:   "/api/collections/:collection_id",
 			params: map[string]string{
-				"troll_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
+				"collection_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			requestData: &requestData{
-				Name:     "Stone Fist",
-				Strength: 20,
+				Name: "Mary",
+				Age:  20,
 			},
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				rw.WriteHeader(http.StatusBadRequest)
@@ -142,9 +139,9 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Post resource error - missing request data",
 			method: http.MethodPost,
-			path:   "/api/trolls/:troll_id",
+			path:   "/api/collections/:collection_id",
 			params: map[string]string{
-				"troll_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
+				"collection_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			requestData: nil,
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
@@ -155,13 +152,13 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Put resource OK",
 			method: http.MethodPut,
-			path:   "/api/orcs",
+			path:   "/api/collections/:collection_id",
 			params: map[string]string{
-				"id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
+				"collection_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			requestData: &requestData{
-				Name:     "Brain Basher",
-				Strength: 10,
+				Name: "John",
+				Age:  10,
 			},
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				requestData := requestData{}
@@ -171,17 +168,17 @@ func TestRetryRequest(t *testing.T) {
 					return
 				}
 
-				id := strings.TrimPrefix(req.URL.Path, "/api/orcs/")
+				id := strings.TrimPrefix(req.URL.Path, "/api/collections/")
 				if id != "52fdfc07-2182-454f-963f-5f0f9a621d72" {
 					rw.WriteHeader(http.StatusNotFound)
 					return
 				}
 
-				if requestData.Name != "Brain Basher" {
+				if requestData.Name != "John" {
 					rw.WriteHeader(http.StatusBadRequest)
 					return
 				}
-				if requestData.Strength != 10 {
+				if requestData.Age != 10 {
 					rw.WriteHeader(http.StatusBadRequest)
 					return
 				}
@@ -200,13 +197,13 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Put resource NotFound",
 			method: http.MethodPut,
-			path:   "/api/orcs",
+			path:   "/api/collections",
 			params: map[string]string{
 				"id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			requestData: &requestData{
-				Name:     "Brain Basher",
-				Strength: 10,
+				Name: "John",
+				Age:  10,
 			},
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				rw.WriteHeader(http.StatusNotFound)
@@ -216,7 +213,7 @@ func TestRetryRequest(t *testing.T) {
 		{
 			name:   "Put resource error - missing request data",
 			method: http.MethodPut,
-			path:   "/api/orcs",
+			path:   "/api/collections",
 			params: map[string]string{
 				"id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
@@ -226,33 +223,33 @@ func TestRetryRequest(t *testing.T) {
 			expectErr: true,
 		},
 		// TODO delete method not yet supported in core/client/client.go
-		//{
-		//	name:   "Delete resource OK",
-		//	method: http.MethodDelete,
-		//	path:   "/api/orcs",
-		//	params: map[string]string{
-		//		"id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
-		//	},
-		//	requestData: &requestData{
-		//		Name:     "Brain Basher",
-		//		Strength: 10,
-		//	},
-		//	serverFunc: func(rw http.ResponseWriter, req *http.Request) {
-		//		id := strings.TrimPrefix(req.URL.Path, "/api/orcs/")
-		//		if id != "52fdfc07-2182-454f-963f-5f0f9a621d72" {
-		//			rw.WriteHeader(http.StatusNotFound)
-		//			return
-		//		}
-		//		rw.WriteHeader(http.StatusOK)
-		//	},
-		//	expectErr: false,
-		//},
+		{
+			name:   "Delete resource OK",
+			method: http.MethodDelete,
+			path:   "/api/collections/:collection_id",
+			params: map[string]string{
+				"collection_id": "52fdfc07-2182-454f-963f-5f0f9a621d72",
+			},
+			requestData: &requestData{
+				Name: "John",
+				Age:  10,
+			},
+			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
+				id := strings.TrimPrefix(req.URL.Path, "/api/collections/")
+				if id != "52fdfc07-2182-454f-963f-5f0f9a621d72" {
+					rw.WriteHeader(http.StatusNotFound)
+					return
+				}
+				rw.WriteHeader(http.StatusOK)
+			},
+			expectErr: false,
+		},
 		{
 			name:   "Delete resource NotFound",
 			method: http.MethodDelete,
-			path:   "/api/orcs",
+			path:   "/api/collections/:collection_id",
 			params: map[string]string{
-				"id": "52fdfc07-abcd-abcd-abcde-5f0f9a621d72",
+				"collection_id": "52fdfc07-abcd-abcd-abcde-5f0f9a621d72",
 			},
 			serverFunc: func(rw http.ResponseWriter, req *http.Request) {
 				rw.WriteHeader(http.StatusNotFound)
@@ -280,7 +277,7 @@ func TestRetryRequest(t *testing.T) {
 			defer server.Close()
 
 			// Client
-			cl, err := NewClient(c, l)
+			cl, err := NewClient(l)
 			require.NoError(t, err, "NewClient returns without error")
 			require.NotNil(t, cl, "NewClient returns a client")
 
@@ -322,13 +319,13 @@ func TestRetryRequest(t *testing.T) {
 	}
 }
 
-func TestBuildURL(t *testing.T) {
+func Test_buildURL(t *testing.T) {
 
-	c, l, err := NewDefaultDependencies()
+	l, err := NewDefaultDependencies()
 	require.NoError(t, err, "NewDefaultDependencies returns without error")
 
 	// Client
-	cl, err := NewClient(c, l)
+	cl, err := NewClient(l)
 
 	// Host
 	cl.Host = "http://example.com"
@@ -348,217 +345,149 @@ func TestBuildURL(t *testing.T) {
 		expectURL string
 	}{
 		{
-			name:   "Build GET URL with additional ID",
+			name:   "Build GET URL",
 			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members/:member_id",
 			params: map[string]string{
-				"id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"member_id":     "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members/52fdfc07-2182-454f-963f-5f0f9a621d72",
 		},
 		{
-			name:   "Build GET URL with additional ID and path param without colon",
+			name:   "Build GET URL with path params without colon and path params without colon",
 			method: http.MethodGet,
-			path:   "/games/game_id/mages/test/test_id",
+			path:   "/collections/collection_id/members/member_id",
 			params: map[string]string{
-				"id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-				"test_id": "52fdfc07-2182-454f-963f-5f0f9a621abc",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"member_id":     "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/test/52fdfc07-2182-454f-963f-5f0f9a621abc/52fdfc07-2182-454f-963f-5f0f9a621d72",
-		},
-		{
-			name:   "Build GET URL without additional ID",
-			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members/52fdfc07-2182-454f-963f-5f0f9a621d72",
 		},
 		{
 			name:   "Build GET URL with query params",
 			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-				"qp1":     "1",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"qp1":           "1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages?qp1=1",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members?qp1=1",
 		},
 		{
-			name:   "Build POST URL with additional ID",
+			name:   "Build POST URL",
 			method: http.MethodPost,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				"id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members",
 		},
 		{
-			name:   "Build POST URL without additional ID",
-			method: http.MethodPost,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
-		},
-		{
-			name:   "Build PUT URL with ID",
+			name:   "Build PUT URL",
 			method: http.MethodPut,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				"id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members",
 		},
 		{
-			name:   "Build PUT URL without ID",
-			method: http.MethodPut,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: true,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
-		},
-		{
-			name:   "Build DELETE URL with ID",
+			name:   "Build DELETE URL",
 			method: http.MethodDelete,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				"id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				"collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
-		},
-		{
-			name:   "Build DELETE URL without ID",
-			method: http.MethodDelete,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				"game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: true,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members",
 		},
 		{
 			name:   "Build GET URL with empty params",
 			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				"id":      "",
-				"game_id": "",
+				"collection_id": "",
 			},
 			expectErr: true,
 		},
 		// prefixed with colon
 		{
-			name:   "Build GET URL with additional ID - prefixed with colon",
+			name:   "Build GET URL prefixed with colon",
 			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members/:member_id",
 			params: map[string]string{
-				":id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":member_id":     "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members/52fdfc07-2182-454f-963f-5f0f9a621d72",
 		},
 		{
-			name:   "Build GET URL without additional ID - prefixed with colon",
+			name:   "Build GET URL with path params without colon and params prefixed with colon",
 			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/collection_id/members/member_id",
 			params: map[string]string{
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":member_id":     "52fdfc07-2182-454f-963f-5f0f9a621d72",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members/52fdfc07-2182-454f-963f-5f0f9a621d72",
 		},
 		{
-			name:   "Build GET URL with query params - prefixed with colon",
+			name:   "Build GET URL with query params prefixed with colon",
 			method: http.MethodGet,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-				":qp1":     "1",
+				":collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":qp1":           "1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages?qp1=1",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members?qp1=1",
 		},
 		{
-			name:   "Build POST URL with additional ID - prefixed with colon",
+			name:   "Build POST URL prefixed with colon",
 			method: http.MethodPost,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				":id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members",
 		},
 		{
-			name:   "Build POST URL without additional ID - prefixed with colon",
-			method: http.MethodPost,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
-		},
-		{
-			name:   "Build PUT URL with ID - prefixed with colon",
+			name:   "Build PUT URL prefixed with colon",
 			method: http.MethodPut,
-			path:   "/games/:game_id/mages",
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				":id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
 			},
 			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members",
 		},
 		{
-			name:   "Build PUT URL without ID - prefixed with colon",
-			method: http.MethodPut,
-			path:   "/games/:game_id/mages",
+			name:   "Build DELETE URL prefixed with colon",
+			method: http.MethodDelete,
+			path:   "/collections/:collection_id/members",
 			params: map[string]string{
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+				":collection_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
+			},
+			expectErr: false,
+			expectURL: "http://example.com/api/collections/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/members",
+		},
+		{
+			name:   "Build GET URL with empty params prefixed with colon",
+			method: http.MethodGet,
+			path:   "/collections/:collection_id/members",
+			params: map[string]string{
+				":collection_id": "",
 			},
 			expectErr: true,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
-		},
-		{
-			name:   "Build DELETE URL with ID - prefixed with colon",
-			method: http.MethodDelete,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				":id":      "52fdfc07-2182-454f-963f-5f0f9a621d72",
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: false,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages/52fdfc07-2182-454f-963f-5f0f9a621d72",
-		},
-		{
-			name:   "Build DELETE URL without ID - prefixed with colon",
-			method: http.MethodDelete,
-			path:   "/games/:game_id/mages",
-			params: map[string]string{
-				":game_id": "3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1",
-			},
-			expectErr: true,
-			expectURL: "http://example.com/api/games/3fa1b1b7-cca9-435e-b2d6-a8c03be21bf1/mages",
 		},
 	}
 
@@ -568,14 +497,14 @@ func TestBuildURL(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 
-			url, err := cl.BuildURL(tc.method, tc.path, tc.params)
+			url, err := cl.buildURL(tc.method, tc.path, tc.params)
 			if tc.expectErr == true {
-				require.Error(t, err, "BuildURL returns with error")
+				require.Error(t, err, "buildURL returns with error")
 				return
 			}
 			t.Logf("Resulting URL >%s<", url)
-			require.NoError(t, err, "BuildURL returns without error")
-			require.Equal(t, tc.expectURL, url, "BuildURL returns expected URL")
+			require.NoError(t, err, "buildURL returns without error")
+			require.Equal(t, tc.expectURL, url, "buildURL returns expected URL")
 		})
 	}
 }

@@ -1,4 +1,4 @@
-package client
+package httpclient
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 // Get is a convenience method wrapping RetryRequest
 func (c *Client) Get(path string, params map[string]string, respData interface{}) error {
-	l := c.Log.WithContext("function", "Get")
+	l := loggerWithFunctionContext(c.Log, "Get")
 
 	l.Debug("Request path >%s< params >%#v< respData >%#v<", path, params, respData)
 
@@ -28,14 +28,14 @@ func (c *Client) Get(path string, params map[string]string, respData interface{}
 
 // Create is a convenience method wrapping RetryRequest
 func (c *Client) Create(path string, params map[string]string, reqData interface{}, respData interface{}) error {
-	l := c.Log.WithContext("function", "Create")
+	l := loggerWithFunctionContext(c.Log, "Create")
 
 	l.Debug("Request path >%s< params >%#v< reqData >%#v< respData >%#v<", path, params, reqData, respData)
 
 	if reqData == nil {
-		msg := fmt.Sprintf("Request data is nil >%v<, cannot create resource", reqData)
-		l.Warn(msg)
-		return fmt.Errorf(msg)
+		err := fmt.Errorf("Request data is nil >%v<, cannot create resource", reqData)
+		l.Warn(err.Error())
+		return err
 	}
 
 	err := c.RetryRequest(
@@ -55,14 +55,14 @@ func (c *Client) Create(path string, params map[string]string, reqData interface
 
 // Update is a convenience method wrapping RetryRequest
 func (c *Client) Update(path string, params map[string]string, reqData interface{}, respData interface{}) error {
-	l := c.Log.WithContext("function", "Update")
+	l := loggerWithFunctionContext(c.Log, "Update")
 
 	l.Debug("Request path >%s< params >%#v< reqData >%#v< respData >%#v<", path, params, reqData, respData)
 
 	if reqData == nil {
-		msg := fmt.Sprintf("Request data is nil >%v<, cannot update resource", reqData)
-		l.Warn(msg)
-		return fmt.Errorf(msg)
+		err := fmt.Errorf("Request data is nil >%v<, cannot update resource", reqData)
+		l.Warn(err.Error())
+		return err
 	}
 
 	err := c.RetryRequest(
@@ -82,7 +82,9 @@ func (c *Client) Update(path string, params map[string]string, reqData interface
 
 // Delete is a convenience method wrapping RetryRequest
 func (c *Client) Delete(path string, params map[string]string, respData interface{}) error {
-	l := c.Log.WithContext("function", "Delete")
+	l := loggerWithFunctionContext(c.Log, "Delete")
+
+	l.Debug("Request path >%s< params >%#v< respData >%#v<", path, params, respData)
 
 	err := c.RetryRequest(
 		http.MethodDelete,
