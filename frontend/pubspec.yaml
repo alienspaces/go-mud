@@ -31,7 +31,7 @@ dependencies:
     sdk: flutter
 
   # A composable, multi-platform, Future-based API for HTTP requests.
-  http: ^0.13.3
+  http: ^1.1.0
 
   # Flutter Widgets that make it easy to implement the BLoC
   # (Business Logic Component) design pattern. Built to be used
@@ -51,7 +51,7 @@ dependencies:
   # abstractions similar to those used in other languages, such as the
   # Closure JS Logger and java.util.logging.Logger.
   # https://pub.dev/packages/logging
-  logging: 1.1.1
+  logging: 1.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
