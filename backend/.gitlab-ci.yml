@@ -3,7 +3,7 @@ test-backend:
     POSTGRES_DB: go-mud
     POSTGRES_USER: go-mud-user
     POSTGRES_PASSWORD: go-mud-pass
-  image: $CI_REGISTRY/alienspaces/go-mud/golang:1.20.4-alpine3.18
+  image: $CI_REGISTRY/alienspaces/go-mud/golang:1.21.0-alpine3.18
   stage: test-backend
   services:
     - name: $CI_REGISTRY/alienspaces/go-mud/postgres:15.3-alpine3.18
