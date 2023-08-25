@@ -13,6 +13,8 @@ const (
 	ErrorCodeActionInvalidDirection coreerror.ErrorCode = "action.invalid_direction"
 	ErrorCodeActionInvalidTarget    coreerror.ErrorCode = "action.invalid_target"
 	ErrorCodeActionTooEarly         coreerror.ErrorCode = "action.too_early"
+	ErrorCodeActionInvalidCharacter coreerror.ErrorCode = "action.invalid_character"
+	ErrorCodeActionInvalidDungeon   coreerror.ErrorCode = "action.invalid_dungeon"
 	ErrorCodeCharacterNameTaken     coreerror.ErrorCode = "character.name_taken"
 )
 
@@ -53,6 +55,24 @@ func NewInvalidTargetError(message string) error {
 		HttpStatusCode: http.StatusBadRequest,
 		ErrorCode:      ErrorCodeActionInvalidTarget,
 		Message:        message,
+	}
+}
+
+func NewActionInvalidCharacterError(characterID string) error {
+	msg := fmt.Sprintf("character ID >%s< is dead or missing", characterID)
+	return coreerror.Error{
+		HttpStatusCode: http.StatusBadRequest,
+		ErrorCode:      ErrorCodeActionInvalidCharacter,
+		Message:        msg,
+	}
+}
+
+func NewActionInvalidDungeonError(dungeonID string) error {
+	msg := fmt.Sprintf("dungeon ID >%s< is dead or missing", dungeonID)
+	return coreerror.Error{
+		HttpStatusCode: http.StatusBadRequest,
+		ErrorCode:      ErrorCodeActionInvalidDungeon,
+		Message:        msg,
 	}
 }
 

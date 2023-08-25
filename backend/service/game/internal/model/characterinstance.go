@@ -165,6 +165,32 @@ CHARACTER_OBJECT_INSTANCE_RECS:
 	return nil
 }
 
+// GetCharacterInstance -
+func (m *Model) GetCharacterInstance(characterID string) (*record.CharacterInstance, error) {
+	l := m.loggerWithFunctionContext("GetCharacterInstance")
+
+	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting character instance records >%v<", err)
+		return nil, err
+	}
+
+	if len(characterInstanceRecs) == 0 {
+		return nil, err
+	}
+
+	return characterInstanceRecs[0], nil
+}
+
 // CreateCharacterInstance -
 func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID string) (*CharacterInstanceRecordSet, error) {
 	l := m.loggerWithFunctionContext("CreateCharacterInstance")

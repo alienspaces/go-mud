@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,7 +10,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
-	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
@@ -119,35 +117,17 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	l.Info("Verifying character instance for dungeon_id >%s< character_id >%s<", dungeonID, characterID)
 
-	characterInstanceRecs, err := m.(*model.Model).GetCharacterInstanceRecs(
-		&coresql.Options{
-			Params: []coresql.Param{
-				{
-					Col: "character_id",
-					Val: characterID,
-				},
-			},
-		},
-	)
+	characterInstanceRec, err := m.(*model.Model).GetCharacterInstance(characterID)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	if len(characterInstanceRecs) == 0 {
-		err := coreerror.NewNotFoundError("character", characterID)
+	if characterInstanceRec == nil {
+		err := model.NewActionInvalidCharacterError(characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
-
-	if len(characterInstanceRecs) > 1 {
-		err := coreerror.NewInternalError(fmt.Sprintf("unexpected number of character instance records returned >%d<", len(characterInstanceRecs)))
-		l.Warn(err.Error())
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	characterInstanceRec := characterInstanceRecs[0]
 
 	dungeonInstanceRec, err := m.(*model.Model).GetDungeonInstanceRec(characterInstanceRec.DungeonInstanceID, nil)
 	if err != nil {
@@ -156,7 +136,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if dungeonInstanceRec == nil {
-		err := coreerror.NewNotFoundError("dungeon_id", dungeonID)
+		err := model.NewActionInvalidDungeonError(characterInstanceRec.DungeonInstanceID)
 		server.WriteError(l, w, err)
 		return err
 	}
