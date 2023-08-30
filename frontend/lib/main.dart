@@ -24,10 +24,16 @@ void main() {
     config['serverHost'] = '10.0.3.2';
   }
 
-  // Dependencies
+  // Server API calls
   final API api = API(config: config);
 
-  final repositories = RepositoryCollection(config: config, api: api);
+  // Server resource request methods and record management
+  final RepositoryCollection repositories =
+      RepositoryCollection(config: config, api: api);
+
+  // Global game state observer that *May* provides the ability to call on
+  // cubit methods when the state of others cubits change?
+  Bloc.observer = GameStateObserver();
 
   // Run application
   runApp(MainApp(config: config, repositories: repositories));
@@ -56,18 +62,6 @@ class MainApp extends StatelessWidget {
               repositories: repositories,
             ),
           ),
-          BlocProvider<CharacterCubit>(
-            create: (BuildContext context) => CharacterCubit(
-              config: config,
-              repositories: repositories,
-            ),
-          ),
-          BlocProvider<DungeonCharacterCubit>(
-            create: (BuildContext context) => DungeonCharacterCubit(
-              config: config,
-              repositories: repositories,
-            ),
-          ),
           BlocProvider<DungeonActionCubit>(
             create: (BuildContext context) => DungeonActionCubit(
               config: config,
@@ -80,9 +74,56 @@ class MainApp extends StatelessWidget {
               repositories: repositories,
             ),
           ),
+          // The dungeon action cubit must be instantiated first to be
+          // passed into the constructors of the following cubits.
+          BlocProvider<CharacterCubit>(
+            create: (BuildContext context) => CharacterCubit(
+              config: config,
+              repositories: repositories,
+              dungeonActionCubit: BlocProvider.of<DungeonActionCubit>(context),
+            ),
+          ),
+          BlocProvider<DungeonCharacterCubit>(
+            create: (BuildContext context) => DungeonCharacterCubit(
+              config: config,
+              repositories: repositories,
+              dungeonActionCubit: BlocProvider.of<DungeonActionCubit>(context),
+            ),
+          ),
         ],
         child: const Navigation(),
       ),
     );
+  }
+}
+
+// Interesting concept but not clear how this is going to help at the moment.
+class GameStateObserver extends BlocObserver {
+  @override
+  void onCreate(BlocBase bloc) {
+    super.onCreate(bloc);
+    final log = getLogger('GameStateObserver', 'onCreate');
+    log.info('onCreate -- ${bloc.runtimeType}');
+  }
+
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    final log = getLogger('GameStateObserver', 'onChange');
+    log.info('onChange -- ${bloc.runtimeType}, $change');
+  }
+
+  @override
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    final log = getLogger('GameStateObserver', 'onError');
+    log.info('onError -- ${bloc.runtimeType}, $error');
+    super.onError(bloc, error, stackTrace);
+  }
+
+  @override
+  void onClose(BlocBase bloc) {
+    super.onClose(bloc);
+    final log = getLogger('GameStateObserver', 'onClose');
+    log.info('onClose -- ${bloc.runtimeType}');
   }
 }

@@ -39,7 +39,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     super.dispose();
   }
 
-  void _createCharacter() {
+  void _createCharacter(BuildContext context) {
     final log = getLogger('CharacterCreateWidget', '_createCharacter');
     log.fine('Creating character name >${characterNameController.text}<');
     log.fine('Creating character strength >$strength<');
@@ -47,6 +47,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     log.fine('Creating character intelligence >$intelligence<');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
     CreateCharacterRecord createCharacterRecord = CreateCharacterRecord(
       characterName: characterNameController.text,
       characterStrength: strength,
@@ -269,7 +270,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
                 onPressed: () {
                   // Validate returns true if the form is valid, or false otherwise.
                   if (_formKey.currentState!.validate()) {
-                    _createCharacter();
+                    _createCharacter(context);
                   }
                 },
                 style: buttonStyle,

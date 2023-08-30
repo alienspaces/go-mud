@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 // Application
+import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/logger.dart';
 
@@ -11,13 +13,34 @@ part 'dungeon_character_state.dart';
 class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
+  final DungeonActionCubit dungeonActionCubit;
 
-  /// DungeonCharacterRecord will be populated when there is a character
-  /// being played and they have entered into a dungeon instance.
+  // dungeonCharacterRecord will be populated when there is a character
+  // being played and they have entered into a dungeon instance.
   DungeonCharacterRecord? dungeonCharacterRecord;
 
-  DungeonCharacterCubit({required this.config, required this.repositories})
-      : super(const DungeonCharacterStateInitial());
+  // streamSubscription is listening to events from the dungeon action
+  // cubit, specifically events that might require this cubit to refresh
+  // and emit an updated state.
+  StreamSubscription? streamSubscription;
+
+  DungeonCharacterCubit({
+    required this.config,
+    required this.repositories,
+    required this.dungeonActionCubit,
+  }) : super(const DungeonCharacterStateInitial()) {
+    streamSubscription?.cancel();
+    streamSubscription = dungeonActionCubit.stream.listen((event) {
+      final log = getLogger('CharacterCubit', 'dungeonActionCubit(listener)');
+      log.warning('Dungeon action cubit emitted event $event');
+
+      // TODO: 12-implement-death: Refresh dungeon character record when
+      // character enters the dungeon, exits the dungeon, or is killed in
+      // the dungeon.
+    });
+  }
+
+  // TODO: 12-implement-death: Add subscription to dungeon action cubit
 
   /// getDungeonCharacterRecordForCharacter returns a DungeonCharacterRecord if
   /// the character is currently inside a dungeon

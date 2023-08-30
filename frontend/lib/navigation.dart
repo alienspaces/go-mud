@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
 // Application page packages
 import 'package:go_mud_client/pages/home.dart';
-import 'package:go_mud_client/pages/dungeon.dart';
-import 'package:go_mud_client/pages/character.dart';
-import 'package:go_mud_client/pages/game.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -27,15 +22,9 @@ typedef NavigationCallback = void Function(BuildContext context);
 class NavigationCallbacks {
   // Add a callback for every page we need to navigate to
   final NavigationCallback openHomePage;
-  final NavigationCallback openDungeonPage;
-  final NavigationCallback openCharacterPage;
-  final NavigationCallback openGamePage;
 
   NavigationCallbacks({
     required this.openHomePage,
-    required this.openDungeonPage,
-    required this.openCharacterPage,
-    required this.openGamePage,
   });
 }
 
@@ -52,37 +41,6 @@ class _NavigationState extends State<Navigation> {
     });
   }
 
-  void openCharacterPage(BuildContext context) {
-    final log = getLogger('Navigation', 'openCharacterPage');
-    log.fine('Opening character page..');
-    setState(() {
-      _pageList = [CharacterPage.pageName];
-    });
-  }
-
-  void openDungeonPage(BuildContext context) {
-    final log = getLogger('Navigation', 'openDungeonPage');
-    log.fine('Opening dungeon page..');
-    setState(() {
-      _pageList = [DungeonPage.pageName];
-    });
-  }
-
-  void openGamePage(BuildContext context) {
-    final log = getLogger('Navigation', 'openGamePage');
-    log.fine('Opening game page..');
-
-    // Clear all dungeon actions
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    log.fine(
-        'Dungeon action record count ${dungeonActionCubit.otherActionRecs.length}');
-    dungeonActionCubit.clearActions();
-
-    setState(() {
-      _pageList = [GamePage.pageName];
-    });
-  }
-
   List<Page<dynamic>> _pages(BuildContext context) {
     final log = getLogger('Navigation', '_pages');
     log.fine('Building pages..');
@@ -91,9 +49,6 @@ class _NavigationState extends State<Navigation> {
 
     NavigationCallbacks callbacks = NavigationCallbacks(
       openHomePage: openHomePage,
-      openDungeonPage: openDungeonPage,
-      openCharacterPage: openCharacterPage,
-      openGamePage: openGamePage,
     );
 
     for (var pageName in _pageList) {
@@ -101,18 +56,6 @@ class _NavigationState extends State<Navigation> {
         case HomePage.pageName:
           log.fine('Adding ${HomePage.pageName}');
           pages.add(HomePage(callbacks: callbacks));
-          break;
-        case CharacterPage.pageName:
-          log.fine('Adding ${CharacterPage.pageName}');
-          pages.add(CharacterPage(callbacks: callbacks));
-          break;
-        case DungeonPage.pageName:
-          log.fine('Adding ${DungeonPage.pageName}');
-          pages.add(DungeonPage(callbacks: callbacks));
-          break;
-        case GamePage.pageName:
-          log.fine('Adding ${GamePage.pageName}');
-          pages.add(GamePage(callbacks: callbacks));
           break;
         default:
         //

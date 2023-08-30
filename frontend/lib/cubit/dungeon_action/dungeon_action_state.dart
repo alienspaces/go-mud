@@ -32,11 +32,22 @@ class DungeonActionStateCreating extends DungeonActionState {
   List<Object?> get props => [sentence];
 }
 
+enum ActionStateErrorType {
+  tooEarly,
+  invalidCharacter,
+  invalidDungeon,
+  unknown,
+}
+
 @immutable
 class DungeonActionStateError extends DungeonActionState {
+  final ActionStateErrorType type;
   final String message;
 
-  const DungeonActionStateError({required this.message});
+  const DungeonActionStateError({
+    required this.type,
+    required this.message,
+  });
 
   @override
   List<Object?> get props => [message];

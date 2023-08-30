@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 // Application
+import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/logger.dart';
 
@@ -14,12 +16,30 @@ const int maxCharacters = 3;
 class CharacterCubit extends Cubit<CharacterState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
+  final DungeonActionCubit dungeonActionCubit;
 
   List<CharacterRecord>? characterRecords;
   CharacterRecord? characterRecord;
 
-  CharacterCubit({required this.config, required this.repositories})
-      : super(const CharacterStateInitial());
+  // streamSubscription is listening to events from the dungeon action
+  // cubit, specifically events that might require this cubit to refresh
+  // and emit an updated state.
+  StreamSubscription? streamSubscription;
+
+  CharacterCubit({
+    required this.config,
+    required this.repositories,
+    required this.dungeonActionCubit,
+  }) : super(const CharacterStateInitial()) {
+    streamSubscription?.cancel();
+    streamSubscription = dungeonActionCubit.stream.listen((event) {
+      final log = getLogger('CharacterCubit', 'dungeonActionCubit(listener)');
+      log.warning('Dungeon action cubit emitted event $event');
+
+      // TODO: 12-implement-death: Refresh character record when character
+      // enters the dungeon, exits the dungeon, or is killed in the dungeon.
+    });
+  }
 
   void clearCharacter() {
     characterRecord = null;

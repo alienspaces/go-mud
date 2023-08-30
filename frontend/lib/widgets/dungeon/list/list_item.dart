@@ -38,6 +38,10 @@ class DungeonListItemWidget extends StatelessWidget {
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
 
     await dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
+
+    // TODO: 12-implement-death: The character cubit is currently listening
+    // to events from the dungeon action cubit and should be able to handle
+    // refreshing itself.
     await characterCubit.refreshCharacter(characterID);
   }
 
