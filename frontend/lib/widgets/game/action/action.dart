@@ -59,9 +59,9 @@ Future<void> playActions(BuildContext context) async {
 
   final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
 
-  log.info('Playing character action');
+  log.fine('Playing character action');
   dungeonActionCubit.playCharacterAction();
 
-  log.info('Playing other actions');
+  log.fine('Playing other actions');
   dungeonActionCubit.playOtherActions();
 }

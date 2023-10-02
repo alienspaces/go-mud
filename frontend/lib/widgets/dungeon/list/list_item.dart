@@ -6,7 +6,7 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/navigation.dart';
 
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/cubit/character_current/character_current_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 
 import 'package:go_mud_client/repository/character/character_repository.dart';
@@ -30,12 +30,12 @@ class DungeonListItemWidget extends StatelessWidget {
     String characterID,
   ) async {
     final log = getLogger('DungeonListItemWidget', '_enterDungeon');
-    log.info('Enter dungeon $dungeonID with character $characterID');
+    log.fine('Enter dungeon $dungeonID with character $characterID');
 
     final dungeonCharacterCubit =
         BlocProvider.of<DungeonCharacterCubit>(context);
 
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(context);
 
     await dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
 
@@ -51,12 +51,12 @@ class DungeonListItemWidget extends StatelessWidget {
     String characterID,
   ) async {
     final log = getLogger('DungeonListItemWidget', '_exitDungeon');
-    log.info('Exit dungeon $dungeonID with character $characterID');
+    log.fine('Exit dungeon $dungeonID with character $characterID');
 
     final dungeonCharacterCubit =
         BlocProvider.of<DungeonCharacterCubit>(context);
 
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(context);
 
     await dungeonCharacterCubit.exitDungeonCharacter(dungeonID, characterID);
     await characterCubit.refreshCharacter(characterID);

@@ -4,17 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/character/character_container.dart';
-import 'package:go_mud_client/widgets/dungeon/dungeon_container.dart';
-import 'package:go_mud_client/widgets/game/game_container.dart';
+import 'package:go_mud_client/widgets/character_list/container.dart';
 
-class HomePage extends Page {
-  static const String pageName = 'HomePage';
+class CharacterListPage extends Page {
+  static const String pageName = 'CharacterListPage';
   final NavigationCallbacks callbacks;
 
-  const HomePage({
-    LocalKey key = const ValueKey(HomePage.pageName),
-    name = HomePage.pageName,
+  const CharacterListPage({
+    LocalKey key = const ValueKey(CharacterListPage.pageName),
+    name = CharacterListPage.pageName,
     required this.callbacks,
   }) : super(key: key, name: name);
 
@@ -67,16 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         alignment: Alignment.center,
-        child: Stack(
-          children: [
-            CharacterContainerWidget(callbacks: widget.callbacks),
-            DungeonContainerWidget(callbacks: widget.callbacks),
-            GameContainerWidget(callbacks: widget.callbacks),
-          ],
-        ),
+        child: CharacterListContainerWidget(callbacks: widget.callbacks),
       ),
     );
   }
 }
-
-// TODO: 12-implement-death: Manager API exceptions.

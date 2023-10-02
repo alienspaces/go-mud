@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
+// import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
@@ -29,23 +29,23 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('GameContainerWidget', 'build');
-    log.info('Building..');
+    log.fine('Building..');
 
-    final characterCubit = BlocProvider.of<CharacterCubit>(
-      context,
-      listen: true,
-    );
+    // final characterCubit = BlocProvider.of<CharacterCubit>(
+    //   context,
+    //   listen: true,
+    // );
 
-    var characterRecord = characterCubit.characterRecord;
-    if (characterRecord == null) {
-      log.warning("character record is null, cannot display game");
-      return const SizedBox.shrink();
-    }
+    // var characterRecord = characterCubit.characterRecord;
+    // if (characterRecord == null) {
+    //   log.warning("character record is null, cannot display game");
+    //   return const SizedBox.shrink();
+    // }
 
-    if (characterRecord.dungeonID == null) {
-      log.warning("character record dungeon id is null, cannot display game");
-      return const SizedBox.shrink();
-    }
+    // if (characterRecord.dungeonID == null) {
+    //   log.warning("character record dungeon id is null, cannot display game");
+    //   return const SizedBox.shrink();
+    // }
 
     return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
       listener: (context, state) {
@@ -67,6 +67,8 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
             child: const Text("GameContainerWidget - Error"),
           );
         } else if (state is DungeonCharacterStateCreated) {
+          log.warning('Dungeon character cubit emitted created state');
+
           // ignore: avoid_unnecessary_containers
           return Container(
             color: Colors.purple[50],
@@ -113,11 +115,9 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
           );
         }
 
-        // ignore: avoid_unnecessary_containers
-        return Container(
-          color: Colors.purple[50],
-          child: const Text("Game Empty"),
-        );
+        log.warning('Dungeon character cubit emitted initial state');
+
+        return const SizedBox.shrink();
       },
     );
   }

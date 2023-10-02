@@ -32,15 +32,27 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     streamSubscription?.cancel();
     streamSubscription = dungeonActionCubit.stream.listen((event) {
       final log = getLogger('CharacterCubit', 'dungeonActionCubit(listener)');
-      log.warning('Dungeon action cubit emitted event $event');
 
-      // TODO: 12-implement-death: Refresh dungeon character record when
-      // character enters the dungeon, exits the dungeon, or is killed in
-      // the dungeon.
+      // TODO: 12-implement-death: Refresh character record when character
+      // enters the dungeon, exits the dungeon, or is killed in the dungeon.
+      // Continue testing what this does when a character dies, we want to go
+      // back to the character selection screen.
+      if (state is DungeonActionStateError) {
+        log.warning('Dungeon action cubit emitted error event');
+        if (dungeonCharacterRecord != null) {
+          log.warning('Clearing dungeon character record');
+          clearDungeonCharacter();
+        }
+      }
     });
   }
 
-  // TODO: 12-implement-death: Add subscription to dungeon action cubit
+  void clearDungeonCharacter() {
+    final log = getLogger('CharacterCubit', 'clearCharacter');
+    log.warning('Clearing character');
+    dungeonCharacterRecord = null;
+    emit(const DungeonCharacterStateInitial());
+  }
 
   /// getDungeonCharacterRecordForCharacter returns a DungeonCharacterRecord if
   /// the character is currently inside a dungeon
@@ -69,7 +81,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   Future<void> enterDungeonCharacter(
       String dungeonID, String characterID) async {
     final log = getLogger('DungeonCharacterCubit', 'enterDungeonCharacter');
-    log.info('Entering dungeon ID $dungeonID character ID $characterID');
+    log.fine('Entering dungeon ID $dungeonID character ID $characterID');
 
     emit(const DungeonCharacterStateCreate());
 
@@ -79,7 +91,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     if (dungeonCharacterRecord != null &&
         dungeonCharacterRecord?.dungeonID == dungeonID &&
         dungeonCharacterRecord?.characterID == characterID) {
-      log.info(
+      log.fine(
           'Dungeon with character $dungeonCharacterRecord is already in this dungeon, resuming..');
       emit(DungeonCharacterStateCreated(
         dungeonCharacterRecord: dungeonCharacterRecord!,
@@ -89,7 +101,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
 
     // Character already inside some other dungeon
     if (dungeonCharacterRecord != null) {
-      log.info(
+      log.fine(
           'Dungeon with character $dungeonCharacterRecord is already in a dungeon');
       emit(DungeonCharacterStateCreateError(
           dungeonID: dungeonID,
@@ -112,7 +124,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
     }
 
     if (dungeonCharacterRecord != null) {
-      log.info('Entered dungeon with character $dungeonCharacterRecord');
+      log.fine('Entered dungeon with character $dungeonCharacterRecord');
       emit(DungeonCharacterStateCreated(
         dungeonCharacterRecord: dungeonCharacterRecord!,
       ));
@@ -122,7 +134,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
   Future<void> exitDungeonCharacter(
       String dungeonID, String characterID) async {
     final log = getLogger('DungeonCharacterCubit', 'exitDungeonCharacter');
-    log.info('Exiting dungeon ID $dungeonID character ID $characterID');
+    log.fine('Exiting dungeon ID $dungeonID character ID $characterID');
 
     emit(const DungeonCharacterStateDelete());
 
@@ -152,7 +164,7 @@ class DungeonCharacterCubit extends Cubit<DungeonCharacterState> {
       return;
     }
 
-    log.info('Exited dungeon character $dungeonCharacterRecord');
+    log.fine('Exited dungeon character $dungeonCharacterRecord');
     emit(DungeonCharacterStateDeleted(
         dungeonCharacterRecord: dungeonCharacterRecord));
     dungeonCharacterRecord = null;

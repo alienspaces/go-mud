@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/logger.dart';
 
 // Application page packages
-import 'package:go_mud_client/pages/home.dart';
+import 'package:go_mud_client/pages/character_list.dart';
+import 'package:go_mud_client/pages/character_create.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -21,23 +22,33 @@ typedef NavigationCallback = void Function(BuildContext context);
 // tree to any widgets that need to perform navigation.
 class NavigationCallbacks {
   // Add a callback for every page we need to navigate to
-  final NavigationCallback openHomePage;
+  final NavigationCallback openCharacterListPage;
+  final NavigationCallback openCharacterCreatePage;
 
   NavigationCallbacks({
-    required this.openHomePage,
+    required this.openCharacterListPage,
+    required this.openCharacterCreatePage,
   });
 }
 
 class _NavigationState extends State<Navigation> {
   // List of supported pages
-  List<String> _pageList = [HomePage.pageName];
+  List<String> _pageList = [CharacterListPage.pageName];
 
   // Callback functions set the desired page stack
-  void openHomePage(BuildContext context) {
-    final log = getLogger('Navigation', 'openHomePage');
+  void openCharacterListPage(BuildContext context) {
+    final log = getLogger('Navigation', 'openCharacterListPage');
     log.fine('Opening home page..');
     setState(() {
-      _pageList = [HomePage.pageName];
+      _pageList = [CharacterListPage.pageName];
+    });
+  }
+
+  void openCharacterCreatePage(BuildContext context) {
+    final log = getLogger('Navigation', 'openCharacterCreatePage');
+    log.fine('Opening character create page..');
+    setState(() {
+      _pageList = [CharacterListPage.pageName, CharacterCreatePage.pageName];
     });
   }
 
@@ -48,14 +59,19 @@ class _NavigationState extends State<Navigation> {
     List<Page<dynamic>> pages = [];
 
     NavigationCallbacks callbacks = NavigationCallbacks(
-      openHomePage: openHomePage,
+      openCharacterListPage: openCharacterListPage,
+      openCharacterCreatePage: openCharacterCreatePage,
     );
 
     for (var pageName in _pageList) {
       switch (pageName) {
-        case HomePage.pageName:
-          log.fine('Adding ${HomePage.pageName}');
-          pages.add(HomePage(callbacks: callbacks));
+        case CharacterListPage.pageName:
+          log.fine('Adding ${CharacterListPage.pageName}');
+          pages.add(CharacterListPage(callbacks: callbacks));
+          break;
+        case CharacterCreatePage.pageName:
+          log.fine('Adding ${CharacterCreatePage.pageName}');
+          pages.add(CharacterCreatePage(callbacks: callbacks));
           break;
         default:
         //

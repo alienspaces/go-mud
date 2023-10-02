@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/cubit/character_current/character_current_cubit.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 
 class CharacterListItemWidget extends StatelessWidget {
@@ -21,17 +21,17 @@ class CharacterListItemWidget extends StatelessWidget {
     CharacterRecord characterRecord,
   ) async {
     final log = getLogger('CharacterListItemWidget', '_selectCharacter');
-    log.info(
+    log.fine(
         'Select character >${characterRecord.characterID}< >${characterRecord.characterName}< dungeon >${characterRecord.dungeonID}< >${characterRecord.dungeonName}<');
 
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(context);
     characterCubit.selectCharacter(characterRecord);
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterListItemWidget', 'build');
-    log.info(
+    log.fine(
         'Display ${characterRecord.characterID} ${characterRecord.characterName}');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(

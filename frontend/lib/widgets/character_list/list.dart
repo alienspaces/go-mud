@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/widgets/character/list/list_item.dart';
+import 'package:go_mud_client/cubit/character_collection/character_collection_cubit.dart';
+import 'package:go_mud_client/widgets/character_list/list_item.dart';
 
 class CharacterListWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
@@ -30,9 +30,9 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
 
   void _loadCharacters(BuildContext context) {
     final log = getLogger('CharacterListWidget', '_loadCharacters');
-    log.info('Loading characters');
+    log.fine('Loading characters');
 
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    final characterCubit = BlocProvider.of<CharacterCollectionCubit>(context);
     characterCubit.loadCharacters();
   }
 
@@ -41,18 +41,18 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
     final log = getLogger('CharacterListWidget', 'build');
     log.fine('Building..');
 
-    return BlocConsumer<CharacterCubit, CharacterState>(
+    return BlocConsumer<CharacterCollectionCubit, CharacterCollectionState>(
       listener: (context, state) {
         log.fine('listener...');
       },
-      builder: (BuildContext context, CharacterState state) {
+      builder: (BuildContext context, CharacterCollectionState state) {
         log.fine('builder...');
         List<Widget> widgets = [];
 
-        if (state is CharacterStateLoaded) {
+        if (state is CharacterCollectionStateLoaded) {
           // Character list
           state.characterRecords?.forEach((characterRecord) {
-            log.info([
+            log.fine([
               'Displaying character list item widget',
               characterRecord.characterName,
             ]);
@@ -66,7 +66,7 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
               ),
             );
           });
-        } else if (state is CharacterStateLoadError) {
+        } else if (state is CharacterCollectionStateError) {
           widgets.add(
             // ignore: avoid_unnecessary_containers
             Container(
@@ -78,10 +78,7 @@ class _CharacterListWidgetState extends State<CharacterListWidget> {
           );
         } else {
           widgets.add(
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: const Text('Loading characters...'),
-            ),
+            const Text('Loading characters...'),
           );
         }
 

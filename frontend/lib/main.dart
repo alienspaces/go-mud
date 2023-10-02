@@ -13,7 +13,9 @@ import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
+import 'package:go_mud_client/cubit/character_create/character_create_cubit.dart';
+import 'package:go_mud_client/cubit/character_current/character_current_cubit.dart';
+import 'package:go_mud_client/cubit/character_collection/character_collection_cubit.dart';
 
 void main() {
   // Initialise logger
@@ -74,10 +76,23 @@ class MainApp extends StatelessWidget {
               repositories: repositories,
             ),
           ),
-          // The dungeon action cubit must be instantiated first to be
-          // passed into the constructors of the following cubits.
-          BlocProvider<CharacterCubit>(
-            create: (BuildContext context) => CharacterCubit(
+          BlocProvider<CharacterCreateCubit>(
+            create: (BuildContext context) => CharacterCreateCubit(
+              config: config,
+              repositories: repositories,
+            ),
+          ),
+          BlocProvider<CharacterCollectionCubit>(
+            create: (BuildContext context) => CharacterCollectionCubit(
+              config: config,
+              repositories: repositories,
+              dungeonActionCubit: BlocProvider.of<DungeonActionCubit>(context),
+              characterCreateCubit:
+                  BlocProvider.of<CharacterCreateCubit>(context),
+            ),
+          ),
+          BlocProvider<CharacterCurrentCubit>(
+            create: (BuildContext context) => CharacterCurrentCubit(
               config: config,
               repositories: repositories,
               dungeonActionCubit: BlocProvider.of<DungeonActionCubit>(context),
@@ -97,26 +112,26 @@ class MainApp extends StatelessWidget {
   }
 }
 
-// Interesting concept but not clear how this is going to help at the moment.
+// Interesting functionality but not clear how this is going to help at the moment.
 class GameStateObserver extends BlocObserver {
   @override
   void onCreate(BlocBase bloc) {
     super.onCreate(bloc);
     final log = getLogger('GameStateObserver', 'onCreate');
-    log.info('onCreate -- ${bloc.runtimeType}');
+    log.fine('onCreate -- ${bloc.runtimeType}');
   }
 
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
     final log = getLogger('GameStateObserver', 'onChange');
-    log.info('onChange -- ${bloc.runtimeType}, $change');
+    log.fine('onChange -- ${bloc.runtimeType}, $change');
   }
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     final log = getLogger('GameStateObserver', 'onError');
-    log.info('onError -- ${bloc.runtimeType}, $error');
+    log.fine('onError -- ${bloc.runtimeType}, $error');
     super.onError(bloc, error, stackTrace);
   }
 
@@ -124,6 +139,6 @@ class GameStateObserver extends BlocObserver {
   void onClose(BlocBase bloc) {
     super.onClose(bloc);
     final log = getLogger('GameStateObserver', 'onClose');
-    log.info('onClose -- ${bloc.runtimeType}');
+    log.fine('onClose -- ${bloc.runtimeType}');
   }
 }

@@ -29,13 +29,13 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
   void onChange(Change<DungeonActionState> change) {
     super.onChange(change);
     final log = getLogger('DungeonActionCubit', 'onChange');
-    log.info("Changed:", change);
+    log.fine("Changed:", change);
   }
 
   @override
   void onError(Object error, StackTrace stackTrace) {
     final log = getLogger('DungeonActionCubit', 'onError');
-    log.info("Errored:", error);
+    log.fine("Errored:", error);
     super.onError(error, stackTrace);
   }
   // ^^^^ //
@@ -162,7 +162,7 @@ class DungeonActionCubit extends Cubit<DungeonActionState> {
     final log = getLogger('DungeonActionCubit', 'playOtherActions');
 
     if (otherActionRecs.isEmpty) {
-      log.info('Other actions are empty, cannot play other action');
+      log.fine('Other actions are empty, cannot play other action');
       return;
     }
 
@@ -204,28 +204,28 @@ Future<void> logActionRec(Logger log, DungeonActionRecord actionRec) async {
           actionRec.actionCommand == 'look') &&
       actionRec.actionTargetLocation != null) {
     direction = actionRec.actionTargetLocation?.locationDirection;
-    log.info(
+    log.fine(
       'Command >${actionRec.actionCommand}< direction >$direction<',
     );
   }
 
   if (actionRec.actionTargetCharacter != null) {
     var target = actionRec.actionTargetCharacter;
-    log.info(
+    log.fine(
       'Command >${actionRec.actionCommand}< character >${target?.characterName}<',
     );
   }
 
   if (actionRec.actionTargetMonster != null) {
     var target = actionRec.actionTargetMonster;
-    log.info(
+    log.fine(
       'Command >${actionRec.actionCommand}< monster >${target?.monsterName}<',
     );
   }
 
   if (actionRec.actionTargetObject != null) {
     var target = actionRec.actionTargetObject;
-    log.info(
+    log.fine(
       'Command >${actionRec.actionCommand}< object >${target?.objectName}<',
     );
   }

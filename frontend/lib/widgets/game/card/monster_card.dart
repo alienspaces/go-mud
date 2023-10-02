@@ -13,7 +13,7 @@ void displayMonsterCard(
 ) {
   final log = getLogger('Card', 'displayMonsterCard');
 
-  log.info(
+  log.fine(
     'Rendering look monster dialogue',
     dungeonActionRecord.actionTargetMonster!,
   );

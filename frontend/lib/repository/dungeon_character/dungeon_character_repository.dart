@@ -44,8 +44,8 @@ class DungeonCharacterRepository
       characterID,
     );
 
-    log.info('APIResponse body ${response.body}');
-    log.info('APIResponse error ${response.error}');
+    log.fine('APIResponse body ${response.body}');
+    log.fine('APIResponse error ${response.error}');
 
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');
@@ -118,8 +118,8 @@ class DungeonCharacterRepository
       characterID,
     );
 
-    log.info('APIResponse body ${response.body}');
-    log.info('APIResponse error ${response.error}');
+    log.fine('APIResponse body ${response.body}');
+    log.fine('APIResponse error ${response.error}');
 
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');

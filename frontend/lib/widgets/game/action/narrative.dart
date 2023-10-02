@@ -63,7 +63,7 @@ class _GameActionNarrativeWidgetState extends State<GameActionNarrativeWidget> {
       _timer!.cancel();
     }
 
-    log.info('Disposing...');
+    log.fine('Disposing...');
     super.dispose();
   }
 
