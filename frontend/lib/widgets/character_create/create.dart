@@ -55,7 +55,12 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
       characterIntelligence: intelligence,
     );
 
-    characterCubit.createCharacter(createCharacterRecord);
+    characterCubit.createCharacter(createCharacterRecord).then((result) {
+      if (result.characterRecord != null && result.exception == null) {
+        log.info(">>> Closing character create window");
+        widget.callbacks.closeCharacterCreatePage(context);
+      }
+    });
   }
 
   void _incrementStrength() {
@@ -183,10 +188,7 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
         List<Widget> formWidgets = [];
 
         if (state is CharacterCreateStateError) {
-          // ignore: avoid_unnecessary_containers
-          formWidgets.add(Container(
-            child: Text(state.message),
-          ));
+          formWidgets.add(Text(state.exception.message));
         }
 
         formWidgets.add(

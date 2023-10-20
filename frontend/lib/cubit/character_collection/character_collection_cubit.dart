@@ -28,6 +28,10 @@ class CharacterCollectionCubit extends Cubit<CharacterCollectionState> {
     required this.dungeonActionCubit,
     required this.characterCreateCubit,
   }) : super(const CharacterCollectionStateInitial()) {
+    // Trigger a character list realod when there is a dungeon action
+    // error which typically means a character may have been killed.
+    // What would ultimately be better here is if the dungeon action
+    // cubit emitted a character exited dungeon event.
     dungeonActionSubscription?.cancel();
     dungeonActionSubscription = dungeonActionCubit.stream.listen((state) {
       final log =
@@ -38,6 +42,7 @@ class CharacterCollectionCubit extends Cubit<CharacterCollectionState> {
       }
     });
 
+    // Trigger a character list reload when a new character has been created.
     characterCreateSubscription?.cancel();
     characterCreateSubscription = characterCreateCubit.stream.listen((state) {
       final log = getLogger(

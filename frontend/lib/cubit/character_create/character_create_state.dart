@@ -36,12 +36,12 @@ class CharacterCreateStateCreated extends CharacterCreateState {
 @immutable
 class CharacterCreateStateError extends CharacterCreateState {
   final CreateCharacterRecord characterRecord;
-  final String message;
+  final CubitException exception;
   const CharacterCreateStateError({
     required this.characterRecord,
-    required this.message,
+    required this.exception,
   });
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [exception];
 }

@@ -23,11 +23,15 @@ typedef NavigationCallback = void Function(BuildContext context);
 class NavigationCallbacks {
   // Add a callback for every page we need to navigate to
   final NavigationCallback openCharacterListPage;
+  final NavigationCallback closeCharacterListPage;
   final NavigationCallback openCharacterCreatePage;
+  final NavigationCallback closeCharacterCreatePage;
 
   NavigationCallbacks({
     required this.openCharacterListPage,
+    required this.closeCharacterListPage,
     required this.openCharacterCreatePage,
+    required this.closeCharacterCreatePage,
   });
 }
 
@@ -44,11 +48,33 @@ class _NavigationState extends State<Navigation> {
     });
   }
 
+  void closeCharacterListPage(BuildContext context) {
+    final log = getLogger('Navigation', 'closeCharacterListPage');
+    log.warning('--- Closing character list page..');
+    Navigator.pop(context);
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == CharacterListPage.pageName,
+      );
+    });
+  }
+
   void openCharacterCreatePage(BuildContext context) {
     final log = getLogger('Navigation', 'openCharacterCreatePage');
     log.fine('Opening character create page..');
     setState(() {
       _pageList = [CharacterListPage.pageName, CharacterCreatePage.pageName];
+    });
+  }
+
+  void closeCharacterCreatePage(BuildContext context) {
+    final log = getLogger('Navigation', 'closeCharacterCreatePage');
+    log.warning('--- Closing character create page..');
+    Navigator.pop(context);
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == CharacterCreatePage.pageName,
+      );
     });
   }
 
@@ -60,7 +86,9 @@ class _NavigationState extends State<Navigation> {
 
     NavigationCallbacks callbacks = NavigationCallbacks(
       openCharacterListPage: openCharacterListPage,
+      closeCharacterListPage: closeCharacterListPage,
       openCharacterCreatePage: openCharacterCreatePage,
+      closeCharacterCreatePage: closeCharacterCreatePage,
     );
 
     for (var pageName in _pageList) {
@@ -81,12 +109,15 @@ class _NavigationState extends State<Navigation> {
   }
 
   bool _onPopPage(Route<dynamic> route, dynamic result, BuildContext context) {
-    final log = getLogger('Navigation', '_onPopPage');
-    log.fine('Page name ${route.settings.name}');
-
     if (!route.didPop(result)) {
       return false;
     }
+
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == route.settings.name,
+      );
+    });
 
     return true;
   }
