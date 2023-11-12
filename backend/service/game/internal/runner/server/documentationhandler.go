@@ -1,7 +1,9 @@
 package runner
 
 import (
+	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/julienschmidt/httprouter"
 
@@ -58,7 +60,81 @@ func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Reques
 
 	l.Info("** get schema documentation handler ** p >%#v< m >%#v<", pp, m)
 
-	docs := []byte{}
+	type pathDocument struct {
+		method      string
+		path        string
+		description string
+	}
+
+	paths := []string{}
+	pathDocuments := map[string]pathDocument{}
+
+	for _, cfg := range rnr.HandlerConfig {
+		pathKey := fmt.Sprintf("%s/%s", cfg.Path, cfg.Method)
+		paths = append(paths, pathKey)
+		pathDocuments[pathKey] = pathDocument{
+			method:      cfg.Method,
+			path:        cfg.Path,
+			description: cfg.DocumentationConfig.Description,
+		}
+	}
+
+	sort.Strings(paths)
+
+	rowClass := "alt-one"
+	content := "<table>\n"
+	for _, pathKey := range paths {
+		if rowClass == "alt-two" {
+			rowClass = "alt-one"
+		} else {
+			rowClass = "alt-two"
+		}
+		content = fmt.Sprintf("%s\n<tr class=\"%s\"><td class=\"method\">%s</td><td class=\"path\">%s</td></tr>", content, rowClass, pathDocuments[pathKey].method, pathDocuments[pathKey].path)
+		content = fmt.Sprintf("%s\n<tr class=\"%s\"><td></td><td class=\"description\">%s</td></tr>", content, rowClass, pathDocuments[pathKey].description)
+	}
+	content = fmt.Sprintf("%s</table>", content)
+
+	html := `
+<html>
+<head>
+	<style>
+		body {
+			font-family: monospace, monospace;			
+		}
+		table {
+			border-spacing: 0px;
+		}
+		.alt-one {
+			background-color: #bcbcbc;
+		}
+		.alt-two {
+			background-color: #dedede;
+		}
+		.method {
+			padding-top: 6px;
+			padding-left: 5px;
+			padding-right: 5px;
+			padding-bottom: 2px;
+		}
+		.path {
+			padding-top: 6px;
+			padding-left: 5px;
+			padding-right: 5px;
+			padding-bottom: 2px;
+		}
+		.description {
+			padding-top: 4px;
+			padding-left: 5px;
+			padding-right: 5px;
+			padding-bottom: 6px;
+		}
+	</style>
+</head>
+%s
+</html>
+	`
+
+	docs := fmt.Sprintf(html, content)
 
 	// content type html
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -67,7 +143,7 @@ func (rnr *Runner) GetDocumentationHandler(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusOK)
 
 	// content
-	written, err := w.Write(docs)
+	written, err := w.Write([]byte(docs))
 	if err != nil {
 		l.Warn("failed writing documentation >%v<", err)
 		return err

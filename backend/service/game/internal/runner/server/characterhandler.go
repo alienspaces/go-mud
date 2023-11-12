@@ -128,7 +128,7 @@ func (rnr *Runner) CharacterHandlerConfig(hc map[string]server.HandlerConfig) ma
 		},
 		putCharacter: {
 			Method:           http.MethodPut,
-			Path:             "/api/v1/characters",
+			Path:             "/api/v1/characters/:character_id",
 			HandlerFunc:      rnr.putCharacterHandler,
 			MiddlewareConfig: server.MiddlewareConfig{},
 			DocumentationConfig: server.DocumentationConfig{

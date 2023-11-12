@@ -47,7 +47,7 @@ func (rnr *Runner) DungeonCharacterHandlerConfig(hc map[string]server.HandlerCon
 			},
 			DocumentationConfig: server.DocumentationConfig{
 				Document:    true,
-				Description: "Enter a dungeon.",
+				Description: "Get a dungeon character.",
 			},
 		},
 		postDungeonCharacterEnter: {
