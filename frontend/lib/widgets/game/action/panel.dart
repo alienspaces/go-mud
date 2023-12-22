@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/game/action/action.dart';
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 import 'package:go_mud_client/style.dart';
 
@@ -72,24 +72,24 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
   void _selectPanelAction(BuildContext context, String action) {
     final log = getLogger('GameActionPanelWidget', '_selectPanelAction');
-    log.fine('Selecting action..');
+    log.fine('Selecting action $action');
 
-    final dungeonCharacterCubit =
-        BlocProvider.of<DungeonCharacterCubit>(context);
-    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+    var characterRecord = characterCubit.characterRecord;
+
+    if (characterRecord == null || characterRecord.dungeonID == null) {
       log.warning(
-          'Dungeon character cubit missing dungeon character record, cannot initialise action');
+          'Character cubit missing character record or character is not in a dungeon, cannot select panel action');
       return;
     }
 
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
     if (dungeonCommandCubit.action == action) {
-      log.fine('++ Unselecting action $action');
       dungeonCommandCubit.unselectAction();
       return;
     }
 
-    log.fine('++ Selecting action $action');
     dungeonCommandCubit.selectAction(action);
   }
 
@@ -97,15 +97,16 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
     final log = getLogger('GameActionPanelWidget', '_submitPanelAction');
     log.fine('Submitting action..');
 
-    final dungeonCharacterCubit =
-        BlocProvider.of<DungeonCharacterCubit>(context);
-    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+    var characterRecord = characterCubit.characterRecord;
+
+    if (characterRecord == null || characterRecord.dungeonID == null) {
       log.warning(
-          'Dungeon character cubit missing dungeon character record, cannot initialise action');
+          'Character cubit missing character record or character is not in a dungeon, cannot submit panel action');
       return;
     }
 
-    log.fine('++ Submitting action');
     final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
     await submitAction(context);

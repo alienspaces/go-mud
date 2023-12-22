@@ -6,8 +6,7 @@ import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/navigation.dart';
 
-import 'package:go_mud_client/cubit/character_current/character_current_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 
 import 'package:go_mud_client/repository/character/character_repository.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
@@ -26,40 +25,20 @@ class DungeonListItemWidget extends StatelessWidget {
   /// Sets the current dungeon state to the provided dungeon
   void _enterDungeon(
     BuildContext context,
-    String dungeonID,
-    String characterID,
+    final CharacterRecord characterRecord,
+    final DungeonRecord dungeonRecord,
   ) async {
     final log = getLogger('DungeonListItemWidget', '_enterDungeon');
-    log.fine('Enter dungeon $dungeonID with character $characterID');
+    log.fine(
+        'Enter dungeon ${dungeonRecord.dungeonID} with character ${characterRecord.characterID}');
 
-    final dungeonCharacterCubit =
-        BlocProvider.of<DungeonCharacterCubit>(context);
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
 
-    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(context);
-
-    await dungeonCharacterCubit.enterDungeonCharacter(dungeonID, characterID);
-
-    // TODO: 12-implement-death: The character cubit is currently listening
-    // to events from the dungeon action cubit and should be able to handle
-    // refreshing itself.
-    await characterCubit.refreshCharacter(characterID);
-  }
-
-  void _exitDungeon(
-    BuildContext context,
-    String dungeonID,
-    String characterID,
-  ) async {
-    final log = getLogger('DungeonListItemWidget', '_exitDungeon');
-    log.fine('Exit dungeon $dungeonID with character $characterID');
-
-    final dungeonCharacterCubit =
-        BlocProvider.of<DungeonCharacterCubit>(context);
-
-    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(context);
-
-    await dungeonCharacterCubit.exitDungeonCharacter(dungeonID, characterID);
-    await characterCubit.refreshCharacter(characterID);
+    characterCubit.enter(dungeonRecord).then((value) => {
+          characterCubit
+              .refresh()
+              .then((value) => callbacks.openGamePage(context))
+        });
   }
 
   @override
@@ -90,8 +69,8 @@ class DungeonListItemWidget extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () => _enterDungeon(
               context,
-              dungeonRecord.dungeonID,
-              characterRecord.characterID,
+              characterRecord,
+              dungeonRecord,
             ),
             style: buttonStyle,
             child: const Text('Enter'),
@@ -110,23 +89,11 @@ class DungeonListItemWidget extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () => _enterDungeon(
               context,
-              dungeonRecord.dungeonID,
-              characterRecord.characterID,
+              characterRecord,
+              dungeonRecord,
             ),
             style: buttonStyle,
             child: const Text('Resume'),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.all(5),
-          child: ElevatedButton(
-            onPressed: () => _exitDungeon(
-              context,
-              dungeonRecord.dungeonID,
-              characterRecord.characterID,
-            ),
-            style: buttonStyle,
-            child: const Text('Exit'),
           ),
         ),
       ];

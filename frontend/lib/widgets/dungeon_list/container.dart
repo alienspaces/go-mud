@@ -4,31 +4,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/character_current/character_current_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
-import 'package:go_mud_client/widgets/dungeon/list/list.dart';
+import 'package:go_mud_client/widgets/dungeon_list/list.dart';
 
-class DungeonContainerWidget extends StatefulWidget {
+class DungeonListContainerWidget extends StatefulWidget {
   final NavigationCallbacks callbacks;
 
-  const DungeonContainerWidget({Key? key, required this.callbacks})
+  const DungeonListContainerWidget({Key? key, required this.callbacks})
       : super(key: key);
 
   @override
-  State<DungeonContainerWidget> createState() => _DungeonContainerWidgetState();
+  State<DungeonListContainerWidget> createState() =>
+      _DungeonListContainerWidgetState();
 }
 
-class _DungeonContainerWidgetState extends State<DungeonContainerWidget> {
+class _DungeonListContainerWidgetState
+    extends State<DungeonListContainerWidget> {
   @override
   void initState() {
-    final log = getLogger('DungeonContainerWidget', 'initState');
+    final log = getLogger('DungeonListContainerWidget', 'initState');
     log.fine('Initialising state..');
     super.initState();
     _loadDungeons(context);
   }
 
   void _loadDungeons(BuildContext context) {
-    final log = getLogger('DungeonContainerWidget', '_loadDungeons');
+    final log = getLogger('DungeonListContainerWidget', '_loadDungeons');
     log.fine('Loading dungeons');
 
     final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
@@ -37,10 +39,10 @@ class _DungeonContainerWidgetState extends State<DungeonContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('DungeonContainerWidget', 'build');
+    final log = getLogger('DungeonListContainerWidget', 'build');
     log.fine('Building..');
 
-    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(
+    final characterCubit = BlocProvider.of<CharacterCubit>(
       context,
       listen: true,
     );

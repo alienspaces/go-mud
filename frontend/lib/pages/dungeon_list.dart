@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/character_create/container.dart';
+import 'package:go_mud_client/widgets/dungeon_list/container.dart';
 
-class CharacterCreatePage extends Page {
-  static const String pageName = 'CharacterCreatePage';
+class DungeonListPage extends Page {
+  static const String pageName = 'DungeonListPage';
   final NavigationCallbacks callbacks;
 
-  const CharacterCreatePage({
-    LocalKey key = const ValueKey(CharacterCreatePage.pageName),
-    name = CharacterCreatePage.pageName,
+  const DungeonListPage({
+    LocalKey key = const ValueKey(DungeonListPage.pageName),
+    name = DungeonListPage.pageName,
     required this.callbacks,
   }) : super(key: key, name: name);
 
@@ -21,7 +21,7 @@ class CharacterCreatePage extends Page {
     return PageRouteBuilder(
       settings: this,
       pageBuilder: (context, animation, secondaryAnimation) {
-        return CharacterCreateScreen(
+        return DungeonListScreen(
           callbacks: callbacks,
         );
       },
@@ -40,30 +40,32 @@ class CharacterCreatePage extends Page {
   }
 }
 
-class CharacterCreateScreen extends StatefulWidget {
+class DungeonListScreen extends StatefulWidget {
   final NavigationCallbacks callbacks;
-  static String pageName = 'CharacterCreate';
+  static String pageName = 'Home';
 
-  const CharacterCreateScreen({
+  const DungeonListScreen({
     Key? key,
     required this.callbacks,
   }) : super(key: key);
 
   @override
-  State<CharacterCreateScreen> createState() => _CharacterCreateScreenState();
+  State<DungeonListScreen> createState() => _DungeonListScreenState();
 }
 
-class _CharacterCreateScreenState extends State<CharacterCreateScreen> {
+class _DungeonListScreenState extends State<DungeonListScreen> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('CharacterCreatePage', 'build');
+    final log = getLogger('DungeonListPage', 'build');
     log.fine('Building..');
 
     return Scaffold(
       appBar: header(context, widget.callbacks),
       resizeToAvoidBottomInset: false,
-      body: CharacterCreateContainerWidget(
-        callbacks: widget.callbacks,
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        alignment: Alignment.center,
+        child: DungeonListContainerWidget(callbacks: widget.callbacks),
       ),
     );
   }

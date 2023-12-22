@@ -18,8 +18,8 @@ class CharacterCreateButtonWidget extends StatelessWidget {
     log.fine('Building..');
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+      textStyle: Theme.of(context).textTheme.labelLarge,
     );
 
     return Container(

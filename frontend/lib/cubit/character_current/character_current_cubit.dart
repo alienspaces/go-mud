@@ -10,6 +10,8 @@ import 'package:go_mud_client/logger.dart';
 
 part 'character_current_state.dart';
 
+// TODO: 12-implement-death: Remove?
+
 class CharacterCurrentCubit extends Cubit<CharacterCurrentState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;

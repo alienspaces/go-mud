@@ -59,7 +59,7 @@ dependencies:
 
   # Annotations used to express developer intentions that can't otherwise 
   # be deduced by statically analyzing source code.
-  meta: ^1.8.0
+  meta: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +70,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.1
+  flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

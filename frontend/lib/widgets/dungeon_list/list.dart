@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/widgets/dungeon/list/list_item.dart';
+import 'package:go_mud_client/widgets/dungeon_list/list_item.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 

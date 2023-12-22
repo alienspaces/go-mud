@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
 // import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
 import 'package:go_mud_client/widgets/game/action/narrative.dart';
@@ -47,27 +47,27 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
     //   return const SizedBox.shrink();
     // }
 
-    return BlocConsumer<DungeonCharacterCubit, DungeonCharacterState>(
+    return BlocConsumer<CharacterCubit, CharacterState>(
       listener: (context, state) {
         log.fine('listener...');
       },
-      builder: (BuildContext context, DungeonCharacterState state) {
+      builder: (BuildContext context, CharacterState state) {
         log.fine('builder...');
 
-        if (state is DungeonCharacterStateCreate) {
+        if (state is CharacterStateEntering) {
           // ignore: avoid_unnecessary_containers
           return Container(
             color: Colors.purple[50],
             child: const Text("GameContainerWidget - Entering"),
           );
-        } else if (state is DungeonCharacterStateCreateError) {
+        } else if (state is CharacterStateError) {
           // ignore: avoid_unnecessary_containers
           return Container(
             color: Colors.purple[50],
             child: const Text("GameContainerWidget - Error"),
           );
-        } else if (state is DungeonCharacterStateCreated) {
-          log.warning('Dungeon character cubit emitted created state');
+        } else if (state is CharacterStateEntered) {
+          log.warning('Dungeon character cubit emitted entered state');
 
           // ignore: avoid_unnecessary_containers
           return Container(

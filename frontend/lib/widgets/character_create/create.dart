@@ -124,8 +124,8 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
     }
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+      textStyle: Theme.of(context).textTheme.labelLarge,
     );
 
     const double fieldHeight = 50;
@@ -262,7 +262,6 @@ class _CharacterCreateWidgetState extends State<CharacterCreateWidget> {
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: ElevatedButton(
               onPressed: () {
-                // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState!.validate()) {
                   _createCharacter(context);
                 }

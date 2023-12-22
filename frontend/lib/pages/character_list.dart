@@ -21,7 +21,7 @@ class CharacterListPage extends Page {
     return PageRouteBuilder(
       settings: this,
       pageBuilder: (context, animation, secondaryAnimation) {
-        return HomeScreen(
+        return CharacterListScreen(
           callbacks: callbacks,
         );
       },
@@ -40,23 +40,23 @@ class CharacterListPage extends Page {
   }
 }
 
-class HomeScreen extends StatefulWidget {
+class CharacterListScreen extends StatefulWidget {
   final NavigationCallbacks callbacks;
   static String pageName = 'Home';
 
-  const HomeScreen({
+  const CharacterListScreen({
     Key? key,
     required this.callbacks,
   }) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CharacterListScreen> createState() => _CharacterListScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CharacterListScreenState extends State<CharacterListScreen> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('HomeScreen', 'build');
+    final log = getLogger('CharacterListPage', 'build');
     log.fine('Building..');
 
     return Scaffold(

@@ -5,17 +5,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 
 // Local
-import 'dungeon_character/dungeon_character_cubit.dart';
+import 'character/character_cubit.dart';
 import 'dungeon_command/dungeon_command_cubit.dart';
 
 void selectTarget(BuildContext context, String target) {
   final log = getLogger('Cubit', 'selectTarget');
   log.fine('Submitting move action..');
 
-  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
-  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+  final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+  var characterRecord = characterCubit.characterRecord;
+
+  if (characterRecord == null || characterRecord.dungeonID != null) {
     log.warning(
-        'Dungeon character cubit missing dungeon character record, cannot initialise action');
+        'Character cubit missing character record, cannot select target');
     return;
   }
 

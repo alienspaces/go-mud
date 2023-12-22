@@ -4,16 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
-import 'package:go_mud_client/cubit/character_current/character_current_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 
 class CharacterListItemWidget extends StatelessWidget {
   final NavigationCallbacks callbacks;
   final CharacterRecord characterRecord;
 
-  const CharacterListItemWidget(
-      {Key? key, required this.characterRecord, required this.callbacks})
-      : super(key: key);
+  const CharacterListItemWidget({
+    Key? key,
+    required this.characterRecord,
+    required this.callbacks,
+  }) : super(key: key);
 
   /// Sets the current character state to the provided character
   void _selectCharacter(
@@ -24,19 +26,33 @@ class CharacterListItemWidget extends StatelessWidget {
     log.fine(
         'Select character >${characterRecord.characterID}< >${characterRecord.characterName}< dungeon >${characterRecord.dungeonID}< >${characterRecord.dungeonName}<');
 
-    final characterCubit = BlocProvider.of<CharacterCurrentCubit>(context);
-    characterCubit.selectCharacter(characterRecord);
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+    characterCubit.select(characterRecord);
+
+    // Open dungeon list page
+    callbacks.openDungeonListPage(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterListItemWidget', 'build');
-    log.fine(
-        'Display ${characterRecord.characterID} ${characterRecord.characterName}');
+    log.warning(
+      'Character => ID ${characterRecord.characterID}',
+    );
+    log.warning(
+      'Character => Name ${characterRecord.characterName}',
+    );
+    log.warning(
+      'Character => Dungeon ID ${characterRecord.dungeonID}',
+    );
+    log.warning(
+      'Character => Dungeon Name ${characterRecord.dungeonName}',
+    );
 
     ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+      textStyle: Theme.of(context).textTheme.labelLarge,
     );
 
     // TODO: (client) When the character is already in a dungeon display the dungeon
@@ -72,7 +88,7 @@ class CharacterListItemWidget extends StatelessWidget {
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Text(
               characterRecord.characterName,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           Container(
