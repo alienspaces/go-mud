@@ -3,18 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
-import 'package:go_mud_client/api/api.dart';
 import 'package:go_mud_client/config.dart';
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/theme.dart';
 import 'package:go_mud_client/navigation.dart';
-import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/character_create/character_create_cubit.dart';
-import 'package:go_mud_client/cubit/character_collection/character_collection_cubit.dart';
+import 'package:go_mud_client/cubit/cubit.dart';
+import 'package:go_mud_client/repository/repository.dart';
+import 'package:go_mud_client/api/api.dart';
 
 void main() {
   // Initialise logger
