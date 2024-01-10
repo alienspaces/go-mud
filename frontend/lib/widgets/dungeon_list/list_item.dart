@@ -5,9 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/navigation.dart';
-
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
-
 import 'package:go_mud_client/repository/character/character_repository.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
 
@@ -22,23 +20,20 @@ class DungeonListItemWidget extends StatelessWidget {
     required this.dungeonRecord,
   }) : super(key: key);
 
-  /// Sets the current dungeon state to the provided dungeon
   void _enterDungeon(
     BuildContext context,
     final CharacterRecord characterRecord,
     final DungeonRecord dungeonRecord,
   ) async {
     final log = getLogger('DungeonListItemWidget', '_enterDungeon');
-    log.fine(
-        'Enter dungeon ${dungeonRecord.dungeonID} with character ${characterRecord.characterID}');
+    log.fine('Dungeon ID ${dungeonRecord.dungeonID}');
+    log.fine('Character ID ${characterRecord.characterID}');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
 
-    characterCubit.enter(dungeonRecord).then((value) => {
-          characterCubit
-              .refresh()
-              .then((value) => callbacks.openGamePage(context))
-        });
+    characterCubit
+        .enter(dungeonRecord)
+        .then((_) => callbacks.openGamePage(context));
   }
 
   @override
@@ -48,8 +43,9 @@ class DungeonListItemWidget extends StatelessWidget {
 
     if (characterRecord.dungeonID != null &&
         characterRecord.dungeonID != dungeonRecord.dungeonID) {
+      log.warning("character is in dungeon ID ${characterRecord.dungeonID}");
       log.warning(
-          "character is not in this dungeon, not displaying dungeon list item");
+          "this dungeon ID ${dungeonRecord.dungeonID}, not displaying list item");
       return const SizedBox.shrink();
     }
 

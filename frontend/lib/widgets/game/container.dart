@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
-// import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
@@ -30,22 +29,6 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
   Widget build(BuildContext context) {
     final log = getLogger('GameContainerWidget', 'build');
     log.fine('Building..');
-
-    // final characterCubit = BlocProvider.of<CharacterCubit>(
-    //   context,
-    //   listen: true,
-    // );
-
-    // var characterRecord = characterCubit.characterRecord;
-    // if (characterRecord == null) {
-    //   log.warning("character record is null, cannot display game");
-    //   return const SizedBox.shrink();
-    // }
-
-    // if (characterRecord.dungeonID == null) {
-    //   log.warning("character record dungeon id is null, cannot display game");
-    //   return const SizedBox.shrink();
-    // }
 
     return BlocConsumer<CharacterCubit, CharacterState>(
       listener: (context, state) {
@@ -115,7 +98,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
           );
         }
 
-        log.warning('Dungeon character cubit emitted initial state');
+        log.warning('Unsupported character cubit state $state');
 
         return const SizedBox.shrink();
       },

@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
-import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/style.dart';
-
-import 'package:go_mud_client/cubit/character/character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
-
 import 'package:go_mud_client/widgets/game/button/character_button.dart';
 import 'package:go_mud_client/widgets/game/button/monster_button.dart';
 import 'package:go_mud_client/widgets/game/button/object_button.dart';
+import 'package:go_mud_client/cubit/target.dart';
 
 class GameLocationGridWidget extends StatefulWidget {
   final LocationData locationData;
@@ -183,7 +177,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
 
   // Object widget
   Widget _objectWidget(BuildContext context, LocationContent object) {
-    return ObjectButtonWidget(objectName: object.name);
+    return ObjectButtonWidget(name: object.name);
   }
 
   // Empty widget
@@ -205,28 +199,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   }
 
   void _selectTarget(BuildContext context, String target) {
-    final log = getLogger('GameLocationGridWidget', '_selectTarget');
-    log.fine('Submitting move action..');
-
-    final characterCubit = BlocProvider.of<CharacterCubit>(context);
-
-    var characterRecord = characterCubit.characterRecord;
-
-    if (characterRecord == null || characterRecord.dungeonID == null) {
-      log.warning(
-          'Character cubit missing character record or character is not in a dungeon, cannot select target');
-      return;
-    }
-
-    final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
-    if (dungeonCommandCubit.target == target) {
-      log.fine('++ Unselecting target $target');
-      dungeonCommandCubit.unselectTarget();
-      return;
-    }
-
-    log.fine('++ Selecting target $target');
-    dungeonCommandCubit.selectTarget(target);
+    selectTarget(context, target);
   }
 
   @override

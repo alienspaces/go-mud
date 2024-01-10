@@ -90,14 +90,18 @@ class CharacterCubit extends Cubit<CharacterState> {
       return;
     }
 
+    emit(CharacterStateEntering(characterRecord: characterRecord!));
+
+    // TODO: Make entering a dungeon idempotent?
+
     // Character already in this dungeon
     if (characterRecord != null &&
         characterRecord!.dungeonID == dungeonRecord.dungeonID) {
-      // Exception here..
+      emit(CharacterStateEntered(
+        characterRecord: characterRecord!,
+      ));
       return;
     }
-
-    emit(CharacterStateEntering(characterRecord: characterRecord!));
 
     try {
       characterRecord = await repositories.dungeonCharacterRepository
@@ -111,7 +115,6 @@ class CharacterCubit extends Cubit<CharacterState> {
     }
 
     if (characterRecord != null) {
-      log.fine('Entered dungeon with character $characterRecord');
       emit(CharacterStateEntered(
         characterRecord: characterRecord!,
       ));

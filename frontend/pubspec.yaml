@@ -45,7 +45,7 @@ dependencies:
   equatable: ^2.0.3
 
   # Load environment variables from a `.env` file.
-  dotenv: 4.1.0
+  dotenv: 4.2.0
 
   # Provides APIs for debugging and error logging. This library introduces
   # abstractions similar to those used in other languages, such as the
