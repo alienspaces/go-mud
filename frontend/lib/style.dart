@@ -7,6 +7,9 @@ EdgeInsetsGeometry decoratedContainerMargin = const EdgeInsets.all(2);
 EdgeInsetsGeometry gameButtonMargin = const EdgeInsets.all(2);
 ButtonStyle gameButtonStyle = ElevatedButton.styleFrom(
   backgroundColor: Colors.brown,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(2)),
+  ),
 );
 
 // Game panels
