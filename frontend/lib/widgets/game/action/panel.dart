@@ -33,7 +33,7 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
 
   Widget _actionWidget(BuildContext context, String label, String action) {
     return Container(
-      margin: gameButtonMargin,
+      margin: gameBoardButtonMargin,
       width: gridMemberWidth,
       height: gridMemberHeight,
       child: ElevatedButton(
@@ -42,9 +42,10 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
           log.fine('Selecting action >$action<');
           _selectPanelAction(context, action);
         },
-        style: gameButtonStyle,
+        style: gameBoardButtonStyle,
         child: Text(
           label,
+          style: gameBoardButtonTextStyle(context),
         ),
       ),
     );
@@ -65,7 +66,10 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
         ),
-        child: const Text('Play'),
+        child: Text(
+          'Play',
+          style: gameBoardButtonTextStyle(context),
+        ),
       ),
     );
   }
@@ -148,7 +152,6 @@ class _GameActionPanelWidgetState extends State<GameActionPanelWidget> {
             borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
           padding: const EdgeInsets.all(1),
-          // margin: const EdgeInsets.all(5),
           child: Row(
             children: <Widget>[
               Expanded(

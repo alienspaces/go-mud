@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 import 'package:go_mud_client/widgets/dungeon_list/list.dart';
@@ -91,7 +92,7 @@ class _DungeonListContainerWidgetState
         }
 
         return Container(
-          color: Colors.orange,
+          color: pageContainerBackgroundColor,
           child: Column(
             children: widgets,
           ),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
+import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 
@@ -17,17 +18,15 @@ class CharacterListItemWidget extends StatelessWidget {
     required this.callbacks,
   }) : super(key: key);
 
-  /// Sets the current character state to the provided character
   void _selectCharacter(
     BuildContext context,
     CharacterRecord characterRecord,
   ) async {
     final log = getLogger('CharacterListItemWidget', '_selectCharacter');
-    log.fine(
-        'Select character >${characterRecord.characterID}< >${characterRecord.characterName}< dungeon >${characterRecord.dungeonID}< >${characterRecord.dungeonName}<');
+    log.fine('Select character ID >${characterRecord.characterID}<');
+    log.fine('Select character Name >${characterRecord.characterName}<');
 
     final characterCubit = BlocProvider.of<CharacterCubit>(context);
-
     characterCubit.select(characterRecord);
 
     // Open dungeon list page
@@ -37,58 +36,45 @@ class CharacterListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('CharacterListItemWidget', 'build');
-    log.warning(
-      'Character => ID ${characterRecord.characterID}',
-    );
-    log.warning(
-      'Character => Name ${characterRecord.characterName}',
-    );
-    log.warning(
-      'Character => Dungeon ID ${characterRecord.dungeonID}',
-    );
-    log.warning(
-      'Character => Dungeon Name ${characterRecord.dungeonName}',
-    );
+    log.info('Display character ID ${characterRecord.characterID}');
+    log.info('Display character Name ${characterRecord.characterName}');
+    log.info('Display character Dungeon ID ${characterRecord.dungeonID}');
+    log.info('Display character Dungeon Name ${characterRecord.dungeonName}');
 
-    ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
-      textStyle: Theme.of(context).textTheme.labelLarge,
-    );
-
-    // TODO: (client) When the character is already in a dungeon display the dungeon
-    // information, the play button should also just drop the player
-    // straight into the game without choosing the dungeon to play in..
     List<Widget> actionWidgets = <Widget>[
       Container(
         margin: const EdgeInsets.all(5),
         child: ElevatedButton(
           onPressed: () => {null},
-          style: buttonStyle,
-          child: const Text('Delete'),
+          style: gameButtonStyle,
+          child: Text(
+            'Delete',
+            style: gameButtonTextStyle(context),
+          ),
         ),
       ),
       Container(
         margin: const EdgeInsets.all(5),
         child: ElevatedButton(
           onPressed: () => _selectCharacter(context, characterRecord),
-          style: buttonStyle,
-          child: const Text('Play'),
+          style: gameButtonStyle,
+          child: Text(
+            'Play',
+            style: gameButtonTextStyle(context),
+          ),
         ),
       ),
     ];
 
     return Container(
       margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        border: Border.all(width: 2),
-      ),
       child: Column(
         children: [
           Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Text(
               characterRecord.characterName,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           Container(

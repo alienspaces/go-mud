@@ -24,12 +24,12 @@ class _ObjectButtonWidgetState extends State<ObjectButtonWidget> {
     log.fine('Building button object name ${widget.name}');
 
     return Container(
-      margin: gameButtonMargin,
+      margin: gameBoardButtonMargin,
       child: ElevatedButton(
         onPressed: () {
           selectTarget(context, widget.name);
         },
-        style: gameButtonStyle,
+        style: gameBoardButtonStyle,
         child: Text(normaliseName(widget.name)),
       ),
     );

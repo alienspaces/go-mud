@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/utility.dart';
 import 'package:go_mud_client/navigation.dart';
+import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/repository/character/character_repository.dart';
 import 'package:go_mud_client/repository/dungeon/dungeon_repository.dart';
@@ -19,6 +20,16 @@ class DungeonListItemWidget extends StatelessWidget {
     required this.characterRecord,
     required this.dungeonRecord,
   }) : super(key: key);
+
+  void _unselectCharacter(
+    BuildContext context,
+  ) async {
+    final characterCubit = BlocProvider.of<CharacterCubit>(context);
+    characterCubit.unselect();
+
+    // Open character list page
+    callbacks.openCharacterListPage(context);
+  }
 
   void _enterDungeon(
     BuildContext context,
@@ -39,27 +50,35 @@ class DungeonListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final log = getLogger('DungeonListItemWidget', 'build');
-    log.fine('Dungeon ${dungeonRecord.dungeonID} ${dungeonRecord.dungeonName}');
+    log.info('Display dungeon ID ${dungeonRecord.dungeonID}');
+    log.info('Display dungeon Name ${dungeonRecord.dungeonName}');
 
     if (characterRecord.dungeonID != null &&
         characterRecord.dungeonID != dungeonRecord.dungeonID) {
-      log.warning("character is in dungeon ID ${characterRecord.dungeonID}");
-      log.warning(
-          "this dungeon ID ${dungeonRecord.dungeonID}, not displaying list item");
+      log.warning("Character dungeon ID ${characterRecord.dungeonID}");
+      log.warning("Not displaying list item");
       return const SizedBox.shrink();
     }
 
-    ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-      textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18),
-    );
-
-    List<Widget> children = [];
+    List<Widget> buttons = [
+      Container(
+        margin: const EdgeInsets.all(5),
+        child: ElevatedButton(
+          onPressed: () => _unselectCharacter(
+            context,
+          ),
+          style: gameCancelButtonStyle,
+          child: Text(
+            'Cancel',
+            style: gameButtonTextStyle(context),
+          ),
+        ),
+      ),
+    ];
 
     // Character not in dungeon
-
     if (characterRecord.dungeonID == null) {
-      children = <Widget>[
+      buttons.add(
         Container(
           margin: const EdgeInsets.all(5),
           child: ElevatedButton(
@@ -68,18 +87,20 @@ class DungeonListItemWidget extends StatelessWidget {
               characterRecord,
               dungeonRecord,
             ),
-            style: buttonStyle,
-            child: const Text('Enter'),
+            style: gameButtonStyle,
+            child: Text(
+              'Enter',
+              style: gameButtonTextStyle(context),
+            ),
           ),
         ),
-      ];
+      );
     }
 
     // Character in this dungeon
-
     else if (characterRecord.dungeonID != null &&
         characterRecord.dungeonID == dungeonRecord.dungeonID) {
-      children = <Widget>[
+      buttons.add(
         Container(
           margin: const EdgeInsets.all(5),
           child: ElevatedButton(
@@ -88,19 +109,19 @@ class DungeonListItemWidget extends StatelessWidget {
               characterRecord,
               dungeonRecord,
             ),
-            style: buttonStyle,
-            child: const Text('Resume'),
+            style: gameButtonStyle,
+            child: Text(
+              'Resume',
+              style: gameButtonTextStyle(context),
+            ),
           ),
         ),
-      ];
+      );
     }
 
     // ignore: avoid_unnecessary_containers
     return Container(
       margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        border: Border.all(width: 2),
-      ),
       child: Column(
         children: [
           Container(
@@ -118,10 +139,10 @@ class DungeonListItemWidget extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: children,
+              children: buttons,
             ),
           ),
         ],

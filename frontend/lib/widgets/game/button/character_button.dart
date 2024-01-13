@@ -32,17 +32,17 @@ class _CharacterButtonWidgetState extends State<CharacterButtonWidget> {
       fit: StackFit.expand,
       children: [
         Container(
-          margin: gameButtonMargin,
+          margin: gameBoardButtonMargin,
           child: ElevatedButton(
             onPressed: () {
               selectTarget(context, widget.name);
             },
-            style: gameButtonStyle,
+            style: gameBoardButtonStyle,
             child: Text(normaliseName(widget.name)),
           ),
         ),
         Container(
-          margin: gameButtonMargin,
+          margin: gameBoardButtonMargin,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

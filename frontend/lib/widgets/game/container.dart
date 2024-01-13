@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/navigation.dart';
+import 'package:go_mud_client/style.dart';
 import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/widgets/game/board/board.dart';
 import 'package:go_mud_client/widgets/game/action/panel.dart';
@@ -40,13 +41,13 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
         if (state is CharacterStateEntering) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            color: Colors.purple[50],
+            color: pageContainerBackgroundColor,
             child: const Text("GameContainerWidget - Entering"),
           );
         } else if (state is CharacterStateError) {
           // ignore: avoid_unnecessary_containers
           return Container(
-            color: Colors.purple[50],
+            color: pageContainerBackgroundColor,
             child: const Text("GameContainerWidget - Error"),
           );
         } else if (state is CharacterStateEntered) {
@@ -54,7 +55,7 @@ class _GameContainerWidgetState extends State<GameContainerWidget> {
 
           // ignore: avoid_unnecessary_containers
           return Container(
-            color: Colors.purple[50],
+            color: pageContainerBackgroundColor,
             // Top level game widget stack
             child: Stack(
               children: <Widget>[

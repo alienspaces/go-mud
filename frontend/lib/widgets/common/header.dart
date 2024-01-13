@@ -42,6 +42,10 @@ AppBar header(BuildContext context, NavigationCallbacks callbacks) {
   List<Widget> links = [];
 
   return AppBar(
+    shape: const Border(
+      top: BorderSide(color: Colors.black),
+      bottom: BorderSide(color: Colors.black),
+    ),
     // ignore: avoid_unnecessary_containers
     title: Container(
       child: Column(

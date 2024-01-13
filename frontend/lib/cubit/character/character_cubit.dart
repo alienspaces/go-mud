@@ -35,15 +35,15 @@ class CharacterCubit extends Cubit<CharacterState> {
         log.warning('Dungeon action cubit emitted error event');
         if (characterRecord != null) {
           log.warning('Clearing character record');
-          clearCharacter();
+          unselect();
         }
       }
     });
   }
 
-  void clearCharacter() {
-    final log = getLogger('CharacterCubit', 'clearCharacter');
-    log.warning('Clearing character');
+  void unselect() {
+    final log = getLogger('CharacterCubit', 'unselect');
+    log.warning('Unselecting character');
     characterRecord = null;
     emit(const CharacterStateInitial());
   }
@@ -59,8 +59,10 @@ class CharacterCubit extends Cubit<CharacterState> {
 
     log.info('Refreshing character ID ${this.characterRecord!.characterID}');
 
-    CharacterRecord? characterRecord = await repositories.characterRepository
-        .getOne(this.characterRecord!.characterID);
+    CharacterRecord? characterRecord =
+        await repositories.characterRepository.getOne(
+      this.characterRecord!.characterID,
+    );
 
     this.characterRecord = characterRecord;
 
@@ -69,8 +71,8 @@ class CharacterCubit extends Cubit<CharacterState> {
 
   Future<void> select(CharacterRecord characterRecord) async {
     final log = getLogger('CharacterCubit', 'select');
-    log.info('Selected character ID ${characterRecord.characterID}');
-    log.info('Selected character Name ${characterRecord.characterName}');
+    log.info('Selecting character ID ${characterRecord.characterID}');
+    log.info('Selecting character Name ${characterRecord.characterName}');
 
     emit(CharacterStateSelecting(characterRecord: characterRecord));
 
@@ -104,13 +106,17 @@ class CharacterCubit extends Cubit<CharacterState> {
     }
 
     try {
-      characterRecord = await repositories.dungeonCharacterRepository
-          .enterDungeonCharacter(
-              dungeonRecord.dungeonID, characterRecord!.characterID);
+      characterRecord =
+          await repositories.dungeonCharacterRepository.enterDungeonCharacter(
+        dungeonRecord.dungeonID,
+        characterRecord!.characterID,
+      );
     } on RepositoryException catch (err) {
       log.warning('Throwing dungeon character enter error');
       emit(CharacterStateError(
-          characterRecord: characterRecord!, message: err.message));
+        characterRecord: characterRecord!,
+        message: err.message,
+      ));
       return;
     }
 
@@ -130,8 +136,8 @@ class CharacterCubit extends Cubit<CharacterState> {
       return;
     }
 
-    log.fine(
-        'Exiting dungeon ID ${characterRecord!.dungeonID} character ID ${characterRecord!.characterID}');
+    log.fine('Exiting dungeon ID ${characterRecord!.dungeonID}');
+    log.fine('Exiting character ID ${characterRecord!.characterID}');
 
     emit(CharacterStateExiting(characterRecord: characterRecord!));
 
@@ -150,6 +156,7 @@ class CharacterCubit extends Cubit<CharacterState> {
     }
 
     log.fine('Exited dungeon character $characterRecord');
+
     emit(CharacterStateExited(characterRecord: characterRecord!));
   }
 }

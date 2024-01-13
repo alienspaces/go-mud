@@ -110,7 +110,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
         onPressed: () {
           _selectTarget(context, direction);
         },
-        style: gameButtonStyle,
+        style: gameBoardButtonStyle,
         child: Text('${directionLabelMap[direction]}'),
       ),
     );
@@ -186,7 +186,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
       width: gridMemberWidth,
       height: gridMemberHeight,
       alignment: Alignment.center,
-      margin: gameButtonMargin,
+      margin: gameBoardButtonMargin,
       decoration: BoxDecoration(
         color: const Color(0xFFD4D4D4),
         border: Border.all(
