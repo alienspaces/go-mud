@@ -11,7 +11,7 @@ import (
 // GetActionMonsterObjectRecs -
 func (m *Model) GetActionMonsterObjectRecs(opts *coresql.Options) ([]*record.ActionMonsterObject, error) {
 
-	l := m.Logger("GetActionMonsterObjectRecs")
+	l := m.loggerWithFunctionContext("GetActionMonsterObjectRecs")
 
 	l.Debug("Getting dungeon action monster object records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetActionMonsterObjectRecs(opts *coresql.Options) ([]*record.Act
 // GetActionMonsterObjectRec -
 func (m *Model) GetActionMonsterObjectRec(recID string, lock *coresql.Lock) (*record.ActionMonsterObject, error) {
 
-	l := m.Logger("GetActionMonsterObjectRec")
+	l := m.loggerWithFunctionContext("GetActionMonsterObjectRec")
 
 	l.Debug("Getting dungeon action monster object rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetActionMonsterObjectRec(recID string, lock *coresql.Lock) (*re
 // CreateActionMonsterObjectRec -
 func (m *Model) CreateActionMonsterObjectRec(rec *record.ActionMonsterObject) error {
 
-	l := m.Logger("CreateActionMonsterObjectRec")
+	l := m.loggerWithFunctionContext("CreateActionMonsterObjectRec")
 
 	l.Debug("Creating dungeon action monster object record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateActionMonsterObjectRec(rec *record.ActionMonsterObject) er
 // UpdateActionMonsterObjectRec -
 func (m *Model) UpdateActionMonsterObjectRec(rec *record.ActionMonsterObject) error {
 
-	l := m.Logger("UpdateActionMonsterObjectRec")
+	l := m.loggerWithFunctionContext("UpdateActionMonsterObjectRec")
 
 	l.Debug("Updating dungeon action monster object record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateActionMonsterObjectRec(rec *record.ActionMonsterObject) er
 // DeleteActionMonsterObjectRec -
 func (m *Model) DeleteActionMonsterObjectRec(recID string) error {
 
-	l := m.Logger("DeleteActionMonsterObjectRec")
+	l := m.loggerWithFunctionContext("DeleteActionMonsterObjectRec")
 
 	l.Debug("Deleting dungeon action monster object rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteActionMonsterObjectRec(recID string) error {
 // RemoveActionMonsterObjectRec -
 func (m *Model) RemoveActionMonsterObjectRec(recID string) error {
 
-	l := m.Logger("RemoveActionMonsterObjectRec")
+	l := m.loggerWithFunctionContext("RemoveActionMonsterObjectRec")
 
 	l.Debug("Removing dungeon action monster object rec ID >%s<", recID)
 

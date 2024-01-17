@@ -19,6 +19,10 @@ const (
 	processStateError   processState = "error"
 )
 
+const (
+	decayTurns int = 10
+)
+
 type dungeonInstanceState struct {
 	turn  int
 	state processState
@@ -50,7 +54,7 @@ func daemonRemoveDungeonInstanceState(dungeonInstanceStates map[string]*dungeonI
 }
 
 func daemonGetDungeonInstanceRecs(l logger.Logger, m *model.Model) ([]*record.DungeonInstance, error) {
-	l = loggerWithContext(l, "daemonGetDungeonInstanceRecs")
+	l = loggerWithFunctionContext(l, "daemonGetDungeonInstanceRecs")
 
 	diRecs, err := m.GetDungeonInstanceRecs(nil)
 	if err != nil {
@@ -62,7 +66,7 @@ func daemonGetDungeonInstanceRecs(l logger.Logger, m *model.Model) ([]*record.Du
 }
 
 func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.DungeonInstance) (empty bool, err error) {
-	l = loggerWithContext(l, "daemonDungeonInstanceEmpty")
+	l = loggerWithFunctionContext(l, "daemonDungeonInstanceEmpty")
 
 	ciRecs, err := m.GetCharacterInstanceRecs(
 		&coresql.Options{
@@ -79,13 +83,13 @@ func daemonDungeonInstanceEmpty(l logger.Logger, m *model.Model, dir *record.Dun
 		return empty, err
 	}
 
-	l.Info("Dungeon instance ID >%s< character instance count >%d<", dir.ID, len(ciRecs))
+	l.Debug("Dungeon instance ID >%s< character instance count >%d<", dir.ID, len(ciRecs))
 
 	return len(ciRecs) == 0, nil
 }
 
 func daemonShutdownDungeonInstance(l logger.Logger, m *model.Model, dir *record.DungeonInstance) error {
-	l = loggerWithContext(l, "daemonShutdownDungeonInstance")
+	l = loggerWithFunctionContext(l, "daemonShutdownDungeonInstance")
 
 	err := m.DeleteDungeonInstance(dir.ID)
 	if err != nil {
@@ -102,7 +106,7 @@ func daemonShutdownDungeonInstance(l logger.Logger, m *model.Model, dir *record.
 // the set of dungeon instance states by removing empty dungeon instances and adding
 // new dungeon instances.
 func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInstanceState) (map[string]*dungeonInstanceState, error) {
-	l = loggerWithContext(l, "daemonInitCycle")
+	l = loggerWithFunctionContext(l, "daemonInitCycle")
 
 	m, err := rnr.initModeller(l)
 	if err != nil {
@@ -121,6 +125,8 @@ func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInsta
 		l.Warn("failed getting dungeon instance recs >%v<", err)
 		return nil, err
 	}
+
+	l.Debug("Dungeon instance count >%d<", len(diRecs))
 
 	// When there are no characters instances in a particular dungeon instance
 	// for a certain period of time, delete the dungeon instance.
@@ -165,7 +171,7 @@ func (rnr *Runner) daemonInitCycle(l logger.Logger, dis map[string]*dungeonInsta
 
 // RunDaemon is a long running background process that manages the server game loop.
 func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
-	l := loggerWithContext(rnr.Log, "RunDaemon")
+	l := loggerWithFunctionContext(rnr.Log, "RunDaemon")
 
 	dungeonInstanceStates := make(map[string]*dungeonInstanceState)
 
@@ -175,10 +181,17 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 
 	for keepRunning() {
 
+		l = loggerWithCycleContext(l, cycles)
+
 		dungeonInstanceStates, err := rnr.daemonInitCycle(l, dungeonInstanceStates)
 		if err != nil {
 			l.Warn("failed daemon init cycle >%v<", err)
 			return err
+		}
+
+		cycles++
+		if cycles%20 == 0 {
+			l.Info("Daemon cycle >%d<", cycles)
 		}
 
 		// When there is nothing to process, wait and check for new instances again
@@ -187,12 +200,11 @@ func (rnr *Runner) RunDaemon(args map[string]interface{}) error {
 			continue
 		}
 
-		if cycles%20 == 0 {
-			l.Info("Daemon cycle >%d<", cycles)
-		}
-
 		runningCount := 0
 		for dungeonInstanceID := range dungeonInstanceStates {
+
+			l = loggerWithInstanceContext(l, dungeonInstanceID)
+
 			switch dungeonInstanceStates[dungeonInstanceID].state {
 			case processStatePending:
 				l.Debug("(pending) Kicking off dungeon instance ID >%s< turn >%d<", dungeonInstanceID, dungeonInstanceStates[dungeonInstanceID].turn)
@@ -286,12 +298,17 @@ type processDungeonInstanceTurnResult struct {
 }
 
 func processDungeonInstanceTurn(l logger.Logger, m *model.Model, dungeonInstanceID string) (*processDungeonInstanceTurnResult, error) {
-	l = loggerWithContext(l, "processDungeonInstanceTurn")
+	l = loggerWithFunctionContext(l, "processDungeonInstanceTurn")
+	l = loggerWithInstanceContext(l, dungeonInstanceID)
+
+	// TODO: 10-implement-effects:
+	// Process any active effects that are still applied to the character.
 
 	pditr := processDungeonInstanceTurnResult{}
 
 WHILE_RESULT_NOT_INCREMENTED:
 	for pditr.incrementTurnResult == nil || !pditr.incrementTurnResult.Incremented {
+
 		// Increment turn
 		iditr, err := m.IncrementDungeonInstanceTurn(&model.IncrementDungeonInstanceTurnArgs{
 			DungeonInstanceID: dungeonInstanceID,
@@ -309,8 +326,22 @@ WHILE_RESULT_NOT_INCREMENTED:
 
 		pditr.incrementTurnResult = iditr
 
+		// Decay dead characters and remove completely decayed characters
+		err = decayCharacters(l, m, dungeonInstanceID)
+		if err != nil {
+			l.Warn("failed decaying characters >%v<", err)
+			return nil, err
+		}
+
+		// Decay dead monsters and remove completely decayed monsters
+		err = decayMonsters(l, m, dungeonInstanceID)
+		if err != nil {
+			l.Warn("failed decaying monsters >%v<", err)
+			return nil, err
+		}
+
 		// Process monster instances
-		recs, err := m.GetMonsterInstanceRecs(
+		mrecs, err := m.GetMonsterInstanceRecs(
 			&coresql.Options{
 				Params: []coresql.Param{
 					{
@@ -325,13 +356,13 @@ WHILE_RESULT_NOT_INCREMENTED:
 			return nil, err
 		}
 
-		l.Info("Processing turn >%d< with >%d< monster instance records", iditr.Record.TurnNumber, len(recs))
+		l.Debug("Processing turn >%d< with >%d< monster instance records", iditr.Record.TurnNumber, len(mrecs))
 
-		for idx := range recs {
-			l.Info("Processing monster instance ID >%s< monster ID >%s<", recs[idx].ID, recs[idx].MonsterID)
-			dmar, err := m.DecideMonsterAction(recs[idx].ID)
+		for idx := range mrecs {
+			l.Info("Processing monster instance ID >%s< monster ID >%s< Name >%s<", mrecs[idx].ID, mrecs[idx].MonsterID)
+			dmar, err := m.DecideMonsterAction(mrecs[idx].ID)
 			if err != nil {
-				l.Warn("failed deciding monster instance ID >%s< action >%v<", recs[idx].ID, err)
+				l.Warn("failed deciding monster instance ID >%s< action >%v<", mrecs[idx].ID, err)
 				return nil, err
 			}
 
@@ -348,7 +379,7 @@ WHILE_RESULT_NOT_INCREMENTED:
 				return nil, err
 			}
 
-			l.Info("Processed monster instance ID >%s< action >%#v<", dmar.MonsterInstanceID, ars.ActionRec)
+			l.Debug("Processed monster instance ID >%s< action >%#v<", dmar.MonsterInstanceID, ars.ActionRec)
 			pditr.monsterInstanceActionRecordSets = append(pditr.monsterInstanceActionRecordSets, ars)
 		}
 	}
@@ -356,6 +387,102 @@ WHILE_RESULT_NOT_INCREMENTED:
 	l.Debug("Processed dungeon instance ID >%s< turn >%d<", dungeonInstanceID, pditr.incrementTurnResult.Record.TurnNumber)
 
 	return &pditr, nil
+}
+
+func decayCharacters(l logger.Logger, m *model.Model, dungeonInstanceID string) error {
+	l = loggerWithFunctionContext(l, "decayCharacters")
+
+	// Decay dead character instances
+	crecs, err := m.GetCharacterInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: record.FieldCharacterInstanceDungeonInstanceID,
+					Val: dungeonInstanceID,
+				},
+				{
+					Col: record.FieldCharacterInstanceHealth,
+					Val: 0,
+					Op:  coresql.OpLessThanEqual,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting dungeon ID >%s< character instance records >%v<", dungeonInstanceID, err)
+		return err
+	}
+
+	for idx := range crecs {
+		l.Info("Decaying character instance ID >%s< character ID >%s<", crecs[idx].ID, crecs[idx].CharacterID)
+
+		crec := crecs[idx]
+		crec.Decay += 1
+
+		err := m.UpdateCharacterInstanceRec(crec)
+		if err != nil {
+			l.Warn("failed updating character instance ID >%s< decay >%v<", crec.ID, err)
+			return err
+		}
+
+		if crec.Decay >= decayTurns {
+			err := m.DeleteCharacterInstance(crec.CharacterID)
+			if err != nil {
+				l.Warn("failed exiting decayed character instance ID >%s< from dungeon >%v<", crec.ID, err)
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func decayMonsters(l logger.Logger, m *model.Model, dungeonInstanceID string) error {
+	l = loggerWithFunctionContext(l, "decayMonsters")
+
+	// Decay dead monster instances
+	mrecs, err := m.GetMonsterInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: record.FieldMonsterInstanceDungeonInstanceID,
+					Val: dungeonInstanceID,
+				},
+				{
+					Col: record.FieldMonsterInstanceHealth,
+					Val: 0,
+					Op:  coresql.OpLessThanEqual,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting dungeon ID >%s< monster instance records >%v<", dungeonInstanceID, err)
+		return err
+	}
+
+	for idx := range mrecs {
+		l.Info("Decaying monster instance ID >%s< monster ID >%s<", mrecs[idx].ID, mrecs[idx].MonsterID)
+
+		mrec := mrecs[idx]
+		mrec.Decay += 1
+
+		err := m.UpdateMonsterInstanceRec(mrec)
+		if err != nil {
+			l.Warn("failed updating monster instance ID >%s< decay >%v<", mrec.ID, err)
+			return err
+		}
+
+		if mrec.Decay >= decayTurns {
+			err := m.DeleteMonsterInstance(mrec.MonsterID)
+			if err != nil {
+				l.Warn("failed exiting decayed monster instance ID >%s< from dungeon >%v<", mrec.ID, err)
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
@@ -371,4 +498,20 @@ func (rnr *Runner) initModeller(l logger.Logger) (*model.Model, error) {
 // to run based on current state etc..
 func keepRunning() bool {
 	return true
+}
+
+// loggerWithCycleContext provides a logger with function context
+func loggerWithCycleContext(l logger.Logger, cycle int) logger.Logger {
+	if l == nil {
+		return nil
+	}
+	return l.WithContext("cycle", fmt.Sprintf("%d", cycle))
+}
+
+// loggerWithInstanceContext provides a logger with function context
+func loggerWithInstanceContext(l logger.Logger, instanceID string) logger.Logger {
+	if l == nil {
+		return nil
+	}
+	return l.WithContext("instance", instanceID)
 }

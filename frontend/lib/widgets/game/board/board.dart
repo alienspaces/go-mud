@@ -62,14 +62,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         return Container(
           width: buttonWidth,
           height: buttonHeight,
-          margin: gameButtonMargin,
+          margin: gameBoardButtonMargin,
           child: ElevatedButton(
             onPressed: () {
               setState(() {
                 panelIndex = boardButtonIndexes[boardButtonType]!;
               });
             },
-            style: gameButtonStyle,
+            style: gameBoardButtonStyle,
             child: Text(boardButtonLabels[boardButtonType]!),
           ),
         );
@@ -99,7 +99,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.purple[200],
+            color: pageContainerBackgroundColor,
             border: null,
             borderRadius: const BorderRadius.all(Radius.zero),
           ),
@@ -126,7 +126,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           child: Container(
             padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
             decoration: BoxDecoration(
-              color: Colors.purple[100],
+              color: pageContainerBackgroundColor,
               border: null,
               borderRadius: const BorderRadius.all(Radius.zero),
             ),

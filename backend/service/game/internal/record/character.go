@@ -23,6 +23,12 @@ type CharacterObject struct {
 	repository.Record
 }
 
+const (
+	FieldCharacterInstanceDungeonInstanceID string = "dungeon_instance_id"
+	FieldCharacterInstanceHealth            string = "health"
+	FieldCharacterInstanceDecay             string = "decay"
+)
+
 type CharacterInstance struct {
 	CharacterID        string `db:"character_id"`
 	DungeonInstanceID  string `db:"dungeon_instance_id"`
@@ -32,6 +38,7 @@ type CharacterInstance struct {
 	Intelligence       int    `db:"intelligence"`
 	Health             int    `db:"health"`
 	Fatigue            int    `db:"fatigue"`
+	Decay              int    `db:"decay"`
 	Coins              int    `db:"coins"`
 	ExperiencePoints   int    `db:"experience_points"`
 	AttributePoints    int    `db:"attribute_points"`
@@ -51,6 +58,7 @@ type CharacterInstanceView struct {
 	CurrentIntelligence int    `db:"current_intelligence"`
 	Health              int    `db:"health"`
 	Fatigue             int    `db:"fatigue"`
+	Decay               int    `db:"decay"`
 	CurrentHealth       int    `db:"current_health"`
 	CurrentFatigue      int    `db:"current_fatigue"`
 	Coins               int    `db:"coins"`

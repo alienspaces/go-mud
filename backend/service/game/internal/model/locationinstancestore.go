@@ -11,7 +11,7 @@ import (
 // GetLocationInstanceRecs -
 func (m *Model) GetLocationInstanceRecs(opts *coresql.Options) ([]*record.LocationInstance, error) {
 
-	l := m.Logger("GetLocationInstanceRecs")
+	l := m.loggerWithFunctionContext("GetLocationInstanceRecs")
 
 	l.Debug("Getting dungeon location records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetLocationInstanceRecs(opts *coresql.Options) ([]*record.Locati
 // GetLocationInstanceRec -
 func (m *Model) GetLocationInstanceRec(recID string, lock *coresql.Lock) (*record.LocationInstance, error) {
 
-	l := m.Logger("GetLocationInstanceRec")
+	l := m.loggerWithFunctionContext("GetLocationInstanceRec")
 
 	l.Debug("Getting dungeon location rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetLocationInstanceRec(recID string, lock *coresql.Lock) (*recor
 // GetLocationInstanceViewRecs -
 func (m *Model) GetLocationInstanceViewRecs(opts *coresql.Options) ([]*record.LocationInstanceView, error) {
 
-	l := m.Logger("GetLocationInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetLocationInstanceViewRecs")
 
 	l.Debug("Getting dungeon location records opts >%#v<", opts)
 
@@ -57,7 +57,7 @@ func (m *Model) GetLocationInstanceViewRecs(opts *coresql.Options) ([]*record.Lo
 // GetLocationInstanceViewRec -
 func (m *Model) GetLocationInstanceViewRec(recID string) (*record.LocationInstanceView, error) {
 
-	l := m.Logger("GetLocationInstanceViewRec")
+	l := m.loggerWithFunctionContext("GetLocationInstanceViewRec")
 
 	l.Debug("Getting dungeon location rec ID >%s<", recID)
 
@@ -79,7 +79,7 @@ func (m *Model) GetLocationInstanceViewRec(recID string) (*record.LocationInstan
 // CreateLocationInstanceRec -
 func (m *Model) CreateLocationInstanceRec(rec *record.LocationInstance) error {
 
-	l := m.Logger("CreateLocationInstanceRec")
+	l := m.loggerWithFunctionContext("CreateLocationInstanceRec")
 
 	l.Debug("Creating dungeon location record >%#v<", rec)
 
@@ -97,7 +97,7 @@ func (m *Model) CreateLocationInstanceRec(rec *record.LocationInstance) error {
 // UpdateLocationInstanceRec -
 func (m *Model) UpdateLocationInstanceRec(rec *record.LocationInstance) error {
 
-	l := m.Logger("UpdateLocationInstanceRec")
+	l := m.loggerWithFunctionContext("UpdateLocationInstanceRec")
 
 	l.Debug("Updating dungeon location record >%#v<", rec)
 
@@ -115,7 +115,7 @@ func (m *Model) UpdateLocationInstanceRec(rec *record.LocationInstance) error {
 // DeleteLocationInstanceRec -
 func (m *Model) DeleteLocationInstanceRec(recID string) error {
 
-	l := m.Logger("DeleteLocationInstanceRec")
+	l := m.loggerWithFunctionContext("DeleteLocationInstanceRec")
 
 	l.Debug("Deleting dungeon location rec ID >%s<", recID)
 
@@ -137,7 +137,7 @@ func (m *Model) DeleteLocationInstanceRec(recID string) error {
 // RemoveLocationInstanceRec -
 func (m *Model) RemoveLocationInstanceRec(recID string) error {
 
-	l := m.Logger("RemoveLocationInstanceRec")
+	l := m.loggerWithFunctionContext("RemoveLocationInstanceRec")
 
 	l.Debug("Removing dungeon location rec ID >%s<", recID)
 

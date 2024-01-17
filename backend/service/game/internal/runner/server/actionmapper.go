@@ -369,20 +369,28 @@ func actionLocationResponseData(l logger.Logger, recordSet *record.ActionLocatio
 
 	var charactersData []schema.ActionLocationCharacter
 	if len(recordSet.ActionCharacterRecs) > 0 {
-		for _, dungeonCharacterRec := range recordSet.ActionCharacterRecs {
+		for _, actionCharacterRec := range recordSet.ActionCharacterRecs {
 			charactersData = append(charactersData,
 				schema.ActionLocationCharacter{
-					Name: dungeonCharacterRec.Name,
+					Name:           actionCharacterRec.Name,
+					Health:         actionCharacterRec.Health,
+					CurrentHealth:  actionCharacterRec.CurrentHealth,
+					Fatigue:        actionCharacterRec.Fatigue,
+					CurrentFatigue: actionCharacterRec.CurrentFatigue,
 				})
 		}
 	}
 
 	var monstersData []schema.ActionLocationMonster
 	if len(recordSet.ActionMonsterRecs) > 0 {
-		for _, dungeonMonsterRec := range recordSet.ActionMonsterRecs {
+		for _, actionMonsterRec := range recordSet.ActionMonsterRecs {
 			monstersData = append(monstersData,
 				schema.ActionLocationMonster{
-					Name: dungeonMonsterRec.Name,
+					Name:           actionMonsterRec.Name,
+					Health:         actionMonsterRec.Health,
+					CurrentHealth:  actionMonsterRec.CurrentHealth,
+					Fatigue:        actionMonsterRec.Fatigue,
+					CurrentFatigue: actionMonsterRec.CurrentFatigue,
 				})
 		}
 	}
@@ -420,6 +428,8 @@ func actionNarrativeResponseData(l logger.Logger, set record.ActionRecordSet) (s
 	}
 
 	switch set.ActionRec.ResolvedCommand {
+	case record.ActionCommandAttack:
+		desc += " attacks "
 	case record.ActionCommandMove:
 		desc += " moves "
 	case record.ActionCommandLook:

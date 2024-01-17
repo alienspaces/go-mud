@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-
 import 'package:go_mud_client/widgets/game/button/object_button.dart';
 
 class GameEquippedWidget extends StatefulWidget {
@@ -36,7 +34,7 @@ class _GameEquippedWidgetState extends State<GameEquippedWidget> {
             var equipped = actionCharacter.characterEquippedObjects;
             for (var i = 0; i < equipped!.length; i++) {
               equippedWidgets.add(
-                ObjectButtonWidget(objectName: equipped[i].objectName),
+                ObjectButtonWidget(name: equipped[i].objectName),
               );
             }
           }

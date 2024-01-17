@@ -51,7 +51,7 @@ class BoardLocationWidget extends StatelessWidget {
           var currentActionRec = state.currentActionRec;
           var previousActionRec = state.previousActionRec;
 
-          log.info(
+          log.fine(
               'DungeonActionStatePlaying - Rendering action ${currentActionRec.actionCommand}');
 
           if (currentActionRec.actionCommand == 'move' &&
@@ -119,7 +119,7 @@ class BoardLocationWidget extends StatelessWidget {
           }
         }
 
-        log.info('Rendering ${widgets.length} dungeon grid widgets');
+        log.fine('Rendering ${widgets.length} dungeon grid widgets');
 
         return Stack(
           clipBehavior: Clip.antiAlias,

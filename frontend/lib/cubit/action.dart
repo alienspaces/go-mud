@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Application packages
 import 'package:go_mud_client/logger.dart';
 
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
@@ -12,10 +12,13 @@ void selectAction(BuildContext context, String action) {
   final log = getLogger('Cubit', 'selectAction');
   log.fine('Selecting action..');
 
-  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
-  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+  final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+  var characterRecord = characterCubit.characterRecord;
+
+  if (characterRecord == null || characterRecord.dungeonID != null) {
     log.warning(
-        'Dungeon character cubit missing dungeon character record, cannot initialise action');
+        'Character cubit missing character record, cannot select action');
     return;
   }
 
@@ -34,10 +37,13 @@ void submitAction(BuildContext context) async {
   final log = getLogger('Cubit', 'submitAction');
   log.fine('Submitting action..');
 
-  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
-  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+  final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+  var characterRecord = characterCubit.characterRecord;
+
+  if (characterRecord == null || characterRecord.dungeonID != null) {
     log.warning(
-        'Dungeon character cubit missing dungeon character record, cannot initialise action');
+        'Character cubit missing character record, cannot submit action');
     return;
   }
 
@@ -46,8 +52,8 @@ void submitAction(BuildContext context) async {
   final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
 
   await dungeonActionCubit.createAction(
-    dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-    dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
+    characterRecord.dungeonID!,
+    characterRecord.characterID,
     dungeonCommandCubit.command(),
   );
 

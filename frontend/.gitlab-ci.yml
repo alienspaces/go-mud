@@ -19,12 +19,11 @@ test-frontend:
     APP_CLIENT_API_SCHEME: "http"
     APP_CLIENT_API_HOST: game-server
     APP_CLIENT_API_PORT: 8084
-    CI_DEBUG_SERVICES: "true"    
-  image: ghcr.io/cirruslabs/flutter:3.7.11
+  image: ghcr.io/cirruslabs/flutter:3.13.0
   stage: test-frontend
   services:
     - name: $CI_REGISTRY/alienspaces/go-mud/game-server:$CI_COMMIT_SHORT_SHA
       alias: game-server
   script:
     - cd frontend
-    - ./script/test
+    - ./tools/test

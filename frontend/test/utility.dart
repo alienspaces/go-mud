@@ -5,9 +5,11 @@ import 'package:go_mud_client/api/api.dart';
 import 'package:go_mud_client/api/response.dart';
 import 'package:go_mud_client/repository/repository.dart';
 
-// Identifiers
-const String testDungeonID = '55087d68-dc17-41ed-bb53-12dc636ac196';
-const String testCharacterID = '38efe8fc-a228-484b-b476-ff0d961942a6';
+// Test dungeon - Cabin
+const String testDungeonID = '34c5b913-3079-42a6-8228-3f1fb8f20dbe';
+
+// Test character - Bolster
+const String testCharacterID = '9d7b1765-5c76-461a-aa87-0e2c99803c0f';
 
 Map<String, String> getConfig() {
   Map<String, String> envVars = Platform.environment;

@@ -5,6 +5,39 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
+// DeleteMonsterInstance -
+func (m *Model) DeleteMonsterInstance(monsterID string) error {
+	l := m.loggerWithFunctionContext("DeleteMonsterInstance")
+
+	monsterInstanceRec, err := m.GetMonsterInstanceViewRecByMonsterID(monsterID)
+	if err != nil {
+		l.Warn("failed getting monster instance view record >%v<", err)
+		return err
+	}
+
+	monsterObjectInstanceRecs, err := m.GetMonsterInstanceObjectInstanceRecs(monsterInstanceRec.MonsterID)
+	if err != nil {
+		l.Warn("failed getting monster object instance view records >%v<", err)
+		return err
+	}
+
+	for idx := range monsterObjectInstanceRecs {
+		err := m.DeleteObjectInstanceRec(monsterObjectInstanceRecs[idx].ID)
+		if err != nil {
+			l.Warn("failed deleting monster object instance record >%v<", err)
+			return err
+		}
+	}
+
+	err = m.DeleteMonsterInstanceRec(monsterInstanceRec.ID)
+	if err != nil {
+		l.Warn("failed deleting monster instance record >%v<", err)
+		return err
+	}
+
+	return nil
+}
+
 // GetMonsterInstanceObjectInstanceRecs -
 func (m *Model) GetMonsterInstanceObjectInstanceRecs(monsterID string) ([]*record.ObjectInstance, error) {
 

@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/calculator"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
 
 // GetMonsterRecs -
 func (m *Model) GetMonsterRecs(opts *coresql.Options) ([]*record.Monster, error) {
 
-	l := m.Logger("GetMonsterRecs")
+	l := m.loggerWithFunctionContext("GetMonsterRecs")
 
 	l.Debug("Getting dungeon monster records opts >%#v<", opts)
 
@@ -23,7 +24,7 @@ func (m *Model) GetMonsterRecs(opts *coresql.Options) ([]*record.Monster, error)
 // GetMonsterRec -
 func (m *Model) GetMonsterRec(recID string, lock *coresql.Lock) (*record.Monster, error) {
 
-	l := m.Logger("GetMonsterRec")
+	l := m.loggerWithFunctionContext("GetMonsterRec")
 
 	l.Debug("Getting dungeon monster rec ID >%s<", recID)
 
@@ -45,7 +46,7 @@ func (m *Model) GetMonsterRec(recID string, lock *coresql.Lock) (*record.Monster
 // CreateMonsterRec -
 func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 
-	l := m.Logger("CreateMonsterRec")
+	l := m.loggerWithFunctionContext("CreateMonsterRec")
 
 	l.Debug("Creating dungeon monster record >%#v<", rec)
 
@@ -53,11 +54,21 @@ func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 
 	rec.AttributePoints = defaultAttributePoints - (rec.Strength + rec.Dexterity + rec.Intelligence)
 	rec.ExperiencePoints = defaultExperiencePoints
-	rec.Health = m.calculateHealth(rec.Strength, rec.Dexterity)
-	rec.Fatigue = m.calculateFatigue(rec.Strength, rec.Intelligence)
 	rec.Coins = defaultCoins
 
-	err := m.validateMonsterRec(rec)
+	rec, err := calculator.CalculateMonsterHealth(rec)
+	if err != nil {
+		l.Debug("Failed calculating monster health >%v<", err)
+		return err
+	}
+
+	rec, err = calculator.CalculateMonsterFatigue(rec)
+	if err != nil {
+		l.Debug("Failed calculating monster fatigue >%v<", err)
+		return err
+	}
+
+	err = m.validateMonsterRec(rec)
 	if err != nil {
 		l.Debug("Failed model validation >%v<", err)
 		return err
@@ -69,7 +80,7 @@ func (m *Model) CreateMonsterRec(rec *record.Monster) error {
 // UpdateMonsterRec -
 func (m *Model) UpdateMonsterRec(rec *record.Monster) error {
 
-	l := m.Logger("UpdateMonsterRec")
+	l := m.loggerWithFunctionContext("UpdateMonsterRec")
 
 	l.Debug("Updating dungeon monster record >%#v<", rec)
 
@@ -87,7 +98,7 @@ func (m *Model) UpdateMonsterRec(rec *record.Monster) error {
 // DeleteMonsterRec -
 func (m *Model) DeleteMonsterRec(recID string) error {
 
-	l := m.Logger("DeleteMonsterRec")
+	l := m.loggerWithFunctionContext("DeleteMonsterRec")
 
 	l.Debug("Deleting dungeon monster rec ID >%s<", recID)
 
@@ -109,7 +120,7 @@ func (m *Model) DeleteMonsterRec(recID string) error {
 // RemoveMonsterRec -
 func (m *Model) RemoveMonsterRec(recID string) error {
 
-	l := m.Logger("RemoveMonsterRec")
+	l := m.loggerWithFunctionContext("RemoveMonsterRec")
 
 	l.Debug("Removing dungeon monster rec ID >%s<", recID)
 

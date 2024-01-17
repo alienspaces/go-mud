@@ -31,7 +31,7 @@ class API {
         port: int.parse(_port),
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -62,7 +62,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -92,7 +92,7 @@ class API {
         path: '/api/v1/dungeons',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -128,7 +128,7 @@ class API {
         path: '/api/v1/characters',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
@@ -138,7 +138,7 @@ class API {
           "intelligence": characterIntelligence,
         },
       });
-      log.info('bodyData $bodyData');
+      log.fine('bodyData $bodyData');
 
       response = await client.post(
         uri,
@@ -179,7 +179,7 @@ class API {
         path: '/api/v1/characters/$characterID',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(
         uri,
@@ -218,7 +218,7 @@ class API {
         path: '/api/v1/characters',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(uri,
           headers: {'Content-Type': 'application/json; charset=utf-8'});
@@ -257,7 +257,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/enter',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.post(
         uri,
@@ -274,7 +274,7 @@ class API {
 
     String responseBody = response.body;
 
-    log.info('Response: $responseBody');
+    log.fine('Response: $responseBody');
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       log.warning('Failed: $responseBody');
@@ -298,7 +298,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.get(
         uri,
@@ -341,7 +341,7 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/exit',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       response = await client.post(
         uri,
@@ -380,14 +380,14 @@ class API {
         path: '/api/v1/dungeons/$dungeonID/characters/$characterID/actions',
       );
 
-      log.info('URI $uri');
+      log.fine('URI $uri');
 
       String bodyData = jsonEncode({
         "data": {
           "sentence": sentence,
         },
       });
-      log.info('bodyData $bodyData');
+      log.fine('bodyData $bodyData');
 
       response = await client.post(
         uri,

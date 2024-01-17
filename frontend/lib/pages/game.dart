@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 // Application packages
 import 'package:go_mud_client/navigation.dart';
 import 'package:go_mud_client/logger.dart';
+import 'package:go_mud_client/page.dart';
 import 'package:go_mud_client/widgets/common/header.dart';
-import 'package:go_mud_client/widgets/game/game.dart';
+import 'package:go_mud_client/widgets/game/container.dart';
 
 class GamePage extends Page {
   static const String pageName = 'GamePage';
@@ -26,23 +27,14 @@ class GamePage extends Page {
         );
       },
       transitionDuration: const Duration(milliseconds: 300),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = 0.0;
-        const end = 1.0;
-        final tween = Tween(begin: begin, end: end);
-        final opacityAnimation = animation.drive(tween);
-        return FadeTransition(
-          opacity: opacityAnimation,
-          child: child,
-        );
-      },
+      transitionsBuilder: pageTransitionsBuilder,
     );
   }
 }
 
 class GameScreen extends StatefulWidget {
   final NavigationCallbacks callbacks;
-  static String pageName = 'Game';
+  static String pageName = 'Home';
 
   const GameScreen({
     Key? key,
@@ -56,7 +48,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameScreen', 'build');
+    final log = getLogger('GamePage', 'build');
     log.fine('Building..');
 
     return Scaffold(
@@ -64,7 +56,7 @@ class _GameScreenState extends State<GameScreen> {
       resizeToAvoidBottomInset: false,
       body: Container(
         alignment: Alignment.center,
-        child: const GameWidget(),
+        child: GameContainerWidget(callbacks: widget.callbacks),
       ),
     );
   }

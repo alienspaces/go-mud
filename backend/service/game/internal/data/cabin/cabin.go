@@ -1,5 +1,8 @@
 package cabin
 
+// The Cabin has no aggressive monsters but employ all other game features
+// that should provide ample testing opportunities for frontend clients.
+
 import (
 	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
@@ -20,17 +23,7 @@ func CharacterConfig() []harness.CharacterConfig {
 }
 
 func MonsterConfig() []harness.MonsterConfig {
-	return []harness.MonsterConfig{
-		{
-			Record: record.Monster{
-				Record: repository.Record{
-					ID: "fb032d39-48a4-4806-bd56-f9cba910bbf4",
-				},
-				Name:        "Giant Grey Rat",
-				Description: "A very large grey rat.",
-			},
-		},
-	}
+	return []harness.MonsterConfig{}
 }
 
 func ObjectConfig() []harness.ObjectConfig {
@@ -81,11 +74,6 @@ func DungeonConfig() harness.DungeonConfig {
 				LocationObjectConfig: []harness.LocationObjectConfig{
 					{
 						ObjectName: "Yellow Chewed Bone",
-					},
-				},
-				LocationMonsterConfig: []harness.LocationMonsterConfig{
-					{
-						MonsterName: "Giant Grey Rat",
 					},
 				},
 			},

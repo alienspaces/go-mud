@@ -6,9 +6,7 @@ import (
 )
 
 func NewDatabaseError(l logger.Logger, err error) error {
-	l.Warn("database error >%v<", err)
-
-	return coreerror.NewInternalError()
+	return coreerror.NewInternalError(err.Error())
 }
 
 func NewInvalidIDError(field string, id string) error {

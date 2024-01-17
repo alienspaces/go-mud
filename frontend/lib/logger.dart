@@ -9,6 +9,10 @@ void initLogger() {
   });
 }
 
+Logger getClassLogger(String className) {
+  return Logger(className);
+}
+
 Logger getLogger(String className, String? functionName) {
   Logger? logger;
 

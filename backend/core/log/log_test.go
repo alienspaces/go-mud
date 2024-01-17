@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/alienspaces/go-mud/backend/core/config"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 func TestNewLogger(t *testing.T) {
@@ -40,15 +41,15 @@ func TestNewLogger(t *testing.T) {
 	l.Warn("Test level >%s<", "warn")
 	l.Error("Test level >%s<", "error")
 
-	l.Context("correlation-id", "abcdefg")
+	l.WithContext("correlation-id", "abcdefg")
 
 	l.Debug("Test level >%s<", "debug")
 
-	l.Context("correlation-id", "hijklmn")
+	l.WithContext("correlation-id", "hijklmn")
 
 	l.Debug("Test level >%s<", "debug")
 
-	l.Level(ErrorLevel)
+	l.Level(logger.ErrorLevel)
 
 	l.Debug("Test level >%s<", "debug")
 	l.Info("Test level >%s<", "info")
@@ -70,15 +71,15 @@ func TestNewLoggerWithConfig(t *testing.T) {
 	l.Warn("Test level >%s<", "warn")
 	l.Error("Test level >%s<", "error")
 
-	l.Context("correlation-id", "abcdefg")
+	l.WithContext("correlation-id", "abcdefg")
 
 	l.Debug("Test level >%s<", "debug")
 
-	l.Context("correlation-id", "hijklmn")
+	l.WithContext("correlation-id", "hijklmn")
 
 	l.Debug("Test level >%s<", "debug")
 
-	l.Level(ErrorLevel)
+	l.Level(logger.ErrorLevel)
 
 	l.Debug("Test level >%s<", "debug")
 	l.Info("Test level >%s<", "info")

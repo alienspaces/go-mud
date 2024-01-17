@@ -3,6 +3,8 @@ package error
 import (
 	"fmt"
 	"strings"
+
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 type ErrorCode string
@@ -26,6 +28,9 @@ type Error struct {
 	ErrorCode              ErrorCode               `json:"code"`
 	Message                string                  `json:"message"`
 	SchemaValidationErrors []SchemaValidationError `json:"validationErrors,omitempty"`
+	// The following are intentionally not included in any public response
+	LogLevel   logger.Level
+	LogMessage string
 }
 
 func (e Error) Error() string {

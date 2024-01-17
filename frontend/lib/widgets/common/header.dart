@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application
 import 'package:go_mud_client/navigation.dart';
-import 'package:go_mud_client/logger.dart';
-// import 'package:go_mud_client/cubit/character/character_cubit.dart';
-// import 'package:go_mud_client/cubit/dungeon/dungeon_cubit.dart';
 
 // ignore: unused_element
 void _showDialogue(
@@ -42,87 +38,14 @@ void _showDialogue(
   );
 }
 
-void _navigateHome(BuildContext context, NavigationCallbacks callbacks) {
-  final log = getLogger('Header', '_navigateHome');
-
-  // Confirmation dialogue example
-  // _showDialogue(context, 'Exit the game?', () {
-  //   final characterCubit = BlocProvider.of<CharacterCubit>(context);
-  //   characterCubit.clearCharacter();
-  //   final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-  //   dungeonCubit.clearDungeon();
-
-  //   log.fine('Navigating to home page...');
-  //   callbacks.openHomePage(context);
-  // });
-
-  log.fine('Navigating to home page...');
-  callbacks.openHomePage(context);
-}
-
-void _navigateCharacter(BuildContext context, NavigationCallbacks callbacks) {
-  final log = getLogger('Header', '_navigateCharacter');
-
-  log.fine('Navigating to character page...');
-  callbacks.openCharacterPage(context);
-}
-
-void _navigateGame(BuildContext context, NavigationCallbacks callbacks) {
-  final log = getLogger('Header', '_navigateGame');
-
-  log.fine('Navigating to game page...');
-  callbacks.openGamePage(context);
-}
-
-Widget _buildLink(
-    BuildContext context, String label, void Function() navigateFunc) {
-  return Container(
-    padding: const EdgeInsets.fromLTRB(1, 10, 1, 0),
-    child: ElevatedButton(
-      onPressed: navigateFunc,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        foregroundColor: Theme.of(context).colorScheme.onSecondary,
-        disabledForegroundColor: Theme.of(context).colorScheme.onSecondary,
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-      ),
-    ),
-  );
-}
-
 AppBar header(BuildContext context, NavigationCallbacks callbacks) {
-  // final characterCubit = BlocProvider.of<CharacterCubit>(context);
-  // final dungeonCubit = BlocProvider.of<DungeonCubit>(context);
-
   List<Widget> links = [];
 
-  // if (characterCubit.characterRecord != null) {
-  links.add(
-    _buildLink(context, 'Home', () => _navigateHome(context, callbacks)),
-  );
-  // }
-
-  // if (characterCubit.characterRecord != null) {
-  links.add(
-    _buildLink(
-        context, 'Character', () => _navigateCharacter(context, callbacks)),
-  );
-  // }
-
-  // if (characterCubit.characterRecord != null &&
-  //     dungeonCubit.dungeonRecord != null) {
-  links.add(
-    _buildLink(context, 'Dungeon', () => _navigateGame(context, callbacks)),
-  );
-  // }
-
   return AppBar(
+    shape: const Border(
+      top: BorderSide(color: Colors.black),
+      bottom: BorderSide(color: Colors.black),
+    ),
     // ignore: avoid_unnecessary_containers
     title: Container(
       child: Column(

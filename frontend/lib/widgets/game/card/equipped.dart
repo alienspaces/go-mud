@@ -31,7 +31,7 @@ class GameCardEquippedWidget extends StatelessWidget {
 
     for (var i = 0; i < objects!.length; i++) {
       objectWidgets.add(
-        ObjectButtonWidget(objectName: objects![i].objectName),
+        ObjectButtonWidget(name: objects![i].objectName),
       );
     }
 

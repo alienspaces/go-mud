@@ -19,6 +19,20 @@ class ActionTooEarlyException extends RepositoryException {
       : super.fromJson(json);
 }
 
+class ActionInvalidCharacterException extends RepositoryException {
+  ActionInvalidCharacterException(String code, String message)
+      : super(code, message);
+  ActionInvalidCharacterException.fromJson(Map<String, dynamic> json)
+      : super.fromJson(json);
+}
+
+class ActionInvalidDungeonException extends RepositoryException {
+  ActionInvalidDungeonException(String code, String message)
+      : super(code, message);
+  ActionInvalidDungeonException.fromJson(Map<String, dynamic> json)
+      : super.fromJson(json);
+}
+
 class DuplicateCharacterNameException extends RepositoryException {
   DuplicateCharacterNameException(String code, String message)
       : super(code, message);
@@ -56,6 +70,14 @@ RepositoryException resolveApiException(String jsonString) {
     case "action.too_early":
       {
         return ActionTooEarlyException(code, message);
+      }
+    case "action.invalid_character":
+      {
+        return ActionInvalidCharacterException(code, message);
+      }
+    case "action.invalid_dungeon":
+      {
+        return ActionInvalidDungeonException(code, message);
       }
   }
 

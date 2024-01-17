@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
-import 'package:go_mud_client/logger.dart';
 import 'package:go_mud_client/location.dart';
 import 'package:go_mud_client/style.dart';
-import 'package:go_mud_client/utility.dart';
-
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
-import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
-
 import 'package:go_mud_client/repository/dungeon_action/dungeon_action_repository.dart';
-
 import 'package:go_mud_client/widgets/game/button/character_button.dart';
 import 'package:go_mud_client/widgets/game/button/monster_button.dart';
 import 'package:go_mud_client/widgets/game/button/object_button.dart';
+import 'package:go_mud_client/cubit/target.dart';
 
 class GameLocationGridWidget extends StatefulWidget {
   final LocationData locationData;
@@ -117,7 +110,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
         onPressed: () {
           _selectTarget(context, direction);
         },
-        style: gameButtonStyle,
+        style: gameBoardButtonStyle,
         child: Text('${directionLabelMap[direction]}'),
       ),
     );
@@ -129,22 +122,27 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
     if (locationContents[idx] == null) {
       return _emptyWidget('E$idx');
     }
+
     Widget returnWidget;
     var locationContent = locationContents[idx];
-    switch (locationContent!.type) {
+    if (locationContent == null) {
+      return _emptyWidget('E$idx');
+    }
+
+    switch (locationContent.type) {
       case ContentType.character:
         {
-          returnWidget = _characterWidget(context, locationContent.name);
+          returnWidget = _characterWidget(context, locationContent);
         }
         break;
       case ContentType.monster:
         {
-          returnWidget = _monsterWidget(context, locationContent.name);
+          returnWidget = _monsterWidget(context, locationContent);
         }
         break;
       case ContentType.object:
         {
-          returnWidget = _objectWidget(context, locationContent.name);
+          returnWidget = _objectWidget(context, locationContent);
         }
         break;
       default:
@@ -156,18 +154,30 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   }
 
   // Character widget
-  Widget _characterWidget(BuildContext context, String characterName) {
-    return CharacterButtonWidget(characterName: characterName);
+  Widget _characterWidget(BuildContext context, LocationContent character) {
+    return CharacterButtonWidget(
+      name: character.name,
+      health: character.health ?? 0,
+      currentHealth: character.currentHealth ?? 0,
+      fatigue: character.fatigue ?? 0,
+      currentFatigue: character.currentFatigue ?? 0,
+    );
   }
 
   // Monster widget
-  Widget _monsterWidget(BuildContext context, String monsterName) {
-    return MonsterButtonWidget(monsterName: monsterName);
+  Widget _monsterWidget(BuildContext context, LocationContent monster) {
+    return MonsterButtonWidget(
+      name: monster.name,
+      health: monster.health ?? 0,
+      currentHealth: monster.currentHealth ?? 0,
+      fatigue: monster.fatigue ?? 0,
+      currentFatigue: monster.currentFatigue ?? 0,
+    );
   }
 
   // Object widget
-  Widget _objectWidget(BuildContext context, String objectName) {
-    return ObjectButtonWidget(objectName: objectName);
+  Widget _objectWidget(BuildContext context, LocationContent object) {
+    return ObjectButtonWidget(name: object.name);
   }
 
   // Empty widget
@@ -176,7 +186,7 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
       width: gridMemberWidth,
       height: gridMemberHeight,
       alignment: Alignment.center,
-      margin: gameButtonMargin,
+      margin: gameBoardButtonMargin,
       decoration: BoxDecoration(
         color: const Color(0xFFD4D4D4),
         border: Border.all(
@@ -189,37 +199,13 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
   }
 
   void _selectTarget(BuildContext context, String target) {
-    final log = getLogger('GameLocationGridWidget', '_selectTarget');
-    log.fine('Submitting move action..');
-
-    final dungeonCharacterCubit =
-        BlocProvider.of<DungeonCharacterCubit>(context);
-    if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
-      log.warning(
-          'Dungeon character cubit missing dungeon character record, cannot initialise action');
-      return;
-    }
-
-    final dungeonCommandCubit = BlocProvider.of<DungeonCommandCubit>(context);
-    if (dungeonCommandCubit.target == target) {
-      log.fine('++ Unselecting target $target');
-      dungeonCommandCubit.unselectTarget();
-      return;
-    }
-
-    log.fine('++ Selecting target $target');
-    dungeonCommandCubit.selectTarget(target);
+    selectTarget(context, target);
   }
 
   @override
   Widget build(BuildContext context) {
-    final log = getLogger('GameLocationGridWidget', 'build');
-
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        log.fine(
-            'Building width ${constraints.maxWidth} height ${constraints.maxHeight}');
-
         // Set grid member dimensions
         gridMemberWidth = (constraints.maxWidth / 5) - 2;
         gridMemberHeight = (constraints.maxHeight / 5) - 2;
@@ -229,10 +215,6 @@ class _GameLocationGridWidgetState extends State<GameLocationGridWidget> {
         if (gridMemberWidth > gridMemberHeight) {
           gridMemberWidth = gridMemberHeight;
         }
-
-        log.fine(
-          '(B-**) Resulting button width $gridMemberWidth height $gridMemberHeight',
-        );
 
         return IgnorePointer(
           ignoring: widget.readonly ? true : false,

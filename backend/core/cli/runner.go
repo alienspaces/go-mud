@@ -51,7 +51,8 @@ func (rnr *Runner) Init(s storer.Storer) error {
 
 	// Storer
 	rnr.Store = s
-	if rnr.Store == nil {
+
+	if !rnr.DeferModelInitialisation && rnr.Store == nil {
 		msg := "store undefined, cannot init runner"
 		rnr.Log.Warn(msg)
 		return fmt.Errorf(msg)
@@ -71,7 +72,7 @@ func (rnr *Runner) InitDB() error {
 		return err
 	}
 
-	// Repository
+	// Repository preparer
 	if rnr.RepositoryPreparerFunc == nil {
 		rnr.RepositoryPreparerFunc = rnr.defaultRepositoryPreparerFunc
 	}
@@ -93,7 +94,7 @@ func (rnr *Runner) InitDB() error {
 		return err
 	}
 
-	// Query
+	// Query preparer
 	if rnr.QueryPreparerFunc == nil {
 		rnr.QueryPreparerFunc = rnr.defaultQueryPreparerFunc
 	}

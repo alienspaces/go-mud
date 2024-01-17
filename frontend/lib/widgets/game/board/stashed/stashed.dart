@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
-
 import 'package:go_mud_client/widgets/game/button/object_button.dart';
 
 class GameStashedWidget extends StatefulWidget {
@@ -36,7 +34,7 @@ class _GameStashedWidgetState extends State<GameStashedWidget> {
             var stashed = actionCharacter.characterStashedObjects;
             for (var i = 0; i < stashed!.length; i++) {
               stashedWidgets.add(
-                ObjectButtonWidget(objectName: stashed[i].objectName),
+                ObjectButtonWidget(name: stashed[i].objectName),
               );
             }
           }

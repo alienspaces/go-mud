@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestToError(t *testing.T) {
+func Test_ToError(t *testing.T) {
 	type args struct {
 		e error
 	}
@@ -56,7 +56,7 @@ func TestToError(t *testing.T) {
 		{
 			name: "internal",
 			args: args{
-				e: NewInternalError(),
+				e: NewInternalError(""),
 			},
 			want: internal,
 		},

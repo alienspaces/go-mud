@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon_character/dungeon_character_cubit.dart';
+import 'package:go_mud_client/cubit/character/character_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/cubit/dungeon_command/dungeon_command_cubit.dart';
 
@@ -11,10 +11,13 @@ void submitLookAction(BuildContext context) async {
   final log = getLogger('GameWidget', '_initAction');
   log.fine('Initialising action..');
 
-  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
-  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+  final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+  var characterRecord = characterCubit.characterRecord;
+
+  if (characterRecord == null || characterRecord.dungeonID == null) {
     log.warning(
-        'Dungeon character cubit missing dungeon character record, cannot initialise action');
+        'Character cubit missing character record or character is not in a dungeon, cannot submit look action');
     return;
   }
 
@@ -22,8 +25,8 @@ void submitLookAction(BuildContext context) async {
 
   return dungeonActionCubit
       .createAction(
-        dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-        dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
+        characterRecord.dungeonID!,
+        characterRecord.characterID,
         "look",
       )
       .then((v) => playActions(context));
@@ -32,10 +35,13 @@ void submitLookAction(BuildContext context) async {
 Future<void> submitAction(BuildContext context) async {
   final log = getLogger('Action', 'submitAction');
 
-  final dungeonCharacterCubit = BlocProvider.of<DungeonCharacterCubit>(context);
-  if (dungeonCharacterCubit.dungeonCharacterRecord == null) {
+  final characterCubit = BlocProvider.of<CharacterCubit>(context);
+
+  var characterRecord = characterCubit.characterRecord;
+
+  if (characterRecord == null || characterRecord.dungeonID == null) {
     log.warning(
-        'Dungeon character cubit missing dungeon character record, cannot initialise action');
+        'Character cubit missing character record or character is not in a dungeon, cannot submit action');
     return;
   }
 
@@ -46,8 +52,8 @@ Future<void> submitAction(BuildContext context) async {
 
   return dungeonActionCubit
       .createAction(
-        dungeonCharacterCubit.dungeonCharacterRecord!.dungeonID,
-        dungeonCharacterCubit.dungeonCharacterRecord!.characterID,
+        characterRecord.dungeonID!,
+        characterRecord.characterID,
         dungeonCommandCubit.command(),
       )
       .then((v) => playActions(context));
@@ -59,9 +65,9 @@ Future<void> playActions(BuildContext context) async {
 
   final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
 
-  log.info('Playing character action');
+  log.fine('Playing character action');
   dungeonActionCubit.playCharacterAction();
 
-  log.info('Playing other actions');
+  log.fine('Playing other actions');
   dungeonActionCubit.playOtherActions();
 }

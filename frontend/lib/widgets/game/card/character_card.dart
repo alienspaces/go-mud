@@ -35,6 +35,8 @@ void displayCharacterCard(
             character.characterCurrentStrength,
             null,
             null,
+            null,
+            1,
           ),
         ),
         Expanded(
@@ -45,6 +47,8 @@ void displayCharacterCard(
             character.characterCurrentDexterity,
             null,
             null,
+            null,
+            1,
           ),
         ),
         Expanded(
@@ -55,6 +59,8 @@ void displayCharacterCard(
             character.characterCurrentIntelligence,
             null,
             null,
+            null,
+            1,
           ),
         ),
         Expanded(
@@ -65,6 +71,8 @@ void displayCharacterCard(
             character.characterCurrentHealth,
             null,
             null,
+            Colors.green,
+            1,
           ),
         ),
         Expanded(
@@ -75,6 +83,8 @@ void displayCharacterCard(
             character.characterCurrentFatigue,
             null,
             null,
+            Colors.yellow,
+            1,
           ),
         ),
         // Description

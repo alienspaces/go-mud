@@ -136,7 +136,7 @@ func (rnr *Runner) TemplateHandlerConfig(hc map[string]server.HandlerConfig) map
 
 // getTemplateHandler -
 func (rnr *Runner) getTemplateHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "getTemplateHandler")
+	l = loggerWithFunctionContext(l, "getTemplateHandler")
 	l.Info("** Get template handler **")
 
 	id := pp.ByName("template_id")
@@ -186,7 +186,7 @@ func (rnr *Runner) getTemplateHandler(w http.ResponseWriter, r *http.Request, pp
 
 // getTemplatesHandler -
 func (rnr *Runner) getTemplatesHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "getTemplatesHandler")
+	l = loggerWithFunctionContext(l, "getTemplatesHandler")
 
 	opts := queryparam.ToSQLOptions(qp)
 

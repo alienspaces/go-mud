@@ -11,7 +11,7 @@ import (
 // GetLocationRecs -
 func (m *Model) GetLocationRecs(opts *coresql.Options) ([]*record.Location, error) {
 
-	l := m.Logger("GetLocationRecs")
+	l := m.loggerWithFunctionContext("GetLocationRecs")
 
 	l.Debug("Getting location records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetLocationRecs(opts *coresql.Options) ([]*record.Location, erro
 // GetLocationRec -
 func (m *Model) GetLocationRec(recID string, lock *coresql.Lock) (*record.Location, error) {
 
-	l := m.Logger("GetLocationRec")
+	l := m.loggerWithFunctionContext("GetLocationRec")
 
 	l.Debug("Getting location rec ID >%s<", recID)
 
@@ -44,7 +44,7 @@ func (m *Model) GetLocationRec(recID string, lock *coresql.Lock) (*record.Locati
 
 // CreateLocationRec -
 func (m *Model) CreateLocationRec(rec *record.Location) error {
-	l := m.Logger("CreateLocationRec")
+	l := m.loggerWithFunctionContext("CreateLocationRec")
 
 	l.Debug("Creating location record >%#v<", rec)
 
@@ -62,7 +62,7 @@ func (m *Model) CreateLocationRec(rec *record.Location) error {
 // UpdateLocationRec -
 func (m *Model) UpdateLocationRec(rec *record.Location) error {
 
-	l := m.Logger("UpdateLocationRec")
+	l := m.loggerWithFunctionContext("UpdateLocationRec")
 
 	l.Debug("Updating location record >%#v<", rec)
 
@@ -80,7 +80,7 @@ func (m *Model) UpdateLocationRec(rec *record.Location) error {
 // DeleteLocationRec -
 func (m *Model) DeleteLocationRec(recID string) error {
 
-	l := m.Logger("DeleteLocationRec")
+	l := m.loggerWithFunctionContext("DeleteLocationRec")
 
 	l.Debug("Deleting location rec ID >%s<", recID)
 
@@ -102,7 +102,7 @@ func (m *Model) DeleteLocationRec(recID string) error {
 // RemoveLocationRec -
 func (m *Model) RemoveLocationRec(recID string) error {
 
-	l := m.Logger("RemoveLocationRec")
+	l := m.loggerWithFunctionContext("RemoveLocationRec")
 
 	l.Debug("Removing location rec ID >%s<", recID)
 

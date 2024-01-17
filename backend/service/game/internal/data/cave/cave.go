@@ -1,5 +1,8 @@
 package cave
 
+// The Cave is full of aggressive monsters and traps that are all hell bent on
+// cutting and crushing the life from anyone and anything  that ventures within.
+
 import (
 	"gitlab.com/alienspaces/go-mud/backend/core/repository"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/harness"
@@ -45,6 +48,15 @@ func MonsterConfig() []harness.MonsterConfig {
 				},
 				Name:        "Angry Goblin",
 				Description: "A particularly angrey specimen of a goblin",
+			},
+		},
+		{
+			Record: record.Monster{
+				Record: repository.Record{
+					ID: "fb032d39-48a4-4806-bd56-f9cba910bbf4",
+				},
+				Name:        "Giant Grey Rat",
+				Description: "A very large grey rat.",
 			},
 		},
 	}
@@ -110,11 +122,6 @@ func DungeonConfig() harness.DungeonConfig {
 						ObjectName: "Rusted Sword",
 					},
 				},
-				LocationMonsterConfig: []harness.LocationMonsterConfig{
-					{
-						MonsterName: "Grumpy Dwarf",
-					},
-				},
 			},
 			{
 				Record: record.Location{
@@ -127,11 +134,6 @@ func DungeonConfig() harness.DungeonConfig {
 				NorthLocationName:     "Cave Room",
 				SouthLocationName:     "Cave Entrance",
 				NorthwestLocationName: "Narrow Tunnel",
-				LocationMonsterConfig: []harness.LocationMonsterConfig{
-					{
-						MonsterName: "Angry Goblin",
-					},
-				},
 			},
 			{
 				Record: record.Location{
@@ -145,6 +147,11 @@ func DungeonConfig() harness.DungeonConfig {
 				LocationObjectConfig: []harness.LocationObjectConfig{
 					{
 						ObjectName: "Silver Key",
+					},
+				},
+				LocationMonsterConfig: []harness.LocationMonsterConfig{
+					{
+						MonsterName: "Giant Grey Rat",
 					},
 				},
 			},
@@ -169,6 +176,11 @@ func DungeonConfig() harness.DungeonConfig {
 				},
 				SoutheastLocationName: "Narrow Tunnel",
 				DownLocationName:      "Dark Room",
+				LocationMonsterConfig: []harness.LocationMonsterConfig{
+					{
+						MonsterName: "Angry Goblin",
+					},
+				},
 			},
 			{
 				Record: record.Location{
@@ -179,6 +191,11 @@ func DungeonConfig() harness.DungeonConfig {
 					Description: "A dark room.",
 				},
 				UpLocationName: "Dark Narrow Tunnel",
+				LocationMonsterConfig: []harness.LocationMonsterConfig{
+					{
+						MonsterName: "Grumpy Dwarf",
+					},
+				},
 			},
 		},
 		DungeonInstanceConfig: []harness.DungeonInstanceConfig{

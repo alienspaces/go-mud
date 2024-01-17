@@ -10,7 +10,6 @@ import (
 	"gitlab.com/alienspaces/go-mud/backend/core/jsonschema"
 	"gitlab.com/alienspaces/go-mud/backend/core/queryparam"
 	"gitlab.com/alienspaces/go-mud/backend/core/server"
-	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
 	schema "gitlab.com/alienspaces/go-mud/backend/schema/game"
@@ -67,7 +66,7 @@ func (rnr *Runner) ActionHandlerConfig(hc map[string]server.HandlerConfig) map[s
 
 // PostActionHandler -
 func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "PostActionHandler")
+	l = loggerWithFunctionContext(l, "PostActionHandler")
 	l.Info("** Post action handler **")
 
 	// Path parameters
@@ -118,35 +117,17 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 
 	l.Info("Verifying character instance for dungeon_id >%s< character_id >%s<", dungeonID, characterID)
 
-	characterInstanceRecs, err := m.(*model.Model).GetCharacterInstanceRecs(
-		&coresql.Options{
-			Params: []coresql.Param{
-				{
-					Col: "character_id",
-					Val: characterID,
-				},
-			},
-		},
-	)
+	characterInstanceRec, err := m.(*model.Model).GetCharacterInstance(characterID)
 	if err != nil {
 		server.WriteError(l, w, err)
 		return err
 	}
 
-	if len(characterInstanceRecs) == 0 {
-		err := coreerror.NewNotFoundError("character", characterID)
+	if characterInstanceRec == nil {
+		err := model.NewActionInvalidCharacterError(characterID)
 		server.WriteError(l, w, err)
 		return err
 	}
-
-	if len(characterInstanceRecs) > 1 {
-		l.Warn("Unexpected number of character instance records returned >%d<", len(characterInstanceRecs))
-		err := coreerror.NewInternalError()
-		server.WriteError(l, w, err)
-		return err
-	}
-
-	characterInstanceRec := characterInstanceRecs[0]
 
 	dungeonInstanceRec, err := m.(*model.Model).GetDungeonInstanceRec(characterInstanceRec.DungeonInstanceID, nil)
 	if err != nil {
@@ -155,7 +136,7 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	}
 
 	if dungeonInstanceRec == nil {
-		err := coreerror.NewNotFoundError("dungeon_id", dungeonID)
+		err := model.NewActionInvalidDungeonError(characterInstanceRec.DungeonInstanceID)
 		server.WriteError(l, w, err)
 		return err
 	}
@@ -214,9 +195,6 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 	for idx := range res.Data {
 		if res.Data[idx].Character != nil {
 			l.Info("Response Character Name >%s<", res.Data[idx].Character.Name)
-			// for oidx := range res.Data[idx].Character.EquippedObjects {
-			// 	l.Info("         -   >%#v<", res.Data[idx].Character.EquippedObjects[oidx])
-			// }
 		}
 		if res.Data[idx].Monster != nil {
 			l.Info("Response Monster Name>%s<", res.Data[idx].Monster.Name)
@@ -224,8 +202,25 @@ func (rnr *Runner) PostActionHandler(w http.ResponseWriter, r *http.Request, pp 
 		l.Info("Response - Location Name >%s<", res.Data[idx].Location.Name)
 		l.Info("Response - Action ID >%s<", res.Data[idx].ID)
 		l.Info("Response - Action Command >%s<", res.Data[idx].Command)
+		l.Info("Response - Action Narrative >%s<", res.Data[idx].Narrative)
 		l.Info("Response - Action TurnNumber >%d<", res.Data[idx].TurnNumber)
 		l.Info("Response - Action SerialNumber >%d<", res.Data[idx].SerialNumber)
+
+		for cidx := range res.Data[idx].Location.Characters {
+			l.Info("Response - Location character Name >%s<", res.Data[idx].Location.Characters[cidx].Name)
+			l.Info("Response - Location character Health >%d<", res.Data[idx].Location.Characters[cidx].Health)
+			l.Info("Response - Location character CurrentHealth >%d<", res.Data[idx].Location.Characters[cidx].CurrentHealth)
+			l.Info("Response - Location character Fatigue >%d<", res.Data[idx].Location.Characters[cidx].Fatigue)
+			l.Info("Response - Location character CurrentFatigue >%d<", res.Data[idx].Location.Characters[cidx].CurrentFatigue)
+		}
+
+		for midx := range res.Data[idx].Location.Monsters {
+			l.Info("Response - Location monster Name >%s<", res.Data[idx].Location.Monsters[midx].Name)
+			l.Info("Response - Location monster Health >%d<", res.Data[idx].Location.Monsters[midx].Health)
+			l.Info("Response - Location monster CurrentHealth >%d<", res.Data[idx].Location.Monsters[midx].CurrentHealth)
+			l.Info("Response - Location monster Fatigue >%d<", res.Data[idx].Location.Monsters[midx].Fatigue)
+			l.Info("Response - Location monster CurrentFatigue >%d<", res.Data[idx].Location.Monsters[midx].CurrentFatigue)
+		}
 	}
 
 	err = server.WriteResponse(l, w, http.StatusOK, res)

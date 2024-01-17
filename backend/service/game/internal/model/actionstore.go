@@ -11,7 +11,7 @@ import (
 // GetActionRecs -
 func (m *Model) GetActionRecs(opts *coresql.Options) ([]*record.Action, error) {
 
-	l := m.Logger("GetActionRecs")
+	l := m.loggerWithFunctionContext("GetActionRecs")
 
 	l.Debug("Getting dungeon action records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetActionRecs(opts *coresql.Options) ([]*record.Action, error) {
 // GetActionRec -
 func (m *Model) GetActionRec(recID string, lock *coresql.Lock) (*record.Action, error) {
 
-	l := m.Logger("GetActionRec")
+	l := m.loggerWithFunctionContext("GetActionRec")
 
 	l.Debug("Getting dungeon action rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetActionRec(recID string, lock *coresql.Lock) (*record.Action, 
 // CreateActionRec -
 func (m *Model) CreateActionRec(rec *record.Action) error {
 
-	l := m.Logger("CreateActionRec")
+	l := m.loggerWithFunctionContext("CreateActionRec")
 
 	l.Debug("Creating dungeon action record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateActionRec(rec *record.Action) error {
 // UpdateActionRec -
 func (m *Model) UpdateActionRec(rec *record.Action) error {
 
-	l := m.Logger("UpdateActionRec")
+	l := m.loggerWithFunctionContext("UpdateActionRec")
 
 	l.Debug("Updating dungeon action record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateActionRec(rec *record.Action) error {
 // DeleteActionRec -
 func (m *Model) DeleteActionRec(recID string) error {
 
-	l := m.Logger("DeleteActionRec")
+	l := m.loggerWithFunctionContext("DeleteActionRec")
 
 	l.Debug("Deleting dungeon action rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteActionRec(recID string) error {
 // RemoveActionRec -
 func (m *Model) RemoveActionRec(recID string) error {
 
-	l := m.Logger("RemoveActionRec")
+	l := m.loggerWithFunctionContext("RemoveActionRec")
 
 	l.Debug("Removing dungeon action rec ID >%s<", recID)
 

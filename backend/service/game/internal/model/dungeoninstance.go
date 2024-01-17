@@ -26,7 +26,7 @@ type DungeonInstanceViewRecordSet struct {
 
 // GetAvailableDungeonInstanceView returns an available dungeon instance
 func (m *Model) GetAvailableDungeonInstanceViewRecordSet(dungeonID string) (*DungeonInstanceViewRecordSet, error) {
-	l := m.Logger("GetAvailableDungeonInstanceView")
+	l := m.loggerWithFunctionContext("GetAvailableDungeonInstanceView")
 
 	l.Info("Finding available dungeon instance for dungeon ID >%s<", dungeonID)
 
@@ -96,7 +96,7 @@ func (m *Model) GetAvailableDungeonInstanceViewRecordSet(dungeonID string) (*Dun
 }
 
 func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*DungeonInstanceViewRecordSet, error) {
-	l := m.Logger("GetDungeonInstanceViewRecordSet")
+	l := m.loggerWithFunctionContext("GetDungeonInstanceViewRecordSet")
 
 	recordSet := &DungeonInstanceViewRecordSet{}
 
@@ -175,7 +175,7 @@ func (m *Model) GetDungeonInstanceViewRecordSet(dungeonInstanceID string) (*Dung
 }
 
 func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonInstanceRecordSet, error) {
-	l := m.Logger("GetDungeonInstanceRecordSet")
+	l := m.loggerWithFunctionContext("GetDungeonInstanceRecordSet")
 
 	recordSet := &DungeonInstanceRecordSet{}
 
@@ -255,7 +255,7 @@ func (m *Model) GetDungeonInstanceRecordSet(dungeonInstanceID string) (*DungeonI
 
 // CreateDungeonInstance creates a dungeon, locations, monsters and objects instances
 func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordSet, error) {
-	l := m.Logger("CreateDungeonInstance")
+	l := m.loggerWithFunctionContext("CreateDungeonInstance")
 
 	l.Debug("Creating dungeon instance from dungeon ID >%s<", dungeonID)
 
@@ -457,7 +457,7 @@ func (m *Model) CreateDungeonInstance(dungeonID string) (*DungeonInstanceRecordS
 
 // DeleteDungeonInstance -
 func (m *Model) DeleteDungeonInstance(dungeonInstanceID string) (err error) {
-	l := m.Logger("DeleteDungeonInstance")
+	l := m.loggerWithFunctionContext("DeleteDungeonInstance")
 
 	oiRecs, err := m.GetObjectInstanceRecs(
 		&coresql.Options{
@@ -593,7 +593,7 @@ func makeLocationMap(locationRecs []*record.Location, locationInstanceRecs []*re
 
 // resolveLocationInstanceDirectionIdentifiers -
 func (m *Model) resolveLocationInstanceDirectionIdentifiers(locationMap map[string]LocationMapItem, locationInstanceRecs []*record.LocationInstance) ([]*record.LocationInstance, error) {
-	l := m.Logger("CreateDungeonInstance")
+	l := m.loggerWithFunctionContext("CreateDungeonInstance")
 
 	l.Debug("Resolving location instance direction identifiers")
 

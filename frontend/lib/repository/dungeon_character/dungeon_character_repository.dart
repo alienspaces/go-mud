@@ -10,11 +10,11 @@ import 'package:go_mud_client/repository/repository.dart';
 part 'dungeon_character_record.dart';
 
 abstract class DungeonCharacterRepositoryInterface {
-  Future<DungeonCharacterRecord?> enterDungeonCharacter(
+  Future<CharacterRecord?> enterDungeonCharacter(
     String dungeonID,
     String characterID,
   );
-  Future<DungeonCharacterRecord?> getDungeonCharacter(
+  Future<CharacterRecord?> getDungeonCharacter(
     String dungeonID,
     String characterID,
   );
@@ -32,7 +32,7 @@ class DungeonCharacterRepository
   DungeonCharacterRepository({required this.config, required this.api});
 
   @override
-  Future<DungeonCharacterRecord?> enterDungeonCharacter(
+  Future<CharacterRecord?> enterDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
@@ -44,8 +44,8 @@ class DungeonCharacterRepository
       characterID,
     );
 
-    log.info('APIResponse body ${response.body}');
-    log.info('APIResponse error ${response.error}');
+    log.fine('APIResponse body ${response.body}');
+    log.fine('APIResponse error ${response.error}');
 
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');
@@ -53,7 +53,7 @@ class DungeonCharacterRepository
       throw exception;
     }
 
-    DungeonCharacterRecord? record;
+    CharacterRecord? record;
     String? responseBody = response.body;
     if (responseBody != null && responseBody.isNotEmpty) {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
@@ -64,7 +64,7 @@ class DungeonCharacterRepository
           log.warning('Unexpected number of records returned');
           throw RecordCountException('Unexpected number of records returned');
         }
-        record = DungeonCharacterRecord.fromJson(data[0]);
+        record = CharacterRecord.fromJson(data[0]);
       }
     }
 
@@ -72,7 +72,7 @@ class DungeonCharacterRepository
   }
 
   @override
-  Future<DungeonCharacterRecord?> getDungeonCharacter(
+  Future<CharacterRecord?> getDungeonCharacter(
     String dungeonID,
     String characterID,
   ) async {
@@ -88,7 +88,7 @@ class DungeonCharacterRepository
       throw exception;
     }
 
-    DungeonCharacterRecord? record;
+    CharacterRecord? record;
     String? responseBody = response.body;
     if (responseBody != null && responseBody.isNotEmpty) {
       Map<String, dynamic> decoded = jsonDecode(responseBody);
@@ -99,7 +99,7 @@ class DungeonCharacterRepository
           log.warning('Unexpected number of records returned');
           throw RecordCountException('Unexpected number of records returned');
         }
-        record = DungeonCharacterRecord.fromJson(data[0]);
+        record = CharacterRecord.fromJson(data[0]);
       }
     }
 
@@ -118,8 +118,8 @@ class DungeonCharacterRepository
       characterID,
     );
 
-    log.info('APIResponse body ${response.body}');
-    log.info('APIResponse error ${response.error}');
+    log.fine('APIResponse body ${response.body}');
+    log.fine('APIResponse error ${response.error}');
 
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');

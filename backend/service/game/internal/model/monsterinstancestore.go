@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
@@ -11,7 +12,7 @@ import (
 // GetMonsterInstanceRecs -
 func (m *Model) GetMonsterInstanceRecs(opts *coresql.Options) ([]*record.MonsterInstance, error) {
 
-	l := m.Logger("GetMonsterInstanceRecs")
+	l := m.loggerWithFunctionContext("GetMonsterInstanceRecs")
 
 	l.Debug("Getting monster instance records opts >%#v<", opts)
 
@@ -23,7 +24,7 @@ func (m *Model) GetMonsterInstanceRecs(opts *coresql.Options) ([]*record.Monster
 // GetMonsterInstanceRec -
 func (m *Model) GetMonsterInstanceRec(recID string, lock *coresql.Lock) (*record.MonsterInstance, error) {
 
-	l := m.Logger("GetMonsterInstanceRec")
+	l := m.loggerWithFunctionContext("GetMonsterInstanceRec")
 
 	l.Debug("Getting monster instance record ID >%s<", recID)
 
@@ -42,10 +43,43 @@ func (m *Model) GetMonsterInstanceRec(recID string, lock *coresql.Lock) (*record
 	return rec, err
 }
 
+// GetMonsterInstanceViewRecByMonsterID -
+func (m *Model) GetMonsterInstanceViewRecByMonsterID(monsterID string) (*record.MonsterInstanceView, error) {
+	l := m.loggerWithFunctionContext("GetMonsterInstanceViewRecByMonsterID")
+
+	monsterInstanceViewRecs, err := m.GetMonsterInstanceViewRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "monster_id",
+					Val: monsterID,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting monster ID >%s< monster instance view records >%v<", monsterID, err)
+		return nil, err
+	}
+
+	if len(monsterInstanceViewRecs) == 0 {
+		l.Warn("monster with ID >%s< has no monster instance view record", monsterID)
+		return nil, nil
+	}
+
+	if len(monsterInstanceViewRecs) > 1 {
+		err := coreerror.NewInternalError("unexpected number of monster instance view records returned >%d<", len(monsterInstanceViewRecs))
+		l.Warn(err.Error())
+		return nil, err
+	}
+
+	return monsterInstanceViewRecs[0], nil
+}
+
 // GetMonsterInstanceViewRecs -
 func (m *Model) GetMonsterInstanceViewRecs(opts *coresql.Options) ([]*record.MonsterInstanceView, error) {
 
-	l := m.Logger("GetMonsterInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetMonsterInstanceViewRecs")
 
 	l.Debug("Getting monster instance view records opts >%#v<", opts)
 
@@ -57,7 +91,7 @@ func (m *Model) GetMonsterInstanceViewRecs(opts *coresql.Options) ([]*record.Mon
 // GetMonsterInstanceViewRec -
 func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstanceView, error) {
 
-	l := m.Logger("GetMonsterInstanceViewRec")
+	l := m.loggerWithFunctionContext("GetMonsterInstanceViewRec")
 
 	l.Debug("Getting monster instance view record ID >%s<", recID)
 
@@ -79,7 +113,7 @@ func (m *Model) GetMonsterInstanceViewRec(recID string) (*record.MonsterInstance
 // CreateMonsterInstanceRec -
 func (m *Model) CreateMonsterInstanceRec(rec *record.MonsterInstance) error {
 
-	l := m.Logger("CreateMonsterInstanceRec")
+	l := m.loggerWithFunctionContext("CreateMonsterInstanceRec")
 
 	l.Debug("Creating monster record >%#v<", rec)
 
@@ -97,7 +131,7 @@ func (m *Model) CreateMonsterInstanceRec(rec *record.MonsterInstance) error {
 // UpdateMonsterInstanceRec -
 func (m *Model) UpdateMonsterInstanceRec(rec *record.MonsterInstance) error {
 
-	l := m.Logger("UpdateMonsterInstanceRec")
+	l := m.loggerWithFunctionContext("UpdateMonsterInstanceRec")
 
 	l.Debug("Updating monster record >%#v<", rec)
 
@@ -115,7 +149,7 @@ func (m *Model) UpdateMonsterInstanceRec(rec *record.MonsterInstance) error {
 // DeleteMonsterInstanceRec -
 func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 
-	l := m.Logger("DeleteMonsterInstanceRec")
+	l := m.loggerWithFunctionContext("DeleteMonsterInstanceRec")
 
 	l.Debug("Deleting monster rec ID >%s<", recID)
 
@@ -137,7 +171,7 @@ func (m *Model) DeleteMonsterInstanceRec(recID string) error {
 // RemoveMonsterInstanceRec -
 func (m *Model) RemoveMonsterInstanceRec(recID string) error {
 
-	l := m.Logger("RemoveMonsterInstanceRec")
+	l := m.loggerWithFunctionContext("RemoveMonsterInstanceRec")
 
 	l.Debug("Removing monster rec ID >%s<", recID)
 

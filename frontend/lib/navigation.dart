@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Application packages
 import 'package:go_mud_client/logger.dart';
-import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 
 // Application page packages
-import 'package:go_mud_client/pages/home.dart';
-import 'package:go_mud_client/pages/dungeon.dart';
-import 'package:go_mud_client/pages/character.dart';
+import 'package:go_mud_client/pages/character_list.dart';
+import 'package:go_mud_client/pages/character_create.dart';
+import 'package:go_mud_client/pages/dungeon_list.dart';
 import 'package:go_mud_client/pages/game.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -26,60 +24,105 @@ typedef NavigationCallback = void Function(BuildContext context);
 // tree to any widgets that need to perform navigation.
 class NavigationCallbacks {
   // Add a callback for every page we need to navigate to
-  final NavigationCallback openHomePage;
-  final NavigationCallback openDungeonPage;
-  final NavigationCallback openCharacterPage;
+  final NavigationCallback openCharacterListPage;
+  final NavigationCallback closeCharacterListPage;
+  final NavigationCallback openCharacterCreatePage;
+  final NavigationCallback closeCharacterCreatePage;
+  final NavigationCallback openDungeonListPage;
+  final NavigationCallback closeDungeonListPage;
   final NavigationCallback openGamePage;
+  final NavigationCallback closeGamePage;
 
   NavigationCallbacks({
-    required this.openHomePage,
-    required this.openDungeonPage,
-    required this.openCharacterPage,
+    required this.openCharacterListPage,
+    required this.closeCharacterListPage,
+    required this.openCharacterCreatePage,
+    required this.closeCharacterCreatePage,
+    required this.openDungeonListPage,
+    required this.closeDungeonListPage,
     required this.openGamePage,
+    required this.closeGamePage,
   });
 }
 
 class _NavigationState extends State<Navigation> {
-  // List of supported pages
-  List<String> _pageList = [HomePage.pageName];
+  // Initial page
+  List<String> _pageList = [CharacterListPage.pageName];
 
   // Callback functions set the desired page stack
-  void openHomePage(BuildContext context) {
-    final log = getLogger('Navigation', 'openHomePage');
-    log.fine('Opening home page..');
+  void openCharacterListPage(BuildContext context) {
+    final log = getLogger('Navigation', 'openCharacterListPage');
+    log.fine('Opening character list page..');
     setState(() {
-      _pageList = [HomePage.pageName];
+      _pageList = [CharacterListPage.pageName];
     });
   }
 
-  void openDungeonPage(BuildContext context) {
-    final log = getLogger('Navigation', 'openDungeonPage');
-    log.fine('Opening dungeon page..');
+  void closeCharacterListPage(BuildContext context) {
+    final log = getLogger('Navigation', 'closeCharacterListPage');
+    log.warning('--- Closing character list page..');
+    Navigator.pop(context);
     setState(() {
-      _pageList = [DungeonPage.pageName];
+      _pageList.removeWhere(
+        (pageName) => pageName == CharacterListPage.pageName,
+      );
     });
   }
 
-  void openCharacterPage(BuildContext context) {
-    final log = getLogger('Navigation', 'openCharacterPage');
-    log.fine('Opening character page..');
+  void openCharacterCreatePage(BuildContext context) {
+    final log = getLogger('Navigation', 'openCharacterCreatePage');
+    log.fine('Opening character create page..');
     setState(() {
-      _pageList = [CharacterPage.pageName];
+      _pageList = [CharacterListPage.pageName, CharacterCreatePage.pageName];
+    });
+  }
+
+  void closeCharacterCreatePage(BuildContext context) {
+    final log = getLogger('Navigation', 'closeCharacterCreatePage');
+    log.warning('--- Closing character create page..');
+    Navigator.pop(context);
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == CharacterCreatePage.pageName,
+      );
+    });
+  }
+
+  void openDungeonListPage(BuildContext context) {
+    final log = getLogger('Navigation', 'openDungeonListPage');
+    log.fine('Opening dungeon list page..');
+    setState(() {
+      _pageList = [DungeonListPage.pageName];
+    });
+  }
+
+  void closeDungeonListPage(BuildContext context) {
+    final log = getLogger('Navigation', 'closeDungeonListPage');
+    log.warning('--- Closing dungeon list page..');
+    Navigator.pop(context);
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == DungeonListPage.pageName,
+      );
     });
   }
 
   void openGamePage(BuildContext context) {
     final log = getLogger('Navigation', 'openGamePage');
     log.fine('Opening game page..');
-
-    // Clear all dungeon actions
-    final dungeonActionCubit = BlocProvider.of<DungeonActionCubit>(context);
-    log.fine(
-        'Dungeon action record count ${dungeonActionCubit.otherActionRecs.length}');
-    dungeonActionCubit.clearActions();
-
     setState(() {
       _pageList = [GamePage.pageName];
+    });
+  }
+
+  void closeGamePage(BuildContext context) {
+    final log = getLogger('Navigation', 'closeGamePage');
+    log.warning('--- Closing game page..');
+    Navigator.pop(context);
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == DungeonListPage.pageName,
+      );
     });
   }
 
@@ -90,25 +133,29 @@ class _NavigationState extends State<Navigation> {
     List<Page<dynamic>> pages = [];
 
     NavigationCallbacks callbacks = NavigationCallbacks(
-      openHomePage: openHomePage,
-      openDungeonPage: openDungeonPage,
-      openCharacterPage: openCharacterPage,
+      openCharacterListPage: openCharacterListPage,
+      closeCharacterListPage: closeCharacterListPage,
+      openCharacterCreatePage: openCharacterCreatePage,
+      closeCharacterCreatePage: closeCharacterCreatePage,
+      openDungeonListPage: openDungeonListPage,
+      closeDungeonListPage: closeDungeonListPage,
       openGamePage: openGamePage,
+      closeGamePage: closeGamePage,
     );
 
     for (var pageName in _pageList) {
       switch (pageName) {
-        case HomePage.pageName:
-          log.fine('Adding ${HomePage.pageName}');
-          pages.add(HomePage(callbacks: callbacks));
+        case CharacterListPage.pageName:
+          log.fine('Adding ${CharacterListPage.pageName}');
+          pages.add(CharacterListPage(callbacks: callbacks));
           break;
-        case DungeonPage.pageName:
-          log.fine('Adding ${DungeonPage.pageName}');
-          pages.add(DungeonPage(callbacks: callbacks));
+        case CharacterCreatePage.pageName:
+          log.fine('Adding ${CharacterCreatePage.pageName}');
+          pages.add(CharacterCreatePage(callbacks: callbacks));
           break;
-        case CharacterPage.pageName:
-          log.fine('Adding ${CharacterPage.pageName}');
-          pages.add(CharacterPage(callbacks: callbacks));
+        case DungeonListPage.pageName:
+          log.fine('Adding ${DungeonListPage.pageName}');
+          pages.add(DungeonListPage(callbacks: callbacks));
           break;
         case GamePage.pageName:
           log.fine('Adding ${GamePage.pageName}');
@@ -122,12 +169,15 @@ class _NavigationState extends State<Navigation> {
   }
 
   bool _onPopPage(Route<dynamic> route, dynamic result, BuildContext context) {
-    final log = getLogger('Navigation', '_onPopPage');
-    log.fine('Page name ${route.settings.name}');
-
     if (!route.didPop(result)) {
       return false;
     }
+
+    setState(() {
+      _pageList.removeWhere(
+        (pageName) => pageName == route.settings.name,
+      );
+    });
 
     return true;
   }

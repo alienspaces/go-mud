@@ -6,13 +6,10 @@ import (
 
 	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
+	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/calculator"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/mapper"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
 )
-
-// TODO: (game) Determine whether we need to pass the character/monster instance view
-// record around everywhere or whether a more specific PerformActionArgs definition
-// (like ResolveActionArgs) would clean this up.
 
 type PerformActionArgs struct {
 	ActionRec                 *record.Action
@@ -44,7 +41,7 @@ func checkPerformActionArgs(args *PerformActionArgs) error {
 }
 
 func (m *Model) performAction(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performCharacterAction")
+	l := m.loggerWithFunctionContext("performCharacterAction")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -54,13 +51,13 @@ func (m *Model) performAction(args *PerformActionArgs) (*record.Action, error) {
 	actionRec := args.ActionRec
 
 	actionFuncs := map[string]characterActionFunc{
-		"move":   m.performActionMove,
-		"look":   m.performActionLook,
-		"use":    m.performActionUse,
-		"stash":  m.performActionStash,
-		"equip":  m.performActionEquip,
-		"drop":   m.performActionDrop,
-		"attack": m.performActionAttack,
+		record.ActionCommandMove:   m.performActionMove,
+		record.ActionCommandLook:   m.performActionLook,
+		record.ActionCommandUse:    m.performActionUse,
+		record.ActionCommandEquip:  m.performActionEquip,
+		record.ActionCommandStash:  m.performActionStash,
+		record.ActionCommandDrop:   m.performActionDrop,
+		record.ActionCommandAttack: m.performActionAttack,
 	}
 
 	actionFunc, ok := actionFuncs[actionRec.ResolvedCommand]
@@ -85,7 +82,7 @@ func (m *Model) performAction(args *PerformActionArgs) (*record.Action, error) {
 }
 
 func (m *Model) performActionMove(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionMove")
+	l := m.loggerWithFunctionContext("performActionMove")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -138,7 +135,7 @@ func (m *Model) performActionMove(args *PerformActionArgs) (*record.Action, erro
 }
 
 func (m *Model) performActionLook(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionLook")
+	l := m.loggerWithFunctionContext("performActionLook")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -168,7 +165,7 @@ func (m *Model) performActionLook(args *PerformActionArgs) (*record.Action, erro
 }
 
 func (m *Model) performActionUse(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionUse")
+	l := m.loggerWithFunctionContext("performActionUse")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -189,7 +186,7 @@ func (m *Model) performActionUse(args *PerformActionArgs) (*record.Action, error
 }
 
 func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionStash")
+	l := m.loggerWithFunctionContext("performActionStash")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -255,7 +252,7 @@ func (m *Model) performActionStash(args *PerformActionArgs) (*record.Action, err
 }
 
 func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionEquip")
+	l := m.loggerWithFunctionContext("performActionEquip")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -321,7 +318,7 @@ func (m *Model) performActionEquip(args *PerformActionArgs) (*record.Action, err
 }
 
 func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionDrop")
+	l := m.loggerWithFunctionContext("performActionDrop")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -398,7 +395,7 @@ func (m *Model) performActionDrop(args *PerformActionArgs) (*record.Action, erro
 
 // TODO: 10-implement-effects: Calculate to-hit, weapon damage, effects etc
 func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, error) {
-	l := m.Logger("performActionAttack")
+	l := m.loggerWithFunctionContext("performActionAttack")
 
 	if err := checkPerformActionArgs(args); err != nil {
 		l.Warn("failed checking performer args >%v<", err)
@@ -406,63 +403,94 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 	}
 
 	actionRec := args.ActionRec
+	characterInstanceRec := args.CharacterInstanceViewRec
+	monsterInstanceRec := args.MonsterInstanceViewRec
+	locationInstanceRecordSet := args.LocationInstanceRecordSet
 
-	if actionRec.CharacterInstanceID.Valid {
+	if null.NullStringIsValid(actionRec.CharacterInstanceID) && characterInstanceRec != nil {
 
-		// TODO: 10-implement-effects: Get equipped weapon for character, establish attack bonuses, damage rating etc
+		// TODO: 10-implement-effects:
+		// Get resolved equipped weapon or the primary equipped weapon being used to attack.
 		if null.NullStringIsValid(actionRec.ResolvedEquippedObjectInstanceID) {
 			l.Info("Attacking with weapon")
 		}
 
+		// TODO: 10-implement-effects:
+		// Rename and refactor this function so it returns an array of effects. Pass the
+		// character instance record and the equipped item that is being used to attack.
+		dmg, err := calculator.CalculateCharacterDamage(characterInstanceRec, locationInstanceRecordSet)
+		if err != nil {
+			l.Warn("failed calculating character damage >%v<", err)
+			return nil, err
+		}
+
 		if null.NullStringIsValid(actionRec.ResolvedTargetCharacterInstanceID) {
+
 			l.Info("Character attacking character")
+
 			tciRec, err := m.GetCharacterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID), coresql.ForUpdate)
 			if err != nil {
-				l.Warn("failed getting character instance record >%s<", err)
+				l.Warn("failed getting character instance record >%v<", err)
 				return nil, err
 			}
 
-			tciRec.Health -= 1
+			// TODO: 10-implement-effects:
+			// Apply resulting effects to the target character instance instead of directly
+			// subtracting damage from the characters health.
+			tciRec.Health -= dmg
 
 			err = m.UpdateCharacterInstanceRec(tciRec)
 			if err != nil {
-				l.Warn("failed updating character instance record >%s<", err)
+				l.Warn("failed updating character instance record >%v<", err)
 				return nil, err
 			}
-
-			// TODO: 12-implement-death: Remove character instance when dead
 
 		} else if null.NullStringIsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+
 			l.Info("Character attacking monster")
+
 			tmiRec, err := m.GetMonsterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetMonsterInstanceID), coresql.ForUpdate)
 			if err != nil {
-				l.Warn("failed getting monster instance record >%s<", err)
+				l.Warn("failed getting monster instance record >%v<", err)
 				return nil, err
 			}
 
-			tmiRec.Health -= 1
+			// TODO: 10-implement-effects:
+			// Apply resulting effects to the target monster instance instead of directly
+			// subtracting damage from the monsters health.
+			tmiRec.Health -= dmg
 
 			err = m.UpdateMonsterInstanceRec(tmiRec)
 			if err != nil {
-				l.Warn("failed updating monster instance record >%s<", err)
+				l.Warn("failed updating monster instance record >%v<", err)
 				return nil, err
 			}
-
-			// TODO: 12-implement-death: Remove monster instance when dead
-
 		}
-	} else if actionRec.MonsterInstanceID.Valid {
 
-		// TODO: Get equipped weapon for monster, establish attack bonuses, damage rating etc
+	} else if null.NullStringIsValid(actionRec.MonsterInstanceID) && monsterInstanceRec != nil {
+
+		// TODO: 10-implement-effects:
+		// Get resolved equipped weapon or the primary equipped weapon being used to attack.
 		if null.NullStringIsValid(actionRec.ResolvedEquippedObjectInstanceID) {
 			l.Info("Attacking with weapon")
 		}
 
+		// TODO: 10-implement-effects:
+		// Rename and refactor this function so it returns an array of effects. Pass the
+		// character instance record and the equipped item that is being used to attack.
+		dmg, err := calculator.CalculateMonsterDamage(monsterInstanceRec, locationInstanceRecordSet)
+		if err != nil {
+			l.Warn("failed calculating monster damage >%v<", err)
+			return nil, err
+		}
+
 		if null.NullStringIsValid(actionRec.ResolvedTargetCharacterInstanceID) {
+
 			l.Info("Monster attacking character")
+
 			tciRec, err := m.GetCharacterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetCharacterInstanceID), coresql.ForUpdate)
 			if err != nil {
-				l.Warn("failed getting character instance record >%s<", err)
+				l.Warn("failed getting character instance record >%v<", err)
 				return nil, err
 			}
 
@@ -472,33 +500,37 @@ func (m *Model) performActionAttack(args *PerformActionArgs) (*record.Action, er
 				return nil, err
 			}
 
-			tciRec.Health -= 1
+			// TODO: 10-implement-effects:
+			// Apply resulting effects to the target character instance instead of directly
+			// subtracting damage from the characters health.
+			tciRec.Health -= dmg
 
 			err = m.UpdateCharacterInstanceRec(tciRec)
 			if err != nil {
-				l.Warn("failed updating character instance record >%s<", err)
+				l.Warn("failed updating character instance record >%v<", err)
 				return nil, err
 			}
-
-			// TODO: 12-implement-death: Remove character instance when dead
 
 		} else if null.NullStringIsValid(actionRec.ResolvedTargetMonsterInstanceID) {
+
 			l.Info("Monster attacking monster")
+
 			tmiRec, err := m.GetMonsterInstanceRec(null.NullStringToString(actionRec.ResolvedTargetMonsterInstanceID), coresql.ForUpdate)
 			if err != nil {
-				l.Warn("failed getting monster instance record >%s<", err)
+				l.Warn("failed getting monster instance record >%v<", err)
 				return nil, err
 			}
 
-			tmiRec.Health -= 1
+			// TODO: 10-implement-effects:
+			// Apply resulting effects to the target monster instance instead of directly
+			// subtracting damage from the monsters health.
+			tmiRec.Health -= dmg
 
 			err = m.UpdateMonsterInstanceRec(tmiRec)
 			if err != nil {
-				l.Warn("failed updating monster instance record >%s<", err)
+				l.Warn("failed updating monster instance record >%v<", err)
 				return nil, err
 			}
-
-			// TODO: 12-implement-death: Remove monster instance when dead
 		}
 	}
 

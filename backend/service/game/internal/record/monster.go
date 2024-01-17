@@ -26,6 +26,12 @@ type MonsterObject struct {
 	repository.Record
 }
 
+const (
+	FieldMonsterInstanceDungeonInstanceID string = "dungeon_instance_id"
+	FieldMonsterInstanceHealth            string = "health"
+	FieldMonsterInstanceDecay             string = "decay"
+)
+
 type MonsterInstance struct {
 	MonsterID          string `db:"monster_id"`
 	DungeonInstanceID  string `db:"dungeon_instance_id"`
@@ -35,6 +41,7 @@ type MonsterInstance struct {
 	Intelligence       int    `db:"intelligence"`
 	Health             int    `db:"health"`
 	Fatigue            int    `db:"fatigue"`
+	Decay              int    `db:"decay"`
 	Coins              int    `db:"coins"`
 	ExperiencePoints   int    `db:"experience_points"`
 	AttributePoints    int    `db:"attribute_points"`
@@ -54,6 +61,7 @@ type MonsterInstanceView struct {
 	CurrentIntelligence int    `db:"current_intelligence"`
 	Health              int    `db:"health"`
 	Fatigue             int    `db:"fatigue"`
+	Decay               int    `db:"decay"`
 	CurrentHealth       int    `db:"current_health"`
 	CurrentFatigue      int    `db:"current_fatigue"`
 	Coins               int    `db:"coins"`

@@ -11,7 +11,7 @@ import (
 // GetObjectInstanceRecs -
 func (m *Model) GetObjectInstanceRecs(opts *coresql.Options) ([]*record.ObjectInstance, error) {
 
-	l := m.Logger("GetObjectInstanceRecs")
+	l := m.loggerWithFunctionContext("GetObjectInstanceRecs")
 
 	l.Debug("Getting object instance records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetObjectInstanceRecs(opts *coresql.Options) ([]*record.ObjectIn
 // GetObjectInstanceRec -
 func (m *Model) GetObjectInstanceRec(recID string, lock *coresql.Lock) (*record.ObjectInstance, error) {
 
-	l := m.Logger("GetObjectInstanceRec")
+	l := m.loggerWithFunctionContext("GetObjectInstanceRec")
 
 	l.Debug("Getting object instance record ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetObjectInstanceRec(recID string, lock *coresql.Lock) (*record.
 // GetObjectInstanceViewRecs -
 func (m *Model) GetObjectInstanceViewRecs(opts *coresql.Options) ([]*record.ObjectInstanceView, error) {
 
-	l := m.Logger("GetObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetObjectInstanceViewRecs")
 
 	l.Debug("Getting object instance view records opts >%#v<", opts)
 
@@ -57,7 +57,7 @@ func (m *Model) GetObjectInstanceViewRecs(opts *coresql.Options) ([]*record.Obje
 // GetObjectInstanceViewRec -
 func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceView, error) {
 
-	l := m.Logger("GetObjectInstanceViewRec")
+	l := m.loggerWithFunctionContext("GetObjectInstanceViewRec")
 
 	l.Debug("Getting object instance view record ID >%s<", recID)
 
@@ -79,7 +79,7 @@ func (m *Model) GetObjectInstanceViewRec(recID string) (*record.ObjectInstanceVi
 // CreateObjectInstanceRec -
 func (m *Model) CreateObjectInstanceRec(rec *record.ObjectInstance) error {
 
-	l := m.Logger("CreateObjectInstanceRec")
+	l := m.loggerWithFunctionContext("CreateObjectInstanceRec")
 
 	l.Debug("Creating object instance record >%#v<", rec)
 
@@ -97,7 +97,7 @@ func (m *Model) CreateObjectInstanceRec(rec *record.ObjectInstance) error {
 // UpdateObjectInstanceRec -
 func (m *Model) UpdateObjectInstanceRec(rec *record.ObjectInstance) error {
 
-	l := m.Logger("UpdateObjectInstanceRec")
+	l := m.loggerWithFunctionContext("UpdateObjectInstanceRec")
 
 	l.Warn("Updating object instance record >%#v<", rec)
 
@@ -115,7 +115,7 @@ func (m *Model) UpdateObjectInstanceRec(rec *record.ObjectInstance) error {
 // DeleteObjectInstanceRec -
 func (m *Model) DeleteObjectInstanceRec(recID string) error {
 
-	l := m.Logger("DeleteObjectInstanceRec")
+	l := m.loggerWithFunctionContext("DeleteObjectInstanceRec")
 
 	l.Debug("Deleting object instance record ID >%s<", recID)
 
@@ -137,7 +137,7 @@ func (m *Model) DeleteObjectInstanceRec(recID string) error {
 // RemoveObjectInstanceRec -
 func (m *Model) RemoveObjectInstanceRec(recID string) error {
 
-	l := m.Logger("RemoveObjectInstanceRec")
+	l := m.loggerWithFunctionContext("RemoveObjectInstanceRec")
 
 	l.Debug("Removing object instance record ID >%s<", recID)
 

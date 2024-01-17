@@ -11,7 +11,7 @@ import (
 // GetDungeonInstanceViewRecs -
 func (m *Model) GetDungeonInstanceViewRecs(opts *coresql.Options) ([]*record.DungeonInstanceView, error) {
 
-	l := m.Logger("GetDungeonInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetDungeonInstanceViewRecs")
 
 	l.Debug("Getting dungeon records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetDungeonInstanceViewRecs(opts *coresql.Options) ([]*record.Dun
 // GetDungeonInstanceViewRec -
 func (m *Model) GetDungeonInstanceViewRec(recID string) (*record.DungeonInstanceView, error) {
 
-	l := m.Logger("GetDungeonInstanceViewRec")
+	l := m.loggerWithFunctionContext("GetDungeonInstanceViewRec")
 
 	l.Debug("Getting dungeon rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetDungeonInstanceViewRec(recID string) (*record.DungeonInstance
 // GetDungeonInstanceRecs -
 func (m *Model) GetDungeonInstanceRecs(opts *coresql.Options) ([]*record.DungeonInstance, error) {
 
-	l := m.Logger("GetDungeonInstanceRecs")
+	l := m.loggerWithFunctionContext("GetDungeonInstanceRecs")
 
 	l.Debug("Getting dungeon records opts >%#v<", opts)
 
@@ -57,7 +57,7 @@ func (m *Model) GetDungeonInstanceRecs(opts *coresql.Options) ([]*record.Dungeon
 // GetDungeonInstanceRec -
 func (m *Model) GetDungeonInstanceRec(recID string, lock *coresql.Lock) (*record.DungeonInstance, error) {
 
-	l := m.Logger("GetDungeonInstanceRec")
+	l := m.loggerWithFunctionContext("GetDungeonInstanceRec")
 
 	l.Debug("Getting dungeon rec ID >%s<", recID)
 
@@ -79,7 +79,7 @@ func (m *Model) GetDungeonInstanceRec(recID string, lock *coresql.Lock) (*record
 // CreateDungeonInstanceRec -
 func (m *Model) CreateDungeonInstanceRec(rec *record.DungeonInstance) error {
 
-	l := m.Logger("CreateDungeonInstanceRec")
+	l := m.loggerWithFunctionContext("CreateDungeonInstanceRec")
 
 	l.Debug("Creating dungeon record >%#v<", rec)
 
@@ -97,7 +97,7 @@ func (m *Model) CreateDungeonInstanceRec(rec *record.DungeonInstance) error {
 // UpdateDungeonInstanceRec -
 func (m *Model) UpdateDungeonInstanceRec(rec *record.DungeonInstance) error {
 
-	l := m.Logger("UpdateDungeonInstanceRec")
+	l := m.loggerWithFunctionContext("UpdateDungeonInstanceRec")
 
 	l.Debug("Updating dungeon record >%#v<", rec)
 
@@ -115,7 +115,7 @@ func (m *Model) UpdateDungeonInstanceRec(rec *record.DungeonInstance) error {
 // DeleteDungeonInstanceRec -
 func (m *Model) DeleteDungeonInstanceRec(recID string) error {
 
-	l := m.Logger("DeleteDungeonInstanceRec")
+	l := m.loggerWithFunctionContext("DeleteDungeonInstanceRec")
 
 	l.Debug("Deleting dungeon rec ID >%s<", recID)
 
@@ -137,7 +137,7 @@ func (m *Model) DeleteDungeonInstanceRec(recID string) error {
 // RemoveDungeonInstanceRec -
 func (m *Model) RemoveDungeonInstanceRec(recID string) error {
 
-	l := m.Logger("RemoveDungeonInstanceRec")
+	l := m.loggerWithFunctionContext("RemoveDungeonInstanceRec")
 
 	l.Debug("Removing dungeon rec ID >%s<", recID)
 

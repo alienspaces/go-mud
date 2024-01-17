@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 
-	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/null"
 	coresql "gitlab.com/alienspaces/go-mud/backend/core/sql"
 	"gitlab.com/alienspaces/go-mud/backend/service/game/internal/record"
@@ -16,7 +15,7 @@ type CharacterInstanceRecordSet struct {
 
 // CharacterEnterDungeon -
 func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*CharacterInstanceRecordSet, error) {
-	l := m.Logger("CharacterEnterDungeon")
+	l := m.loggerWithFunctionContext("CharacterEnterDungeon")
 
 	dungeonInstance, err := m.GetAvailableDungeonInstanceViewRecordSet(dungeonID)
 	if err != nil {
@@ -55,7 +54,7 @@ func (m *Model) CharacterEnterDungeon(dungeonID, characterID string) (*Character
 
 // CharacterExitDungeon -
 func (m *Model) CharacterExitDungeon(characterID string) error {
-	l := m.Logger("CharacterExitDungeon")
+	l := m.loggerWithFunctionContext("CharacterExitDungeon")
 
 	// Update character record
 	characterInstanceRec, err := m.GetCharacterInstanceRecByCharacterID(characterID)
@@ -65,8 +64,8 @@ func (m *Model) CharacterExitDungeon(characterID string) error {
 	}
 
 	if characterInstanceRec == nil {
-		l.Warn("character instance record is nil")
-		err := coreerror.NewInternalError()
+		err := NewInternalError("character instance record is nil")
+		l.Warn(err.Error())
 		return err
 	}
 
@@ -166,9 +165,35 @@ CHARACTER_OBJECT_INSTANCE_RECS:
 	return nil
 }
 
+// GetCharacterInstance -
+func (m *Model) GetCharacterInstance(characterID string) (*record.CharacterInstance, error) {
+	l := m.loggerWithFunctionContext("GetCharacterInstance")
+
+	characterInstanceRecs, err := m.GetCharacterInstanceRecs(
+		&coresql.Options{
+			Params: []coresql.Param{
+				{
+					Col: "character_id",
+					Val: characterID,
+				},
+			},
+		},
+	)
+	if err != nil {
+		l.Warn("failed getting character instance records >%v<", err)
+		return nil, err
+	}
+
+	if len(characterInstanceRecs) == 0 {
+		return nil, err
+	}
+
+	return characterInstanceRecs[0], nil
+}
+
 // CreateCharacterInstance -
 func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID string) (*CharacterInstanceRecordSet, error) {
-	l := m.Logger("CreateCharacterInstance")
+	l := m.loggerWithFunctionContext("CreateCharacterInstance")
 
 	locationInstanceRec, err := m.GetLocationInstanceRec(locationInstanceID, nil)
 	if err != nil {
@@ -254,7 +279,7 @@ func (m *Model) CreateCharacterInstance(locationInstanceID string, characterID s
 
 // DeleteCharacterInstance -
 func (m *Model) DeleteCharacterInstance(characterID string) error {
-	l := m.Logger("DeleteCharacterInstance")
+	l := m.loggerWithFunctionContext("DeleteCharacterInstance")
 
 	characterInstanceRec, err := m.GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {
@@ -306,7 +331,7 @@ func (m *Model) GetCharacterInstanceObjectInstanceRecs(characterInstanceID strin
 
 // GetCharacterInstanceEquippedObjectInstanceRecs -
 func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
-	l := m.Logger("GetCharacterInstanceEquippedObjectInstanceRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceEquippedObjectInstanceRecs")
 
 	l.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
@@ -330,7 +355,7 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceRecs(characterInstance
 
 // GetCharacterInstanceStashedObjectInstanceRecs -
 func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceID string) ([]*record.ObjectInstance, error) {
-	l := m.Logger("GetCharacterInstanceStashedObjectInstanceRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceStashedObjectInstanceRecs")
 
 	l.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 
@@ -354,7 +379,7 @@ func (m *Model) GetCharacterInstanceStashedObjectInstanceRecs(characterInstanceI
 
 // GetCharacterInstanceObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
-	l := m.Logger("GetCharacterInstanceObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceObjectInstanceViewRecs")
 
 	l.Info("Getting character instance ID >%s< object records", characterInstanceID)
 
@@ -374,7 +399,7 @@ func (m *Model) GetCharacterInstanceObjectInstanceViewRecs(characterInstanceID s
 
 // GetCharacterInstanceEquippedObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
-	l := m.Logger("GetCharacterInstanceEquippedObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceEquippedObjectInstanceViewRecs")
 
 	l.Info("Getting character instance ID >%s< equipped object records", characterInstanceID)
 
@@ -398,7 +423,7 @@ func (m *Model) GetCharacterInstanceEquippedObjectInstanceViewRecs(characterInst
 
 // GetCharacterInstanceStashedObjectInstanceViewRecs -
 func (m *Model) GetCharacterInstanceStashedObjectInstanceViewRecs(characterInstanceID string) ([]*record.ObjectInstanceView, error) {
-	l := m.Logger("GetCharacterInstanceStashedObjectInstanceViewRecs")
+	l := m.loggerWithFunctionContext("GetCharacterInstanceStashedObjectInstanceViewRecs")
 
 	l.Info("Getting character instance ID >%s< stashed object records", characterInstanceID)
 

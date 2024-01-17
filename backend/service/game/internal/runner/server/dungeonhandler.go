@@ -80,7 +80,7 @@ func (rnr *Runner) DungeonHandlerConfig(hc map[string]server.HandlerConfig) map[
 
 // getDungeonHandler -
 func (rnr *Runner) getDungeonHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "getDungeonHandler")
+	l = loggerWithFunctionContext(l, "getDungeonHandler")
 
 	// Path parameters
 	id := pp.ByName("dungeon_id")
@@ -124,7 +124,7 @@ func (rnr *Runner) getDungeonHandler(w http.ResponseWriter, r *http.Request, pp 
 
 // getDungeonsHandler -
 func (rnr *Runner) getDungeonsHandler(w http.ResponseWriter, r *http.Request, pp httprouter.Params, qp *queryparam.QueryParams, l logger.Logger, m modeller.Modeller) error {
-	l = loggerWithContext(l, "getDungeonsHandler")
+	l = loggerWithFunctionContext(l, "getDungeonsHandler")
 
 	opts := queryparam.ToSQLOptions(qp)
 

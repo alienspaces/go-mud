@@ -138,11 +138,7 @@ func (rnr *Runner) RegisterDefaultLivenessRoute(r *httprouter.Router) (*httprout
 
 	// This logger should only be used for the liveness endpoint and is to avoid creating
 	// a new logger on every request.
-	hl, err := rnr.Log.NewInstance()
-	if err != nil {
-		l.Warn("failed new log instance >%v<", err)
-		return nil, err
-	}
+	hl := rnr.Log.NewInstance(nil)
 	r.GET("/liveness", func(w http.ResponseWriter, r *http.Request, pp httprouter.Params) {
 		_ = rnr.HandlerFunc(w, r, pp, nil, hl, nil)
 	})
@@ -210,11 +206,7 @@ func (rnr *Runner) HttpRouterHandlerWrapper(h Handle) httprouter.Handle {
 		// Create new logger with its own context (fields map) on every request because each
 		// request maintains its own context (fields map). If the same logger is used, when
 		// different requests set the logger context, there will be concurrent map read/writes.
-		l, err := rnr.Log.NewInstance()
-		if err != nil {
-			rnr.Log.Warn("failed new log instance >%v<", err)
-			return
-		}
+		l := rnr.Log.NewInstance(nil)
 
 		// delegate
 		_ = h(w, r, pp, nil, l, nil)

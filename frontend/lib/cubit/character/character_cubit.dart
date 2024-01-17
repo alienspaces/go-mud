@@ -1,134 +1,162 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 // Application
+import 'package:go_mud_client/cubit/dungeon_action/dungeon_action_cubit.dart';
 import 'package:go_mud_client/repository/repository.dart';
 import 'package:go_mud_client/logger.dart';
 
 part 'character_state.dart';
 
-const int maxAttributes = 36;
-const int maxCharacters = 3;
-
 class CharacterCubit extends Cubit<CharacterState> {
   final Map<String, String> config;
   final RepositoryCollection repositories;
+  final DungeonActionCubit dungeonActionCubit;
 
-  List<CharacterRecord>? characterRecords;
   CharacterRecord? characterRecord;
 
-  CharacterCubit({required this.config, required this.repositories})
-      : super(const CharacterStateInitial());
+  // streamSubscription is listening to events from the dungeon action
+  // cubit, specifically events that might require this cubit to refresh
+  // and emit an updated state.
+  StreamSubscription? streamSubscription;
 
-  void clearCharacter() {
+  CharacterCubit({
+    required this.config,
+    required this.repositories,
+    required this.dungeonActionCubit,
+  }) : super(const CharacterStateInitial()) {
+    streamSubscription?.cancel();
+    streamSubscription = dungeonActionCubit.stream.listen((state) {
+      final log = getLogger('CharacterCubit', 'dungeonActionCubit(listener)');
+      log.warning('Dungeon action cubit emitted state');
+      if (state is DungeonActionStateError) {
+        log.warning('Dungeon action cubit emitted error event');
+        if (characterRecord != null) {
+          log.warning('Clearing character record');
+          unselect();
+        }
+      }
+    });
+  }
+
+  void unselect() {
+    final log = getLogger('CharacterCubit', 'unselect');
+    log.warning('Unselecting character');
     characterRecord = null;
     emit(const CharacterStateInitial());
   }
 
-  bool canCreateCharacter() {
-    if (characterRecords == null) {
-      return true;
-    }
-    if (characterRecords != null && characterRecords!.length <= maxCharacters) {
-      return true;
-    }
-    return false;
-  }
+  Future<void> refresh() async {
+    final log = getLogger('CharacterCubit', 'refresh');
 
-  Future<void> initCreateCharacter() async {
-    if (canCreateCharacter()) {
-      emit(const CharacterStateCreate());
-    }
-  }
-
-  Future<void> createCharacter(CreateCharacterRecord characterRecord) async {
-    final log = getLogger('CharacterCubit', 'createCharacter');
-    log.fine('Creating character $characterRecord');
-
-    emit(const CharacterStateCreate());
-
-    if (characterRecord.characterStrength +
-            characterRecord.characterDexterity +
-            characterRecord.characterIntelligence >
-        maxAttributes) {
-      String message = 'New character attributes exceeds maximum allowed';
-      log.warning(message);
-      emit(CharacterStateCreateError(
-          characterRecord: characterRecord, message: message));
+    // Character not selected
+    if (this.characterRecord == null) {
+      // Exception here..
       return;
     }
 
-    CharacterRecord? createdCharacterRecord;
+    log.info('Refreshing character ID ${this.characterRecord!.characterID}');
 
-    try {
-      createdCharacterRecord =
-          await repositories.characterRepository.createOne(characterRecord);
-    } on DuplicateCharacterNameException {
-      log.warning('Throwing character create error');
-      emit(CharacterStateCreateError(
-        characterRecord: characterRecord,
-        message:
-            'Character name ${characterRecord.characterName} has been taken.',
-      ));
-      return;
-    } on RepositoryException catch (err) {
-      log.warning('Throwing character create error ${err.message}');
-      emit(CharacterStateCreateError(
-          characterRecord: characterRecord, message: err.message));
-      return;
-    }
+    CharacterRecord? characterRecord =
+        await repositories.characterRepository.getOne(
+      this.characterRecord!.characterID,
+    );
 
-    if (createdCharacterRecord != null) {
-      log.fine('Created character $createdCharacterRecord');
-      this.characterRecord = createdCharacterRecord;
-      characterRecords ??= [];
-      characterRecords?.add(createdCharacterRecord);
-      emit(CharacterStateSelected(characterRecord: createdCharacterRecord));
-    }
-  }
-
-  Future<void> loadCharacters() async {
-    final log = getLogger('CharacterCubit', 'loadCharacters');
-    log.fine('Loading characters...');
-    emit(const CharacterStateLoading());
-
-    List<CharacterRecord>? characterRecords;
-
-    try {
-      characterRecords = await repositories.characterRepository.getMany();
-    } catch (err) {
-      emit(const CharacterStateLoadError());
-      return;
-    }
-
-    emit(CharacterStateLoaded(characterRecords: characterRecords));
-  }
-
-  Future<void> loadCharacter(String characterID) async {
-    final log = getLogger('CharacterCubit', 'loadCharacter');
-    log.fine('Creating character ID $characterID');
-
-    emit(const CharacterStateLoading());
-
-    CharacterRecord? loadedCharacterRecord =
-        await repositories.characterRepository.getOne(characterID);
-
-    log.fine('Created character $loadedCharacterRecord');
-
-    if (loadedCharacterRecord != null) {
-      emit(CharacterStateSelected(characterRecord: loadedCharacterRecord));
-    }
-  }
-
-  Future<void> selectCharacter(CharacterRecord characterRecord) async {
     this.characterRecord = characterRecord;
 
-    emit(
-      CharacterStateLoaded(
-        characterRecords: characterRecords,
-        currentCharacterRecord: characterRecord,
-      ),
-    );
+    log.info('Refreshed character $characterRecord');
+  }
+
+  Future<void> select(CharacterRecord characterRecord) async {
+    final log = getLogger('CharacterCubit', 'select');
+    log.info('Selecting character ID ${characterRecord.characterID}');
+    log.info('Selecting character Name ${characterRecord.characterName}');
+
+    emit(CharacterStateSelecting(characterRecord: characterRecord));
+
+    this.characterRecord = characterRecord;
+
+    emit(CharacterStateSelected(characterRecord: characterRecord));
+  }
+
+  Future<void> enter(DungeonRecord dungeonRecord) async {
+    final log = getLogger('CharacterCubit', 'enter');
+    log.info('Entering dungeon ID ${dungeonRecord.dungeonID}');
+    log.info('Entering dungeon Name ${dungeonRecord.dungeonName}');
+
+    // Character not selected
+    if (characterRecord == null) {
+      // Exception here..
+      return;
+    }
+
+    emit(CharacterStateEntering(characterRecord: characterRecord!));
+
+    // TODO: Make entering a dungeon idempotent?
+
+    // Character already in this dungeon
+    if (characterRecord != null &&
+        characterRecord!.dungeonID == dungeonRecord.dungeonID) {
+      emit(CharacterStateEntered(
+        characterRecord: characterRecord!,
+      ));
+      return;
+    }
+
+    try {
+      characterRecord =
+          await repositories.dungeonCharacterRepository.enterDungeonCharacter(
+        dungeonRecord.dungeonID,
+        characterRecord!.characterID,
+      );
+    } on RepositoryException catch (err) {
+      log.warning('Throwing dungeon character enter error');
+      emit(CharacterStateError(
+        characterRecord: characterRecord!,
+        message: err.message,
+      ));
+      return;
+    }
+
+    if (characterRecord != null) {
+      emit(CharacterStateEntered(
+        characterRecord: characterRecord!,
+      ));
+    }
+  }
+
+  Future<void> exit() async {
+    final log = getLogger('CharacterCubit', 'exit');
+
+    // Character not selected
+    if (characterRecord == null || characterRecord!.dungeonID == null) {
+      // Exception here..
+      return;
+    }
+
+    log.fine('Exiting dungeon ID ${characterRecord!.dungeonID}');
+    log.fine('Exiting character ID ${characterRecord!.characterID}');
+
+    emit(CharacterStateExiting(characterRecord: characterRecord!));
+
+    try {
+      await repositories.dungeonCharacterRepository.exitDungeonCharacter(
+        characterRecord!.dungeonID!,
+        characterRecord!.characterID,
+      );
+    } on RepositoryException catch (err) {
+      log.warning('Throwing dungeon character exit error');
+      emit(CharacterStateError(
+        characterRecord: characterRecord!,
+        message: err.message,
+      ));
+      return;
+    }
+
+    log.fine('Exited dungeon character $characterRecord');
+
+    emit(CharacterStateExited(characterRecord: characterRecord!));
   }
 }

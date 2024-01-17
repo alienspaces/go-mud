@@ -11,7 +11,7 @@ import (
 // GetActionCharacterObjectRecs -
 func (m *Model) GetActionCharacterObjectRecs(opts *coresql.Options) ([]*record.ActionCharacterObject, error) {
 
-	l := m.Logger("GetActionCharacterObjectRecs")
+	l := m.loggerWithFunctionContext("GetActionCharacterObjectRecs")
 
 	l.Debug("Getting dungeon action character object records opts >%#v<", opts)
 
@@ -23,7 +23,7 @@ func (m *Model) GetActionCharacterObjectRecs(opts *coresql.Options) ([]*record.A
 // GetActionCharacterObjectRec -
 func (m *Model) GetActionCharacterObjectRec(recID string, lock *coresql.Lock) (*record.ActionCharacterObject, error) {
 
-	l := m.Logger("GetActionCharacterObjectRec")
+	l := m.loggerWithFunctionContext("GetActionCharacterObjectRec")
 
 	l.Debug("Getting dungeon action character object rec ID >%s<", recID)
 
@@ -45,7 +45,7 @@ func (m *Model) GetActionCharacterObjectRec(recID string, lock *coresql.Lock) (*
 // CreateActionCharacterObjectRec -
 func (m *Model) CreateActionCharacterObjectRec(rec *record.ActionCharacterObject) error {
 
-	l := m.Logger("CreateActionCharacterObjectRec")
+	l := m.loggerWithFunctionContext("CreateActionCharacterObjectRec")
 
 	l.Debug("Creating dungeon action character object record >%#v<", rec)
 
@@ -63,7 +63,7 @@ func (m *Model) CreateActionCharacterObjectRec(rec *record.ActionCharacterObject
 // UpdateActionCharacterObjectRec -
 func (m *Model) UpdateActionCharacterObjectRec(rec *record.ActionCharacterObject) error {
 
-	l := m.Logger("UpdateActionCharacterObjectRec")
+	l := m.loggerWithFunctionContext("UpdateActionCharacterObjectRec")
 
 	l.Debug("Updating dungeon action character object record >%#v<", rec)
 
@@ -81,7 +81,7 @@ func (m *Model) UpdateActionCharacterObjectRec(rec *record.ActionCharacterObject
 // DeleteActionCharacterObjectRec -
 func (m *Model) DeleteActionCharacterObjectRec(recID string) error {
 
-	l := m.Logger("DeleteActionCharacterObjectRec")
+	l := m.loggerWithFunctionContext("DeleteActionCharacterObjectRec")
 
 	l.Debug("Deleting dungeon action character object rec ID >%s<", recID)
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteActionCharacterObjectRec(recID string) error {
 // RemoveActionCharacterObjectRec -
 func (m *Model) RemoveActionCharacterObjectRec(recID string) error {
 
-	l := m.Logger("RemoveActionCharacterObjectRec")
+	l := m.loggerWithFunctionContext("RemoveActionCharacterObjectRec")
 
 	l.Debug("Removing dungeon action character object rec ID >%s<", recID)
 

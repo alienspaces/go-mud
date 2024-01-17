@@ -8,8 +8,8 @@ use (
 )
 
 replace (
-	gitlab.com/alienspaces/go-mud/backend/core v1.0 => ./backend/core
-	gitlab.com/alienspaces/go-mud/backend/schema v1.0 => ./backend/schema
-	gitlab.com/alienspaces/go-mud/backend/service/game v1.0 => ./backend/service/game
-	gitlab.com/alienspaces/go-mud/backend/service/template v1.0 => ./backend/service/template
+	gitlab.com/alienspaces/go-mud/backend/core v1.0.0 => ./backend/core
+	gitlab.com/alienspaces/go-mud/backend/schema v1.0.0 => ./backend/schema
+	gitlab.com/alienspaces/go-mud/backend/service/game v1.0.0 => ./backend/service/game
+	gitlab.com/alienspaces/go-mud/backend/service/template v1.0.0 => ./backend/service/template
 )

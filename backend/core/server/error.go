@@ -85,7 +85,7 @@ func WriteSystemError(l logger.Logger, w http.ResponseWriter, err error) {
 }
 
 func writeSystemError(l logger.Logger, w http.ResponseWriter) {
-	err := coreerror.NewInternalError()
+	err := coreerror.NewInternalError("system")
 	e, _ := coreerror.ToError(err)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

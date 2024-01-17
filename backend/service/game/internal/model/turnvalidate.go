@@ -9,7 +9,7 @@ import (
 
 // validateTurnRec - validates creating and updating a turn record
 func (m *Model) validateTurnRec(rec *record.Turn) error {
-	l := m.Logger("validateTurnRec")
+	l := m.loggerWithFunctionContext("validateTurnRec")
 
 	// New turn
 	if rec.ID == "" {

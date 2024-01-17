@@ -31,29 +31,15 @@ type Config struct {
 
 var _ logger.Logger = &Log{}
 
-// Level -
-type Level uint32
-
-const (
+var levelMap = map[logger.Level]zerolog.Level{
 	// DebugLevel -
-	DebugLevel = 5
+	logger.DebugLevel: zerolog.DebugLevel,
 	// InfoLevel -
-	InfoLevel = 4
+	logger.InfoLevel: zerolog.InfoLevel,
 	// WarnLevel -
-	WarnLevel = 3
+	logger.WarnLevel: zerolog.WarnLevel,
 	// ErrorLevel -
-	ErrorLevel = 2
-)
-
-var levelMap = map[Level]zerolog.Level{
-	// DebugLevel -
-	DebugLevel: zerolog.DebugLevel,
-	// InfoLevel -
-	InfoLevel: zerolog.InfoLevel,
-	// WarnLevel -
-	WarnLevel: zerolog.WarnLevel,
-	// ErrorLevel -
-	ErrorLevel: zerolog.ErrorLevel,
+	logger.ErrorLevel: zerolog.ErrorLevel,
 }
 
 func NewDefaultLogger() *Log {
@@ -134,12 +120,12 @@ func (l *Log) Init() {
 }
 
 // NewInstance - Create a new log instance based off configuration of this instance
-func (l *Log) NewInstance() (logger.Logger, error) {
+func (l *Log) NewInstance(fields map[string]interface{}) logger.Logger {
 	return &Log{
-		fields: make(map[string]interface{}),
+		fields: fields,
 		Config: l.Config,
-		log:    l.log.With().Logger(),
-	}, nil
+		log:    l.log.With().Fields(fields).Logger(),
+	}
 }
 
 // Printf -
@@ -148,100 +134,70 @@ func (l *Log) Printf(format string, args ...interface{}) {
 }
 
 // Level -
-func (l *Log) Level(level Level) {
+func (l *Log) Level(level logger.Level) {
 	if lvl, ok := levelMap[level]; ok {
 		l.log = l.log.Level(lvl)
 	}
 }
 
-// Context - set logging
-func (l *Log) Context(key, value string) {
-	if value == "" {
-		delete(l.fields, key)
-		return
+func (l *Log) WithContext(key, value string) logger.Logger {
+	fields := map[string]interface{}{
+		key: value,
 	}
-	l.fields[key] = value
+	for field, value := range l.fields {
+		if field == key {
+			continue
+		}
+		fields[field] = value
+	}
+	i := l.NewInstance(fields)
+	return i
 }
 
-// WithApplicationContext - Shallow copied logger instance with new application context and existing package and function context
+// WithApplicationContext - New logger instance with new application context and existing package and function context
 func (l *Log) WithApplicationContext(value string) logger.Logger {
-	ctxLog := *l
-	fields := map[string]interface{}{
-		"application": value,
-	}
-	if value, ok := ctxLog.fields["package"]; ok {
-		fields["package"] = value
-	}
-	if value, ok := ctxLog.fields["function"]; ok {
-		fields["function"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
-
-	ctxLog.fields = fields
-	return &ctxLog
+	return l.WithContext(logger.ContextApplication, value)
 }
 
-// WithPackageContext - Shallow copied logger instance with new package context and existing application and function context
+// WithPackageContext - New logger instance with new package context and existing application and function context
 func (l *Log) WithPackageContext(value string) logger.Logger {
-	ctxLog := *l
-	fields := map[string]interface{}{
-		"package": value,
-	}
-	if value, ok := ctxLog.fields["application"]; ok {
-		fields["application"] = value
-	}
-	if value, ok := ctxLog.fields["function"]; ok {
-		fields["function"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
-	ctxLog.fields = fields
-	return &ctxLog
+	return l.WithContext(logger.ContextPackage, value)
 }
 
-// WithFunctionContext - Shallow copied logger instance with new function context and existing application and package context
+// WithFunctionContext - New logger instance with new function context and existing application and package context
 func (l *Log) WithFunctionContext(value string) logger.Logger {
-	ctxLog := *l
-	fields := map[string]interface{}{
-		"function": value,
-	}
-	if value, ok := ctxLog.fields["application"]; ok {
-		fields["application"] = value
-	}
-	if value, ok := ctxLog.fields["package"]; ok {
-		fields["package"] = value
-	}
-	if value, ok := ctxLog.fields["correlation-id"]; ok {
-		fields["correlation-id"] = value
-	}
+	return l.WithContext(logger.ContextFunction, value)
+}
 
-	ctxLog.fields = fields
-	return &ctxLog
+func (l *Log) Write(lvl logger.Level, msg string, args ...any) {
+	switch lvl {
+	case logger.DebugLevel:
+		l.Debug(msg, args...)
+	case logger.InfoLevel:
+		l.Info(msg, args...)
+	case logger.WarnLevel:
+		l.Warn(msg, args...)
+	case logger.ErrorLevel:
+		l.Error(msg, args...)
+	}
 }
 
 // Debug -
-func (l *Log) Debug(msg string, args ...interface{}) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Debug().Msgf(msg, args...)
+func (l *Log) Debug(msg string, args ...any) {
+	l.log.Debug().Msgf(msg, args...)
 }
 
 // Info -
-func (l *Log) Info(msg string, args ...interface{}) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Info().Msgf(msg, args...)
+func (l *Log) Info(msg string, args ...any) {
+	l.log.Info().Msgf(msg, args...)
 }
 
 // Warn -
-func (l *Log) Warn(msg string, args ...interface{}) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Warn().Msgf(msg, args...)
+func (l *Log) Warn(msg string, args ...any) {
+	l.log.Warn().Msgf(msg, args...)
 }
 
 // Error -
-func (l *Log) Error(msg string, args ...interface{}) {
-	ctxLog := l.log.With().Fields(l.fields).Logger()
-	ctxLog.Error().Msgf(msg, args...)
+func (l *Log) Error(msg string, args ...any) {
+	l.log.Error().Msgf(msg, args...)
 }

@@ -21,7 +21,7 @@ type Memory struct {
 
 // ProcessCharacterAction - Processes a submitted character action
 func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
-	l := m.Logger("ProcessCharacterAction")
+	l := m.loggerWithFunctionContext("ProcessCharacterAction")
 
 	l.Info("Processing character ID >%s< action command >%s<", characterInstanceID, sentence)
 
@@ -43,6 +43,9 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: 10-implement-effects:
+	// Process any active effects that are still applied to the character.
+
 	// Get the current dungeon location set of related records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(civRec.LocationInstanceID, true)
 	if err != nil {
@@ -55,8 +58,24 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, fmt.Errorf(msg)
 	}
 
+	resolved, err := m.resolveCommand(&ResolveCommandArgs{
+		Sentence:                  sentence,
+		EntityType:                EntityTypeCharacter,
+		EntityInstanceID:          civRec.ID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
+	if err != nil {
+		l.Warn("failed resolving command >%v<", err)
+		return nil, err
+	}
+
+	if resolved == nil {
+		l.Info("no command resolved, you might be dead")
+		return nil, nil
+	}
+
 	// Resolve the submitted character action
-	actionRec, err := m.resolveAction(sentence, &ResolveActionArgs{
+	actionRec, err := m.resolveAction(resolved, &ResolveActionArgs{
 		EntityType:                EntityTypeCharacter,
 		EntityInstanceID:          civRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
@@ -66,7 +85,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		return nil, err
 	}
 
-	// Resolve the initial action turn
+	// Resolve the action turn
 	actionRec, err = m.resolveActionTurn(&ResolveActionTurnArgs{
 		ActionRec:         actionRec,
 		EntityType:        EntityTypeCharacter,
@@ -74,7 +93,7 @@ func (m *Model) ProcessCharacterAction(dungeonInstanceID string, characterInstan
 		DungeonInstanceID: locationInstanceRecordSet.LocationInstanceViewRec.DungeonInstanceID,
 	})
 	if err != nil {
-		l.Warn("failed resolving action turn >%v<", err)
+		l.Warn("failed resolving action turn, maybe too early >%v<", err)
 		return nil, err
 	}
 
@@ -182,7 +201,7 @@ type DecideMonsterActionResult struct {
 
 // DecideMonsterAction -
 func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterActionResult, error) {
-	l := m.Logger("DecideMonsterAction")
+	l := m.loggerWithFunctionContext("DecideMonsterAction")
 
 	l.Info("Deciding monster instance ID >%s< action", monsterInstanceID)
 
@@ -235,7 +254,7 @@ func (m *Model) DecideMonsterAction(monsterInstanceID string) (*DecideMonsterAct
 
 // ProcessMonsterAction - Processes a submitted character action
 func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID string, sentence string) (*record.ActionRecordSet, error) {
-	l := m.Logger("ProcessMonsterAction")
+	l := m.loggerWithFunctionContext("ProcessMonsterAction")
 
 	l.Info("Processing monster ID >%s< action command >%s<", monsterInstanceID, sentence)
 
@@ -257,6 +276,9 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, fmt.Errorf(msg)
 	}
 
+	// TODO: 10-implement-effects:
+	// Process any active effects that are still applied to the monster.
+
 	// Get the current dungeon location set of related records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(mivRec.LocationInstanceID, true)
 	if err != nil {
@@ -269,8 +291,25 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, fmt.Errorf(msg)
 	}
 
+	resolved, err := m.resolveCommand(&ResolveCommandArgs{
+		Sentence:                  sentence,
+		EntityType:                EntityTypeMonster,
+		EntityInstanceID:          mivRec.ID,
+		LocationInstanceRecordSet: locationInstanceRecordSet,
+	})
+	if err != nil {
+		l.Warn("failed resolving command >%v<", err)
+		return nil, err
+	}
+
+	if resolved == nil {
+		err := NewInternalError("command was not resolved")
+		l.Warn(err.Error())
+		return nil, err
+	}
+
 	// Resolve the submitted monster action
-	actionRec, err := m.resolveAction(sentence, &ResolveActionArgs{
+	actionRec, err := m.resolveAction(resolved, &ResolveActionArgs{
 		EntityType:                EntityTypeMonster,
 		EntityInstanceID:          mivRec.ID,
 		LocationInstanceRecordSet: locationInstanceRecordSet,
@@ -387,21 +426,11 @@ func (m *Model) ProcessMonsterAction(dungeonInstanceID string, monsterInstanceID
 		return nil, err
 	}
 
-	// actionMemoryRecs, err := m.memoriseAction(&MemoriserArgs{ActionRecordSet: actionRecordSet})
-	// if err != nil {
-	// 	l.Warn("failed memorising action >%v<", err)
-	// 	return nil, err
-	// }
-
-	// l.Info("Recorded >%d< memory records", len(actionMemoryRecs))
-
-	// actionRecordSet.ActionMemoryRecs = actionMemoryRecs
-
 	return actionRecordSet, nil
 }
 
 func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, error) {
-	l := m.Logger("GetActionRecordSet")
+	l := m.loggerWithFunctionContext("GetActionRecordSet")
 
 	actionRecordSet := record.ActionRecordSet{}
 
@@ -927,7 +956,7 @@ func (m *Model) GetActionRecordSet(actionID string) (*record.ActionRecordSet, er
 }
 
 func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forUpdate bool) (*record.LocationInstanceViewRecordSet, error) {
-	l := m.Logger("GetLocationInstanceViewRecordSet")
+	l := m.loggerWithFunctionContext("GetLocationInstanceViewRecordSet")
 
 	locationInstanceRecordSet := &record.LocationInstanceViewRecordSet{}
 
@@ -1046,7 +1075,7 @@ func (m *Model) GetLocationInstanceViewRecordSet(locationInstanceID string, forU
 // for the entity associated with the given action record. The given action record
 // is then appended to the result providing the full list.
 func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.Action, error) {
-	l := m.Logger("GetActionRecsSincePreviousAction")
+	l := m.loggerWithFunctionContext("GetActionRecsSincePreviousAction")
 
 	if rec == nil {
 		return nil, fmt.Errorf("missing action record argument, cannot get action record since previous action")
@@ -1140,7 +1169,7 @@ func (m *Model) GetActionRecsSincePreviousAction(rec *record.Action) ([]*record.
 // need to be referenced when deciding what action to take..
 
 func (m *Model) GetMonsterInstanceMemories(rec *record.MonsterInstanceView) ([]*Memory, error) {
-	l := m.Logger("GetMonsterInstanceMemories")
+	l := m.loggerWithFunctionContext("GetMonsterInstanceMemories")
 
 	var memories []*Memory
 
@@ -1259,7 +1288,7 @@ func (m *Model) GetMonsterInstanceMemories(rec *record.MonsterInstanceView) ([]*
 }
 
 func (m *Model) createActionRecordSetRecords(actionRecordSet *record.ActionRecordSet) (*record.ActionRecordSet, error) {
-	l := m.Logger("createActionRecordSetRecords")
+	l := m.loggerWithFunctionContext("createActionRecordSetRecords")
 
 	actionRec := actionRecordSet.ActionRec
 
@@ -1380,7 +1409,7 @@ func (m *Model) createTargetActionLocationRecordSet(actionID, locationInstanceID
 }
 
 func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID string, locationType LocationType) (*record.ActionLocationRecordSet, error) {
-	l := m.Logger("createActionLocationRecordSet")
+	l := m.loggerWithFunctionContext("createActionLocationRecordSet")
 
 	// TODO: Think we should be using turn_number here to get relevant records
 	locationInstanceRecordSet, err := m.GetLocationInstanceViewRecordSet(locationInstanceID, true)
@@ -1511,7 +1540,7 @@ func (m *Model) createActionLocationRecordSet(actionID, locationInstanceID strin
 }
 
 func (m *Model) createActionTargetCharacterRecs(actionID, locationInstanceID, characterInstanceID string) (*record.ActionCharacter, []*record.ActionCharacterObject, error) {
-	l := m.Logger("createActionTargetCharacterRecs")
+	l := m.loggerWithFunctionContext("createActionTargetCharacterRecs")
 
 	l.Info("Creating action ID >%s< character instance ID >%s< records", actionID, characterInstanceID)
 
@@ -1576,7 +1605,7 @@ func (m *Model) createActionTargetCharacterRecs(actionID, locationInstanceID, ch
 }
 
 func (m *Model) createActionTargetMonsterRecs(actionID, locationInstanceID, monsterInstanceID string) (*record.ActionMonster, []*record.ActionMonsterObject, error) {
-	l := m.Logger("createActionTargetMonsterRecs")
+	l := m.loggerWithFunctionContext("createActionTargetMonsterRecs")
 
 	l.Info("Creating action ID >%s< monster instance ID >%s< records", actionID, monsterInstanceID)
 
@@ -1641,7 +1670,7 @@ func (m *Model) createActionTargetMonsterRecs(actionID, locationInstanceID, mons
 }
 
 func (m *Model) createActionObjectRec(actionID, locationInstanceID, objectInstanceID, recordType string) (*record.ActionObject, error) {
-	l := m.Logger("createActionObjectRec")
+	l := m.loggerWithFunctionContext("createActionObjectRec")
 
 	targetObjectInstanceViewRec, err := m.GetObjectInstanceViewRec(objectInstanceID)
 	if err != nil {

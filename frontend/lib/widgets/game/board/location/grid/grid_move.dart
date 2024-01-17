@@ -68,7 +68,7 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
     final log = getLogger('GameLocationGridMoveWidget', 'initState');
 
     if (!mounted) {
-      log.info('+++ Not mounted, not initialising');
+      log.fine('+++ Not mounted, not initialising');
       return;
     }
 
@@ -110,11 +110,11 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
     final log = getLogger('GameLocationGridMoveWidget', 'dispose');
 
     if (!mounted) {
-      log.info('### Not mounted, not disposing');
+      log.fine('### Not mounted, not disposing');
       return;
     }
 
-    log.info('### Disposing..');
+    log.fine('### Disposing..');
     _controller.dispose();
     super.dispose();
   }
@@ -124,11 +124,11 @@ class _GameLocationGridMoveWidgetState extends State<GameLocationGridMoveWidget>
     final log = getLogger('GameLocationGridMoveWidget', 'build');
 
     if (!mounted) {
-      log.info('<<< Not mounted, not building grid..');
+      log.fine('<<< Not mounted, not building grid..');
       return Container();
     }
 
-    log.info('<<< Building ${widget.key} - ${widget.slide}..');
+    log.fine('<<< Building ${widget.key} - ${widget.slide}..');
 
     return AnimatedBuilder(
       animation: _controller,

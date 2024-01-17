@@ -14,32 +14,13 @@ class CharacterStateInitial extends CharacterState {
 }
 
 @immutable
-class CharacterStateCreate extends CharacterState {
-  const CharacterStateCreate();
-
-  @override
-  List<Object> get props => [];
-}
-
-@immutable
-class CharacterStateCreateError extends CharacterState {
-  final CreateCharacterRecord characterRecord;
-  final String message;
-  const CharacterStateCreateError({
-    required this.characterRecord,
-    required this.message,
-  });
-
-  @override
-  List<Object> get props => [characterRecord, message];
-}
-
-@immutable
 class CharacterStateError extends CharacterState {
   final CharacterRecord characterRecord;
   final String message;
-  const CharacterStateError(
-      {required this.characterRecord, required this.message});
+  const CharacterStateError({
+    required this.characterRecord,
+    required this.message,
+  });
 
   @override
   List<Object> get props => [message];
@@ -58,25 +39,82 @@ class CharacterStateLoaded extends CharacterState {
   final List<CharacterRecord>? characterRecords;
   final CharacterRecord? currentCharacterRecord;
 
-  const CharacterStateLoaded(
-      {required this.characterRecords, this.currentCharacterRecord});
+  const CharacterStateLoaded({
+    required this.characterRecords,
+    this.currentCharacterRecord,
+  });
 
   @override
   List<Object?> get props => [characterRecords, currentCharacterRecord];
 }
 
 @immutable
-class CharacterStateLoadError extends CharacterState {
-  const CharacterStateLoadError();
+class CharacterStateSelecting extends CharacterState {
+  final CharacterRecord characterRecord;
+
+  const CharacterStateSelecting({
+    required this.characterRecord,
+  });
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [characterRecord];
 }
 
 @immutable
 class CharacterStateSelected extends CharacterState {
   final CharacterRecord characterRecord;
-  const CharacterStateSelected({required this.characterRecord});
+
+  const CharacterStateSelected({
+    required this.characterRecord,
+  });
+
+  @override
+  List<Object> get props => [characterRecord];
+}
+
+@immutable
+class CharacterStateEntering extends CharacterState {
+  final CharacterRecord characterRecord;
+
+  const CharacterStateEntering({
+    required this.characterRecord,
+  });
+
+  @override
+  List<Object> get props => [characterRecord];
+}
+
+@immutable
+class CharacterStateEntered extends CharacterState {
+  final CharacterRecord characterRecord;
+
+  const CharacterStateEntered({
+    required this.characterRecord,
+  });
+
+  @override
+  List<Object> get props => [characterRecord];
+}
+
+@immutable
+class CharacterStateExiting extends CharacterState {
+  final CharacterRecord characterRecord;
+
+  const CharacterStateExiting({
+    required this.characterRecord,
+  });
+
+  @override
+  List<Object> get props => [characterRecord];
+}
+
+@immutable
+class CharacterStateExited extends CharacterState {
+  final CharacterRecord characterRecord;
+
+  const CharacterStateExited({
+    required this.characterRecord,
+  });
 
   @override
   List<Object> get props => [characterRecord];

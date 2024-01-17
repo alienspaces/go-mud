@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"fmt"
+
 	coreerror "gitlab.com/alienspaces/go-mud/backend/core/error"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 	"gitlab.com/alienspaces/go-mud/backend/core/type/modeller"
@@ -15,7 +17,7 @@ type InstanceViewRecordSet struct {
 }
 
 func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m modeller.Modeller, characterID string) (*InstanceViewRecordSet, error) {
-	l = loggerWithContext(l, "getInstanceViewRecordSetByCharacterID")
+	l = loggerWithFunctionContext(l, "getInstanceViewRecordSetByCharacterID")
 
 	characterInstanceViewRec, err := m.(*model.Model).GetCharacterInstanceViewRecByCharacterID(characterID)
 	if err != nil {
@@ -36,8 +38,8 @@ func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m mode
 	}
 
 	if dungeonInstanceViewRec == nil {
-		l.Warn("dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID)
-		err := coreerror.NewInternalError()
+		err := coreerror.NewInternalError(fmt.Sprintf("dungeon instance record ID >%s< does not exist", characterInstanceViewRec.DungeonInstanceID))
+		l.Warn(err.Error())
 		return nil, err
 	}
 
@@ -48,8 +50,8 @@ func (rnr *Runner) getInstanceViewRecordSetByCharacterID(l logger.Logger, m mode
 	}
 
 	if locationInstanceViewRec == nil {
-		l.Warn("location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID)
-		err := coreerror.NewInternalError()
+		err := coreerror.NewInternalError(fmt.Sprintf("location instance record ID >%s< does not exist", characterInstanceViewRec.LocationInstanceID))
+		l.Warn(err.Error())
 		return nil, err
 	}
 

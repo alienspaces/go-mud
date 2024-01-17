@@ -31,7 +31,7 @@ dependencies:
     sdk: flutter
 
   # A composable, multi-platform, Future-based API for HTTP requests.
-  http: ^0.13.3
+  http: ^1.1.0
 
   # Flutter Widgets that make it easy to implement the BLoC
   # (Business Logic Component) design pattern. Built to be used
@@ -45,13 +45,13 @@ dependencies:
   equatable: ^2.0.3
 
   # Load environment variables from a `.env` file.
-  dotenv: 4.1.0
+  dotenv: 4.2.0
 
   # Provides APIs for debugging and error logging. This library introduces
   # abstractions similar to those used in other languages, such as the
   # Closure JS Logger and java.util.logging.Logger.
   # https://pub.dev/packages/logging
-  logging: 1.1.1
+  logging: 1.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -59,7 +59,7 @@ dependencies:
 
   # Annotations used to express developer intentions that can't otherwise 
   # be deduced by statically analyzing source code.
-  meta: ^1.8.0
+  meta: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +70,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.1
+  flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

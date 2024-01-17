@@ -28,7 +28,7 @@ class CharacterRepository implements CharacterRepositoryInterface {
   @override
   Future<CharacterRecord?> createOne(CreateCharacterRecord createRecord) async {
     final log = getLogger('CharacterRepository', 'createOne');
-    log.info('Creating character ${createRecord.characterName}');
+    log.fine('Creating character ${createRecord.characterName}');
 
     var response = await api.createCharacter(
       characterName: createRecord.characterName,
@@ -37,8 +37,8 @@ class CharacterRepository implements CharacterRepositoryInterface {
       characterIntelligence: createRecord.characterIntelligence,
     );
 
-    log.info('APIResponse body ${response.body}');
-    log.info('APIResponse error ${response.error}');
+    log.fine('APIResponse body ${response.body}');
+    log.fine('APIResponse error ${response.error}');
 
     if (response.error != null) {
       log.warning('API responded with error ${response.error}');

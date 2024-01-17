@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
+	"gitlab.com/alienspaces/go-mud/backend/core/type/logger"
 )
 
 var (
@@ -17,10 +18,17 @@ var internal = Error{
 	HttpStatusCode: http.StatusInternalServerError,
 	ErrorCode:      Internal,
 	Message:        "An internal error has occurred.",
+	LogLevel:       logger.ErrorLevel,
+	LogMessage:     "",
 }
 
-func NewInternalError() error {
-	return internal
+func NewInternalError(message string, args ...any) error {
+	e := internal
+	if message != "" {
+		e.LogLevel = logger.ErrorLevel
+		e.LogMessage = fmt.Sprintf(message, args...)
+	}
+	return e
 }
 
 var notFound = Error{
