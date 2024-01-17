@@ -93,7 +93,7 @@ class MainApp extends StatelessWidget {
             ),
           ),
         ],
-        child: Navigation(),
+        child: const Navigation(),
       ),
     );
   }
