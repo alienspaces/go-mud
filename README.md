@@ -8,6 +8,9 @@
 
 A M.U.D (multi user dungeon) with a back end API built with [`Go`](https://go.dev/) and a front end UI built with [`Flutter`](https://flutter.dev/docs).
 
+❗ No Longer Maintained ~ March 18th 2024 - See [Go Little M.U.D.](https://gitlab.com/alienspaces/go-little-mud
+) for more information❗
+
 ## Quick Start
 
 📝 _Might be a good idea to look at what these tools do before running them!_
